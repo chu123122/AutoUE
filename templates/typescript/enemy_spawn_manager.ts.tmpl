@@ -1,5 +1,123 @@
-export interface {{interface_name}} { runId?: string; }
+import UE = require('ue');
+import { createAutoUESpawnPointRegistry, AutoUESpawnPointRegistry, AutoUESpawnPointInfo } from './AutoUESpawnPointRegistry';
+import { createAutoUEEnemyArchetypeRegistry, AutoUEEnemyArchetypeRegistry } from './AutoUEEnemyArchetypeRegistry';
 
-export function {{export_name}}(_context: {{interface_name}} = {}): Record<string, unknown> {
-  return { schema_version: 'autoue-enemy-spawn-manager/v1', source_behavior_id: {{behavior_id_json}}, runtime_mapping_path: {{runtime_mapping_path_json}}, verification_hooks: ['enemy_spawned'] };
+const LOG_PREFIX = '[AUTOUE_GENERATED]';
+const GENERATED_ENEMY_TAG = 'AUTOUE_GENERATED_ENEMY';
+
+export interface {{interface_name}} { worldContext?: UE.Object; runId?: string; }
+
+export type AutoUESpawnedEnemy = {
+  actor: UE.CombatEnemy;
+  enemyId: string;
+  spawnGroup: string;
+  spawnPoint?: UE.Actor;
+};
+
+export type AutoUEEnemySpawnManager = {
+  spawnEncounterEnemies(encounter: any): AutoUESpawnedEnemy[];
+  reset(): void;
+  snapshot(): Record<string, unknown>;
+};
+
+function log(message: string): void { console.warn(`${LOG_PREFIX} ${message}`); }
+function actorName(actor: UE.Actor | undefined): string { if (!actor) return '<none>'; try { return (actor as any).GetName(); } catch (_) { return String(actor); } }
+
+function addTag(actor: UE.Actor, tag: string): void {
+  try { actor.Tags.Add(tag); } catch (_) {}
+}
+
+function enemyComposition(encounter: any): Array<{ enemy: string; count: number }> {
+  const raw = encounter && Array.isArray(encounter.composition) ? encounter.composition : [{ enemy: 'goblin_melee', count: 1 }];
+  return raw.map((item: any) => ({ enemy: String(item && item.enemy ? item.enemy : 'goblin_melee'), count: Math.max(1, Number(item && item.count ? item.count : 1)) }));
+}
+
+function spawnTransform(point: AutoUESpawnPointInfo | undefined): UE.Transform {
+  if (point) return point.transform;
+  return new UE.Transform(new UE.Rotator(0, 0, 0), new UE.Vector(360, 0, 120), new UE.Vector(1, 1, 1));
+}
+
+function configureSpawnedEnemy(enemy: UE.CombatEnemy, enemyId: string, defaultHealth: number): void {
+  addTag(enemy, GENERATED_ENEMY_TAG);
+  addTag(enemy, `AUTOUE_ENEMY_${enemyId}`);
+  addTag(enemy, 'AUTOUE_COMBAT_ENEMY');
+  try { (enemy as any).MaxHP = defaultHealth; } catch (_) {}
+  try { (enemy as any).CurrentHP = defaultHealth; } catch (_) {}
+  try { enemy.PrimaryActorTick.bCanEverTick = true; } catch (_) {}
+}
+
+function spawnOne(worldContext: UE.Object, cls: UE.Class, point: AutoUESpawnPointInfo | undefined, enemyId: string, defaultHealth: number): UE.CombatEnemy | undefined {
+  const xform = spawnTransform(point);
+  try {
+    const pending = UE.GameplayStatics.BeginDeferredActorSpawnFromClass(
+      worldContext,
+      cls,
+      xform,
+      UE.ESpawnActorCollisionHandlingMethod.AdjustIfPossibleButAlwaysSpawn,
+      undefined
+    );
+    if (!pending) {
+      log(`EnemySpawnFailed enemy=${enemyId} reason=BeginDeferredActorSpawnFromClass`);
+      return undefined;
+    }
+    configureSpawnedEnemy(pending as UE.CombatEnemy, enemyId, defaultHealth);
+    const finished = UE.GameplayStatics.FinishSpawningActor(pending, xform) as UE.CombatEnemy;
+    if (!finished) {
+      log(`EnemySpawnFailed enemy=${enemyId} reason=FinishSpawningActor`);
+      return undefined;
+    }
+    configureSpawnedEnemy(finished, enemyId, defaultHealth);
+    const loc = finished.K2_GetActorLocation();
+    log(`EnemySpawned actor=${actorName(finished)} class=BP_AutoUECombatEnemy enemy=${enemyId} spawn_group=${point ? point.spawn_group : '<fallback>'} loc=${Math.round(loc.X)},${Math.round(loc.Y)},${Math.round(loc.Z)}`);
+    return finished;
+  } catch (e) {
+    log(`EnemySpawnFailed enemy=${enemyId} error=${e}`);
+    return undefined;
+  }
+}
+
+export function {{export_name}}(context: {{interface_name}} = {}): AutoUEEnemySpawnManager {
+  const spawnPoints: AutoUESpawnPointRegistry = createAutoUESpawnPointRegistry(context);
+  const archetypes: AutoUEEnemyArchetypeRegistry = createAutoUEEnemyArchetypeRegistry(context);
+  const spawned: AutoUESpawnedEnemy[] = [];
+
+  return {
+    spawnEncounterEnemies(encounter: any): AutoUESpawnedEnemy[] {
+      const worldContext = context.worldContext;
+      if (!worldContext) {
+        log('EnemySpawnFailed reason=no_world_context');
+        return [];
+      }
+      const spawnGroup = String(encounter && encounter.spawn_group ? encounter.spawn_group : 'room_01_guard');
+      const points = spawnPoints.getSpawnPoints(spawnGroup);
+      if (!points.length) log(`EnemySpawnFailed spawn_group=${spawnGroup} reason=no_spawn_point`);
+      const created: AutoUESpawnedEnemy[] = [];
+      let pointIndex = 0;
+      for (const item of enemyComposition(encounter)) {
+        const archetype = archetypes.getArchetype(item.enemy);
+        const cls = archetypes.loadClass(item.enemy);
+        if (!cls) continue;
+        for (let i = 0; i < item.count; i++) {
+          const point = points.length ? points[pointIndex % points.length] : undefined;
+          pointIndex += 1;
+          const actor = spawnOne(worldContext, cls, point, item.enemy, archetype.default_health);
+          if (actor) {
+            const handle = { actor, enemyId: item.enemy, spawnGroup, spawnPoint: point ? point.actor : undefined };
+            spawned.push(handle);
+            created.push(handle);
+          }
+        }
+      }
+      return created;
+    },
+    reset(): void {
+      while (spawned.length) {
+        const handle = spawned.pop();
+        try { if (handle && handle.actor) handle.actor.K2_DestroyActor(); } catch (_) {}
+      }
+    },
+    snapshot(): Record<string, unknown> {
+      return { schema_version: 'autoue-enemy-spawn-manager/v2', spawned_count: spawned.length, spawn_points: spawnPoints.snapshot(), archetypes: archetypes.snapshot() };
+    }
+  };
 }

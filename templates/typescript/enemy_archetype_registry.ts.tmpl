@@ -1,5 +1,75 @@
-export interface {{interface_name}} { runId?: string; }
+import UE = require('ue');
+import { getAutoUEGeneratedEnemyArchetypes } from './AutoUEGeneratedEnemyArchetypes';
 
-export function {{export_name}}(_context: {{interface_name}} = {}): Record<string, unknown> {
-  return { schema_version: 'autoue-enemy-archetype-registry/v1', source_behavior_id: {{behavior_id_json}}, runtime_mapping_path: {{runtime_mapping_path_json}} };
+const LOG_PREFIX = '[AUTOUE_GENERATED]';
+const DEFAULT_ENEMY_CLASS = '/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C';
+
+export interface {{interface_name}} { worldContext?: UE.Object; runId?: string; }
+
+export type AutoUEEnemyArchetype = {
+  enemy: string;
+  display_name: string;
+  class_path: string;
+  default_health: number;
+  tags: string[];
+};
+
+export type AutoUEEnemyArchetypeRegistry = {
+  getArchetype(enemyId?: string): AutoUEEnemyArchetype;
+  loadClass(enemyId?: string): UE.Class | undefined;
+  snapshot(): Record<string, unknown>;
+};
+
+function log(message: string): void { console.warn(`${LOG_PREFIX} ${message}`); }
+
+function defaultArchetype(): AutoUEEnemyArchetype {
+  return {
+    enemy: 'goblin_melee',
+    display_name: 'AutoUE Combat Enemy',
+    class_path: DEFAULT_ENEMY_CLASS,
+    default_health: 2,
+    tags: ['AUTOUE_GENERATED_ENEMY', 'AUTOUE_COMBAT_ENEMY', 'ground', 'melee']
+  };
+}
+
+function normalize(raw: any): AutoUEEnemyArchetype {
+  const base = defaultArchetype();
+  return {
+    enemy: String(raw && raw.enemy ? raw.enemy : base.enemy),
+    display_name: String(raw && raw.display_name ? raw.display_name : base.display_name),
+    class_path: String(raw && raw.class_path ? raw.class_path : base.class_path),
+    default_health: Number(raw && raw.default_health ? raw.default_health : base.default_health),
+    tags: Array.isArray(raw && raw.tags) ? raw.tags.map((x: unknown) => String(x)) : base.tags,
+  };
+}
+
+export function {{export_name}}(_context: {{interface_name}} = {}): AutoUEEnemyArchetypeRegistry {
+  const data = getAutoUEGeneratedEnemyArchetypes({});
+  const rawList = Array.isArray((data as any).archetypes) ? (data as any).archetypes : [defaultArchetype()];
+  const byId = new Map<string, AutoUEEnemyArchetype>();
+  for (const raw of rawList) {
+    const archetype = normalize(raw);
+    byId.set(archetype.enemy, archetype);
+  }
+  if (!byId.has('goblin_melee')) byId.set('goblin_melee', defaultArchetype());
+
+  return {
+    getArchetype(enemyId = 'goblin_melee'): AutoUEEnemyArchetype {
+      return byId.get(enemyId) || byId.get('goblin_melee') || defaultArchetype();
+    },
+    loadClass(enemyId = 'goblin_melee'): UE.Class | undefined {
+      const archetype = this.getArchetype(enemyId);
+      try {
+        const cls = UE.Class.Load(archetype.class_path);
+        if (!cls) log(`EnemyClassLoadFailed path=${archetype.class_path}`);
+        return cls || undefined;
+      } catch (e) {
+        log(`EnemyClassLoadFailed path=${archetype.class_path} error=${e}`);
+        return undefined;
+      }
+    },
+    snapshot(): Record<string, unknown> {
+      return { schema_version: 'autoue-enemy-archetype-registry/v2', archetype_count: byId.size, default_class: DEFAULT_ENEMY_CLASS };
+    }
+  };
 }

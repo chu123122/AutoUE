@@ -25,7 +25,8 @@ export function {{export_name}}(_context: {{interface_name}} = {}): Record<strin
     ],
     actors: [
       { actor_name: 'AutoUEGenerated_Player', type: 'player', tags: ['AUTOUE_GENERATED_PLAYER'], purpose: 'controllable character and runtime state owner' },
-      { actor_name: 'AutoUEGenerated_Enemy', type: 'enemy', tags: ['AUTOUE_GENERATED_ENEMY'], purpose: 'patrolling melee enemy with health and defeated state' },
+      { actor_name: 'BP_EnemySpawnPoint(room_01_guard)', type: 'spawn_point', tags: ['AUTOUE_ENEMY_SPAWN_POINT', 'SpawnGroup=room_01_guard'], purpose: 'real placed UE Actor scanned at runtime for enemy spawning' },
+      { actor_name: 'BP_AutoUECombatEnemy(runtime)', type: 'enemy', tags: ['AUTOUE_GENERATED_ENEMY'], purpose: 'real ACombatEnemy-derived Blueprint spawned at runtime' },
       { actor_name: 'AutoUEGenerated_IceTrap', type: 'hazard', tags: ['AUTOUE_GENERATED_ICE_TRAP'], purpose: 'one-shot freeze trap that rearms only after player leaves radius' },
       { actor_name: 'AutoUEGenerated_FreezeVFX', type: 'feedback', tags: ['AUTOUE_GENERATED_FREEZE_VFX'], purpose: 'visible while player is frozen' },
       { actor_name: 'AutoUEGenerated_SideCamera', type: 'camera', tags: ['AUTOUE_GENERATED_SIDE_CAMERA'], purpose: 'side camera view target for gameplay and screenshot alignment' },

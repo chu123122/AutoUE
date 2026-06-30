@@ -1,5 +1,130 @@
-export interface {{interface_name}} { runId?: string; }
+import UE = require('ue');
+import { getAutoUEGeneratedEncounterSpec } from './AutoUEGeneratedEncounterSpec';
+import { createAutoUEEnemySpawnManager, AutoUEEnemySpawnManager, AutoUESpawnedEnemy } from './AutoUEEnemySpawnManager';
 
-export function {{export_name}}(_context: {{interface_name}} = {}): Record<string, unknown> {
-  return { schema_version: 'autoue-encounter-manager/v1', source_behavior_id: {{behavior_id_json}}, runtime_mapping_path: {{runtime_mapping_path_json}}, verification_hooks: ['encounter_completed'] };
+const LOG_PREFIX = '[AUTOUE_GENERATED]';
+
+export interface {{interface_name}} { worldContext?: UE.Object; runId?: string; }
+
+export type AutoUEEncounterManager = {
+  beginLevel(owner: UE.Actor): void;
+  tick(owner: UE.Actor, dt: number): void;
+  reset(): void;
+  getNearestAliveEnemy(source: UE.Actor): UE.CombatEnemy | undefined;
+  getAliveEnemies(): UE.CombatEnemy[];
+  aliveEnemyCount(): number;
+  hasStarted(): boolean;
+  isEncounterCompleted(): boolean;
+  isExitUnlocked(): boolean;
+  snapshot(): Record<string, unknown>;
+};
+
+function log(message: string): void { console.warn(`${LOG_PREFIX} ${message}`); }
+function actorName(actor: UE.Actor | undefined): string { if (!actor) return '<none>'; try { return (actor as any).GetName(); } catch (_) { return String(actor); } }
+function loc(actor: UE.Actor): UE.Vector { try { return actor.K2_GetActorLocation(); } catch (_) { return new UE.Vector(0, 0, 0); } }
+function dist(a: UE.Vector, b: UE.Vector): number { const dx = a.X - b.X; const dy = a.Y - b.Y; const dz = a.Z - b.Z; return Math.sqrt(dx * dx + dy * dy + dz * dz); }
+
+function firstLevelStartEncounter(spec: any): any {
+  const list = spec && Array.isArray(spec.encounters) ? spec.encounters : [];
+  for (const encounter of list) {
+    const trigger = encounter && encounter.trigger ? encounter.trigger : {};
+    if (!trigger.type || trigger.type === 'on_level_start') return encounter;
+  }
+  return list.length ? list[0] : {
+    encounter_id: 'room_01_initial_guard',
+    trigger: { type: 'on_level_start' },
+    spawn_group: 'room_01_guard',
+    composition: [{ enemy: 'goblin_melee', count: 1 }],
+    completion: { type: 'all_spawned_enemies_defeated', set_flags: ['exit_unlocked'] },
+  };
+}
+
+export function {{export_name}}(context: {{interface_name}} = {}): AutoUEEncounterManager {
+  const spawnManager: AutoUEEnemySpawnManager = createAutoUEEnemySpawnManager(context);
+  const spec = getAutoUEGeneratedEncounterSpec({});
+  let started = false;
+  let encounterCompleted = false;
+  let exitUnlocked = false;
+  let aliveEnemies: UE.CombatEnemy[] = [];
+  const deathSeen = new Set<string>();
+
+  function markEnemyDied(enemy: UE.CombatEnemy | undefined, reason: string): void {
+    if (!enemy) return;
+    const name = actorName(enemy);
+    if (deathSeen.has(name)) return;
+    deathSeen.add(name);
+    aliveEnemies = aliveEnemies.filter((item) => actorName(item) !== name);
+    log(`EnemyDied alive=${aliveEnemies.length} actor=${name} reason=${reason}`);
+    if (started && aliveEnemies.length === 0 && !encounterCompleted) {
+      encounterCompleted = true;
+      exitUnlocked = true;
+      log('EncounterCompleted=1 ExitUnlocked=1');
+    }
+  }
+
+  function registerEnemy(handle: AutoUESpawnedEnemy): void {
+    const enemy = handle.actor;
+    if (!enemy) return;
+    aliveEnemies.push(enemy);
+    let bound = false;
+    try {
+      enemy.OnEnemyDied.Add(() => markEnemyDied(enemy, 'OnEnemyDied'));
+      bound = true;
+    } catch (e) {
+      log(`EnemyDeathDelegateBindFailed actor=${actorName(enemy)} error=${e}`);
+    }
+    if (!bound) {
+      try { enemy.OnDestroyed.Add((_destroyed: UE.Actor | undefined) => markEnemyDied(enemy, 'OnDestroyed')); }
+      catch (e) { log(`EnemyDestroyedFallbackBindFailed actor=${actorName(enemy)} error=${e}`); }
+    }
+    log(`AliveEnemyRegistered count=${aliveEnemies.length} actor=${actorName(enemy)}`);
+  }
+
+  function pruneDeadByHP(): void {
+    for (const enemy of aliveEnemies.slice()) {
+      try {
+        if ((enemy as any).CurrentHP <= 0) markEnemyDied(enemy, 'CurrentHP<=0');
+      } catch (_) {}
+    }
+  }
+
+  return {
+    beginLevel(_owner: UE.Actor): void {
+      if (started) return;
+      started = true;
+      const encounter = firstLevelStartEncounter(spec);
+      const spawned = spawnManager.spawnEncounterEnemies(encounter);
+      for (const handle of spawned) registerEnemy(handle);
+      log(`EncounterStarted id=${encounter.encounter_id || '<unknown>'} spawn_group=${encounter.spawn_group || 'room_01_guard'} alive=${aliveEnemies.length}`);
+    },
+    tick(_owner: UE.Actor, _dt: number): void { pruneDeadByHP(); },
+    reset(): void {
+      spawnManager.reset();
+      started = false;
+      encounterCompleted = false;
+      exitUnlocked = false;
+      aliveEnemies = [];
+      deathSeen.clear();
+    },
+    getNearestAliveEnemy(source: UE.Actor): UE.CombatEnemy | undefined {
+      pruneDeadByHP();
+      let best: UE.CombatEnemy | undefined = undefined;
+      let bestDist = Number.MAX_VALUE;
+      const origin = loc(source);
+      for (const enemy of aliveEnemies) {
+        const d = dist(origin, loc(enemy));
+        if (d < bestDist) { best = enemy; bestDist = d; }
+      }
+      return best;
+    },
+    getAliveEnemies(): UE.CombatEnemy[] { pruneDeadByHP(); return aliveEnemies.slice(); },
+    aliveEnemyCount(): number { pruneDeadByHP(); return aliveEnemies.length; },
+    hasStarted(): boolean { return started; },
+    isEncounterCompleted(): boolean { pruneDeadByHP(); return encounterCompleted; },
+    isExitUnlocked(): boolean { pruneDeadByHP(); return exitUnlocked; },
+    snapshot(): Record<string, unknown> {
+      pruneDeadByHP();
+      return { schema_version: 'autoue-encounter-manager/v2', started, alive: aliveEnemies.map(actorName), encounterCompleted, exitUnlocked, spec_version: (spec as any).schema_version };
+    }
+  };
 }

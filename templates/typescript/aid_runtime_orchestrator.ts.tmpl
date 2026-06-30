@@ -1,11 +1,11 @@
 import UE = require('ue');
 import { setupAutoUEGeneratedCamera, updateAutoUEGeneratedSideCamera } from './AutoUEGeneratedCameraHelper';
 import { getAutoUEGeneratedSceneManifest } from './AutoUEGeneratedSceneManifest';
+import { createAutoUEEncounterManager, AutoUEEncounterManager } from './AutoUEEncounterManager';
 
 const LOG_PREFIX = '[AUTOUE_GENERATED]';
 const MOVE_SPEED = 620;
 const DASH_SPEED = 1100;
-const ENEMY_X = 360;
 const TRAP_X = 160;
 const EXIT_X = 820;
 const ROOM_Y = 0;
@@ -17,6 +17,7 @@ const EXIT_RADIUS = 165;
 const FREEZE_SECONDS = 1.25;
 const CAMERA_SHAKE_SECONDS = 0.35;
 const INPUT_PULSE_SECONDS = 0.25;
+const ATTACK_DAMAGE = 5.0;
 
 const INPUT_LEFT = 'AUTOUE_INPUT_LEFT';
 const INPUT_RIGHT = 'AUTOUE_INPUT_RIGHT';
@@ -29,6 +30,8 @@ const INPUT_RESET = 'AUTOUE_INPUT_RESET';
 type GeneratedState = {
   enemyHealth: number;
   enemyDefeated: boolean;
+  aliveEnemyCount: number;
+  encounterCompleted: boolean;
   frozenUntil: number;
   trapArmed: boolean;
   trapTriggerCount: number;
@@ -54,6 +57,7 @@ function hasTag(actor: UE.Actor, tag: string): boolean { try { return actor.Acto
 function clearTags(actor: UE.Actor): void { try { (actor.Tags as any).Empty(); } catch (_) {} }
 function refreshTags(actor: UE.Actor, state: GeneratedState): void {
   clearTags(actor);
+  addTag(actor, 'Player');
   addTag(actor, 'AUTOUE_GENERATED_ACTIVE');
   if (state.enemyDefeated) addTag(actor, 'AUTOUE_GENERATED_ENEMY_DEFEATED');
   if (state.elapsed < state.frozenUntil) addTag(actor, 'AUTOUE_GENERATED_PLAYER_FROZEN');
@@ -114,30 +118,55 @@ export function configureAutoUEGeneratedCharacter(actor: UE.Character): void {
 }
 
 function initialState(): GeneratedState {
-  return { enemyHealth: 2, enemyDefeated: false, frozenUntil: 0, trapArmed: true, trapTriggerCount: 0, cameraShakeUntil: 0, exitUnlocked: false, exitReached: false, roomComplete: false, elapsed: 0 };
+  return { enemyHealth: 2, enemyDefeated: false, aliveEnemyCount: 0, encounterCompleted: false, frozenUntil: 0, trapArmed: true, trapTriggerCount: 0, cameraShakeUntil: 0, exitUnlocked: false, exitReached: false, roomComplete: false, elapsed: 0 };
 }
+
+function encounterManager(actor: UE.Character): AutoUEEncounterManager {
+  const self = actor as any;
+  if (!self._autoueGeneratedEncounterManager) {
+    self._autoueGeneratedEncounterManager = createAutoUEEncounterManager({ worldContext: actor });
+  }
+  return self._autoueGeneratedEncounterManager as AutoUEEncounterManager;
+}
+
+function syncEncounterState(actor: UE.Character, state: GeneratedState): void {
+  const manager = encounterManager(actor);
+  manager.tick(actor, 0);
+  state.aliveEnemyCount = manager.aliveEnemyCount();
+  state.encounterCompleted = manager.isEncounterCompleted();
+  state.exitUnlocked = manager.isExitUnlocked();
+  state.enemyDefeated = manager.hasStarted() && state.aliveEnemyCount === 0 && state.encounterCompleted;
+  const nearest = manager.getNearestAliveEnemy(actor);
+  if (nearest) {
+    try { state.enemyHealth = Math.max(0, Number((nearest as any).CurrentHP)); } catch (_) {}
+  } else if (state.encounterCompleted) {
+    state.enemyHealth = 0;
+  }
+}
+
 function resetGeneratedRuntime(actor: UE.Character): void {
   const self = actor as any;
+  const manager = encounterManager(actor);
+  manager.reset();
   self._autoueGeneratedState = initialState();
   self._autoueGeneratedHarnessInput = { axis: 0, axisUntil: 0, dashUntil: 0, attackPulseUntil: 0 } as HarnessInput;
   try { (actor as any).K2_SetActorLocation(new UE.Vector(0, ROOM_Y, FLOOR_Z + 40), false, undefined, true); } catch (_) {}
-  try { if (self._autoueGeneratedEnemy) self._autoueGeneratedEnemy.SetVisibility(true, true); } catch (_) {}
   try { if (self._autoueGeneratedFreezeVFX) self._autoueGeneratedFreezeVFX.SetVisibility(false, true); } catch (_) {}
-  refreshTags(actor, self._autoueGeneratedState);
+  manager.beginLevel(actor);
+  syncEncounterState(actor, self._autoueGeneratedState as GeneratedState);
+  refreshTags(actor, self._autoueGeneratedState as GeneratedState);
   log('RuntimeReset=1');
 }
 
 export function beginAutoUEGeneratedCharacter(actor: UE.Character): void {
   const self = actor as any;
   configureAutoUEGeneratedCharacter(actor);
-  self._autoueGeneratedEnemyLocation = new UE.Vector(ENEMY_X, ROOM_Y, FLOOR_Z);
   self._autoueGeneratedTrapLocation = new UE.Vector(TRAP_X, ROOM_Y, FLOOR_Z);
   self._autoueGeneratedExitLocation = new UE.Vector(EXIT_X, ROOM_Y, FLOOR_Z);
-  self._autoueGeneratedFloor = makeWorldMesh(actor, 'AutoUEGenerated_RoomFloor', new UE.Vector(EXIT_X * 0.5, ROOM_Y, 25), new UE.Vector(10, 2.0, 0.08), new UE.LinearColor(0.18, 0.18, 0.18, 1));
-  self._autoueGeneratedEnemy = makeWorldMesh(actor, 'AutoUEGenerated_Enemy', self._autoueGeneratedEnemyLocation, new UE.Vector(0.65, 0.65, 1.15), new UE.LinearColor(1, 0.12, 0.08, 1));
-  self._autoueGeneratedTrap = makeWorldMesh(actor, 'AutoUEGenerated_IceTrap', self._autoueGeneratedTrapLocation, new UE.Vector(0.65, 0.65, 0.2), new UE.LinearColor(0.2, 0.8, 1, 1));
-  self._autoueGeneratedExit = makeWorldMesh(actor, 'AutoUEGenerated_Exit', self._autoueGeneratedExitLocation, new UE.Vector(0.35, 1.0, 1.65), new UE.LinearColor(0.05, 0.9, 0.15, 1));
-  self._autoueGeneratedFreezeVFX = makeAttachedMesh(actor, 'AutoUEGenerated_FreezeVFX', new UE.Vector(0, 0, 80), new UE.Vector(1.4, 1.4, 1.4), new UE.LinearColor(0.25, 0.9, 1, 1));
+  if (!self._autoueGeneratedFloor) self._autoueGeneratedFloor = makeWorldMesh(actor, 'AutoUEGenerated_RoomFloor', new UE.Vector(EXIT_X * 0.5, ROOM_Y, 25), new UE.Vector(10, 2.0, 0.08), new UE.LinearColor(0.18, 0.18, 0.18, 1));
+  if (!self._autoueGeneratedTrap) self._autoueGeneratedTrap = makeWorldMesh(actor, 'AutoUEGenerated_IceTrap', self._autoueGeneratedTrapLocation, new UE.Vector(0.65, 0.65, 0.2), new UE.LinearColor(0.2, 0.8, 1, 1));
+  if (!self._autoueGeneratedExit) self._autoueGeneratedExit = makeWorldMesh(actor, 'AutoUEGenerated_Exit', self._autoueGeneratedExitLocation, new UE.Vector(0.35, 1.0, 1.65), new UE.LinearColor(0.05, 0.9, 0.15, 1));
+  if (!self._autoueGeneratedFreezeVFX) self._autoueGeneratedFreezeVFX = makeAttachedMesh(actor, 'AutoUEGenerated_FreezeVFX', new UE.Vector(0, 0, 80), new UE.Vector(1.4, 1.4, 1.4), new UE.LinearColor(0.25, 0.9, 1, 1));
   setupAutoUEGeneratedCamera(actor, { orthoWidth: 1450, armLength: 1650 });
   resetGeneratedRuntime(actor);
   const manifest = getAutoUEGeneratedSceneManifest({});
@@ -205,21 +234,31 @@ function applyTrap(actor: UE.Character, state: GeneratedState): void {
   }
 }
 function applyAttack(actor: UE.Character, pc: UE.PlayerController | undefined, state: GeneratedState): void {
-  const self = actor as any;
   const pressed = attackPressed(actor, pc, state);
-  if (!pressed || state.enemyDefeated) return;
-  const distance = Math.abs(loc(actor).X - ENEMY_X);
-  log(`MeleeAttack distance=${Math.round(distance)} radius=${MELEE_RADIUS}`);
+  if (!pressed) return;
+  const manager = encounterManager(actor);
+  const enemy = manager.getNearestAliveEnemy(actor);
+  if (!enemy) { log('MeleeAttack target=<none> alive=0'); return; }
+  const playerLoc = loc(actor);
+  const enemyLoc = loc(enemy);
+  const dx = enemyLoc.X - playerLoc.X;
+  const dy = enemyLoc.Y - playerLoc.Y;
+  const dz = enemyLoc.Z - playerLoc.Z;
+  const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+  log(`MeleeAttack target=${(() => { try { return (enemy as any).GetName(); } catch (_) { return '<enemy>'; } })()} distance=${Math.round(distance)} radius=${MELEE_RADIUS}`);
   if (distance > MELEE_RADIUS) return;
-  state.enemyHealth -= 1;
-  if (state.enemyHealth <= 0) {
-    state.enemyDefeated = true;
-    state.exitUnlocked = true;
-    try { if (self._autoueGeneratedEnemy) self._autoueGeneratedEnemy.SetVisibility(false, true); } catch (_) {}
-    log('EnemyDefeated=1 ExitUnlocked=1');
-  } else {
-    log(`EnemyHit enemyHealth=${state.enemyHealth}`);
+  const impulseX = dx >= 0 ? 350 : -350;
+  try { (enemy as any).NotifyDanger(playerLoc, actor); } catch (_) {}
+  try {
+    (enemy as any).ApplyDamage(ATTACK_DAMAGE, actor, enemyLoc, new UE.Vector(impulseX, 0, 160));
+    log(`EnemyDamageApplied amount=${ATTACK_DAMAGE}`);
+  } catch (e) {
+    try {
+      UE.GameplayStatics.ApplyDamage(enemy, ATTACK_DAMAGE, pc, actor, undefined);
+      log(`EnemyDamageApplied amount=${ATTACK_DAMAGE} path=GameplayStatics.ApplyDamage`);
+    } catch (ee) { log(`EnemyDamageFailed error=${e} fallback=${ee}`); }
   }
+  syncEncounterState(actor, state);
 }
 function updateExit(actor: UE.Character, state: GeneratedState): void {
   if (!state.exitUnlocked || state.roomComplete) return;
@@ -249,6 +288,7 @@ export function tickAutoUEGeneratedCharacter(actor: UE.Character, dt: number): v
   applyMovement(actor, pc, dt, state);
   applyTrap(actor, state);
   applyAttack(actor, pc, state);
+  syncEncounterState(actor, state);
   updateExit(actor, state);
   updateFeedback(actor, state);
   refreshTags(actor, state);
@@ -260,7 +300,15 @@ export function latestAutoUEGeneratedSnapshot(actor: UE.Actor): Record<string, u
   const h = self._autoueGeneratedHarnessInput as HarnessInput | undefined;
   let freezeVfxVisible = false;
   try { if (self._autoueGeneratedFreezeVFX) freezeVfxVisible = !!self._autoueGeneratedFreezeVFX.GetVisibleFlag(); } catch (_) {}
-  return { ...state, pawnX: loc(actor).X, enemyX: ENEMY_X, trapX: TRAP_X, exitX: EXIT_X, freezeVfxVisible, harnessAxis: h ? h.axis : 0, harnessAxisUntil: h ? h.axisUntil : 0, cameraShakeActive: state.elapsed < state.cameraShakeUntil };
+  let enemyX = 360;
+  let encounter: Record<string, unknown> | undefined = undefined;
+  try {
+    const manager = encounterManager(actor as UE.Character);
+    encounter = manager.snapshot();
+    const enemy = manager.getNearestAliveEnemy(actor);
+    if (enemy) enemyX = loc(enemy).X;
+  } catch (_) {}
+  return { ...state, pawnX: loc(actor).X, enemyX, trapX: TRAP_X, exitX: EXIT_X, freezeVfxVisible, harnessAxis: h ? h.axis : 0, harnessAxisUntil: h ? h.axisUntil : 0, cameraShakeActive: state.elapsed < state.cameraShakeUntil, encounter };
 }
 
 const BEHAVIOR_ID = {{behavior_id_json}};

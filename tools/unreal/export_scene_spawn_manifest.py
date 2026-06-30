@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -75,8 +76,31 @@ def _is_kind(actor: Any, kind: str) -> bool:
     return kind.lower() in cls or kind.lower() in tags
 
 
+def _tag_value(actor: Any, prefixes: list[str]) -> str:
+    for tag in _tags(actor):
+        raw = str(tag)
+        for prefix in prefixes:
+            if raw.startswith(prefix):
+                return raw[len(prefix):].strip()
+    return ""
+
+
 def _spawn_group(actor: Any) -> str:
-    return str(_prop(actor, ["SpawnGroup", "spawn_group", "spawnGroup"], "") or "")
+    return str(_prop(actor, ["SpawnGroup", "spawn_group", "spawnGroup"], "") or "") or _tag_value(actor, ["SpawnGroup=", "SpawnGroup:", "spawn_group="])
+
+
+def _spawn_bool(actor: Any, names: list[str], tags: list[str], default: bool = False) -> bool:
+    value = _prop(actor, names, None)
+    if value is not None:
+        return _as_bool(value, default)
+    lower_tags = {t.lower() for t in _tags(actor)}
+    return any(tag.lower() in lower_tags for tag in tags) or default
+
+
+def _allowed_enemy_tags(actor: Any) -> list[str]:
+    values = _as_str_list(_prop(actor, ["AllowedEnemyTags", "allowed_enemy_tags"], []))
+    values.extend(_tag_value(actor, ["AllowedEnemyTags=", "AllowedEnemyTags:", "allowed_enemy_tags="]).replace(",", ";").split(";"))
+    return [v.strip() for v in values if v and v.strip()]
 
 
 def _load_map(map_name: str | None) -> str:
@@ -114,9 +138,9 @@ def export_manifest(map_name: str | None) -> dict[str, Any]:
             })
             item["source_types"].add("EnemySpawnPoint")
             item["point_count"] += 1
-            item["allowed_enemy_tags"].update(_as_str_list(_prop(actor, ["AllowedEnemyTags", "allowed_enemy_tags"], [])))
-            item["can_initial_spawn"] = item["can_initial_spawn"] or _as_bool(_prop(actor, ["CanInitialSpawn", "can_initial_spawn"], False))
-            item["can_runtime_spawn"] = item["can_runtime_spawn"] or _as_bool(_prop(actor, ["CanRuntimeSpawn", "can_runtime_spawn"], False))
+            item["allowed_enemy_tags"].update(_allowed_enemy_tags(actor))
+            item["can_initial_spawn"] = item["can_initial_spawn"] or _spawn_bool(actor, ["CanInitialSpawn", "can_initial_spawn"], ["CanInitialSpawn", "AUTOUE_CAN_INITIAL_SPAWN"], False)
+            item["can_runtime_spawn"] = item["can_runtime_spawn"] or _spawn_bool(actor, ["CanRuntimeSpawn", "can_runtime_spawn"], ["CanRuntimeSpawn", "AUTOUE_CAN_RUNTIME_SPAWN"], False)
         elif _is_kind(actor, "EnemySpawnArea") or _is_kind(actor, "BP_EnemySpawnArea"):
             group = _spawn_group(actor)
             if not group:
@@ -132,7 +156,7 @@ def export_manifest(map_name: str | None) -> dict[str, Any]:
             })
             item["source_types"].add("EnemySpawnArea")
             item["area_count"] += max(1, _as_number(_prop(actor, ["MaxSpawnCount", "max_spawn_count"], 1), 1))
-            item["allowed_enemy_tags"].update(_as_str_list(_prop(actor, ["AllowedEnemyTags", "allowed_enemy_tags"], [])))
+            item["allowed_enemy_tags"].update(_allowed_enemy_tags(actor))
             item["can_initial_spawn"] = True
             item["can_runtime_spawn"] = True
         elif _is_kind(actor, "EncounterZone") or _is_kind(actor, "BP_EncounterZone"):
@@ -167,11 +191,14 @@ def export_manifest(map_name: str | None) -> dict[str, Any]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--map", dest="map_name")
-    parser.add_argument("--out", required=True)
+    parser.add_argument("--out")
     args = parser.parse_args(argv)
-    out = Path(args.out).resolve()
+    out_arg = args.out or os.getenv("AUTOUE_SPAWN_MANIFEST_OUT") or os.getenv("AUTOUE_EXPORT_OUT")
+    if not out_arg:
+        parser.error("--out is required unless AUTOUE_SPAWN_MANIFEST_OUT or AUTOUE_EXPORT_OUT is set")
+    out = Path(out_arg).resolve()
     out.parent.mkdir(parents=True, exist_ok=True)
-    manifest = export_manifest(args.map_name)
+    manifest = export_manifest(args.map_name or os.getenv("AUTOUE_EXPORT_MAP") or os.getenv("AUTOUE_ENCOUNTER_MAP"))
     out.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"[SUCCESS] scene spawn manifest exported to: {out}")
     return 0
