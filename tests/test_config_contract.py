@@ -12,6 +12,7 @@ ORDER = [
     'SceneAndGameplaySplitter',
     'EntityAbilityBehaviorPlanner',
     'ThinGameplayFlowPlanner',
+    'EncounterSpecPlanner',
     'UEApiMCPFeasibilitySearcher',
     'PuerTSRuntimeMappingPlanner',
     'TypeScriptScriptAnalyzer',
@@ -31,7 +32,7 @@ def run(cmd):
 def eab():
     return {
         'entities': [{
-            'entity_id': 'player', 'display_name': 'Player', 'summary': 'Playable character',
+            'entity_id': 'player', 'display_name': 'Player', 'summary': 'Playable character', 'entity_kind': 'player', 'content_tags': ['player'], 'spawnable': False,
             'abilities': [{
                 'ability_id': 'player.combat', 'display_name': 'Combat', 'summary': 'Attack enemy',
                 'behaviors': [{
@@ -39,6 +40,11 @@ def eab():
                     'trigger': 'attack input', 'execution': 'strike enemy', 'result': 'enemy defeated', 'source_refs': []
                 }]
             }]
+        }, {
+            'entity_id': 'goblin_melee', 'entity_kind': 'enemy', 'display_name': 'Goblin Melee', 'summary': 'Ground melee enemy',
+            'content_tags': ['enemy', 'ground', 'melee'], 'spawnable': True,
+            'enemy_profile': {'cost': 2, 'allowed_spawn_tags': ['ground', 'melee'], 'default_health': 2},
+            'abilities': []
         }],
         'non_goals': []
     }
@@ -53,6 +59,19 @@ def thin():
         ],
         'verification': ['enemy defeated']
     }]}
+
+def encounter():
+    return {'schema_version': 'autoue-encounter-spec/v1', 'encounters': [{
+        'encounter_id': 'room_01_initial_guard',
+        'trigger': {'type': 'on_level_start'},
+        'spawn_group': 'room_01_guard',
+        'enemy_budget': 2,
+        'composition': [{'enemy': 'goblin_melee', 'count': 1}],
+        'spawn_policy': {'avoid_camera_view': False, 'min_distance_to_player': 400, 'consume_spawn_point': True, 'max_alive': 1},
+        'completion': {'type': 'all_spawned_enemies_defeated', 'set_flags': ['exit_unlocked']},
+        'verification_hooks': ['enemy_spawned', 'enemy_defeated', 'encounter_completed']
+    }]}
+
 
 
 def mcp():
@@ -126,6 +145,7 @@ def good_outputs():
         'SceneAndGameplaySplitter': json.dumps({'scene_description': 'Room', 'gameplay_description': 'Attack enemy'}),
         'EntityAbilityBehaviorPlanner': json.dumps(eab()),
         'ThinGameplayFlowPlanner': json.dumps(thin()),
+        'EncounterSpecPlanner': json.dumps(encounter()),
         'UEApiMCPFeasibilitySearcher': json.dumps(mcp()),
         'PuerTSRuntimeMappingPlanner': json.dumps(mapping()),
         'TypeScriptScriptAnalyzer': json.dumps(analyzer()),
@@ -135,17 +155,29 @@ def good_outputs():
     }
 
 
-def test_phase2_banned_nodes_are_disabled():
+def test_phase2_workflow_contains_only_active_puerts_nodes():
     result = run([sys.executable, 'tools/validate_config_contract.py', '--workflow', 'config/workflows/puerts_ts.json', '--phase', 'phase2'])
     data = json.loads(result.stdout)
     assert data['result'] == 'pass'
     assert data['enabled_nodes'] == ORDER
-    for name in ['RetrieveModel', 'PCGGraphComposer', 'PCGPlanner', 'ModuleCodeGenerator', 'InteractiveObjectCodeGenerator']:
-        assert name not in data['enabled_nodes']
+    workflow = json.loads((ROOT / 'config' / 'workflows' / 'puerts_ts.json').read_text(encoding='utf-8'))
+    all_nodes = {node['name'] for node in workflow['nodes']}
+    for name in [
+        'SceneFormalizer',
+        'KeyElementExtractor',
+        'RetrieveModel',
+        'ModuleAnalyzer',
+        'ModuleCodeGenerator',
+        'InteractiveObjectAnalyzer',
+        'InteractiveObjectCodeGenerator',
+        'PCGGraphComposer',
+        'PCGPlanner',
+    ]:
+        assert name not in all_nodes
 
 
 def test_dry_run_config_has_prompts():
-    result = run([sys.executable, 'autogenerate_qwen.py', '--dry-run-config', '--workflow', 'config/workflows/puerts_ts.json'])
+    result = run([sys.executable, 'autogenerate_qwen.py', '--dry-run-config'])
     data = json.loads(result.stdout)
     assert data['missing_prompts'] == []
     assert data['enabled_nodes'] == ORDER

@@ -1,41 +1,86 @@
 from __future__ import annotations
-import argparse,json,re,sys
+
+import argparse
+import json
+import re
+import sys
 from pathlib import Path
-ROOT=Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path: sys.path.insert(0,str(ROOT))
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 from core.phase2_validation import PHASE2_NODE_ORDER
-ABS_WIN=re.compile(r"(?i)(?<![A-Z])[A-Z]:[\\/](?![\\/])")
-PHASE2_EXPECTED_BANNED={"RetrieveModel","PCGGraphComposer","PCGPlanner","ModuleCodeGenerator","InteractiveObjectCodeGenerator"}
-PHASE2_LEGACY_INACTIVE=PHASE2_EXPECTED_BANNED|{"SceneFormalizer","KeyElementExtractor","ModuleAnalyzer","InteractiveObjectAnalyzer"}
-def load_json(rel):
-    with (ROOT/rel).open('r',encoding='utf-8') as f: return json.load(f)
-def walk_strings(v):
-    if isinstance(v,str): yield v
-    elif isinstance(v,dict):
-        for x in v.values(): yield from walk_strings(x)
-    elif isinstance(v,list):
-        for x in v: yield from walk_strings(x)
-def main():
-    ap=argparse.ArgumentParser(); ap.add_argument('--workflow',default='config/workflows/default.json'); ap.add_argument('--phase',choices=['phase1','phase2'],default='phase1'); args=ap.parse_args(); errors=[]
-    env=(ROOT/'.env').read_text(encoding='utf-8') if (ROOT/'.env').exists() else ''
-    for i,line in enumerate(env.splitlines(),1):
-        if ABS_WIN.search(line): errors.append(f'.env:{i}: hard-coded absolute Windows path: {line}')
-    for rel in ['config/local.example.json','config/llm-profiles.example.json',args.workflow]:
-        data=load_json(rel)
-        for s in walk_strings(data):
-            if ABS_WIN.search(s): errors.append(f'{rel}: hard-coded absolute Windows path: {s}')
-    workflow=load_json(args.workflow); enabled=[n.get('name') for n in workflow.get('nodes',[]) if n.get('enabled',True)]
-    if len(enabled)!=len(set(enabled)): errors.append(f'duplicate enabled nodes: {enabled}')
-    for n in workflow.get('nodes',[]):
-        prompt=n.get('prompt_file')
-        if n.get('enabled',True) and prompt and not (ROOT/prompt).exists(): errors.append(f"missing prompt file for {n.get('name')}: {prompt}")
-    if args.phase=='phase2':
-        banned=set(workflow.get('banned_nodes',[])); missing=sorted(PHASE2_EXPECTED_BANNED-banned)
-        if missing: errors.append(f'phase2 workflow must explicitly ban nodes: {missing}')
-        leaked=sorted((banned|PHASE2_LEGACY_INACTIVE).intersection(enabled))
-        if leaked: errors.append(f'phase2 banned/legacy nodes enabled: {leaked}')
-        if enabled!=PHASE2_NODE_ORDER: errors.append(f'phase2 enabled node order mismatch: expected {PHASE2_NODE_ORDER}, got {enabled}')
+
+ABS_WIN = re.compile(r"(?i)(?<![A-Z])[A-Z]:[\\/](?![\\/])")
+LEGACY_NODE_NAMES = {
+    "SceneFormalizer",
+    "KeyElementExtractor",
+    "RetrieveModel",
+    "ModuleAnalyzer",
+    "ModuleCodeGenerator",
+    "InteractiveObjectAnalyzer",
+    "InteractiveObjectCodeGenerator",
+    "PCGGraphComposer",
+    "PCGPlanner",
+}
+
+
+def load_json(rel: str) -> dict:
+    with (ROOT / rel).open("r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def walk_strings(value):
+    if isinstance(value, str):
+        yield value
+    elif isinstance(value, dict):
+        for child in value.values():
+            yield from walk_strings(child)
+    elif isinstance(value, list):
+        for child in value:
+            yield from walk_strings(child)
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--workflow", default="config/workflows/puerts_ts.json")
+    parser.add_argument("--phase", choices=["phase2"], default="phase2")
+    args = parser.parse_args()
+    errors: list[str] = []
+
+    for rel in ["config/local.example.json", "config/llm-profiles.example.json", args.workflow]:
+        data = load_json(rel)
+        for text in walk_strings(data):
+            if ABS_WIN.search(text):
+                errors.append(f"{rel}: hard-coded absolute Windows path: {text}")
+
+    workflow = load_json(args.workflow)
+    nodes = workflow.get("nodes", [])
+    node_names = [node.get("name") for node in nodes]
+    enabled = [node.get("name") for node in nodes if node.get("enabled", True)]
+
+    if len(enabled) != len(set(enabled)):
+        errors.append(f"duplicate enabled nodes: {enabled}")
+
+    legacy_present = sorted(name for name in node_names if name in LEGACY_NODE_NAMES)
+    if legacy_present:
+        errors.append(f"legacy C++/PCG nodes must not be present in active workflow file: {legacy_present}")
+
+    for node in nodes:
+        prompt = node.get("prompt_file")
+        if node.get("enabled", True) and prompt and not (ROOT / prompt).exists():
+            errors.append(f"missing prompt file for {node.get('name')}: {prompt}")
+
+    if enabled != PHASE2_NODE_ORDER:
+        errors.append(f"phase2 enabled node order mismatch: expected {PHASE2_NODE_ORDER}, got {enabled}")
+
     if errors:
-        print(json.dumps({'result':'fail','errors':errors},indent=2,ensure_ascii=False)); return 1
-    print(json.dumps({'result':'pass','workflow':workflow.get('name'),'enabled_nodes':enabled},indent=2,ensure_ascii=False)); return 0
-if __name__=='__main__': raise SystemExit(main())
+        print(json.dumps({"result": "fail", "errors": errors}, indent=2, ensure_ascii=False))
+        return 1
+    print(json.dumps({"result": "pass", "workflow": workflow.get("name"), "enabled_nodes": enabled}, indent=2, ensure_ascii=False))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

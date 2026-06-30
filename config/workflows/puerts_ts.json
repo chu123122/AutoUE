@@ -1,14 +1,7 @@
 {
   "schema_version": 1,
-  "name": "puerts_ts_phase2_flow",
-  "description": "Phase2 PuerTS/TypeScript flow with UE API MCP feasibility evidence and RAG/PCG/native code nodes disabled.",
-  "banned_nodes": [
-    "RetrieveModel",
-    "PCGGraphComposer",
-    "PCGPlanner",
-    "ModuleCodeGenerator",
-    "InteractiveObjectCodeGenerator"
-  ],
+  "name": "puerts_ts_phase3_encounter_flow",
+  "description": "Single active PuerTS/TypeScript workflow with EncounterSpec planning and UE API MCP feasibility evidence.",
   "nodes": [
     {
       "name": "SceneAndGameplaySplitter",
@@ -28,6 +21,13 @@
       "name": "ThinGameplayFlowPlanner",
       "factory": "custom_nodes.thin_gameplay_flow_planner:create_thin_gameplay_flow_planner",
       "prompt_file": "prompts/thin_gameplay_flow_planner.md",
+      "enabled": true,
+      "llm_profile": "codex_cli_planning"
+    },
+    {
+      "name": "EncounterSpecPlanner",
+      "factory": "custom_nodes.encounter_spec_planner:create_encounter_spec_planner",
+      "prompt_file": "prompts/encounter_spec_planner.md",
       "enabled": true,
       "llm_profile": "codex_cli_planning"
     },
@@ -72,41 +72,6 @@
       "prompt_file": "prompts/evaluate_instruction_generator.md",
       "enabled": true,
       "llm_profile": "codex_cli_fast"
-    },
-    {
-      "name": "RetrieveModel",
-      "factory": "custom_nodes.retrieve_model:create_retrieve_model_node",
-      "prompt_file": "prompts/retrieve_model.md",
-      "enabled": false,
-      "ban_reason": "Phase2 keeps model search and retrieval disabled."
-    },
-    {
-      "name": "ModuleCodeGenerator",
-      "factory": "custom_nodes.module_code_generator:create_module_code_generator",
-      "prompt_file": "prompts/module_code_generator.md",
-      "enabled": false,
-      "ban_reason": "Phase2 migrates implementation generation to TypeScript nodes only."
-    },
-    {
-      "name": "InteractiveObjectCodeGenerator",
-      "factory": "custom_nodes.interactive_object_code_generator:create_interactive_object_code_generator",
-      "prompt_file": "prompts/interactive_object_code_generator.md",
-      "enabled": false,
-      "ban_reason": "Phase2 migrates interactive object implementation to TypeScriptInteractiveObjectGenerator."
-    },
-    {
-      "name": "PCGGraphComposer",
-      "factory": "custom_nodes.pcg_graph_composer:create_pcg_graph_composer",
-      "prompt_file": "prompts/pcg_graph_composer.md",
-      "enabled": false,
-      "ban_reason": "Phase2 keeps procedural scene graph composition disabled."
-    },
-    {
-      "name": "PCGPlanner",
-      "factory": "custom_nodes.pcg_planner:create_pcg_planner",
-      "prompt_file": "prompts/pcg_planner.md",
-      "enabled": false,
-      "ban_reason": "Phase2 keeps procedural asset planning disabled."
     }
   ],
   "validators": [
@@ -122,6 +87,7 @@
     "codex_cli_planning": [
       "EntityAbilityBehaviorPlanner",
       "ThinGameplayFlowPlanner",
+      "EncounterSpecPlanner",
       "PuerTSRuntimeMappingPlanner",
       "TypeScriptScriptAnalyzer"
     ],

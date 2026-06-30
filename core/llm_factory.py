@@ -196,6 +196,12 @@ class ScriptedSmokeChatModel:
                 {"template": "aid_gamemode_adapter", "path": "TypeScript/AutoUEGeneratedGameModeAdapter.ts", "export_name": "AutoUEGeneratedGameModeAdapter", "interface_name": "AutoUEGeneratedGameModeAdapterContext"},
                 {"template": "aid_camera_setup", "path": "TypeScript/content/generated/AutoUEGeneratedCameraHelper.ts", "export_name": "setupAutoUEGeneratedCamera", "interface_name": "AutoUEGeneratedCameraOptions"},
                 {"template": "scene_manifest_helper", "path": "TypeScript/content/generated/AutoUEGeneratedSceneManifest.ts", "export_name": "getAutoUEGeneratedSceneManifest", "interface_name": "AutoUEGeneratedSceneManifestContext"},
+                {"template": "encounter_spec_data", "path": "TypeScript/content/generated/AutoUEGeneratedEncounterSpec.ts", "export_name": "getAutoUEGeneratedEncounterSpec", "interface_name": "AutoUEGeneratedEncounterSpecContext"},
+                {"template": "enemy_archetypes", "path": "TypeScript/content/generated/AutoUEGeneratedEnemyArchetypes.ts", "export_name": "getAutoUEGeneratedEnemyArchetypes", "interface_name": "AutoUEGeneratedEnemyArchetypesContext"},
+                {"template": "spawn_point_registry", "path": "TypeScript/content/generated/AutoUESpawnPointRegistry.ts", "export_name": "createAutoUESpawnPointRegistry", "interface_name": "AutoUESpawnPointRegistryContext"},
+                {"template": "enemy_archetype_registry", "path": "TypeScript/content/generated/AutoUEEnemyArchetypeRegistry.ts", "export_name": "createAutoUEEnemyArchetypeRegistry", "interface_name": "AutoUEEnemyArchetypeRegistryContext"},
+                {"template": "enemy_spawn_manager", "path": "TypeScript/content/generated/AutoUEEnemySpawnManager.ts", "export_name": "createAutoUEEnemySpawnManager", "interface_name": "AutoUEEnemySpawnManagerContext"},
+                {"template": "encounter_manager", "path": "TypeScript/content/generated/AutoUEEncounterManager.ts", "export_name": "createAutoUEEncounterManager", "interface_name": "AutoUEEncounterManagerContext"},
             ]
             template_inputs = [{"template": "ability_module", "path": "TypeScript/content/generated/SmokeGame.ts", **base, "export_name": "tickSmokeGame", "interface_name": "SmokeGameContext"}]
             template_inputs.extend({**item, **base} for item in support)
@@ -242,6 +248,20 @@ class ScriptedSmokeChatModel:
                 }],
                 "blocked_mappings": [],
             })
+        elif "SCHEMA: EncounterSpecPlanner" in system:
+            content = json.dumps({
+                "schema_version": "autoue-encounter-spec/v1",
+                "encounters": [{
+                    "encounter_id": "room_01_initial_guard",
+                    "trigger": {"type": "on_level_start"},
+                    "spawn_group": "room_01_guard",
+                    "enemy_budget": 2,
+                    "composition": [{"enemy": "goblin_melee", "count": 1}],
+                    "spawn_policy": {"avoid_camera_view": False, "min_distance_to_player": 400, "consume_spawn_point": True, "max_alive": 1},
+                    "completion": {"type": "all_spawned_enemies_defeated", "set_flags": ["exit_unlocked"]},
+                    "verification_hooks": ["enemy_spawned", "enemy_defeated", "encounter_completed"],
+                }],
+            })
         elif "SCHEMA: UEApiMCPFeasibilitySearcher" in system:
             content = json.dumps({
                 "queries": [
@@ -266,7 +286,10 @@ class ScriptedSmokeChatModel:
             })
         elif "SCHEMA: EntityAbilityBehaviorPlanner" in system:
             content = json.dumps({
-                "entities": [{"entity_id": "player", "display_name": "Player", "summary": "Playable character", "abilities": [{"ability_id": "player.combat", "display_name": "Combat", "summary": "Attack behavior", "behaviors": [{"behavior_id": "player.combat.attack", "display_name": "Attack Enemy", "trigger": "attack input", "execution": "strike the enemy", "result": "enemy is defeated", "source_refs": []}]}]}],
+                "entities": [
+                    {"entity_id": "player", "entity_kind": "player", "display_name": "Player", "summary": "Playable character", "content_tags": ["player"], "spawnable": False, "abilities": [{"ability_id": "player.combat", "display_name": "Combat", "summary": "Attack behavior", "behaviors": [{"behavior_id": "player.combat.attack", "display_name": "Attack Enemy", "trigger": "attack input", "execution": "strike the enemy", "result": "enemy is defeated", "source_refs": []}]}]},
+                    {"entity_id": "goblin_melee", "entity_kind": "enemy", "display_name": "Goblin Melee", "summary": "Ground melee enemy", "content_tags": ["enemy", "ground", "melee"], "spawnable": True, "enemy_profile": {"cost": 2, "allowed_spawn_tags": ["ground", "melee"], "default_health": 2}, "abilities": []},
+                ],
                 "non_goals": [],
             })
         elif "SCHEMA: SceneAndGameplaySplitter" in system:
@@ -303,12 +326,6 @@ def create_llm(profile_name: str, profiles_config: Mapping[str, Any]):
         reasoning_effort = os.getenv(profile.get("reasoning_effort_env", "CODEX_REASONING_EFFORT"), "") or profile.get("reasoning_effort", "")
         return CodexCliChatModel(command=command, model=model, cwd=cwd, timeout=timeout, reasoning_effort=reasoning_effort)
 
-    if provider == "tongyi":
-        api_env = profile.get("api_key_env", "DASHSCOPE_API_KEY")
-        if not os.getenv(api_env, ""):
-            raise RuntimeError(f"Missing required environment variable: {api_env}")
-        from langchain_community.chat_models import ChatTongyi
-        return ChatTongyi(model=profile.get("model", "qwen-plus"), temperature=temperature)
     if provider == "openai_compatible":
         api_key = _env_or_default(profile, "api_key_env", required=True)
         base_url = _env_or_default(profile, "base_url_env", "default_base_url", required=True)

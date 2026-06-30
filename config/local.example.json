@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "llm_profile": "codex_cli_planning",
-  "workflow": "config/workflows/default.json",
+  "workflow": "config/workflows/puerts_ts.json",
   "paths": {
     "input_dir": "data/input",
     "output_dir": "data/output",
@@ -11,8 +11,7 @@
   },
   "post_actions": {
     "copy_dirs": true,
-    "copy_prompt_to_eval": true,
-    "render_gltf": false
+    "copy_prompt_to_eval": true
   },
   "mcp": {
     "ue_api_search": {
@@ -33,5 +32,13 @@
     "launches_ue_editor": false,
     "launches_pie": false,
     "injects_player_input": false
+  },
+  "scene_spawn_manifest": {
+    "enabled": false,
+    "unreal_editor": "",
+    "project": "",
+    "map": "",
+    "allow_fixture": false,
+    "fixture_path": ""
   }
 }

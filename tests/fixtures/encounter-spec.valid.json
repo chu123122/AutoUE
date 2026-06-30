@@ -1,0 +1,36 @@
+{
+  "schema_version": "autoue-encounter-spec/v1",
+  "encounters": [
+    {
+      "encounter_id": "room_01_initial_guard",
+      "trigger": {
+        "type": "on_level_start"
+      },
+      "spawn_group": "room_01_guard",
+      "enemy_budget": 2,
+      "composition": [
+        {
+          "enemy": "goblin_melee",
+          "count": 1
+        }
+      ],
+      "spawn_policy": {
+        "avoid_camera_view": false,
+        "min_distance_to_player": 400,
+        "consume_spawn_point": true,
+        "max_alive": 1
+      },
+      "completion": {
+        "type": "all_spawned_enemies_defeated",
+        "set_flags": [
+          "exit_unlocked"
+        ]
+      },
+      "verification_hooks": [
+        "enemy_spawned",
+        "enemy_defeated",
+        "encounter_completed"
+      ]
+    }
+  ]
+}

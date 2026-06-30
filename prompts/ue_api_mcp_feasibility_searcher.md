@@ -36,3 +36,7 @@ Adjudication guidance:
 - Use indirect_hit when the top candidates are usable UE/PuerTS types, components, helper functions, or member evidence that can carry the port even if no exact operation symbol appears.
 - If mcp_summary.status is ok and candidate_symbols is non-empty, prefer hit with hit_type=direct_hit or indirect_hit and list the best candidate symbols.
 - Use miss only when there are no candidate symbols or the candidates are clearly unrelated to the engine_port contract.
+
+
+Encounter note:
+- EncounterSpecPlanner may be present as context. Do not add API queries inside EncounterSpec itself; only adjudicate engine_ports collected from thin gameplay flows.

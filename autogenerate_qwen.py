@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import shutil
+import subprocess
 from datetime import datetime
 from pathlib import Path
 
@@ -69,6 +70,57 @@ def is_runtime_validation_enabled(args, runtime_config: dict) -> bool:
 
 def run_runtime_validation_for_demo(demo_output_dir: Path) -> dict:
     return run_runtime_validation(demo_output_dir, write_outputs=True)
+
+SCENE_SPAWN_MANIFEST_REL = Path("flow") / "scene-spawn-manifest.json"
+
+
+def workflow_uses_node(workflow_config: dict, node_name: str) -> bool:
+    return any(node.get("name") == node_name and node.get("enabled", True) for node in workflow_config.get("nodes", []))
+
+
+def ensure_scene_spawn_manifest_for_demo(demo_output_dir: Path, runtime_config: dict, workflow_config: dict) -> None:
+    if not workflow_uses_node(workflow_config, "EncounterSpecPlanner"):
+        return
+    from core.encounter_validation import load_json_file, validate_scene_spawn_manifest_data
+
+    target = demo_output_dir / SCENE_SPAWN_MANIFEST_REL
+    if target.exists():
+        validate_scene_spawn_manifest_data(load_json_file(target))
+        return
+
+    cfg = runtime_config.get("scene_spawn_manifest", {}) if isinstance(runtime_config, dict) else {}
+    fixture_path = cfg.get("fixture_path")
+    if cfg.get("allow_fixture") and fixture_path:
+        source = repo_path(fixture_path)
+        if not source.exists():
+            raise FileNotFoundError(f"scene_spawn_manifest.fixture_path does not exist: {source}")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, target)
+        data = load_json_file(target)
+        data["fixture"] = True
+        target.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+        validate_scene_spawn_manifest_data(data)
+        print(f"[WARN] Using fixture scene spawn manifest: {target}")
+        return
+
+    if cfg.get("enabled"):
+        editor = cfg.get("unreal_editor")
+        project = cfg.get("project")
+        map_name = cfg.get("map")
+        if not editor or not project or not map_name:
+            raise RuntimeError("scene_spawn_manifest.enabled requires unreal_editor, project, and map in runtime config")
+        script = repo_path("tools/unreal/export_scene_spawn_manifest.py")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        cmd = [str(editor), str(project), f"-ExecutePythonScript={script}", "--", "--map", str(map_name), "--out", str(target)]
+        subprocess.run(cmd, cwd=str(repo_path(".")), check=True)
+        validate_scene_spawn_manifest_data(load_json_file(target))
+        return
+
+    raise RuntimeError(
+        f"EncounterSpecPlanner requires deterministic scene manifest at {target}. "
+        "Run tools/unreal/export_scene_spawn_manifest.py or configure scene_spawn_manifest.enabled."
+    )
+
 
 
 def build_graph(runtime_config: dict | None = None, workflow_config: dict | None = None, *, llm_profile: str | None = None):
@@ -161,6 +213,8 @@ def run_workflow(args) -> int:
         print("[DEBUG] Graph rebuilt for this demo")
         demo_output_dir = output_dir / f"demo_{demo_id}"
         demo_output_dir.mkdir(parents=True, exist_ok=True)
+        if any(getattr(node, "name", "") == "EncounterSpecPlanner" for node in _nodes):
+            ensure_scene_spawn_manifest_for_demo(demo_output_dir, runtime, workflow)
         initial_state = GraphState(messages=[HumanMessage(content=prompt)], save_dir=str(demo_output_dir))
         print("[DEBUG] Start Graph Execution")
         final_state: GraphState = scene_analyser.invoke(initial_state)
@@ -183,9 +237,6 @@ def run_workflow(args) -> int:
         DEMO_FINISH_LOG_PATH.open("a", encoding="utf-8").write(log_line)
         print(f"[DEBUG] demo_{demo_id} output completed")
 
-    if post_actions.get("render_gltf", False) and not args.skip_render:
-        from model_description.batch_render_gltf import render_gltf
-        render_gltf()
     if runtime_failures:
         print(json.dumps({"runtime_validation": "fail", "failures": runtime_failures}, ensure_ascii=False, indent=2))
         return 1
@@ -201,7 +252,6 @@ def parse_args():
     parser.add_argument("--output-dir", help="Override output directory.")
     parser.add_argument("--dry-run-config", action="store_true", help="Validate config/workflow/prompt wiring without calling LLM.")
     parser.add_argument("--run-runtime-validation", action="store_true", help="Run Phase3 Python runtime validation after each demo output is written.")
-    parser.add_argument("--skip-render", action="store_true", help="Do not run optional GLTF rendering post-action.")
     return parser.parse_args()
 
 

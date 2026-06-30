@@ -10,6 +10,7 @@ Select TypeScript/PuerTS ability/runtime and AIDev bridge templates for every an
 
 def build_generation_context(node: BaseLLMNode, state: GraphState, full_input: str) -> None:
     required = {
+        "EncounterSpecPlanner": state.llm_outputs.get("EncounterSpecPlanner", ""),
         "PuerTSRuntimeMappingPlanner": state.llm_outputs.get("PuerTSRuntimeMappingPlanner", ""),
         "TypeScriptScriptAnalyzer": state.llm_outputs.get("TypeScriptScriptAnalyzer", ""),
         "TypeScriptInteractiveObjectGenerator": state.llm_outputs.get("TypeScriptInteractiveObjectGenerator", ""),

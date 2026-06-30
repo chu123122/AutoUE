@@ -1,0 +1,19 @@
+const ENTITY_ID = {{entity_id_json}};
+const BEHAVIOR_ID = {{behavior_id_json}};
+const FLOW_ID = {{flow_id_json}};
+const RUNTIME_MAPPING_PATH = {{runtime_mapping_path_json}};
+
+export interface {{interface_name}} { runId?: string; }
+
+export function {{export_name}}(_context: {{interface_name}} = {}): Record<string, unknown> {
+  return {
+    schema_version: 'autoue-generated-encounter-spec/v1',
+    source_entity_id: ENTITY_ID,
+    source_behavior_id: BEHAVIOR_ID,
+    flow_id: FLOW_ID,
+    runtime_mapping_path: RUNTIME_MAPPING_PATH,
+    action_label: {{action_label_json}},
+    target_label: {{target_label_json}},
+    result_label: {{result_label_json}}
+  };
+}

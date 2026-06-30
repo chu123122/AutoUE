@@ -10,6 +10,12 @@ Allowed templates:
 - aid_gamemode_adapter
 - aid_camera_setup
 - scene_manifest_helper
+- encounter_spec_data
+- enemy_archetypes
+- spawn_point_registry
+- enemy_archetype_registry
+- enemy_spawn_manager
+- encounter_manager
 
 Required JSON shape:
 {
@@ -51,8 +57,15 @@ Rules:
   - aid_character_adapter at TypeScript/AutoUEGeneratedCharacterAdapter.ts using export_name AutoUEGeneratedCharacterAdapter
   - aid_gamemode_adapter at TypeScript/AutoUEGeneratedGameModeAdapter.ts using export_name AutoUEGeneratedGameModeAdapter
   - aid_camera_setup at TypeScript/content/generated/AutoUEGeneratedCameraHelper.ts using export_name setupAutoUEGeneratedCamera
-  - scene_manifest_helper at TypeScript/content/generated/AutoUEGeneratedSceneManifest.ts using export_name getAutoUEGeneratedSceneManifest
+  - scene_manifest_helper
+- encounter_spec_data
+- enemy_archetypes
+- spawn_point_registry
+- enemy_archetype_registry
+- enemy_spawn_manager
+- encounter_manager at TypeScript/content/generated/AutoUEGeneratedSceneManifest.ts using export_name getAutoUEGeneratedSceneManifest
 - Support template_inputs still need entity_id, behavior_id, flow_id, runtime_mapping_path, interface_name, action_label, target_label, and result_label; use the most central gameplay behavior as the trace anchor.
+- TypeScriptCodeGenerator must consume EncounterSpecPlanner as data. It may generate glue, but must not invent enemy ids or spawn groups beyond EncounterSpec.
 - The AIDev bridge support templates are responsible for runnable runtime orchestration, including application-layer input harness tags (`AUTOUE_INPUT_RIGHT_1S`, `AUTOUE_INPUT_ATTACK`), one-shot ice-trap freeze/rearm behavior, freeze VFX visibility, side-camera setup, camera feedback shake, and snapshot-friendly state tags. Do not create extra LLM nodes for these bridge concerns.
 - Include flow_id and runtime_mapping_path from the mapping.
 - consumed_interactive_files must reference interactive object generated paths.

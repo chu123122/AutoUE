@@ -191,7 +191,6 @@ def test_run_workflow_runtime_validation_failure_returns_nonzero(tmp_path, monke
         input_dir=str(input_dir),
         output_dir=str(output_dir),
         run_runtime_validation=True,
-        skip_render=True,
     )
 
     assert autogenerate_qwen.run_workflow(args) == 1

@@ -5,10 +5,13 @@ import re
 from pathlib import PurePosixPath, PureWindowsPath
 from typing import Any, Iterable, Mapping
 
+from core.encounter_validation import EncounterValidationError, validate_encounter_spec_data, validate_spawnable_enemy_entity
+
 PHASE2_NODE_ORDER = [
     "SceneAndGameplaySplitter",
     "EntityAbilityBehaviorPlanner",
     "ThinGameplayFlowPlanner",
+    "EncounterSpecPlanner",
     "UEApiMCPFeasibilitySearcher",
     "PuerTSRuntimeMappingPlanner",
     "TypeScriptScriptAnalyzer",
@@ -35,6 +38,12 @@ ALLOWED_TEMPLATES = {
         "aid_gamemode_adapter",
         "aid_camera_setup",
         "scene_manifest_helper",
+        "encounter_spec_data",
+        "enemy_archetypes",
+        "spawn_point_registry",
+        "enemy_archetype_registry",
+        "enemy_spawn_manager",
+        "encounter_manager",
     },
 }
 ALLOWED_STAGES = {"Input", "Ability/Action", "SpatialQuery/HitQuery", "Damage/Resource", "Event/Result", "Feedback/HUD", "Cleanup", "Custom"}
@@ -147,12 +156,30 @@ def validate_entity_ability_behavior_planner(node: str, data: dict[str, Any]) ->
     bad = sorted(forbidden.intersection(walk_keys(data)))
     if bad:
         raise Phase2ValidationError(f"{node}: planner is definition-only and must not decide files, templates, engine ports, flows, or implementation slots: {bad}")
+    seen_entities: set[str] = set()
     for ei, entity in enumerate(require_list(node, data, "entities", non_empty=True)):
         if not isinstance(entity, dict):
             raise Phase2ValidationError(f"{node}: entities[{ei}] must be object")
         for key in ("entity_id", "display_name", "summary"):
             require_string(node, entity, key, non_empty=True)
-        for ai, ability in enumerate(require_list(node, entity, "abilities", non_empty=True)):
+        entity_id = entity["entity_id"]
+        if entity_id in seen_entities:
+            raise Phase2ValidationError(f"{node}: duplicate entity_id: {entity_id}")
+        seen_entities.add(entity_id)
+        if "entity_kind" in entity:
+            require_string(node, entity, "entity_kind", non_empty=True)
+        if "content_tags" in entity:
+            tags = require_list(node, entity, "content_tags")
+            if any(not isinstance(tag, str) or not tag.strip() for tag in tags):
+                raise Phase2ValidationError(f"{node}: content_tags must contain non-empty strings")
+        if "spawnable" in entity and not isinstance(entity["spawnable"], bool):
+            raise Phase2ValidationError(f"{node}: spawnable must be bool when present")
+        if entity.get("spawnable") is True:
+            try:
+                validate_spawnable_enemy_entity(entity, label=node)
+            except EncounterValidationError as exc:
+                raise Phase2ValidationError(str(exc)) from exc
+        for ai, ability in enumerate(require_list(node, entity, "abilities")):
             if not isinstance(ability, dict):
                 raise Phase2ValidationError(f"{node}: abilities[{ai}] must be object")
             for key in ("ability_id", "display_name", "summary"):
@@ -191,6 +218,12 @@ def validate_thin_gameplay_flow_planner(node: str, data: dict[str, Any]) -> None
             raise Phase2ValidationError(f"{node}: every flow must declare at least one engine_port")
         if "verification" in flow:
             require_list(node, flow, "verification")
+
+def validate_encounter_spec_planner(node: str, data: dict[str, Any]) -> None:
+    try:
+        validate_encounter_spec_data(data)
+    except EncounterValidationError as exc:
+        raise Phase2ValidationError(str(exc)) from exc
 
 def validate_ue_api_mcp_feasibility_searcher(node: str, data: dict[str, Any]) -> None:
     for qi, query in enumerate(require_list(node, data, "queries", non_empty=True)):
@@ -357,6 +390,7 @@ NODE_VALIDATORS = {
     "SceneAndGameplaySplitter": validate_scene_and_gameplay_splitter,
     "EntityAbilityBehaviorPlanner": validate_entity_ability_behavior_planner,
     "ThinGameplayFlowPlanner": validate_thin_gameplay_flow_planner,
+    "EncounterSpecPlanner": validate_encounter_spec_planner,
     "UEApiMCPFeasibilitySearcher": validate_ue_api_mcp_feasibility_searcher,
     "PuerTSRuntimeMappingPlanner": validate_puerts_runtime_mapping_planner,
     "TypeScriptScriptAnalyzer": validate_typescript_script_analyzer,
@@ -429,6 +463,14 @@ def _cross(data: Mapping[str, dict[str, Any]], require_all: bool) -> dict[str, A
     flow_by_behavior, flow_by_id, ports_by_flow, behavior_by_port = {}, {}, {}, {}
     if data.get("ThinGameplayFlowPlanner") and behavior_index:
         flow_by_behavior, flow_by_id, ports_by_flow, behavior_by_port = _flow_indexes(data["ThinGameplayFlowPlanner"], behavior_index, coverage)
+
+    encounter_ids: list[str] = []
+    if data.get("EncounterSpecPlanner"):
+        try:
+            validate_encounter_spec_data(data["EncounterSpecPlanner"], structure=data.get("EntityAbilityBehaviorPlanner"))
+        except EncounterValidationError as exc:
+            raise Phase2ValidationError(str(exc)) from exc
+        encounter_ids = [item.get("encounter_id", "") for item in data["EncounterSpecPlanner"].get("encounters", []) if isinstance(item, dict)]
 
     mcp_by_port, adjudication_by_path = {}, {}
     if data.get("UEApiMCPFeasibilitySearcher"):
@@ -560,6 +602,7 @@ def _cross(data: Mapping[str, dict[str, Any]], require_all: bool) -> dict[str, A
     evidence = {
         "behavior_ids": sorted(behavior_index),
         "flow_ids": sorted(flow_by_id),
+        "encounter_ids": sorted(encounter_ids),
         "engine_port_ids": sorted(mcp_by_port or behavior_by_port),
         "mcp_adjudication_paths": sorted(adjudication_by_path),
         "runtime_mapping_path": runtime_mapping_path,

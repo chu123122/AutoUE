@@ -11,12 +11,6 @@
       "default_model": "local-model",
       "temperature": 0.2
     },
-    "qwen_tongyi": {
-      "provider": "tongyi",
-      "api_key_env": "DASHSCOPE_API_KEY",
-      "model": "qwen-plus",
-      "temperature": 0.2
-    },
     "scripted_smoke": {
       "provider": "scripted_smoke"
     },

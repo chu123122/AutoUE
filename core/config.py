@@ -53,7 +53,7 @@ def load_llm_profiles() -> Dict[str, Any]:
 
 
 def load_workflow_config(workflow_path: Optional[str], runtime_config: Mapping[str, Any]) -> Dict[str, Any]:
-    selected = workflow_path or os.getenv("AUTOUE_WORKFLOW") or runtime_config.get("workflow") or "config/workflows/default.json"
+    selected = workflow_path or os.getenv("AUTOUE_WORKFLOW") or runtime_config.get("workflow") or "config/workflows/puerts_ts.json"
     return _read_json(repo_path(str(selected)))
 
 

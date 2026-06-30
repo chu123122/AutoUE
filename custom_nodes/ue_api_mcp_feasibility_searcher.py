@@ -159,8 +159,10 @@ def build_mcp_context(node: BaseLLMNode, state: GraphState, full_input: str) -> 
         raw_records.append({**query, "raw_path": raw_path, "adjudication_path": adjudication_path, "mcp_summary": _compact_payload(raw_result)})
         if raw_error:
             raise RuntimeError(f"UE API MCP query failed for {port}: {raw_error}")
+    encounter_text = state.llm_outputs.get("EncounterSpecPlanner", "")
     node.full_input = (
         "ThinGameplayFlowPlanner JSON:\n" + thin_text
+        + ("\n\nEncounterSpecPlanner JSON:\n" + encounter_text if encounter_text.strip() else "")
         + "\n\nMCP raw search records were written under flow/04-ue-api-mcp/raw. "
         + "Adjudicate each query. Copy engine_port_id, query, flow_ids, behavior_ids, raw_path, and adjudication_path exactly.\n\n"
         + json.dumps({"raw_records": raw_records}, ensure_ascii=False, indent=2)

@@ -1,0 +1,29 @@
+{
+  "schema_version": "autoue-scene-spawn-manifest/v1",
+  "level_name": "Lvl_TestRoom",
+  "spawn_groups": [
+    {
+      "spawn_group": "room_01_guard",
+      "source_types": [
+        "EnemySpawnPoint"
+      ],
+      "point_count": 3,
+      "area_count": 0,
+      "allowed_enemy_tags": [
+        "ground",
+        "melee"
+      ],
+      "can_initial_spawn": true,
+      "can_runtime_spawn": false
+    }
+  ],
+  "encounter_zones": [
+    {
+      "zone_id": "room_01_entry_zone",
+      "trigger": "on_player_enter_zone",
+      "spawn_group": "room_01_guard",
+      "one_shot": true
+    }
+  ],
+  "fixture": true
+}

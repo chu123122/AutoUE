@@ -1,6 +1,6 @@
 SCHEMA: PuerTSRuntimeMappingPlanner
 
-Map thin gameplay flows and UE API MCP adjudications into concrete PuerTS runtime carriers.
+Map thin gameplay flows, EncounterSpec data, and UE API MCP adjudications into concrete PuerTS runtime carriers.
 
 Required JSON shape:
 {
@@ -40,5 +40,6 @@ Rules:
 - Create one mapping per behavior.
 - runtime_mapping_path must be exactly flow/05-puerts-runtime-mapping.json.
 - runtime_owner should be the behavior-level generated TypeScript ability file under TypeScript/content/generated/.
+- Use EncounterSpecPlanner as encounter context for enemy spawn/defeat/encounter completion responsibilities; do not invent spawn groups or enemy ids here.
 - Do not silently put input binding, camera, scene hookup, combat, status effects, and exit logic into an unspecified handwritten runtime. Record adapter_or_helper and implementation_carrier explicitly.
 - If any required engine_port is not hit, add a blocked mapping instead of inventing code.

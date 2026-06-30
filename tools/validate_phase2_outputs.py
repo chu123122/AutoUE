@@ -11,6 +11,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from core.phase2_validation import BANNED_OUTPUT_MARKERS, PHASE2_NODE_ORDER, Phase2ValidationError, is_safe_relative_path, validate_phase2_output_set
+from core.encounter_validation import ENCOUNTER_SPEC_MD_PATH, ENCOUNTER_SPEC_PATH, SCENE_SPAWN_MANIFEST_PATH, STRUCTURE_PATH, EncounterValidationError, validate_encounter_spec_data, validate_scene_spawn_manifest_data
 
 CXX_SUFFIXES = {'.h', '.cpp'}
 CXX_FILE_RE = re.compile(r'(?i)\.(?:h|cpp)\b')
@@ -63,6 +64,31 @@ def validate_declared_files(root: Path, data: dict, errors: list[str]) -> list[s
             if target:
                 emitted.append(rel)
     return emitted
+
+
+def validate_encounter_artifacts(root: Path, data: dict, errors: list[str], evidence: dict) -> list[str]:
+    artifacts: list[str] = []
+    manifest_data = None
+    manifest_path = ensure_rel_file(root, SCENE_SPAWN_MANIFEST_PATH, 'SceneSpawnManifest', errors)
+    if manifest_path:
+        artifacts.append(SCENE_SPAWN_MANIFEST_PATH)
+        try:
+            manifest_data = json.loads(manifest_path.read_text(encoding='utf-8'))
+            validate_scene_spawn_manifest_data(manifest_data)
+            evidence['scene_spawn_groups'] = [g.get('spawn_group') for g in manifest_data.get('spawn_groups', [])]
+        except Exception as exc:
+            errors.append(f'scene-spawn-manifest is invalid: {exc}')
+    for rel, label in [(STRUCTURE_PATH, 'EntityAbilityBehaviorPlanner structure artifact'), (ENCOUNTER_SPEC_PATH, 'EncounterSpecPlanner json artifact'), (ENCOUNTER_SPEC_MD_PATH, 'EncounterSpecPlanner md artifact')]:
+        target = ensure_rel_file(root, rel, label, errors)
+        if target:
+            artifacts.append(rel)
+    if data.get('EncounterSpecPlanner'):
+        try:
+            validate_encounter_spec_data(data['EncounterSpecPlanner'], structure=data.get('EntityAbilityBehaviorPlanner'), manifest=manifest_data)
+            evidence['encounter_count'] = len(data['EncounterSpecPlanner'].get('encounters', []))
+        except EncounterValidationError as exc:
+            errors.append(str(exc))
+    return artifacts
 
 
 def validate_mcp_artifacts(root: Path, data: dict, errors: list[str]) -> list[str]:
@@ -133,6 +159,7 @@ def main() -> int:
     evidence['generated_ts_files'] = [str(path.relative_to(root)) for path in ts_files]
     if data:
         evidence['declared_ts_files'] = validate_declared_files(root, data, errors)
+        evidence['encounter_artifacts'] = validate_encounter_artifacts(root, data, errors, evidence)
         evidence['mcp_artifacts'] = validate_mcp_artifacts(root, data, errors)
 
     native_files = sorted(path for path in root.rglob('*') if path.is_file() and path.suffix.lower() in CXX_SUFFIXES) if root.exists() else []

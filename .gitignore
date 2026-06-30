@@ -1,6 +1,16 @@
 .langgraph_api/
 .vscode/
 __pycache__/
+.pytest_cache/
 .venv/
+.env
+.env.local
+config/local.json
+config/llm-profiles.local.json
+artifacts/
+llm_outputs/
 data/output*/
 demo_finish_log.txt
+*.bak-*
+*.run.log
+PCGGen_UE/

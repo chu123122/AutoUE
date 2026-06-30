@@ -22,6 +22,7 @@ def build_runtime_mapping_context(node: BaseLLMNode, state: GraphState, full_inp
     required = {
         "EntityAbilityBehaviorPlanner": state.llm_outputs.get("EntityAbilityBehaviorPlanner", ""),
         "ThinGameplayFlowPlanner": state.llm_outputs.get("ThinGameplayFlowPlanner", ""),
+        "EncounterSpecPlanner": state.llm_outputs.get("EncounterSpecPlanner", ""),
         "UEApiMCPFeasibilitySearcher": state.llm_outputs.get("UEApiMCPFeasibilitySearcher", ""),
     }
     missing = [name for name, value in required.items() if not value.strip()]
@@ -30,7 +31,7 @@ def build_runtime_mapping_context(node: BaseLLMNode, state: GraphState, full_inp
     node.full_input = "\n\n".join(f"{name} JSON:\n{value}" for name, value in required.items()) + (
         "\n\nCreate one mapping for every behavior. runtime_mapping_path must be "
         + RUNTIME_MAPPING_PATH
-        + ". runtime_owner should be the behavior-level generated TypeScript ability file under TypeScript/content/generated/. Include implementation_carrier, existing_framework_candidates, why_not_existing_framework, temporary_or_canonical, migration_path, and adapter_or_helper for every engine port."
+        + ". runtime_owner should be the behavior-level generated TypeScript ability file under TypeScript/content/generated/. Include implementation_carrier, existing_framework_candidates, why_not_existing_framework, temporary_or_canonical, migration_path, and adapter_or_helper for every engine port. Use EncounterSpecPlanner as encounter context, but do not silently hide spawn/combat/status/exit responsibilities in an unspecified runtime."
     )
 
 def write_runtime_mapping(state: GraphState, output: str) -> None:

@@ -1,0 +1,5 @@
+export interface {{interface_name}} { runId?: string; }
+
+export function {{export_name}}(_context: {{interface_name}} = {}): Record<string, unknown> {
+  return { schema_version: 'autoue-spawn-point-registry/v1', source_behavior_id: {{behavior_id_json}}, runtime_mapping_path: {{runtime_mapping_path_json}} };
+}

@@ -15,6 +15,7 @@ def GetInput(node: BaseLLMNode, state: GraphState, full_input: str) -> str:
         "SceneAndGameplaySplitter": state.llm_outputs.get("SceneAndGameplaySplitter", ""),
         "EntityAbilityBehaviorPlanner": state.llm_outputs.get("EntityAbilityBehaviorPlanner", ""),
         "ThinGameplayFlowPlanner": state.llm_outputs.get("ThinGameplayFlowPlanner", ""),
+        "EncounterSpecPlanner": state.llm_outputs.get("EncounterSpecPlanner", ""),
         "UEApiMCPFeasibilitySearcher": state.llm_outputs.get("UEApiMCPFeasibilitySearcher", ""),
         "PuerTSRuntimeMappingPlanner": state.llm_outputs.get("PuerTSRuntimeMappingPlanner", ""),
         "TypeScriptScriptAnalyzer": state.llm_outputs.get("TypeScriptScriptAnalyzer", ""),
