@@ -1,14 +1,16 @@
 SCHEMA: PuerTSRuntimeMappingPlanner
 
-Map thin gameplay flows, EncounterSpec data, and UE API MCP adjudications into concrete PuerTS runtime carriers.
+Map thin gameplay flows, behavior capabilities, and UE API MCP adjudications into concrete PuerTS runtime carriers and runtime feature flags.
 
 Required JSON shape:
 {
   "runtime_mapping_path": "flow/05-puerts-runtime-mapping.json",
+  "runtime_features": ["input", "movement", "trap", "status", "vfx", "camera"],
+  "disabled_features": ["enemy_encounter"],
   "mappings": [
     {
       "entity_id": "entity id",
-      "ability_id": "ability id",
+      "ability_id": "legacy parent capability id",
       "behavior_id": "behavior id",
       "flow_id": "flow id",
       "runtime_owner": "TypeScript/content/generated/ExampleAbility.ts",
@@ -28,7 +30,7 @@ Required JSON shape:
         }
       ],
       "thin_contracts": ["contract summary"],
-      "ability_binding": "how this ability should be invoked from PuerTS",
+      "ability_binding": "how this behavior should be invoked from PuerTS",
       "verification_evidence": ["what later validation should check"]
     }
   ],
@@ -40,6 +42,8 @@ Rules:
 - Create one mapping per behavior.
 - runtime_mapping_path must be exactly flow/05-puerts-runtime-mapping.json.
 - runtime_owner should be the behavior-level generated TypeScript ability file under TypeScript/content/generated/.
-- Use EncounterSpecPlanner as encounter context for enemy spawn/defeat/encounter completion responsibilities; do not invent spawn groups or enemy ids here.
+- runtime_features must be the union of features actually needed by selected behaviors.
+- Put enemy_encounter in runtime_features only if behaviors require enemy spawn, enemy AI, enemy death, or encounter completion.
+- If enemy_encounter is absent, include it in disabled_features.
 - Do not silently put input binding, camera, scene hookup, combat, status effects, and exit logic into an unspecified handwritten runtime. Record adapter_or_helper and implementation_carrier explicitly.
 - If any required engine_port is not hit, add a blocked mapping instead of inventing code.

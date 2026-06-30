@@ -184,71 +184,8 @@ def dry_run_config(args) -> int:
 
 
 def run_workflow(args) -> int:
-    from langchain_core.messages import HumanMessage
-    from core.BaseLLMNode import GraphState
-    from core.workflow_loader import read_prompt_text
-
-    runtime = load_runtime_config(args.config)
-    workflow = load_workflow_config(args.workflow, runtime)
-    input_dir = Path(args.input_dir).resolve() if args.input_dir else resolve_configured_path(runtime, "input_dir")
-    output_dir = Path(args.output_dir).resolve() if args.output_dir else resolve_configured_path(runtime, "output_dir")
-    llm_outputs_dir_name = runtime.get("paths", {}).get("llm_outputs_dir_name", "llm_outputs")
-    post_actions = runtime.get("post_actions", {})
-    copy_dirs = resolve_copy_dirs(runtime)
-    run_runtime = is_runtime_validation_enabled(args, runtime)
-    runtime_failures: list[dict] = []
-
-    if not input_dir.exists():
-        raise FileNotFoundError(f"input_dir does not exist: {input_dir}")
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    txt_files = [p for p in input_dir.iterdir() if p.suffix == ".txt" and p.stem.isdigit()]
-    txt_files.sort(key=lambda p: int(p.stem))
-    if not txt_files:
-        print(f"[WARN] No numeric .txt prompts found in {input_dir}")
-        return 0
-
-    for txt_path in txt_files:
-        demo_id = txt_path.stem
-        print(f"\n[DEBUG] ===== Processing demo_{demo_id} =====")
-        prompt = read_prompt_text(txt_path)
-        if not prompt:
-            print(f"[WARN] Empty prompt, skipping: {txt_path.name}")
-            continue
-
-        scene_analyser, _nodes = build_graph(runtime, workflow, llm_profile=args.llm_profile)
-        print("[DEBUG] Graph rebuilt for this demo")
-        demo_output_dir = output_dir / f"demo_{demo_id}"
-        demo_output_dir.mkdir(parents=True, exist_ok=True)
-        if any(getattr(node, "name", "") == "EncounterSpecPlanner" for node in _nodes):
-            ensure_scene_spawn_manifest_for_demo(demo_output_dir, runtime, workflow)
-        initial_state = GraphState(messages=[HumanMessage(content=prompt)], save_dir=str(demo_output_dir))
-        print("[DEBUG] Start Graph Execution")
-        final_state: GraphState = scene_analyser.invoke(initial_state)
-
-        if post_actions.get("copy_dirs", True):
-            copy_all_dirs_to_output(demo_output_dir, copy_dirs)
-        if post_actions.get("copy_prompt_to_eval", True):
-            copy_prompt_to_eval(txt_path, demo_output_dir)
-        save_llm_outputs(final_state, demo_output_dir, llm_outputs_dir_name)
-
-        if run_runtime:
-            runtime_summary = run_runtime_validation_for_demo(demo_output_dir)
-            print(f"[DEBUG] runtime validation result for demo_{demo_id}: {runtime_summary.get('result')}")
-            if runtime_summary.get("result") != "pass":
-                runtime_failures.append({"demo_id": demo_id, "errors": runtime_summary.get("errors", [])})
-
-        finish_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        log_line = f"demo_{demo_id} finished at {finish_time}\n"
-        print(f"[DEBUG] {log_line.strip()}")
-        WORKFLOW_FINISH_LOG_PATH.open("a", encoding="utf-8").write(log_line)
-        print(f"[DEBUG] demo_{demo_id} output completed")
-
-    if runtime_failures:
-        print(json.dumps({"runtime_validation": "fail", "failures": runtime_failures}, ensure_ascii=False, indent=2))
-        return 1
-    return 0
-
+    from core.bundle_runner import run_bundle_workflow
+    return run_bundle_workflow(args)
 
 def parse_args(argv: list[str] | None = None):
     parser = argparse.ArgumentParser(description="Run AutoUE workflow with config-driven paths, LLM profiles, nodes, and prompts.")
@@ -277,6 +214,9 @@ def main(argv: list[str] | None = None) -> int:
         if args.dry_run_config:
             return dry_run_config(args)
         return run_workflow(args)
+    if command == "node":
+        from core.bundle_runner import node_main
+        return node_main(raw)
     if command == "validate-output":
         from tools.validate_workflow_outputs import main as validate_output_main
         return validate_output_main(raw)
@@ -288,7 +228,7 @@ def main(argv: list[str] | None = None) -> int:
         return validate_runtime_main(raw)
 
     print(f"Unknown AutoUE command: {command}", file=sys.stderr)
-    print("Supported commands: run, check-config, validate-output, run-runtime-validation, validate-runtime", file=sys.stderr)
+    print("Supported commands: run, check-config, node, validate-output, run-runtime-validation, validate-runtime", file=sys.stderr)
     return 2
 
 

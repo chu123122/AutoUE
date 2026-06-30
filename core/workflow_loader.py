@@ -8,6 +8,7 @@ from core.config import repo_path
 from core.BaseLLMNode import BaseLLMNode
 from core.validation.registry import default_validator_id_for_node, resolve_validator
 from core.validation.workflow import validate_graph_node_output
+from core.bundle import DEFAULT_NODE_INPUT_PORTS, DEFAULT_NODE_OUTPUT_PORTS
 
 
 def read_prompt_text(txt_path: str | Path) -> str:
@@ -45,6 +46,8 @@ def create_node_from_spec(spec: Mapping[str, Any]) -> BaseLLMNode:
     resolve_validator(validator_id)
     node.validator_id = validator_id
     node.output_artifacts = list(spec.get("output_artifacts") or [])
+    node.input_ports = list(spec.get("inputs") or DEFAULT_NODE_INPUT_PORTS.get(node.name, []))
+    node.output_ports = list(spec.get("outputs") or DEFAULT_NODE_OUTPUT_PORTS.get(node.name, []))
     if spec.get("llm_profile"):
         node.llm_profile = spec["llm_profile"]
     if not callable(getattr(node, "output_validator", None)):

@@ -6,7 +6,7 @@
     {
       "name": "SceneAndGameplaySplitter",
       "factory": "custom_nodes.scene_and_gameplay_splitter:create_scene_and_gameplay_splitter",
-      "prompt_file": "prompts/scene_and_gameplay_splitter.md",
+      "prompt_file": "prompts/01-scene_and_gameplay_splitter.md",
       "enabled": true,
       "llm_profile": "codex_cli_fast",
       "validator": "scene_and_gameplay_splitter",
@@ -15,12 +15,18 @@
           "kind": "llm_output",
           "path": "llm_outputs/{node}.txt"
         }
+      ],
+      "inputs": [
+        "user_prompt"
+      ],
+      "outputs": [
+        "scene_gameplay_split"
       ]
     },
     {
       "name": "EntityAbilityBehaviorPlanner",
       "factory": "custom_nodes.entity_ability_behavior_planner:create_entity_ability_behavior_planner",
-      "prompt_file": "prompts/entity_ability_behavior_planner.md",
+      "prompt_file": "prompts/02-entity_ability_behavior_planner.md",
       "enabled": true,
       "llm_profile": "codex_cli_planning",
       "validator": "entity_ability_behavior_planner",
@@ -36,13 +42,28 @@
         {
           "kind": "markdown",
           "path": "flow/02-结构化拆解-行为能力实体.md"
+        },
+        {
+          "kind": "json",
+          "path": "flow/02-entity-behavior-candidates.json"
+        },
+        {
+          "kind": "json",
+          "path": "flow/02-entity-behavior-selection.json"
         }
+      ],
+      "inputs": [
+        "user_prompt",
+        "scene_gameplay_split"
+      ],
+      "outputs": [
+        "entity_behavior"
       ]
     },
     {
       "name": "ThinGameplayFlowPlanner",
       "factory": "custom_nodes.thin_gameplay_flow_planner:create_thin_gameplay_flow_planner",
-      "prompt_file": "prompts/thin_gameplay_flow_planner.md",
+      "prompt_file": "prompts/03-thin_gameplay_flow_planner.md",
       "enabled": true,
       "llm_profile": "codex_cli_planning",
       "validator": "thin_gameplay_flow_planner",
@@ -55,12 +76,19 @@
           "kind": "json",
           "path": "flow/03-thin-gameplay-flow.json"
         }
+      ],
+      "inputs": [
+        "user_prompt",
+        "entity_behavior"
+      ],
+      "outputs": [
+        "thin_flow"
       ]
     },
     {
       "name": "EncounterSpecPlanner",
       "factory": "custom_nodes.encounter_spec_planner:create_encounter_spec_planner",
-      "prompt_file": "prompts/encounter_spec_planner.md",
+      "prompt_file": "prompts/04-encounter_spec_planner.md",
       "enabled": true,
       "llm_profile": "codex_cli_planning",
       "validator": "encounter_spec_planner",
@@ -77,12 +105,20 @@
           "kind": "markdown",
           "path": "flow/03-encounter-spec.md"
         }
+      ],
+      "inputs": [
+        "entity_behavior",
+        "thin_flow",
+        "scene_spawn_manifest"
+      ],
+      "outputs": [
+        "encounter_spec"
       ]
     },
     {
       "name": "UEApiMCPFeasibilitySearcher",
       "factory": "custom_nodes.ue_api_mcp_feasibility_searcher:create_ue_api_mcp_feasibility_searcher",
-      "prompt_file": "prompts/ue_api_mcp_feasibility_searcher.md",
+      "prompt_file": "prompts/05-ue_api_mcp_feasibility_searcher.md",
       "enabled": true,
       "llm_profile": "codex_cli_fast",
       "validator": "ue_api_mcp_feasibility_searcher",
@@ -103,12 +139,18 @@
           "kind": "json",
           "path": "flow/04-ue-api-mcp/summary.json"
         }
+      ],
+      "inputs": [
+        "thin_flow"
+      ],
+      "outputs": [
+        "ue_api_feasibility"
       ]
     },
     {
       "name": "PuerTSRuntimeMappingPlanner",
       "factory": "custom_nodes.puerts_runtime_mapping_planner:create_puerts_runtime_mapping_planner",
-      "prompt_file": "prompts/puerts_runtime_mapping_planner.md",
+      "prompt_file": "prompts/06-puerts_runtime_mapping_planner.md",
       "enabled": true,
       "llm_profile": "codex_cli_planning",
       "validator": "puerts_runtime_mapping_planner",
@@ -120,13 +162,29 @@
         {
           "kind": "json",
           "path": "flow/05-puerts-runtime-mapping.json"
+        },
+        {
+          "kind": "json",
+          "path": "flow/06-behavior-spec.json"
+        },
+        {
+          "kind": "json",
+          "path": "flow/06-runtime-support-check.json"
         }
+      ],
+      "inputs": [
+        "entity_behavior",
+        "thin_flow",
+        "ue_api_feasibility"
+      ],
+      "outputs": [
+        "runtime_mapping"
       ]
     },
     {
       "name": "TypeScriptScriptAnalyzer",
       "factory": "custom_nodes.typescript_script_analyzer:create_typescript_script_analyzer",
-      "prompt_file": "prompts/typescript_script_analyzer.md",
+      "prompt_file": "prompts/07-typescript_script_analyzer.md",
       "enabled": true,
       "llm_profile": "codex_cli_planning",
       "validator": "typescript_script_analyzer",
@@ -135,12 +193,19 @@
           "kind": "llm_output",
           "path": "llm_outputs/{node}.txt"
         }
+      ],
+      "inputs": [
+        "entity_behavior",
+        "runtime_mapping"
+      ],
+      "outputs": [
+        "ts_analyzer"
       ]
     },
     {
       "name": "TypeScriptInteractiveObjectGenerator",
       "factory": "custom_nodes.typescript_interactive_object_generator:create_typescript_interactive_object_generator",
-      "prompt_file": "prompts/typescript_interactive_object_generator.md",
+      "prompt_file": "prompts/08-typescript_interactive_object_generator.md",
       "enabled": true,
       "llm_profile": "codex_cli_codegen",
       "validator": "typescript_interactive_object_generator",
@@ -153,12 +218,20 @@
           "kind": "typescript",
           "path_from": "template_inputs[].path"
         }
+      ],
+      "inputs": [
+        "entity_behavior",
+        "runtime_mapping",
+        "ts_analyzer"
+      ],
+      "outputs": [
+        "interactive_ts_plan"
       ]
     },
     {
       "name": "TypeScriptCodeGenerator",
       "factory": "custom_nodes.typescript_code_generator:create_typescript_code_generator",
-      "prompt_file": "prompts/typescript_code_generator.md",
+      "prompt_file": "prompts/09-typescript_code_generator.md",
       "enabled": true,
       "llm_profile": "codex_cli_codegen",
       "validator": "typescript_code_generator",
@@ -171,12 +244,21 @@
           "kind": "typescript",
           "path_from": "template_inputs[].path"
         }
+      ],
+      "inputs": [
+        "entity_behavior",
+        "runtime_mapping",
+        "ts_analyzer",
+        "interactive_ts_plan"
+      ],
+      "outputs": [
+        "typescript_codegen"
       ]
     },
     {
       "name": "EvaluateInstructionGenerator",
       "factory": "custom_nodes.evaluate_instruction_generator:create_evaluate_instruction_generator",
-      "prompt_file": "prompts/evaluate_instruction_generator.md",
+      "prompt_file": "prompts/10-evaluate_instruction_generator.md",
       "enabled": true,
       "llm_profile": "codex_cli_fast",
       "validator": "evaluate_instruction_generator",
@@ -189,6 +271,20 @@
           "kind": "json",
           "path": "MyPCG/eval/instructions.json"
         }
+      ],
+      "inputs": [
+        "scene_gameplay_split",
+        "entity_behavior",
+        "thin_flow",
+        "encounter_spec",
+        "ue_api_feasibility",
+        "runtime_mapping",
+        "ts_analyzer",
+        "interactive_ts_plan",
+        "typescript_codegen"
+      ],
+      "outputs": [
+        "evaluation_instructions"
       ]
     }
   ],

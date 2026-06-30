@@ -12,6 +12,7 @@ if str(ROOT) not in sys.path:
 
 from core.validation.common import WORKFLOW_NODE_ORDER, is_safe_relative_path
 from core.validation.registry import VALIDATOR_REGISTRY
+from core.bundle import DEFAULT_NODE_INPUT_PORTS, DEFAULT_NODE_OUTPUT_PORTS
 
 ABS_WIN = re.compile(r"(?i)(?<![A-Z])[A-Z]:[\\/](?![\\/])")
 LEGACY_NODE_NAMES = {
@@ -47,6 +48,21 @@ def profile_names(llm_profiles: dict) -> set[str]:
     profiles = llm_profiles.get("profiles", {})
     return set(profiles) if isinstance(profiles, dict) else set()
 
+
+
+def validate_port_contract(node_name: str, node: dict, errors: list[str]) -> None:
+    expected_inputs = DEFAULT_NODE_INPUT_PORTS.get(node_name)
+    expected_outputs = DEFAULT_NODE_OUTPUT_PORTS.get(node_name)
+    inputs = node.get("inputs")
+    outputs = node.get("outputs")
+    if not isinstance(inputs, list) or not all(isinstance(x, str) and x for x in inputs):
+        errors.append(f"{node_name}: inputs must be a non-empty string list")
+    elif expected_inputs is not None and inputs != expected_inputs:
+        errors.append(f"{node_name}: inputs mismatch: expected {expected_inputs}, got {inputs}")
+    if not isinstance(outputs, list) or not all(isinstance(x, str) and x for x in outputs):
+        errors.append(f"{node_name}: outputs must be a non-empty string list")
+    elif expected_outputs is not None and outputs != expected_outputs:
+        errors.append(f"{node_name}: outputs mismatch: expected {expected_outputs}, got {outputs}")
 
 def validate_artifact_schema(node_name: str, artifacts, errors: list[str]) -> None:
     if not isinstance(artifacts, list) or not artifacts:
@@ -116,6 +132,7 @@ def main(argv: list[str] | None = None) -> int:
                 errors.append(f"{name}: missing llm_profile")
             elif llm_profile not in known_profiles:
                 errors.append(f"{name}: llm_profile does not exist: {llm_profile}")
+            validate_port_contract(str(name), node, errors)
             validate_artifact_schema(str(name), node.get("output_artifacts"), errors)
 
     if enabled != WORKFLOW_NODE_ORDER:

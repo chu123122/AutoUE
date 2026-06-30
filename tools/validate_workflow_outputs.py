@@ -136,18 +136,30 @@ def validate_declared_files(root: Path, data: dict, errors: list[str]) -> list[s
     return emitted
 
 
+def _enemy_encounter_enabled(data: dict) -> bool:
+    for node_name in ("PuerTSRuntimeMappingPlanner", "TypeScriptCodeGenerator"):
+        node = data.get(node_name, {}) if isinstance(data, dict) else {}
+        if isinstance(node, dict) and "enemy_encounter" in node.get("runtime_features", []):
+            return True
+    encounter = data.get("EncounterSpecPlanner", {}) if isinstance(data, dict) else {}
+    return bool(isinstance(encounter, dict) and encounter.get("encounters"))
+
+
 def validate_encounter_artifacts(root: Path, data: dict, errors: list[str], evidence: dict) -> list[str]:
     artifacts: list[str] = []
     manifest_data = None
-    manifest_path = ensure_rel_file(root, SCENE_SPAWN_MANIFEST_PATH, 'SceneSpawnManifest', errors)
-    if manifest_path:
-        artifacts.append(SCENE_SPAWN_MANIFEST_PATH)
-        try:
-            manifest_data = json.loads(manifest_path.read_text(encoding='utf-8'))
-            validate_scene_spawn_manifest_data(manifest_data)
-            evidence['scene_spawn_groups'] = [g.get('spawn_group') for g in manifest_data.get('spawn_groups', [])]
-        except Exception as exc:
-            errors.append(f'scene-spawn-manifest is invalid: {exc}')
+    if _enemy_encounter_enabled(data):
+        manifest_path = ensure_rel_file(root, SCENE_SPAWN_MANIFEST_PATH, 'SceneSpawnManifest', errors)
+        if manifest_path:
+            artifacts.append(SCENE_SPAWN_MANIFEST_PATH)
+            try:
+                manifest_data = json.loads(manifest_path.read_text(encoding='utf-8'))
+                validate_scene_spawn_manifest_data(manifest_data)
+                evidence['scene_spawn_groups'] = [g.get('spawn_group') for g in manifest_data.get('spawn_groups', [])]
+            except Exception as exc:
+                errors.append(f'scene-spawn-manifest is invalid: {exc}')
+    else:
+        evidence['scene_spawn_groups'] = []
     for rel, label in [(STRUCTURE_PATH, 'EntityAbilityBehaviorPlanner structure artifact'), (ENCOUNTER_SPEC_PATH, 'EncounterSpecPlanner json artifact'), (ENCOUNTER_SPEC_MD_PATH, 'EncounterSpecPlanner md artifact')]:
         target = ensure_rel_file(root, rel, label, errors)
         if target:
@@ -185,11 +197,15 @@ def validate_mcp_artifacts(root: Path, data: dict, errors: list[str]) -> list[st
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument('--root', required=True)
+    parser.add_argument('--root')
+    parser.add_argument('--bundle')
     parser.add_argument('--workflow', default='config/workflows/puerts_ts.json')
     parser.add_argument('--write-report', action='store_true')
     args = parser.parse_args(argv)
-    root = Path(args.root).resolve()
+    selected_root = args.bundle or args.root
+    if not selected_root:
+        parser.error('one of --root or --bundle is required')
+    root = Path(selected_root).resolve()
     workflow = load_workflow_config(args.workflow)
     enabled_nodes = [node.get('name') for node in iter_enabled_nodes(workflow)]
     errors: list[str] = []
@@ -254,6 +270,17 @@ def main(argv: list[str] | None = None) -> int:
                 evidence['instruction_count'] = len(obj['evaluation_instructions'])
         except Exception as exc:
             errors.append(f'instructions.json is not valid JSON: {exc}')
+
+    if args.bundle or (root / 'manifest.json').exists():
+        try:
+            from core.bundle import RunBundle
+            from core.bundle_validation import validate_bundle
+            bundle_report = validate_bundle(RunBundle.load(root), workflow)
+            evidence['bundle_validation'] = bundle_report
+            if bundle_report.get('result') != 'pass':
+                errors.extend('bundle: ' + err for err in bundle_report.get('errors', []))
+        except Exception as exc:
+            errors.append(f'bundle validation failed: {exc}')
 
     report = {'result': 'fail' if errors else 'pass', 'errors': errors, 'evidence': evidence}
     if args.write_report and root.exists():

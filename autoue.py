@@ -4,6 +4,8 @@
 - python autoue.py check-config
 - python autoue.py run --workflow config/workflows/puerts_ts.json
 - python autoue.py validate-output --root data/output/demo_1
+- python autoue.py node run --node TypeScriptScriptAnalyzer --input-bundle <prev> --output-bundle <next>
+- python autoue.py node validate --node TypeScriptScriptAnalyzer --bundle <bundle>
 - python autoue.py run-runtime-validation --root data/output/demo_1 --write-summary
 - python autoue.py validate-runtime --root data/output/demo_1
 """
