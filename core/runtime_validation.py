@@ -18,7 +18,7 @@ LOG_FILE_NAME = "runtime-log.jsonl"
 
 
 def runtime_validation_config(*, enabled: bool = False) -> dict[str, Any]:
-    """Return the explicit Phase3 runtime harness contract used by dry-run output."""
+    """Return the explicit runtime harness contract used by dry-run output."""
     return {
         "enabled": bool(enabled),
         "runner": "tools/run_runtime_validation.py",
@@ -195,7 +195,7 @@ def collect_runtime_validation(root: str | Path) -> tuple[dict[str, Any], list[d
             "engine_port_ids": [],
         },
         "notes": [
-            "Phase3 runtime validation is a Python static adapter_call harness only.",
+            "Runtime validation is a Python static adapter_call harness only.",
             "It does not launch UE Editor, does not launch PIE, and does not inject real player input.",
         ],
     }

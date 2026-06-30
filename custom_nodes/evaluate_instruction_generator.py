@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from core.BaseLLMNode import BaseLLMNode, GraphState
-from core.phase2_validation import parse_phase2_json, validate_phase2_node_output, validate_phase2_output
+from core.workflow_validation import parse_node_json, validate_graph_node_output, validate_node_output
 
 EVALUATE_INSTRUCTION_GENERATOR_PROMPT = """SCHEMA: EvaluateInstructionGenerator
 Generate a machine-readable static validation plan for the complete TypeScript/PuerTS chain. Return JSON only.
@@ -29,11 +29,11 @@ def GetInput(node: BaseLLMNode, state: GraphState, full_input: str) -> str:
         f"Scene Description:\n{getattr(state, 'scene_description', '')}\n\n"
         f"Gameplay Description:\n{getattr(state, 'gameplay_description', '')}\n\n"
         + "\n\n".join(f"{name} JSON:\n{value}" for name, value in required.items())
-        + "\n\nPhase2 emits a static adapter_call plan for the Phase3 Python harness. Use driver=adapter_call only and expected.type=static_trace_present only. Do not claim PIE/runtime pass."
+        + "\n\nThe workflow emits a static adapter_call plan that the Python runtime harness can validate. Use driver=adapter_call only and expected.type=static_trace_present only. Do not claim PIE/runtime pass."
     )
 
 def SaveInstructionjson(state: GraphState, output: str) -> None:
-    data = parse_phase2_json("EvaluateInstructionGenerator", validate_phase2_output("EvaluateInstructionGenerator", output))
+    data = parse_node_json("EvaluateInstructionGenerator", validate_node_output("EvaluateInstructionGenerator", output))
     save_dir = getattr(state, "save_dir", "")
     if not save_dir:
         raise RuntimeError("state.save_dir is required for instructions.json emission")
@@ -49,7 +49,7 @@ def create_evaluate_instruction_generator() -> BaseLLMNode:
         prompt=EVALUATE_INSTRUCTION_GENERATOR_PROMPT,
         enable_feedback=False,
         extra_prompt_action=GetInput,
-        output_validator=validate_phase2_node_output,
+        output_validator=validate_graph_node_output,
         post_action=SaveInstructionjson,
     )
 

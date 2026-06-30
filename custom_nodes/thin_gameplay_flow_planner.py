@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from core.BaseLLMNode import BaseLLMNode, GraphState
-from core.phase2_validation import parse_phase2_json, validate_phase2_node_output, validate_phase2_output
+from core.workflow_validation import parse_node_json, validate_graph_node_output, validate_node_output
 
 THIN_GAMEPLAY_FLOW_PLANNER_PROMPT = """SCHEMA: ThinGameplayFlowPlanner
 Create one thin gameplay flow for every behavior. Return JSON only.
@@ -29,7 +29,7 @@ def build_thin_flow_context(node: BaseLLMNode, state: GraphState, full_input: st
     )
 
 def write_thin_flow(state: GraphState, output: str) -> None:
-    data = parse_phase2_json("ThinGameplayFlowPlanner", validate_phase2_output("ThinGameplayFlowPlanner", output))
+    data = parse_node_json("ThinGameplayFlowPlanner", validate_node_output("ThinGameplayFlowPlanner", output))
     target = _output_root(state) / "flow" / "03-thin-gameplay-flow.json"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -40,7 +40,7 @@ def create_thin_gameplay_flow_planner() -> BaseLLMNode:
         name="ThinGameplayFlowPlanner",
         prompt=THIN_GAMEPLAY_FLOW_PLANNER_PROMPT,
         pre_action=build_thin_flow_context,
-        output_validator=validate_phase2_node_output,
+        output_validator=validate_graph_node_output,
         post_action=write_thin_flow,
         enable_feedback=False,
     )

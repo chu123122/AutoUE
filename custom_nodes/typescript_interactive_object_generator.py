@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from core.BaseLLMNode import BaseLLMNode, GraphState
-from core.phase2_validation import validate_phase2_node_output
-from custom_nodes.phase2_file_writer import write_files_from_output
+from core.workflow_validation import validate_graph_node_output
+from custom_nodes.template_file_writer import write_files_from_output
 
 TYPESCRIPT_INTERACTIVE_OBJECT_GENERATOR_PROMPT = """SCHEMA: TypeScriptInteractiveObjectGenerator
 Select TypeScript/PuerTS interactive_object templates and fill template_inputs. Return JSON only.
@@ -29,7 +29,7 @@ def create_typescript_interactive_object_generator() -> BaseLLMNode:
         name="TypeScriptInteractiveObjectGenerator",
         prompt=TYPESCRIPT_INTERACTIVE_OBJECT_GENERATOR_PROMPT,
         pre_action=build_interactive_context,
-        output_validator=validate_phase2_node_output,
+        output_validator=validate_graph_node_output,
         post_action=write_interactive_files,
         enable_feedback=False,
     )

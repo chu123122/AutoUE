@@ -29,7 +29,7 @@ Rules:
 - Copy engine_port_id, flow_ids, behavior_ids, query, raw_path, and adjudication_path exactly from raw_records.
 - verdict must be hit only when the raw result contains usable UE/PuerTS API evidence.
 - If verdict is miss, hit_type must be none.
-- Phase2 done requires all required ports to be hit; do not hide misses.
+- Workflow completion requires all required ports to be hit; do not hide misses.
 
 Adjudication guidance:
 - Use direct_hit when a candidate symbol directly names the requested operation.

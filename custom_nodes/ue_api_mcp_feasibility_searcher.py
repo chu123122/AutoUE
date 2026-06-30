@@ -8,7 +8,7 @@ from typing import Any
 from core.BaseLLMNode import BaseLLMNode, GraphState
 from core.config import load_runtime_config
 from core.mcp_client import call_ue_api_semantic_search, safe_engine_port_filename
-from core.phase2_validation import parse_phase2_json, validate_phase2_node_output, validate_phase2_output
+from core.workflow_validation import parse_node_json, validate_graph_node_output, validate_node_output
 
 UE_API_MCP_FEASIBILITY_SEARCHER_PROMPT = """SCHEMA: UEApiMCPFeasibilitySearcher
 Adjudicate UE API MCP raw search results for each engine_port. Return JSON only.
@@ -134,7 +134,7 @@ def build_mcp_context(node: BaseLLMNode, state: GraphState, full_input: str) -> 
     thin_text = state.llm_outputs.get("ThinGameplayFlowPlanner", "")
     if not thin_text.strip():
         raise RuntimeError("UEApiMCPFeasibilitySearcher requires ThinGameplayFlowPlanner output")
-    thin = parse_phase2_json("ThinGameplayFlowPlanner", thin_text)
+    thin = parse_node_json("ThinGameplayFlowPlanner", thin_text)
     queries = _collect_queries(thin)
     if not queries:
         raise RuntimeError("UEApiMCPFeasibilitySearcher found no engine_ports to query")
@@ -169,7 +169,7 @@ def build_mcp_context(node: BaseLLMNode, state: GraphState, full_input: str) -> 
     )
 
 def write_adjudication_files(state: GraphState, output: str) -> None:
-    data = parse_phase2_json("UEApiMCPFeasibilitySearcher", validate_phase2_output("UEApiMCPFeasibilitySearcher", output))
+    data = parse_node_json("UEApiMCPFeasibilitySearcher", validate_node_output("UEApiMCPFeasibilitySearcher", output))
     root = _output_root(state)
     for query in data.get("queries", []):
         target = root / query["adjudication_path"]
@@ -185,7 +185,7 @@ def create_ue_api_mcp_feasibility_searcher() -> BaseLLMNode:
         name="UEApiMCPFeasibilitySearcher",
         prompt=UE_API_MCP_FEASIBILITY_SEARCHER_PROMPT,
         pre_action=build_mcp_context,
-        output_validator=validate_phase2_node_output,
+        output_validator=validate_graph_node_output,
         post_action=write_adjudication_files,
         enable_feedback=False,
     )

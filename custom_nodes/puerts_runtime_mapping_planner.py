@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from core.BaseLLMNode import BaseLLMNode, GraphState
-from core.phase2_validation import RUNTIME_MAPPING_PATH, parse_phase2_json, validate_phase2_node_output, validate_phase2_output
+from core.workflow_validation import RUNTIME_MAPPING_PATH, parse_node_json, validate_graph_node_output, validate_node_output
 
 PUERTS_RUNTIME_MAPPING_PLANNER_PROMPT = """SCHEMA: PuerTSRuntimeMappingPlanner
 Map thin gameplay flows and UE API MCP adjudications to PuerTS runtime carriers with explicit implementation_carrier, adapter_or_helper, existing framework decision, and verification evidence. Return JSON only.
@@ -35,7 +35,7 @@ def build_runtime_mapping_context(node: BaseLLMNode, state: GraphState, full_inp
     )
 
 def write_runtime_mapping(state: GraphState, output: str) -> None:
-    data = parse_phase2_json("PuerTSRuntimeMappingPlanner", validate_phase2_output("PuerTSRuntimeMappingPlanner", output))
+    data = parse_node_json("PuerTSRuntimeMappingPlanner", validate_node_output("PuerTSRuntimeMappingPlanner", output))
     target = _output_root(state) / RUNTIME_MAPPING_PATH
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -46,7 +46,7 @@ def create_puerts_runtime_mapping_planner() -> BaseLLMNode:
         name="PuerTSRuntimeMappingPlanner",
         prompt=PUERTS_RUNTIME_MAPPING_PLANNER_PROMPT,
         pre_action=build_runtime_mapping_context,
-        output_validator=validate_phase2_node_output,
+        output_validator=validate_graph_node_output,
         post_action=write_runtime_mapping,
         enable_feedback=False,
     )

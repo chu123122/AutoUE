@@ -88,7 +88,7 @@ class StdioMCPClient:
             encoding="utf-8",
             errors="replace",
         )
-        self.request("initialize", {"protocolVersion": "2024-11-05", "capabilities": {}, "clientInfo": {"name": "autoue-phase2", "version": "0.1"}})
+        self.request("initialize", {"protocolVersion": "2024-11-05", "capabilities": {}, "clientInfo": {"name": "autoue-workflow", "version": "0.1"}})
         self.notify("notifications/initialized", {})
         return self
 

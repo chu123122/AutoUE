@@ -40,15 +40,25 @@ Machine-specific settings belong in `config/local.json` or `.env`; neither shoul
 ## Validate wiring
 
 ```bash
-python autogenerate_qwen.py --dry-run-config
-python tools/validate_config_contract.py --workflow config/workflows/puerts_ts.json --phase phase2
+python autoue.py check-config
+python tools/validate_config_contract.py --workflow config/workflows/puerts_ts.json --contract puerts_ts
 pytest -q
 ```
 
 ## Run
 
 ```bash
-python autogenerate_qwen.py --workflow config/workflows/puerts_ts.json
+python autoue.py run --workflow config/workflows/puerts_ts.json
+```
+
+## Stable command entry
+
+```bash
+python autoue.py check-config
+python autoue.py run --workflow config/workflows/puerts_ts.json
+python autoue.py validate-output --root data/output/demo_1
+python autoue.py run-runtime-validation --root data/output/demo_1 --write-summary
+python autoue.py validate-runtime --root data/output/demo_1
 ```
 
 Generated outputs are written under `data/output*` and are ignored by git.

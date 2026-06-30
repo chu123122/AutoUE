@@ -1,6 +1,6 @@
 SCHEMA: EvaluateInstructionGenerator
 
-Generate a Phase2 static validation plan that the Phase3 Python runtime harness can validate without launching UE/PIE.
+Generate a static workflow validation plan that the Python runtime harness can validate without launching UE/PIE.
 
 Required JSON shape:
 {

@@ -1,3 +1,9 @@
+"""TypeScript 模板落盘工具。
+
+LLM 节点只允许输出 template_inputs；真正文件内容由这里读取 templates/typescript/*.ts.tmpl 后渲染。
+这样可以避免模型直接吐大段源码，也方便 validator 约束输出边界。
+"""
+
 from __future__ import annotations
 
 import json
@@ -7,7 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from core.BaseLLMNode import GraphState
-from core.phase2_validation import parse_phase2_json, validate_phase2_output
+from core.workflow_validation import parse_node_json, validate_node_output
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE_ROOT = REPO_ROOT / "templates" / "typescript"
@@ -17,7 +23,7 @@ PLACEHOLDER_RE = re.compile(r"{{\s*([A-Za-z0-9_]+)\s*}}")
 def output_root(state: GraphState) -> Path:
     save_dir = getattr(state, "save_dir", "") or os.getenv("AUTOUE_TS_OUTPUT_DIR", "")
     if not save_dir:
-        raise RuntimeError("state.save_dir/AUTOUE_TS_OUTPUT_DIR is required for Phase2 file emission")
+        raise RuntimeError("state.save_dir/AUTOUE_TS_OUTPUT_DIR is required for workflow file emission")
     root = Path(save_dir).resolve()
     root.mkdir(parents=True, exist_ok=True)
     return root
@@ -75,7 +81,7 @@ def render_template_input(item: dict[str, Any]) -> str:
 
 
 def write_files_from_output(state: GraphState, node_name: str, output: str) -> list[Path]:
-    data: dict[str, Any] = parse_phase2_json(node_name, validate_phase2_output(node_name, output))
+    data: dict[str, Any] = parse_node_json(node_name, validate_node_output(node_name, output))
     root = output_root(state)
     written: list[Path] = []
     for item in data.get("template_inputs", []):

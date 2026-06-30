@@ -15,7 +15,7 @@ from core.encounter_validation import (
     validate_encounter_spec_data,
     validate_scene_spawn_manifest_data,
 )
-from core.phase2_validation import parse_phase2_json, validate_phase2_node_output, validate_phase2_output
+from core.workflow_validation import parse_node_json, validate_graph_node_output, validate_node_output
 
 ENCOUNTER_SPEC_PLANNER_PROMPT = """SCHEMA: EncounterSpecPlanner
 Generate EncounterSpec data from structure, thin gameplay flow, and scene spawn manifest. Return JSON only.
@@ -53,8 +53,8 @@ def build_encounter_context(node: BaseLLMNode, state: GraphState, full_input: st
         raise RuntimeError(f"EncounterSpecPlanner missing upstream outputs: {missing}")
     root = _output_root(state)
     manifest = _load_manifest(root)
-    structure = parse_phase2_json("EntityAbilityBehaviorPlanner", required["EntityAbilityBehaviorPlanner"])
-    thin = parse_phase2_json("ThinGameplayFlowPlanner", required["ThinGameplayFlowPlanner"])
+    structure = parse_node_json("EntityAbilityBehaviorPlanner", required["EntityAbilityBehaviorPlanner"])
+    thin = parse_node_json("ThinGameplayFlowPlanner", required["ThinGameplayFlowPlanner"])
     structure_path = root / STRUCTURE_PATH
     structure_path.parent.mkdir(parents=True, exist_ok=True)
     structure_path.write_text(json.dumps(structure, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -69,11 +69,11 @@ def build_encounter_context(node: BaseLLMNode, state: GraphState, full_input: st
 
 
 def validate_encounter_output(node: BaseLLMNode, state: GraphState, output: str) -> str:
-    canonical = validate_phase2_node_output(node, state, output)
-    data = parse_phase2_json("EncounterSpecPlanner", canonical)
+    canonical = validate_graph_node_output(node, state, output)
+    data = parse_node_json("EncounterSpecPlanner", canonical)
     root = _output_root(state)
     manifest = _load_manifest(root)
-    structure = parse_phase2_json("EntityAbilityBehaviorPlanner", state.llm_outputs.get("EntityAbilityBehaviorPlanner", ""))
+    structure = parse_node_json("EntityAbilityBehaviorPlanner", state.llm_outputs.get("EntityAbilityBehaviorPlanner", ""))
     try:
         validate_encounter_spec_data(data, structure=structure, manifest=manifest)
     except EncounterValidationError as exc:
@@ -82,7 +82,7 @@ def validate_encounter_output(node: BaseLLMNode, state: GraphState, output: str)
 
 
 def write_encounter_spec(state: GraphState, output: str) -> None:
-    data = parse_phase2_json("EncounterSpecPlanner", validate_phase2_output("EncounterSpecPlanner", output))
+    data = parse_node_json("EncounterSpecPlanner", validate_node_output("EncounterSpecPlanner", output))
     root = _output_root(state)
     json_path = root / ENCOUNTER_SPEC_PATH
     md_path = root / ENCOUNTER_SPEC_MD_PATH

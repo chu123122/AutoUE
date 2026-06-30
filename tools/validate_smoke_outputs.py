@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from core.phase2_validation import PHASE2_NODE_ORDER, Phase2ValidationError, validate_phase2_output_set
+from core.workflow_validation import WORKFLOW_NODE_ORDER, WorkflowValidationError, validate_workflow_output_set
 
 
 def main() -> int:
@@ -30,25 +30,25 @@ def main() -> int:
         root / 'flow' / '04-ue-api-mcp' / 'adjudication' / 'damage.apply.json',
         root / 'flow' / '04-ue-api-mcp' / 'summary.json',
         root / 'flow' / '05-puerts-runtime-mapping.json',
-    ] + [root / 'llm_outputs' / f'{node}.txt' for node in PHASE2_NODE_ORDER]
+    ] + [root / 'llm_outputs' / f'{node}.txt' for node in WORKFLOW_NODE_ORDER]
     for path in required:
         if not path.exists():
             errors.append(f'missing required smoke artifact: {path}')
     outputs = {}
     llm_dir = root / 'llm_outputs'
     if llm_dir.exists():
-        for node in PHASE2_NODE_ORDER:
+        for node in WORKFLOW_NODE_ORDER:
             path = llm_dir / f'{node}.txt'
             if path.exists():
                 outputs[node] = path.read_text(encoding='utf-8')
-    if len(outputs) == len(PHASE2_NODE_ORDER):
+    if len(outputs) == len(WORKFLOW_NODE_ORDER):
         try:
-            validate_phase2_output_set(outputs)
-        except Phase2ValidationError as exc:
+            validate_workflow_output_set(outputs)
+        except WorkflowValidationError as exc:
             errors.append(str(exc))
     native_files = sorted(path for path in root.rglob('*') if path.is_file() and path.suffix.lower() in {'.h', '.cpp'}) if root.exists() else []
     if native_files:
-        errors.append('Phase2 output must not contain native code files: ' + ', '.join(str(path.relative_to(root)) for path in native_files))
+        errors.append('workflow output must not contain native code files: ' + ', '.join(str(path.relative_to(root)) for path in native_files))
     if errors:
         print(json.dumps({'result': 'fail', 'errors': errors}, indent=2, ensure_ascii=False))
         return 1

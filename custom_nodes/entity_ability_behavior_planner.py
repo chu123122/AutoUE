@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from core.BaseLLMNode import BaseLLMNode, GraphState
-from core.phase2_validation import parse_phase2_json, validate_phase2_node_output, validate_phase2_output
+from core.workflow_validation import parse_node_json, validate_graph_node_output, validate_node_output
 
 ENTITY_ABILITY_BEHAVIOR_PLANNER_PROMPT = """SCHEMA: EntityAbilityBehaviorPlanner
 Create definition-layer gameplay structure only: behaviors grouped into abilities owned by entities. Analyze behavior-first, but return the machine tree as entities -> abilities -> behaviors. Do not decide implementation files or write code. Return JSON only.
@@ -32,7 +32,7 @@ def build_planner_context(node: BaseLLMNode, state: GraphState, full_input: str)
 
 
 def write_02_structure(state: GraphState, output: str) -> None:
-    data = parse_phase2_json("EntityAbilityBehaviorPlanner", validate_phase2_output("EntityAbilityBehaviorPlanner", output))
+    data = parse_node_json("EntityAbilityBehaviorPlanner", validate_node_output("EntityAbilityBehaviorPlanner", output))
     root = _output_root(state)
     flow_dir = root / "flow"
     flow_dir.mkdir(parents=True, exist_ok=True)
@@ -64,7 +64,7 @@ def create_entity_ability_behavior_planner() -> BaseLLMNode:
         name="EntityAbilityBehaviorPlanner",
         prompt=ENTITY_ABILITY_BEHAVIOR_PLANNER_PROMPT,
         pre_action=build_planner_context,
-        output_validator=validate_phase2_node_output,
+        output_validator=validate_graph_node_output,
         post_action=write_02_structure,
         enable_feedback=False,
     )
