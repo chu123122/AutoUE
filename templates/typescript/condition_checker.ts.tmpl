@@ -1,0 +1,13 @@
+export interface {{interface_name}} { readonly state?: { isActive(key: string): boolean; get(key: string): unknown }; }
+export class AutoUEConditionChecker {
+  constructor(private readonly context: {{interface_name}} = {}) {}
+  passes(condition: any): boolean {
+    if (!condition || !condition.type) return true;
+    if (condition.type === 'state_active') return Boolean(this.context.state?.isActive(condition.key));
+    if (condition.type === 'state_not_active') return !this.context.state?.isActive(condition.key);
+    if (condition.type === 'state_equals') return this.context.state?.get(condition.key) === condition.value;
+    throw new Error(`Unknown AutoUE condition type: ${condition.type}`);
+  }
+  all(conditions: readonly any[] = []): boolean { return conditions.every((condition) => this.passes(condition)); }
+}
+export function {{export_name}}(context?: {{interface_name}}): AutoUEConditionChecker { return new AutoUEConditionChecker(context); }

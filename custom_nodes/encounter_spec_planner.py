@@ -43,6 +43,17 @@ def _load_manifest(root: Path) -> dict:
     return manifest
 
 
+def _requires_enemy_encounter(structure: dict) -> bool:
+    for entity in structure.get("entities", []):
+        if entity.get("spawnable") is True:
+            return True
+        for ability in entity.get("abilities", []):
+            for behavior in ability.get("behaviors", []):
+                if "enemy_encounter" in behavior.get("runtime_features", []):
+                    return True
+    return False
+
+
 def build_encounter_context(node: BaseLLMNode, state: GraphState, full_input: str) -> None:
     required = {
         "EntityAbilityBehaviorPlanner": state.llm_outputs.get("EntityAbilityBehaviorPlanner", ""),
@@ -52,12 +63,23 @@ def build_encounter_context(node: BaseLLMNode, state: GraphState, full_input: st
     if missing:
         raise RuntimeError(f"EncounterSpecPlanner missing upstream outputs: {missing}")
     root = _output_root(state)
-    manifest = _load_manifest(root)
     structure = parse_node_json("EntityAbilityBehaviorPlanner", required["EntityAbilityBehaviorPlanner"])
     thin = parse_node_json("ThinGameplayFlowPlanner", required["ThinGameplayFlowPlanner"])
     structure_path = root / STRUCTURE_PATH
     structure_path.parent.mkdir(parents=True, exist_ok=True)
     structure_path.write_text(json.dumps(structure, ensure_ascii=False, indent=2), encoding="utf-8")
+    if not _requires_enemy_encounter(structure):
+        state._autoue_enemy_encounter_enabled = False
+        node.full_input = (
+            f"Scene Description:\n{getattr(state, 'scene_description', '')}\n\n"
+            f"Gameplay Description:\n{getattr(state, 'gameplay_description', '')}\n\n"
+            "EntityAbilityBehaviorPlanner JSON:\n" + json.dumps(structure, ensure_ascii=False, indent=2) + "\n\n"
+            "ThinGameplayFlowPlanner JSON:\n" + json.dumps(thin, ensure_ascii=False, indent=2) + "\n\n"
+            "No selected behavior requires runtime feature enemy_encounter. Return EncounterSpec JSON with an empty encounters array."
+        )
+        return
+    state._autoue_enemy_encounter_enabled = True
+    manifest = _load_manifest(root)
     node.full_input = (
         f"Scene Description:\n{getattr(state, 'scene_description', '')}\n\n"
         f"Gameplay Description:\n{getattr(state, 'gameplay_description', '')}\n\n"
@@ -72,8 +94,8 @@ def validate_encounter_output(node: BaseLLMNode, state: GraphState, output: str)
     canonical = validate_graph_node_output(node, state, output)
     data = parse_node_json("EncounterSpecPlanner", canonical)
     root = _output_root(state)
-    manifest = _load_manifest(root)
     structure = parse_node_json("EntityAbilityBehaviorPlanner", state.llm_outputs.get("EntityAbilityBehaviorPlanner", ""))
+    manifest = _load_manifest(root) if _requires_enemy_encounter(structure) else None
     try:
         validate_encounter_spec_data(data, structure=structure, manifest=manifest)
     except EncounterValidationError as exc:

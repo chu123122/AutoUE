@@ -24,6 +24,6 @@ def validate_typescript_script_analyzer(node: str, data: dict[str, Any]) -> None
         target = require_string(node, slot, "target_ts_file", non_empty=True)
         validate_ts_path(node, target, label=f"implementation_slots[{si}].target_ts_file")
         previous = targets.get(target)
-        if previous and previous != behavior_id:
-            raise WorkflowValidationError(f"{node}: one workflow template target file must not collapse multiple behaviors: {target} used by {previous} and {behavior_id}")
+        if previous and previous != behavior_id and not target.endswith("AutoUEBehaviorSpec.generated.ts"):
+            raise WorkflowValidationError(f"{node}: one workflow template target file must not collapse multiple behaviors except the shared BehaviorSpec: {target} used by {previous} and {behavior_id}")
         targets[target] = behavior_id

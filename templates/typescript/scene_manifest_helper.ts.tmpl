@@ -1,19 +1,17 @@
-const ENTITY_ID = {{entity_id_json}};
-const BEHAVIOR_ID = {{behavior_id_json}};
-const FLOW_ID = {{flow_id_json}};
-const RUNTIME_MAPPING_PATH = {{runtime_mapping_path_json}};
+const RUNTIME_FEATURES = {{runtime_features_json}} as string[];
+const DISABLED_FEATURES = {{disabled_features_json}} as string[];
 
-export interface {{interface_name}} {
-  runId?: string;
-}
+export interface {{interface_name}} { runId?: string; }
 
 export function {{export_name}}(_context: {{interface_name}} = {}): Record<string, unknown> {
   return {
-    schema_version: 'autoue-generated-scene-manifest/v2',
-    source_behavior_id: BEHAVIOR_ID,
-    source_entity_id: ENTITY_ID,
-    flow_id: FLOW_ID,
-    runtime_mapping_path: RUNTIME_MAPPING_PATH,
+    schema_version: 'autoue-generated-scene-manifest/v3',
+    source_entity_id: {{entity_id_json}},
+    source_behavior_id: {{behavior_id_json}},
+    flow_id: {{flow_id_json}},
+    runtime_mapping_path: {{runtime_mapping_path_json}},
+    runtime_features: RUNTIME_FEATURES,
+    disabled_features: DISABLED_FEATURES,
     harness_input_tags: [
       'AUTOUE_INPUT_RIGHT',
       'AUTOUE_INPUT_RIGHT_1S',
@@ -25,12 +23,10 @@ export function {{export_name}}(_context: {{interface_name}} = {}): Record<strin
     ],
     actors: [
       { actor_name: 'AutoUEGenerated_Player', type: 'player', tags: ['AUTOUE_GENERATED_PLAYER'], purpose: 'controllable character and runtime state owner' },
-      { actor_name: 'BP_EnemySpawnPoint(room_01_guard)', type: 'spawn_point', tags: ['AUTOUE_ENEMY_SPAWN_POINT', 'SpawnGroup=room_01_guard'], purpose: 'real placed UE Actor scanned at runtime for enemy spawning' },
-      { actor_name: 'BP_AutoUECombatEnemy(runtime)', type: 'enemy', tags: ['AUTOUE_GENERATED_ENEMY'], purpose: 'real ACombatEnemy-derived Blueprint spawned at runtime' },
-      { actor_name: 'AutoUEGenerated_IceTrap', type: 'hazard', tags: ['AUTOUE_GENERATED_ICE_TRAP'], purpose: 'one-shot freeze trap that rearms only after player leaves radius' },
-      { actor_name: 'AutoUEGenerated_FreezeVFX', type: 'feedback', tags: ['AUTOUE_GENERATED_FREEZE_VFX'], purpose: 'visible while player is frozen' },
-      { actor_name: 'AutoUEGenerated_SideCamera', type: 'camera', tags: ['AUTOUE_GENERATED_SIDE_CAMERA'], purpose: 'side camera view target for gameplay and screenshot alignment' },
-      { actor_name: 'AutoUEGenerated_Exit', type: 'exit', tags: ['AUTOUE_GENERATED_EXIT'], purpose: 'locked room exit unlocked after enemy defeat' }
+      { actor_name: 'AutoUEGenerated_IceTrap', type: 'hazard', tags: ['AUTOUE_GENERATED_ICE_TRAP'], purpose: 'behavior-driven overlap trap that applies frozen status' },
+      { actor_name: 'AutoUEGenerated_FreezeVFX', type: 'feedback', tags: ['AUTOUE_GENERATED_FREEZE_VFX'], purpose: 'visible while player.effects.frozen is active' },
+      { actor_name: 'AutoUEGenerated_SideCamera', type: 'camera', tags: ['AUTOUE_GENERATED_SIDE_CAMERA'], purpose: 'side camera view target and camera feedback impulse' },
+      { actor_name: 'AutoUEGenerated_Exit', type: 'exit', tags: ['AUTOUE_GENERATED_EXIT'], purpose: 'simple corridor completion marker for non-enemy gameplay' }
     ]
   };
 }

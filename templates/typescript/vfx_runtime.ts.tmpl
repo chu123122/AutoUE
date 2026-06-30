@@ -1,0 +1,36 @@
+import UE = require('ue');
+
+export interface {{interface_name}} { runId?: string; }
+export type AutoUEVfxRuntime = { ensure(owner: UE.Character): void; setFrozenVisible(owner: UE.Character, visible: boolean): void; reset(owner: UE.Character): void; snapshot(owner: UE.Character): Record<string, unknown>; };
+
+const LOG_PREFIX = '[AUTOUE_GENERATED]';
+function log(message: string): void { console.warn(`${LOG_PREFIX} ${message}`); }
+function makeMaterial(owner: UE.Object, r: number, g: number, b: number): UE.MaterialInstanceDynamic | undefined {
+  try { const base = UE.Material.Load('/Engine/BasicShapes/BasicShapeMaterial'); if (!base) return undefined; const mat = UE.KismetMaterialLibrary.CreateDynamicMaterialInstance(owner, base); mat.SetVectorParameterValue('Color', new UE.LinearColor(r, g, b, 1)); return mat; } catch (_) { return undefined; }
+}
+function makeAttachedMesh(owner: UE.Character): UE.StaticMeshComponent | undefined {
+  try {
+    const c = new UE.StaticMeshComponent(owner, 'AutoUEGenerated_FreezeVFX');
+    const mesh = UE.StaticMesh.Load('/Engine/BasicShapes/Cube');
+    if (mesh) c.SetStaticMesh(mesh);
+    c.SetRelativeScale3D(new UE.Vector(1.4, 1.4, 1.4));
+    const mat = makeMaterial(owner, 0.25, 0.9, 1);
+    if (mat) c.SetMaterial(0, mat);
+    c.SetupAttachment(owner.RootComponent, '');
+    c.RegisterComponent();
+    (c as any).K2_SetRelativeLocation(new UE.Vector(0, 0, 80), false, undefined, true);
+    c.SetVisibility(false, true);
+    try { c.ComponentTags.Add('AUTOUE_GENERATED_FREEZE_VFX'); } catch (_) {}
+    log('FreezeVFXReady=1');
+    return c;
+  } catch (e) { log(`FreezeVFXCreateFailed error=${e}`); return undefined; }
+}
+
+export function {{export_name}}(_context: {{interface_name}} = {}): AutoUEVfxRuntime {
+  return {
+    ensure(owner: UE.Character): void { const self = owner as any; if (!self._autoueGeneratedFreezeVFX) self._autoueGeneratedFreezeVFX = makeAttachedMesh(owner); },
+    setFrozenVisible(owner: UE.Character, visible: boolean): void { const self = owner as any; this.ensure(owner); try { if (self._autoueGeneratedFreezeVFX) self._autoueGeneratedFreezeVFX.SetVisibility(visible, true); } catch (_) {} if (visible) log('FreezeVFXVisible=1'); },
+    reset(owner: UE.Character): void { const self = owner as any; try { if (self._autoueGeneratedFreezeVFX) self._autoueGeneratedFreezeVFX.SetVisibility(false, true); } catch (_) {} },
+    snapshot(owner: UE.Character): Record<string, unknown> { const self = owner as any; let visible = false; try { if (self._autoueGeneratedFreezeVFX) visible = !!self._autoueGeneratedFreezeVFX.GetVisibleFlag(); } catch (_) {} return { schema_version: 'autoue-vfx-runtime/v1', freezeVfxVisible: visible }; },
+  };
+}

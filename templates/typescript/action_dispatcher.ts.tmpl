@@ -1,0 +1,23 @@
+export interface {{interface_name}} { readonly world?: any; readonly registry?: any; readonly state?: any; readonly log?: (message: string) => void; }
+export const AUTOUE_ACTION_WHITELIST = ['write_state','clear_state','movement_gate','set_vfx_visible','camera_impulse','set_hud_value','unlock_exit','open_exit','spawn_vfx','destroy_entity','apply_damage','start_timer'] as const;
+export type AutoUEActionType = typeof AUTOUE_ACTION_WHITELIST[number];
+export class AutoUEActionDispatcher {
+  constructor(private readonly context: {{interface_name}} = {}) {}
+  validate(actions: readonly any[]): void { for (const action of actions) { if (AUTOUE_ACTION_WHITELIST.indexOf(action.type) < 0) throw new Error(`Unknown AutoUE action type: ${action.type}`); if (typeof action.source === 'string' && action.source.indexOf('function') >= 0) throw new Error('Raw TypeScript source strings are forbidden in actions'); } }
+  dispatch(action: any): void {
+    if (AUTOUE_ACTION_WHITELIST.indexOf(action.type) < 0) throw new Error(`Unknown AutoUE action type: ${action.type}`);
+    if (action.type === 'write_state') this.context.state?.set?.(action.key, action.value, action.value?.duration);
+    else if (action.type === 'clear_state') this.context.state?.clear?.(action.key);
+    else if (action.type === 'movement_gate') { const blocked = Boolean(this.context.state?.isActive?.(action.blocked_by)); const key = `movement.${action.target_entity_id || 'entity'}.blocked`; if (blocked) this.context.state?.set?.(key, { blocked_by: action.blocked_by }); else this.context.state?.clear?.(key); this.context.log?.(`MovementGate ${action.target_entity_id} blocked=${blocked ? 1 : 0} blocked_by=${action.blocked_by}`); }
+    else if (action.type === 'set_vfx_visible') this.context.world?.setVisibility?.(this.context.registry?.resolve?.(action.entity_id), Boolean(this.context.state?.isActive?.(action.visible_while)));
+    else if (action.type === 'camera_impulse') this.context.world?.cameraImpulse?.(Number(action.duration || 0));
+    else if (action.type === 'set_hud_value') this.context.world?.setHudValue?.(action.entity_id, this.context.state?.snapshot?.());
+    else if (action.type === 'unlock_exit') this.context.state?.set?.(action.state_key || `exit.${action.entity_id}.unlocked`, true);
+    else if (action.type === 'open_exit') this.context.world?.openLevel?.(action.level || 'next');
+    else if (action.type === 'spawn_vfx') this.context.world?.spawnVfx?.(action.entity_id);
+    else if (action.type === 'destroy_entity') this.context.registry?.remove?.(action.entity_id);
+    else if (action.type === 'apply_damage') this.context.world?.applyDamage?.(this.context.registry?.resolve?.(action.target_entity_id), Number(action.amount || 0));
+    else if (action.type === 'start_timer') this.context.world?.bindTimer?.(Number(action.seconds || 0), () => this.context.log?.(`Timer ${action.key || ''}`));
+  }
+}
+export function {{export_name}}(context?: {{interface_name}}): AutoUEActionDispatcher { return new AutoUEActionDispatcher(context); }

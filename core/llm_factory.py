@@ -145,158 +145,66 @@ class CodexCliChatModel:
 
 
 
+
 class ScriptedSmokeChatModel:
     """Deterministic local model for workflow smoke tests; never calls network."""
 
     def invoke(self, messages: Iterable[Any]) -> SimpleChatResponse:
         normalized = OpenAICompatibleChatModel(api_key="x", base_url="http://127.0.0.1", model="x")._normalize_messages(messages)
         system = "\n".join(m["content"] for m in normalized if m["role"] == "system")
-        port_input = "input.action_binding"
-        port_damage = "damage.apply"
-        raw_input = "flow/04-ue-api-mcp/raw/input.action_binding.raw.json"
-        raw_damage = "flow/04-ue-api-mcp/raw/damage.apply.raw.json"
-        adj_input = "flow/04-ue-api-mcp/adjudication/input.action_binding.json"
-        adj_damage = "flow/04-ue-api-mcp/adjudication/damage.apply.json"
+        rf = ["action_dispatcher", "behavior_orchestrator", "condition_checker", "entity_registry", "movement_runtime", "state_blackboard", "trigger_router", "world_adapter"]
+        df = ["enemy_encounter"]
+        behavior_id = "freeze_trap.freeze_player_on_overlap"
+        ability_id = "freeze_trap.sensor.detect_player_overlap"
+        flow_id = "flow_freeze_trap_freeze_player_on_overlap"
         runtime_mapping_path = "flow/05-puerts-runtime-mapping.json"
-        trace = {
-            "entity_id": "player",
-            "ability_id": "player.combat",
-            "behavior_id": "player.combat.attack",
-            "flow_id": "flow_player_combat_attack",
-            "engine_port_ids": [port_input, port_damage],
-            "adjudication_paths": [adj_input, adj_damage],
-            "runtime_mapping_path": runtime_mapping_path,
-            "ts_files": ["TypeScript/content/generated/interactive/SmokeInteractable.ts", "TypeScript/content/generated/SmokeGame.ts"],
-        }
+        runtime_owner = "TypeScript/content/generated/AutoUEBehaviorSpec.generated.ts"
+        interactive_path = "TypeScript/content/generated/interactive/FreezeTrapInteractable.ts"
+        ports = ["input.action_binding", "primitive.on_component_begin_overlap", "component.set_visibility", "camera.update_view_target"]
+        raw = {p: f"flow/04-ue-api-mcp/raw/{p}.raw.json" for p in ports}
+        adj = {p: f"flow/04-ue-api-mcp/adjudication/{p}.json" for p in ports}
+        trace = {"entity_id": "freeze_trap", "ability_id": ability_id, "behavior_id": behavior_id, "flow_id": flow_id, "engine_port_ids": ports, "adjudication_paths": [adj[p] for p in ports], "runtime_mapping_path": runtime_mapping_path, "ts_files": [interactive_path, runtime_owner]}
+        base = {"entity_id": "freeze_trap", "behavior_id": behavior_id, "flow_id": flow_id, "runtime_mapping_path": runtime_mapping_path, "action_label": "overlap triggers freeze", "target_label": "Player", "result_label": "player frozen with VFX and camera shake", "runtime_features": rf, "disabled_features": df}
         if "SCHEMA: EvaluateInstructionGenerator" in system:
-            content = json.dumps({
-                "evaluation_instructions": [
-                    {
-                        "step_id": 1,
-                        "action": "attack",
-                        "target": "Enemy",
-                        "description": "Statically validate the scripted smoke adapter_call trace without launching PIE.",
-                        "driver": "adapter_call",
-                        "executor_action": "call_behavior",
-                        "expected": [
-                            {"type": "static_trace_present", "key": "ability_module_export", "expected_value": "tickSmokeGame"},
-                            {"type": "static_trace_present", "key": "interactive_adapter_export", "expected_value": "runSmokeInteraction"},
-                            {"type": "static_trace_present", "key": "engine_ports_mapped", "expected_value": [port_input, port_damage]},
-                        ],
-                        "trace": trace,
-                    },
-                ],
-                "coverage": [trace],
-            })
+            content = json.dumps({"evaluation_instructions": [{"step_id": 1, "action": "trigger_freeze_trap", "target": "FreezeTrap", "description": "Statically validate the behavior-driven freeze trap adapter_call trace without launching PIE.", "driver": "adapter_call", "executor_action": "call_behavior", "expected": [{"type": "static_trace_present", "key": "ability_module_export", "expected_value": "getAutoUEBehaviorSpec"}, {"type": "static_trace_present", "key": "interactive_adapter_export", "expected_value": "runFreezeTrapInteraction"}, {"type": "static_trace_present", "key": "engine_ports_mapped", "expected_value": ports}], "trace": trace}], "coverage": [trace]})
         elif "SCHEMA: TypeScriptCodeGenerator" in system:
-            base = {"entity_id": "player", "behavior_id": "player.combat.attack", "flow_id": "flow_player_combat_attack", "runtime_mapping_path": runtime_mapping_path, "action_label": "attacks", "target_label": "Enemy", "result_label": "enemy defeated"}
             support = [
-                {"template": "aid_runtime_orchestrator", "path": "TypeScript/content/generated/AutoUEGeneratedRuntime.ts", "export_name": "runAutoUEGeneratedRuntime", "interface_name": "AutoUEGeneratedRuntimeContext"},
-                {"template": "aid_character_adapter", "path": "TypeScript/AutoUEGeneratedCharacterAdapter.ts", "export_name": "AutoUEGeneratedCharacterAdapter", "interface_name": "AutoUEGeneratedCharacterAdapterContext"},
-                {"template": "aid_gamemode_adapter", "path": "TypeScript/AutoUEGeneratedGameModeAdapter.ts", "export_name": "AutoUEGeneratedGameModeAdapter", "interface_name": "AutoUEGeneratedGameModeAdapterContext"},
-                {"template": "aid_camera_setup", "path": "TypeScript/content/generated/AutoUEGeneratedCameraHelper.ts", "export_name": "setupAutoUEGeneratedCamera", "interface_name": "AutoUEGeneratedCameraOptions"},
-                {"template": "scene_manifest_helper", "path": "TypeScript/content/generated/AutoUEGeneratedSceneManifest.ts", "export_name": "getAutoUEGeneratedSceneManifest", "interface_name": "AutoUEGeneratedSceneManifestContext"},
-                {"template": "encounter_spec_data", "path": "TypeScript/content/generated/AutoUEGeneratedEncounterSpec.ts", "export_name": "getAutoUEGeneratedEncounterSpec", "interface_name": "AutoUEGeneratedEncounterSpecContext"},
-                {"template": "enemy_archetypes", "path": "TypeScript/content/generated/AutoUEGeneratedEnemyArchetypes.ts", "export_name": "getAutoUEGeneratedEnemyArchetypes", "interface_name": "AutoUEGeneratedEnemyArchetypesContext"},
-                {"template": "spawn_point_registry", "path": "TypeScript/content/generated/AutoUESpawnPointRegistry.ts", "export_name": "createAutoUESpawnPointRegistry", "interface_name": "AutoUESpawnPointRegistryContext"},
-                {"template": "enemy_archetype_registry", "path": "TypeScript/content/generated/AutoUEEnemyArchetypeRegistry.ts", "export_name": "createAutoUEEnemyArchetypeRegistry", "interface_name": "AutoUEEnemyArchetypeRegistryContext"},
-                {"template": "enemy_spawn_manager", "path": "TypeScript/content/generated/AutoUEEnemySpawnManager.ts", "export_name": "createAutoUEEnemySpawnManager", "interface_name": "AutoUEEnemySpawnManagerContext"},
-                {"template": "encounter_manager", "path": "TypeScript/content/generated/AutoUEEncounterManager.ts", "export_name": "createAutoUEEncounterManager", "interface_name": "AutoUEEncounterManagerContext"},
+                ("runtime_feature_manifest", "TypeScript/content/generated/AutoUERuntimeFeatureManifest.ts", "getAutoUERuntimeFeatureManifest", "AutoUERuntimeFeatureManifestContext"),
+                ("input_harness_runtime", "TypeScript/content/generated/AutoUEInputHarnessRuntime.ts", "createAutoUEInputHarnessRuntime", "AutoUEInputHarnessRuntimeContext"),
+                ("movement_runtime", "TypeScript/content/generated/AutoUEMovementRuntime.ts", "createAutoUEMovementRuntime", "AutoUEMovementRuntimeContext"),
+                ("trap_runtime", "TypeScript/content/generated/AutoUETrapRuntime.ts", "createAutoUETrapRuntime", "AutoUETrapRuntimeContext"),
+                ("vfx_runtime", "TypeScript/content/generated/AutoUEVfxRuntime.ts", "createAutoUEVfxRuntime", "AutoUEVfxRuntimeContext"),
+                ("aid_runtime_orchestrator", "TypeScript/content/generated/AutoUEGeneratedRuntime.ts", "runAutoUEGeneratedRuntime", "AutoUEGeneratedRuntimeContext"),
+                ("aid_character_adapter", "TypeScript/AutoUEGeneratedCharacterAdapter.ts", "AutoUEGeneratedCharacterAdapter", "AutoUEGeneratedCharacterAdapterContext"),
+                ("aid_gamemode_adapter", "TypeScript/AutoUEGeneratedGameModeAdapter.ts", "AutoUEGeneratedGameModeAdapter", "AutoUEGeneratedGameModeAdapterContext"),
+                ("aid_camera_setup", "TypeScript/content/generated/AutoUEGeneratedCameraHelper.ts", "setupAutoUEGeneratedCamera", "AutoUEGeneratedCameraOptions"),
+                ("scene_manifest_helper", "TypeScript/content/generated/AutoUEGeneratedSceneManifest.ts", "getAutoUEGeneratedSceneManifest", "AutoUEGeneratedSceneManifestContext"),
             ]
-            template_inputs = [{"template": "ability_module", "path": "TypeScript/content/generated/SmokeGame.ts", **base, "export_name": "tickSmokeGame", "interface_name": "SmokeGameContext"}]
-            template_inputs.extend({**item, **base} for item in support)
-            content = json.dumps({
-                "template_inputs": template_inputs,
-                "behavior_traces": [{"entity_id": "player", "behavior_id": "player.combat.attack", "flow_id": "flow_player_combat_attack", "runtime_mapping_path": runtime_mapping_path, "file_path": "TypeScript/content/generated/SmokeGame.ts", "export_name": "tickSmokeGame"}],
-                "consumed_interactive_files": ["TypeScript/content/generated/interactive/SmokeInteractable.ts"],
-                "validation_notes": ["scripted smoke runtime and AIDev bridge templates"],
-            })
+            template_inputs = [{"template": "ability_module", "path": runtime_owner, **base, "export_name": "getAutoUEBehaviorSpec", "interface_name": "AutoUEBehaviorSpecContext"}]
+            template_inputs += [{"template": t, "path": path, "export_name": export, "interface_name": iface, **base} for t, path, export, iface in support]
+            content = json.dumps({"runtime_features": rf, "disabled_features": df, "template_inputs": template_inputs, "behavior_traces": [{"entity_id": "freeze_trap", "behavior_id": behavior_id, "flow_id": flow_id, "runtime_mapping_path": runtime_mapping_path, "file_path": runtime_owner, "export_name": "getAutoUEBehaviorSpec"}], "consumed_interactive_files": [interactive_path], "validation_notes": ["behavior-driven runtime; enemy_encounter disabled"]})
         elif "SCHEMA: TypeScriptInteractiveObjectGenerator" in system:
-            content = json.dumps({
-                "template_inputs": [{"template": "interactive_object", "path": "TypeScript/content/generated/interactive/SmokeInteractable.ts", "entity_id": "player", "behavior_id": "player.combat.attack", "flow_id": "flow_player_combat_attack", "runtime_mapping_path": runtime_mapping_path, "export_name": "runSmokeInteraction", "interface_name": "SmokeInteractionContext", "action_label": "attacks", "target_label": "Enemy", "result_label": "enemy defeated"}],
-                "behavior_traces": [{"entity_id": "player", "behavior_id": "player.combat.attack", "flow_id": "flow_player_combat_attack", "runtime_mapping_path": runtime_mapping_path, "file_path": "TypeScript/content/generated/interactive/SmokeInteractable.ts", "export_name": "runSmokeInteraction"}],
-                "validation_notes": ["scripted smoke interactive object template"],
-            })
+            content = json.dumps({"template_inputs": [{"template": "interactive_object", "path": interactive_path, "entity_id": "freeze_trap", "behavior_id": behavior_id, "flow_id": flow_id, "runtime_mapping_path": runtime_mapping_path, "export_name": "runFreezeTrapInteraction", "interface_name": "FreezeTrapInteractionContext", "action_label": "overlap triggers freeze", "target_label": "Player", "result_label": "player frozen with VFX and camera shake"}], "behavior_traces": [{"entity_id": "freeze_trap", "behavior_id": behavior_id, "flow_id": flow_id, "runtime_mapping_path": runtime_mapping_path, "file_path": interactive_path, "export_name": "runFreezeTrapInteraction"}], "validation_notes": ["scripted smoke interactive trap object template"]})
         elif "SCHEMA: TypeScriptScriptAnalyzer" in system:
-            content = json.dumps({
-                "typescript_sources": [{"path": "TypeScript/content/generated/SmokeGame.ts", "role": "ability", "notes": "runtime_owner from smoke mapping"}],
-                "implementation_slots": [{"entity_id": "player", "behavior_id": "player.combat.attack", "flow_id": "flow_player_combat_attack", "runtime_mapping_path": runtime_mapping_path, "target_ts_file": "TypeScript/content/generated/SmokeGame.ts", "reason": "scripted smoke runtime mapping"}],
-                "missing_slots": [],
-            })
+            content = json.dumps({"typescript_sources": [{"path": runtime_owner, "role": "runtime_owner", "notes": "runtime_owner from freeze trap mapping"}], "implementation_slots": [{"entity_id": "freeze_trap", "behavior_id": behavior_id, "flow_id": flow_id, "runtime_mapping_path": runtime_mapping_path, "target_ts_file": runtime_owner, "reason": "scripted smoke runtime mapping"}], "missing_slots": []})
         elif "SCHEMA: PuerTSRuntimeMappingPlanner" in system:
-            content = json.dumps({
-                "runtime_mapping_path": runtime_mapping_path,
-                "mappings": [{
-                    "entity_id": "player",
-                    "ability_id": "player.combat",
-                    "behavior_id": "player.combat.attack",
-                    "flow_id": "flow_player_combat_attack",
-                    "runtime_owner": "TypeScript/content/generated/SmokeGame.ts",
-                    "implementation_carrier": "template_rendered_ts",
-                    "selected_runtime_owner": "SmokeGameAbility",
-                    "existing_framework_candidates": ["TypeScriptCodeGenerator templates", "AIDev TypeScript Blueprint adapter"],
-                    "why_not_existing_framework": "scripted smoke uses generated templates to prove the bridge contract",
-                    "temporary_or_canonical": "temporary",
-                    "migration_path": "replace smoke runtime with canonical generated AIDev bridge after runtime validation",
-                    "engine_port_mappings": [
-                        {"engine_port_id": port_input, "adjudication_path": adj_input, "adapter_or_helper": "CharacterAdapter.bindInput", "verdict": "hit", "evidence_symbols": ["UE.EnhancedInputComponent.BindAction"]},
-                        {"engine_port_id": port_damage, "adjudication_path": adj_damage, "adapter_or_helper": "RuntimePorts.applyDamage", "verdict": "hit", "evidence_symbols": ["UE.GameplayStatics.ApplyDamage"]},
-                    ],
-                    "thin_contracts": ["bind attack input", "apply damage to enemy"],
-                    "ability_binding": "adapter_call:tickSmokeGame",
-                    "verification_evidence": ["adapter_call can invoke generated ability", "MCP adjudications exist for required ports"],
-                }],
-                "blocked_mappings": [],
-            })
+            port_rows = [("input.action_binding", "InputHarnessRuntime.read", "UE.PlayerController.IsInputKeyDown"), ("primitive.on_component_begin_overlap", "TrapRuntime.tickOverlapRadius", "UE.PrimitiveComponent.OnComponentBeginOverlap"), ("component.set_visibility", "VfxRuntime.setFrozenVisible", "UE.SceneComponent.SetVisibility"), ("camera.update_view_target", "CameraHelper.updateAutoUEGeneratedSideCamera", "UE.CameraComponent.K2_SetWorldLocation")]
+            content = json.dumps({"runtime_mapping_path": runtime_mapping_path, "runtime_features": rf, "disabled_features": df, "mappings": [{"entity_id": "freeze_trap", "ability_id": ability_id, "behavior_id": behavior_id, "flow_id": flow_id, "runtime_owner": runtime_owner, "implementation_carrier": "template_rendered_ts", "selected_runtime_owner": "FreezeTrapBehaviorRuntime", "existing_framework_candidates": ["TypeScriptCodeGenerator behavior feature modules", "AIDev TypeScript Blueprint adapter"], "why_not_existing_framework": "scripted smoke composes trap/state_blackboard/vfx/camera modules and disables enemy encounter", "temporary_or_canonical": "temporary", "migration_path": "replace scripted constants with behavior-derived module params after runtime validation", "engine_port_mappings": [{"engine_port_id": p, "adjudication_path": adj[p], "adapter_or_helper": h, "verdict": "hit", "evidence_symbols": [sym]} for p, h, sym in port_rows], "thin_contracts": ["read input", "detect trap overlap", "write player.effects.frozen", "show freeze VFX", "shake side camera"], "ability_binding": "behavior_spec:freeze_trap.freeze_player_on_overlap", "verification_evidence": ["adapter_call can invoke freeze trap behavior", "enemy_encounter disabled"]}], "blocked_mappings": []})
         elif "SCHEMA: EncounterSpecPlanner" in system:
-            content = json.dumps({
-                "schema_version": "autoue-encounter-spec/v1",
-                "encounters": [{
-                    "encounter_id": "room_01_initial_guard",
-                    "trigger": {"type": "on_level_start"},
-                    "spawn_group": "room_01_guard",
-                    "enemy_budget": 2,
-                    "composition": [{"enemy": "goblin_melee", "count": 1}],
-                    "spawn_policy": {"avoid_camera_view": False, "min_distance_to_player": 400, "consume_spawn_point": True, "max_alive": 1},
-                    "completion": {"type": "all_spawned_enemies_defeated", "set_flags": ["exit_unlocked"]},
-                    "verification_hooks": ["enemy_spawned", "enemy_defeated", "encounter_completed"],
-                }],
-            })
+            content = json.dumps({"schema_version": "autoue-encounter-spec/v1", "encounters": []})
         elif "SCHEMA: UEApiMCPFeasibilitySearcher" in system:
-            content = json.dumps({
-                "queries": [
-                    {"engine_port_id": port_input, "flow_ids": ["flow_player_combat_attack"], "behavior_ids": ["player.combat.attack"], "query": "Unreal Engine PuerTS gameplay API for input.action_binding: bind player attack input", "raw_path": raw_input, "adjudication_path": adj_input, "verdict": "hit", "hit_type": "direct_hit", "evidence_symbols": ["UE.EnhancedInputComponent.BindAction"], "notes": "MCP fixture returns an input binding symbol."},
-                    {"engine_port_id": port_damage, "flow_ids": ["flow_player_combat_attack"], "behavior_ids": ["player.combat.attack"], "query": "Unreal Engine PuerTS gameplay API for damage.apply: apply damage to enemy", "raw_path": raw_damage, "adjudication_path": adj_damage, "verdict": "hit", "hit_type": "direct_hit", "evidence_symbols": ["UE.GameplayStatics.ApplyDamage"], "notes": "MCP fixture returns a damage application symbol."},
-                ],
-                "summary": {"all_required_ports_hit": True, "blocked_engine_ports": []},
-            })
+            symbols = {"input.action_binding": "UE.PlayerController.IsInputKeyDown", "primitive.on_component_begin_overlap": "UE.PrimitiveComponent.OnComponentBeginOverlap", "component.set_visibility": "UE.SceneComponent.SetVisibility", "camera.update_view_target": "UE.CameraComponent.K2_SetWorldLocation"}
+            content = json.dumps({"queries": [{"engine_port_id": p, "flow_ids": [flow_id], "behavior_ids": [behavior_id], "query": f"Unreal Engine PuerTS gameplay API for {p}", "raw_path": raw[p], "adjudication_path": adj[p], "verdict": "hit", "hit_type": "direct_hit", "evidence_symbols": [symbols[p]], "notes": "scripted smoke hit"} for p in ports], "summary": {"all_required_ports_hit": True, "blocked_engine_ports": []}})
         elif "SCHEMA: ThinGameplayFlowPlanner" in system:
-            content = json.dumps({
-                "flows": [{
-                    "flow_id": "flow_player_combat_attack",
-                    "entity_id": "player",
-                    "ability_id": "player.combat",
-                    "source_behavior_id": "player.combat.attack",
-                    "stages": [
-                        {"stage": "Input", "contract": "bind player attack input", "inputs": ["attack input"], "outputs": ["attack requested"], "engine_ports": [port_input]},
-                        {"stage": "Damage/Resource", "contract": "apply damage to enemy", "inputs": ["enemy target"], "outputs": ["enemy defeated"], "engine_ports": [port_damage]},
-                    ],
-                    "verification": ["enemy state becomes defeated"],
-                }]
-            })
+            content = json.dumps({"flows": [{"flow_id": flow_id, "entity_id": "freeze_trap", "ability_id": ability_id, "source_behavior_id": behavior_id, "stages": [{"stage": "Input", "contract": "read player movement/reset harness input", "inputs": ["input"], "outputs": ["intent"], "engine_ports": ["input.action_binding"]}, {"stage": "SpatialQuery/HitQuery", "contract": "detect player entering freeze trap radius", "inputs": ["player location", "trap radius"], "outputs": ["trap triggered"], "engine_ports": ["primitive.on_component_begin_overlap"]}, {"stage": "Event/Result", "contract": "write player.effects.frozen and block movement for a duration", "inputs": ["trap triggered"], "outputs": ["player.effects.frozen active"], "engine_ports": ["primitive.on_component_begin_overlap"]}, {"stage": "Feedback/HUD", "contract": "show freeze VFX and shake side camera while frozen", "inputs": ["player.effects.frozen active"], "outputs": ["visible VFX", "camera impulse"], "engine_ports": ["component.set_visibility", "camera.update_view_target"]}], "verification": ["IceTrapTriggered", "StateWritten player.effects.frozen", "enemy_encounter disabled"]}]})
         elif "SCHEMA: EntityAbilityBehaviorPlanner" in system:
-            content = json.dumps({
-                "entities": [
-                    {"entity_id": "player", "entity_kind": "player", "display_name": "Player", "summary": "Playable character", "content_tags": ["player"], "spawnable": False, "abilities": [{"ability_id": "player.combat", "display_name": "Combat", "summary": "Attack behavior", "behaviors": [{"behavior_id": "player.combat.attack", "display_name": "Attack Enemy", "trigger": "attack input", "execution": "strike the enemy", "result": "enemy is defeated", "source_refs": []}]}]},
-                    {"entity_id": "goblin_melee", "entity_kind": "enemy", "display_name": "Goblin Melee", "summary": "Ground melee enemy", "content_tags": ["enemy", "ground", "melee"], "spawnable": True, "enemy_profile": {"cost": 2, "allowed_spawn_tags": ["ground", "melee"], "default_health": 2}, "abilities": []},
-                ],
-                "non_goals": [],
-            })
+            content = json.dumps({"selected_entity_ids": ["player", "freeze_trap", "freeze_vfx", "side_camera"], "selected_capability_ids": [], "selected_behavior_ids": [behavior_id]})
         elif "SCHEMA: SceneAndGameplaySplitter" in system:
-            content = json.dumps({"scene_description": "A tiny side-scroller test room.", "gameplay_description": "The player moves, attacks one enemy, collects a reward, and exits."})
+            content = json.dumps({"scene_description": "A tiny side-scroller test room with a freeze trap and exit.", "gameplay_description": "The player moves into a freeze trap, gets frozen, sees VFX/camera feedback, then exits after thawing."})
         else:
             content = json.dumps({"ok": True, "note": "scripted smoke output"})
         return SimpleChatResponse(content=content, response_metadata={"token_usage": {"input_tokens": 0, "output_tokens": 0}})
+
 
 def _env_or_default(profile: Mapping[str, Any], env_key: str, default_key: str = "", required: bool = False) -> str:
     env_name = profile.get(env_key)

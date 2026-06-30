@@ -1,0 +1,27 @@
+import UE = require('ue');
+import { AutoUEHarnessInput } from './AutoUEInputHarnessRuntime';
+
+export interface {{interface_name}} { runId?: string; }
+export type AutoUEMovementRuntime = { tick(actor: UE.Character, dt: number, elapsed: number, input: AutoUEHarnessInput, frozen: boolean): boolean; snapshot(actor: UE.Actor): Record<string, unknown>; };
+
+const MOVE_SPEED = 620;
+const DASH_SPEED = 1100;
+const LOG_PREFIX = '[AUTOUE_GENERATED]';
+function log(message: string): void { console.warn(`${LOG_PREFIX} ${message}`); }
+function loc(actor: UE.Actor): UE.Vector { try { return actor.K2_GetActorLocation(); } catch (_) { return new UE.Vector(0, 0, 92); } }
+
+export function {{export_name}}(_context: {{interface_name}} = {}): AutoUEMovementRuntime {
+  return {
+    tick(actor: UE.Character, dt: number, elapsed: number, input: AutoUEHarnessInput, frozen: boolean): boolean {
+      const axis = elapsed <= input.axisUntil ? input.axis : 0;
+      if (!axis) return false;
+      if (frozen) { log('MoveBlocked reason=frozen'); return false; }
+      const dash = elapsed <= input.dashUntil;
+      const speed = dash ? DASH_SPEED : MOVE_SPEED;
+      try { (actor as any).K2_AddActorWorldOffset(new UE.Vector(axis * speed * dt, 0, 0), true, undefined, true); } catch (e) { log(`MoveFailed error=${e}`); return false; }
+      log(`MoveInput axis=${axis} dash=${dash ? 1 : 0} x=${Math.round(loc(actor).X)}`);
+      return true;
+    },
+    snapshot(actor: UE.Actor): Record<string, unknown> { return { schema_version: 'autoue-movement-runtime/v1', pawnX: loc(actor).X }; },
+  };
+}

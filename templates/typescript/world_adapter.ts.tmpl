@@ -1,0 +1,48 @@
+type AnyUEObject = any;
+export interface {{interface_name}} { readonly UE?: any; readonly actor?: AnyUEObject; readonly world?: AnyUEObject; readonly entities?: Record<string, AnyUEObject>; inputActions?: Record<string, () => void>; readonly registerTick?: (callback: (dt: number) => void) => void; readonly log?: (message: string) => void; }
+export class AutoUEWorldAdapter {
+  constructor(private readonly context: {{interface_name}} = {}) {}
+  log(message: string): void { if (this.context.log) this.context.log(message); }
+  findEntity(binding: Record<string, unknown>): AnyUEObject | undefined {
+    const entityId = String(binding.entity_id || binding.id || binding.target_entity_id || '');
+    if (entityId && this.context.entities && this.context.entities[entityId]) return this.context.entities[entityId];
+    if ((entityId === 'player' || entityId === 'prisoner') && this.context.actor) return this.context.actor;
+    const tag = String(binding.tag || binding.actor_tag || entityId || '');
+    const UE = this.context.UE;
+    try {
+      if (UE && tag && this.context.world && UE.GameplayStatics && UE.GameplayStatics.GetAllActorsWithTag) {
+        const out: AnyUEObject[] = [];
+        UE.GameplayStatics.GetAllActorsWithTag(this.context.world, tag, out);
+        if (out.length) return out[0];
+      }
+    } catch (e) { this.log(`WorldAdapter.findEntity tag lookup failed ${tag}: ${e}`); }
+    this.log(`WorldAdapter.findEntity unresolved ${JSON.stringify(binding)}`);
+    return undefined;
+  }
+  bindOverlapEnter(target: AnyUEObject, callback: (other: AnyUEObject) => void): void {
+    if (!target) { this.log('WorldAdapter.bindOverlapEnter missing target'); return; }
+    const bind = (delegate: AnyUEObject, label: string) => {
+      try { if (delegate && delegate.Add) { delegate.Add((...args: AnyUEObject[]) => callback(args[1] || args[0])); this.log(`WorldAdapter.bindOverlapEnter bound ${label}`); return true; } } catch (e) { this.log(`WorldAdapter.bindOverlapEnter failed ${label}: ${e}`); }
+      return false;
+    };
+    if (bind(target.OnComponentBeginOverlap, 'OnComponentBeginOverlap')) return;
+    if (bind(target.OnActorBeginOverlap, 'OnActorBeginOverlap')) return;
+    if (target.GetComponentsByClass) {
+      try { for (const c of target.GetComponentsByClass(this.context.UE?.PrimitiveComponent || undefined) || []) if (bind(c.OnComponentBeginOverlap, 'component.OnComponentBeginOverlap')) return; } catch (_) {}
+    }
+    this.log('WorldAdapter.bindOverlapEnter unsupported target');
+  }
+  bindInputAction(actionName: string, callback: () => void): void { this.context.inputActions = this.context.inputActions || {}; (this.context.inputActions as Record<string, () => void>)[actionName] = callback; this.log(`WorldAdapter.bindInputAction ${actionName}`); }
+  bindTick(callback: (dt: number) => void): void { if (this.context.registerTick) this.context.registerTick(callback); else this.log('WorldAdapter.bindTick no registerTick hook'); }
+  bindTimer(seconds: number, callback: () => void): void { const setTimer = (globalThis as any).setTimeout; if (setTimer) setTimer(callback, Math.max(0, seconds) * 1000); else this.log(`WorldAdapter.bindTimer ${seconds}`); }
+  bindDestroyed(target: AnyUEObject, callback: () => void): void { try { if (target?.OnDestroyed?.Add) target.OnDestroyed.Add(callback); else this.log('WorldAdapter.bindDestroyed unsupported target'); } catch (e) { this.log(`WorldAdapter.bindDestroyed failed: ${e}`); } }
+  bindDamage(target: AnyUEObject, callback: (amount: number) => void): void { try { if (target?.OnTakeAnyDamage?.Add) target.OnTakeAnyDamage.Add((_a: AnyUEObject, amount: number) => callback(amount)); else this.log('WorldAdapter.bindDamage unsupported target'); } catch (e) { this.log(`WorldAdapter.bindDamage failed: ${e}`); } }
+  setVisibility(entity: AnyUEObject, visible: boolean): void { try { if (entity?.SetVisibility) entity.SetVisibility(visible, true); else if (entity?.SetActorHiddenInGame) entity.SetActorHiddenInGame(!visible); else this.log(`WorldAdapter.setVisibility unresolved ${visible ? 1 : 0}`); } catch (e) { this.log(`WorldAdapter.setVisibility failed: ${e}`); } }
+  setHudValue(entityId: string, value: unknown): void { this.log(`WorldAdapter.setHudValue ${entityId}=${JSON.stringify(value)}`); }
+  applyDamage(target: AnyUEObject, amount: number): void { try { const UE = this.context.UE; if (UE?.GameplayStatics?.ApplyDamage) UE.GameplayStatics.ApplyDamage(target, amount, undefined, this.context.actor, undefined); else this.log(`WorldAdapter.applyDamage ${amount}`); } catch (e) { this.log(`WorldAdapter.applyDamage failed: ${e}`); } }
+  spawnVfx(entityId: string): void { const entity = this.findEntity({ entity_id: entityId }); if (entity) this.setVisibility(entity, true); else this.log(`WorldAdapter.spawnVfx ${entityId}`); }
+  cameraImpulse(duration: number): void { this.log(`WorldAdapter.cameraImpulse ${duration}`); }
+  openLevel(levelName: string): void { try { const UE = this.context.UE; if (UE?.GameplayStatics?.OpenLevel) UE.GameplayStatics.OpenLevel(this.context.world || this.context.actor, levelName); else this.log(`WorldAdapter.openLevel ${levelName}`); } catch (e) { this.log(`WorldAdapter.openLevel failed: ${e}`); } }
+}
+export function {{export_name}}(context?: {{interface_name}}): AutoUEWorldAdapter { return new AutoUEWorldAdapter(context); }
+

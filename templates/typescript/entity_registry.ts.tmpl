@@ -1,0 +1,11 @@
+export interface {{interface_name}} { readonly bindings?: Record<string, Record<string, unknown>>; readonly world?: { findEntity(binding: Record<string, unknown>): unknown }; }
+export class AutoUEEntityRegistry {
+  private readonly bindings: Record<string, Record<string, unknown>>;
+  constructor(private readonly context: {{interface_name}} = {}) { this.bindings = context.bindings || {}; }
+  register(entityId: string, binding: Record<string, unknown>): void { this.bindings[entityId] = binding; }
+  binding(entityId: string): Record<string, unknown> | undefined { return this.bindings[entityId]; }
+  resolve(entityId: string): unknown { const binding = this.binding(entityId); return binding && this.context.world ? this.context.world.findEntity(binding) : undefined; }
+  is(_candidate: unknown, entityId: string): boolean { return Boolean(this.binding(entityId)); }
+  snapshot(): Record<string, Record<string, unknown>> { return JSON.parse(JSON.stringify(this.bindings)); }
+}
+export function {{export_name}}(context?: {{interface_name}}): AutoUEEntityRegistry { return new AutoUEEntityRegistry(context); }

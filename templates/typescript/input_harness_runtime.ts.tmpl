@@ -1,0 +1,45 @@
+import UE = require('ue');
+
+export interface {{interface_name}} { runId?: string; }
+export type AutoUEHarnessInput = { axis: number; axisUntil: number; dashUntil: number; attackPulseUntil: number; resetRequested: boolean; };
+
+const INPUT_LEFT = 'AUTOUE_INPUT_LEFT';
+const INPUT_RIGHT = 'AUTOUE_INPUT_RIGHT';
+const INPUT_RIGHT_1S = 'AUTOUE_INPUT_RIGHT_1S';
+const INPUT_RIGHT_3S = 'AUTOUE_INPUT_RIGHT_3S';
+const INPUT_DASH = 'AUTOUE_INPUT_DASH';
+const INPUT_ATTACK = 'AUTOUE_INPUT_ATTACK';
+const INPUT_RESET = 'AUTOUE_INPUT_RESET';
+const INPUT_PULSE_SECONDS = 0.25;
+
+function hasTag(actor: UE.Actor, tag: string): boolean { try { return actor.ActorHasTag(tag); } catch (_) { return false; } }
+function keyDown(pc: UE.PlayerController | undefined, key: string): boolean { if (!pc) return false; try { return pc.IsInputKeyDown(new UE.Key(key)); } catch (_) { return false; } }
+
+export type AutoUEInputHarnessRuntime = {
+  read(actor: UE.Actor, pc: UE.PlayerController | undefined, elapsed: number): AutoUEHarnessInput;
+  snapshot(): Record<string, unknown>;
+  reset(): void;
+};
+
+export function {{export_name}}(_context: {{interface_name}} = {}): AutoUEInputHarnessRuntime {
+  let input: AutoUEHarnessInput = { axis: 0, axisUntil: 0, dashUntil: 0, attackPulseUntil: 0, resetRequested: false };
+  return {
+    read(actor: UE.Actor, pc: UE.PlayerController | undefined, elapsed: number): AutoUEHarnessInput {
+      input.resetRequested = hasTag(actor, INPUT_RESET);
+      if (hasTag(actor, INPUT_LEFT)) { input.axis = -1; input.axisUntil = elapsed + INPUT_PULSE_SECONDS; }
+      if (hasTag(actor, INPUT_RIGHT)) { input.axis = 1; input.axisUntil = elapsed + INPUT_PULSE_SECONDS; }
+      if (hasTag(actor, INPUT_RIGHT_1S)) { input.axis = 1; input.axisUntil = elapsed + 1.0; }
+      if (hasTag(actor, INPUT_RIGHT_3S)) { input.axis = 1; input.axisUntil = elapsed + 3.0; }
+      if (hasTag(actor, INPUT_DASH)) input.dashUntil = elapsed + 0.35;
+      if (hasTag(actor, INPUT_ATTACK)) input.attackPulseUntil = elapsed + 0.12;
+      const left = keyDown(pc, 'A') || keyDown(pc, 'Left');
+      const right = keyDown(pc, 'D') || keyDown(pc, 'Right');
+      const keyAxis = (right ? 1 : 0) - (left ? 1 : 0);
+      if (keyAxis) { input.axis = keyAxis; input.axisUntil = elapsed + INPUT_PULSE_SECONDS; }
+      if (keyDown(pc, 'LeftShift') || keyDown(pc, 'RightShift')) input.dashUntil = elapsed + 0.35;
+      return input;
+    },
+    snapshot(): Record<string, unknown> { return { schema_version: 'autoue-input-harness/v1', ...input }; },
+    reset(): void { input = { axis: 0, axisUntil: 0, dashUntil: 0, attackPulseUntil: 0, resetRequested: false }; },
+  };
+}

@@ -1,0 +1,14 @@
+export interface {{interface_name}} { readonly nowSeconds?: () => number; }
+export interface AutoUEStateRecord { value: unknown; expiresAt?: number; }
+export class AutoUEStateBlackboard {
+  private readonly state = new Map<string, AutoUEStateRecord>();
+  constructor(private readonly context: {{interface_name}} = {}) {}
+  private now(): number { return this.context.nowSeconds ? this.context.nowSeconds() : Date.now() / 1000; }
+  set(key: string, value: unknown, ttlSeconds?: number): void { this.state.set(key, { value, expiresAt: ttlSeconds ? this.now() + ttlSeconds : undefined }); }
+  get(key: string): unknown { const record = this.state.get(key); if (!record) return undefined; if (record.expiresAt !== undefined && record.expiresAt <= this.now()) { this.state.delete(key); return undefined; } return record.value; }
+  isActive(key: string): boolean { return this.get(key) !== undefined; }
+  clear(key: string): void { this.state.delete(key); }
+  clearExpired(): void { for (const key of Array.from(this.state.keys())) this.get(key); }
+  snapshot(): Record<string, unknown> { this.clearExpired(); const out: Record<string, unknown> = {}; for (const [key, record] of this.state.entries()) out[key] = { value: record.value, expiresAt: record.expiresAt }; return out; }
+}
+export function {{export_name}}(context?: {{interface_name}}): AutoUEStateBlackboard { return new AutoUEStateBlackboard(context); }

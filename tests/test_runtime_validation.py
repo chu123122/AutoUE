@@ -180,16 +180,21 @@ def test_run_workflow_runtime_validation_failure_returns_nonzero(tmp_path, monke
     (input_dir / "1.txt").write_text("smoke prompt", encoding="utf-8")
     output_dir = tmp_path / "output"
 
-    class FakeGraph:
-        def invoke(self, initial_state):
-            return {}
+    from core import bundle_runner
 
-    monkeypatch.setattr(workflow_runner, "build_graph", lambda *args, **kwargs: (FakeGraph(), []))
-    monkeypatch.setattr(workflow_runner, "run_runtime_validation_for_demo", lambda demo_output_dir: {"result": "fail", "errors": ["boom"]})
+    runtime_config = tmp_path / "runtime.json"
+    runtime_config.write_text(json.dumps({
+        "scene_spawn_manifest": {
+            "allow_fixture": True,
+            "fixture_path": "tests/fixtures/scene-spawn-manifest.valid.json"
+        }
+    }), encoding="utf-8")
+
+    monkeypatch.setattr(bundle_runner, "run_runtime_validation", lambda demo_output_dir, write_outputs=True: {"result": "fail", "errors": ["boom"]})
     monkeypatch.setattr(workflow_runner, "WORKFLOW_FINISH_LOG_PATH", tmp_path / "demo_finish_log.txt")
 
     args = SimpleNamespace(
-        config=None,
+        config=str(runtime_config),
         workflow="config/workflows/puerts_ts.json",
         llm_profile="scripted_smoke",
         input_dir=str(input_dir),

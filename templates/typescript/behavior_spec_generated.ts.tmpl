@@ -1,0 +1,5 @@
+export interface AutoUEBehaviorSpecContext { readonly generatedAt?: string; }
+export const AUTOUE_BEHAVIOR_SPEC = {{behavior_spec_json}} as const;
+export const AUTOUE_RUNTIME_SUPPORT_CHECK = {{support_check_json}} as const;
+export function {{export_name}}(_context?: {{interface_name}}) { return AUTOUE_BEHAVIOR_SPEC; }
+export function getAutoUERuntimeSupportCheck() { return AUTOUE_RUNTIME_SUPPORT_CHECK; }

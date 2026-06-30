@@ -89,8 +89,12 @@ def validate_cross_trace(data: Mapping[str, dict[str, Any]], require_all: bool) 
                 raise WorkflowValidationError(f"UEApiMCPFeasibilitySearcher: missing MCP query for engine_port_id: {missing}")
 
     mapping_by_behavior, runtime_mapping_path = {}, ""
+    runtime_features: list[str] = []
+    disabled_features: list[str] = []
     if data.get("PuerTSRuntimeMappingPlanner"):
         mapping_node = data["PuerTSRuntimeMappingPlanner"]
+        runtime_features = list(mapping_node.get("runtime_features", []))
+        disabled_features = list(mapping_node.get("disabled_features", []))
         runtime_mapping_path = mapping_node.get("runtime_mapping_path", "")
         if runtime_mapping_path != RUNTIME_MAPPING_PATH:
             raise WorkflowValidationError(f"PuerTSRuntimeMappingPlanner: runtime_mapping_path must be {RUNTIME_MAPPING_PATH}, got {runtime_mapping_path}")
@@ -155,6 +159,9 @@ def validate_cross_trace(data: Mapping[str, dict[str, Any]], require_all: bool) 
 
     if data.get("TypeScriptCodeGenerator"):
         code = data["TypeScriptCodeGenerator"]
+        code_runtime_features = list(code.get("runtime_features", []))
+        if runtime_features and sorted(code_runtime_features) != sorted(runtime_features):
+            raise WorkflowValidationError("TypeScriptCodeGenerator: runtime_features must match PuerTSRuntimeMappingPlanner")
         codegen_files = _generated(code)
         consumed = set(code.get("consumed_interactive_files", []))
         if interactive_files and not consumed.issubset(interactive_files):
@@ -200,6 +207,8 @@ def validate_cross_trace(data: Mapping[str, dict[str, Any]], require_all: bool) 
         "engine_port_ids": sorted(mcp_by_port or behavior_by_port),
         "mcp_adjudication_paths": sorted(adjudication_by_path),
         "runtime_mapping_path": runtime_mapping_path,
+        "runtime_features": sorted(runtime_features),
+        "disabled_features": sorted(disabled_features),
         "analyzer_targets": sorted(analyzer_targets),
         "interactive_files": sorted(interactive_files),
         "codegen_files": sorted(codegen_files),

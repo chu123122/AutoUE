@@ -1,0 +1,16 @@
+export type AutoUETriggerType = 'input_action' | 'tick' | 'overlap_enter' | 'timer' | 'destroyed' | 'damage' | 'manual';
+export interface {{interface_name}} { readonly world?: any; readonly registry?: any; readonly runBehavior?: (behaviorId: string, payload?: unknown) => void; }
+export class AutoUETriggerRouter {
+  constructor(private readonly context: {{interface_name}} = {}) {}
+  bindBehavior(behavior: any): void {
+    const trigger = behavior.trigger || {};
+    const run = (payload?: unknown) => this.context.runBehavior && this.context.runBehavior(behavior.behavior_id, payload);
+    if (trigger.type === 'overlap_enter') this.context.world?.bindOverlapEnter?.(this.context.registry?.resolve?.(trigger.target_entity_id), run);
+    else if (trigger.type === 'input_action') this.context.world?.bindInputAction?.(trigger.action || behavior.behavior_id, () => run({ input: trigger.action }));
+    else if (trigger.type === 'tick') this.context.world?.bindTick?.((dt: number) => run({ dt }));
+    else if (trigger.type === 'timer') this.context.world?.bindTimer?.(trigger.seconds || 0, run);
+    else if (trigger.type === 'destroyed') this.context.world?.bindDestroyed?.(this.context.registry?.resolve?.(trigger.target_entity_id), run);
+    else if (trigger.type === 'damage') this.context.world?.bindDamage?.(this.context.registry?.resolve?.(trigger.target_entity_id), (amount: number) => run({ amount }));
+  }
+}
+export function {{export_name}}(context?: {{interface_name}}): AutoUETriggerRouter { return new AutoUETriggerRouter(context); }

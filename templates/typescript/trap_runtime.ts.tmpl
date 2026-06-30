@@ -1,0 +1,38 @@
+import UE = require('ue');
+
+export interface {{interface_name}} { runId?: string; }
+export type AutoUETrapRuntime = { tick(actor: UE.Actor, elapsed: number, isFrozen: boolean): { triggered: boolean; rearmed: boolean; trapArmed: boolean; triggerCount: number; distance: number }; reset(): void; snapshot(actor: UE.Actor): Record<string, unknown>; };
+
+const TRAP_X = 160;
+const ROOM_Y = 0;
+const FLOOR_Z = 92;
+const TRAP_RADIUS = 95;
+const TRAP_REARM_RADIUS = 135;
+const LOG_PREFIX = '[AUTOUE_GENERATED]';
+function log(message: string): void { console.warn(`${LOG_PREFIX} ${message}`); }
+function loc(actor: UE.Actor): UE.Vector { try { return actor.K2_GetActorLocation(); } catch (_) { return new UE.Vector(0, 0, FLOOR_Z); } }
+
+export function {{export_name}}(_context: {{interface_name}} = {}): AutoUETrapRuntime {
+  let armed = true;
+  let triggerCount = 0;
+  return {
+    tick(actor: UE.Actor, _elapsed: number, isFrozen: boolean) {
+      const distance = Math.abs(loc(actor).X - TRAP_X);
+      let rearmed = false;
+      let triggered = false;
+      if (distance > TRAP_REARM_RADIUS) {
+        if (!armed) { log(`IceTrapRearmed distance=${Math.round(distance)}`); rearmed = true; }
+        armed = true;
+      }
+      if (distance <= TRAP_RADIUS && armed && !isFrozen) {
+        armed = false;
+        triggerCount += 1;
+        triggered = true;
+        log(`IceTrapTriggered frozen=1 distance=${Math.round(distance)} triggerCount=${triggerCount}`);
+      }
+      return { triggered, rearmed, trapArmed: armed, triggerCount, distance };
+    },
+    reset(): void { armed = true; triggerCount = 0; },
+    snapshot(actor: UE.Actor): Record<string, unknown> { return { schema_version: 'autoue-trap-runtime/v1', trapX: TRAP_X, trapY: ROOM_Y, trapZ: FLOOR_Z, trapArmed: armed, trapTriggerCount: triggerCount, distance: Math.abs(loc(actor).X - TRAP_X) }; },
+  };
+}

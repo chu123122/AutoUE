@@ -1,0 +1,16 @@
+const RUNTIME_FEATURES = {{runtime_features_json}} as string[];
+const DISABLED_FEATURES = {{disabled_features_json}} as string[];
+
+export interface {{interface_name}} { runId?: string; }
+
+export function {{export_name}}(_context: {{interface_name}} = {}): Record<string, unknown> {
+  return {
+    schema_version: 'autoue-runtime-feature-manifest/v1',
+    source_entity_id: {{entity_id_json}},
+    source_behavior_id: {{behavior_id_json}},
+    flow_id: {{flow_id_json}},
+    runtime_mapping_path: {{runtime_mapping_path_json}},
+    runtime_features: RUNTIME_FEATURES,
+    disabled_features: DISABLED_FEATURES,
+  };
+}

@@ -77,7 +77,10 @@ def _render(template_text: str, values: dict[str, Any]) -> str:
 def render_template_input(item: dict[str, Any]) -> str:
     template_name = str(item.get("template", ""))
     template_text = _template_path(template_name).read_text(encoding="utf-8")
-    return _render(template_text, item)
+    values = dict(item)
+    values.setdefault("runtime_features", ["world_adapter", "entity_registry", "state_blackboard", "trigger_router", "condition_checker", "action_dispatcher", "behavior_orchestrator"])
+    values.setdefault("disabled_features", ["enemy_encounter"])
+    return _render(template_text, values)
 
 
 def write_files_from_output(state: GraphState, node_name: str, output: str) -> list[Path]:
