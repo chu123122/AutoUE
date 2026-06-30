@@ -1,0 +1,134 @@
+{
+  "schema_version": "autoue-runtime-support-check/v1",
+  "status": "unsupported",
+  "required_runtime_modules": [
+    "action_dispatcher",
+    "behavior_orchestrator",
+    "condition_checker",
+    "entity_registry",
+    "state_blackboard",
+    "trigger_router",
+    "world_adapter"
+  ],
+  "engine_ports": [
+    "widget.set_percent",
+    "widget.set_text"
+  ],
+  "supported_capabilities": [
+    {
+      "capability_kind": "hud_binding",
+      "action_kind": "refresh_value",
+      "handler": "ActionDispatcher.setHudValue",
+      "required_runtime_modules": [
+        "world_adapter",
+        "entity_registry",
+        "state_blackboard",
+        "action_dispatcher"
+      ],
+      "engine_ports": [
+        "widget.set_text",
+        "widget.set_percent"
+      ],
+      "supported": true,
+      "reason": "",
+      "capability_id": "combat_damage_number_hud.display"
+    },
+    {
+      "capability_kind": "hud_binding",
+      "action_kind": "refresh_value",
+      "handler": "ActionDispatcher.setHudValue",
+      "required_runtime_modules": [
+        "world_adapter",
+        "entity_registry",
+        "state_blackboard",
+        "action_dispatcher"
+      ],
+      "engine_ports": [
+        "widget.set_text",
+        "widget.set_percent"
+      ],
+      "supported": true,
+      "reason": "",
+      "capability_id": "health_bar_hud.display"
+    },
+    {
+      "capability_kind": "gate_lock",
+      "action_kind": "evaluate_unlock",
+      "handler": "ActionDispatcher.unlockExit",
+      "required_runtime_modules": [
+        "state_blackboard",
+        "action_dispatcher"
+      ],
+      "engine_ports": [],
+      "supported": true,
+      "reason": "",
+      "capability_id": "level_exit_door.lock"
+    }
+  ],
+  "unsupported_capabilities": [
+    {
+      "capability_kind": "combat",
+      "action_kind": "apply_damage",
+      "handler": null,
+      "required_runtime_modules": [],
+      "engine_ports": [
+        "input.action_binding",
+        "gameplay_statics.apply_damage"
+      ],
+      "supported": false,
+      "reason": "combat damage runtime is not implemented",
+      "capability_id": "player.combat"
+    },
+    {
+      "capability_kind": "enemy_combat",
+      "action_kind": "enemy_attack",
+      "handler": null,
+      "required_runtime_modules": [],
+      "engine_ports": [
+        "kismet.sphere_trace_single",
+        "gameplay_statics.apply_damage"
+      ],
+      "supported": false,
+      "reason": "enemy encounter/combat runtime is optional and not implemented by the generic behavior framework",
+      "capability_id": "zombie.offense"
+    },
+    {
+      "capability_kind": "enemy_pursuit",
+      "action_kind": "chase_target",
+      "handler": null,
+      "required_runtime_modules": [],
+      "engine_ports": [
+        "actor.get_distance_to",
+        "pawn.add_movement_input"
+      ],
+      "supported": false,
+      "reason": "enemy encounter movement runtime is optional and not implemented by the generic behavior framework",
+      "capability_id": "zombie.pursuit"
+    }
+  ],
+  "unsupported_behaviors": [
+    "player.combat.attack",
+    "zombie.offense.resolve_hit",
+    "zombie.pursuit.detect_player"
+  ],
+  "behavior_by_capability": {
+    "combat_damage_number_hud.display": [
+      "combat_damage_number_hud.display.refresh_value"
+    ],
+    "health_bar_hud.display": [
+      "health_bar_hud.display.refresh_value"
+    ],
+    "level_exit_door.lock": [
+      "level_exit_door.lock.evaluate_unlock"
+    ],
+    "player.combat": [
+      "player.combat.attack"
+    ],
+    "zombie.offense": [
+      "zombie.offense.resolve_hit"
+    ],
+    "zombie.pursuit": [
+      "zombie.pursuit.detect_player"
+    ]
+  }
+}

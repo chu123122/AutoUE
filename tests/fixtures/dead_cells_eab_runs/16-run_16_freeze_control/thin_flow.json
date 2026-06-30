@@ -1,0 +1,30 @@
+{
+  "flows": [
+    {
+      "flow_id": "flow_freeze_trap_freeze_player_on_overlap",
+      "entity_id": "freeze_trap",
+      "ability_id": "freeze_trap.sensor.detect_player_overlap",
+      "source_behavior_id": "freeze_trap.freeze_player_on_overlap",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "primitive.on_component_begin_overlap",
+            "component.set_visibility",
+            "camera.update_view_target"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered freeze_trap.freeze_player_on_overlap"
+      ]
+    }
+  ]
+}

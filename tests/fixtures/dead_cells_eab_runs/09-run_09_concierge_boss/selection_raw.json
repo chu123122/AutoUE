@@ -1,0 +1,16 @@
+{
+  "selected_entity_ids": [
+    "concierge_boss",
+    "boss_health_bar_hud",
+    "critical_hit_vfx"
+  ],
+  "selected_capability_ids": [],
+  "selected_behavior_ids": [
+    "player.movement.dodge_roll",
+    "player.combat.attack",
+    "concierge_boss.pursuit.detect_player",
+    "concierge_boss.offense.resolve_hit",
+    "boss_health_bar_hud.display.refresh_value",
+    "critical_hit_vfx.emit.spawn_particles"
+  ]
+}

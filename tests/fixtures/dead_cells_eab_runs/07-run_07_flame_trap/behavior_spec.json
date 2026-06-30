@@ -1,0 +1,138 @@
+{
+  "schema_version": "autoue-behavior-spec/v1",
+  "source_nodes": [
+    "EntityAbilityBehaviorPlanner",
+    "ThinGameplayFlowPlanner",
+    "PuerTSRuntimeMappingPlanner"
+  ],
+  "behaviors": [
+    {
+      "behavior_id": "burn_vfx.emit.spawn_particles",
+      "primary_entity_id": "burn_vfx",
+      "entity_id": "burn_vfx",
+      "ability_id": "burn_vfx.emit",
+      "flow_id": "flow_burn_vfx_emit_spawn_particles",
+      "trigger": {
+        "type": "legacy_text",
+        "description": "gameplay event fires"
+      },
+      "conditions": [],
+      "actions": [
+        {
+          "type": "spawn_vfx",
+          "entity_id": "burn_vfx",
+          "capability_id": "burn_vfx.emit"
+        }
+      ],
+      "required_capability_ids": [
+        "burn_vfx.emit"
+      ],
+      "engine_port_ids": [
+        "component.set_visibility"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered burn_vfx.emit.spawn_particles"
+      ]
+    },
+    {
+      "behavior_id": "flame_jet_trap.arming.enter_active",
+      "primary_entity_id": "flame_jet_trap",
+      "entity_id": "flame_jet_trap",
+      "ability_id": "flame_jet_trap.arming",
+      "flow_id": "flow_flame_jet_trap_arming_enter_active",
+      "trigger": {
+        "type": "legacy_text",
+        "description": "arming delay finishes"
+      },
+      "conditions": [],
+      "actions": [],
+      "required_capability_ids": [
+        "flame_jet_trap.arming"
+      ],
+      "engine_port_ids": [
+        "primitive.on_component_begin_overlap"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered flame_jet_trap.arming.enter_active"
+      ]
+    },
+    {
+      "behavior_id": "flame_jet_trap.arming.show_warning",
+      "primary_entity_id": "flame_jet_trap",
+      "entity_id": "flame_jet_trap",
+      "ability_id": "flame_jet_trap.arming",
+      "flow_id": "flow_flame_jet_trap_arming_show_warning",
+      "trigger": {
+        "type": "legacy_text",
+        "description": "actor approaches hazard zone"
+      },
+      "conditions": [],
+      "actions": [],
+      "required_capability_ids": [
+        "flame_jet_trap.arming"
+      ],
+      "engine_port_ids": [
+        "primitive.on_component_begin_overlap"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered flame_jet_trap.arming.show_warning"
+      ]
+    },
+    {
+      "behavior_id": "flame_jet_trap.apply_burn_on_hit",
+      "primary_entity_id": "flame_jet_trap",
+      "entity_id": "flame_jet_trap",
+      "ability_id": "flame_jet_trap.hazard.apply_burn",
+      "flow_id": "flow_flame_jet_trap_apply_burn_on_hit",
+      "trigger": {
+        "type": "overlap_enter",
+        "source_entity_id": "player",
+        "target_entity_id": "flame_jet_trap"
+      },
+      "conditions": [],
+      "actions": [
+        {
+          "type": "write_state",
+          "key": "player.effects.burn",
+          "value": {
+            "duration": 2
+          }
+        }
+      ],
+      "required_capability_ids": [
+        "flame_jet_trap.hazard.apply_burn",
+        "burn_vfx.emit"
+      ],
+      "engine_port_ids": [
+        "primitive.on_component_begin_overlap",
+        "component.set_visibility"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered flame_jet_trap.apply_burn_on_hit"
+      ]
+    },
+    {
+      "behavior_id": "player.movement.run",
+      "primary_entity_id": "player",
+      "entity_id": "player",
+      "ability_id": "player.movement",
+      "flow_id": "flow_player_movement_run",
+      "trigger": {
+        "type": "legacy_text",
+        "description": "movement input"
+      },
+      "conditions": [],
+      "actions": [],
+      "required_capability_ids": [
+        "player.movement"
+      ],
+      "engine_port_ids": [
+        "input.action_binding",
+        "pawn.add_movement_input"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered player.movement.run"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,400 @@
+{
+  "entities": [
+    {
+      "entity_id": "combat_damage_number_hud",
+      "display_name": "Damage Number HUD",
+      "display_name_zh": "伤害数字HUD",
+      "entity_kind": "hud",
+      "summary": "显示战斗伤害数字。",
+      "summary_zh": "显示战斗伤害数字。",
+      "content_tags": [
+        "hud",
+        "damage",
+        "feedback"
+      ],
+      "spawnable": false,
+      "abilities": []
+    },
+    {
+      "entity_id": "critical_hit_vfx",
+      "display_name": "Critical Hit VFX",
+      "display_name_zh": "暴击特效",
+      "entity_kind": "vfx",
+      "summary": "暴击时的冲击爆发。",
+      "summary_zh": "暴击时的冲击爆发。",
+      "content_tags": [
+        "vfx",
+        "particle",
+        "critical"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "critical_hit_vfx.emit",
+          "entity_id": "critical_hit_vfx",
+          "display_name": "Critical Hit VFX Particle Emission",
+          "display_name_zh": "暴击特效粒子生成",
+          "summary": "负责在玩法事件发生时生成可见粒子。",
+          "summary_zh": "负责在玩法事件发生时生成可见粒子。",
+          "capability_id": "critical_hit_vfx.emit",
+          "semantic_role": "capability",
+          "capability_kind": "vfx_binding",
+          "runtime_primitives": [
+            "spawn_vfx",
+            "attach_vfx"
+          ],
+          "engine_ports": [
+            "component.set_visibility"
+          ],
+          "runtime_features": [
+            "vfx"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "spawn_particles",
+          "behaviors": [
+            {
+              "behavior_id": "critical_hit_vfx.emit.spawn_particles",
+              "ability_id": "critical_hit_vfx.emit",
+              "entity_id": "critical_hit_vfx",
+              "display_name": "Critical Hit VFX Spawn Particles",
+              "display_name_zh": "暴击特效生成粒子",
+              "trigger": "gameplay event fires",
+              "execution": "spawns particles at the relevant actor or world position",
+              "result": "event has visible feedback",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "critical_hit_vfx",
+              "required_capability_ids": [
+                "critical_hit_vfx.emit"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "gameplay event fires"
+              },
+              "effects": [
+                "event has visible feedback"
+              ],
+              "runtime_features": [
+                "vfx"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "elite_aura_vfx",
+      "display_name": "Elite Aura VFX",
+      "display_name_zh": "精英光环特效",
+      "entity_kind": "vfx",
+      "summary": "精英敌人身上的威胁光环。",
+      "summary_zh": "精英敌人身上的威胁光环。",
+      "content_tags": [
+        "vfx",
+        "particle",
+        "elite"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "elite_aura_vfx.emit",
+          "entity_id": "elite_aura_vfx",
+          "display_name": "Elite Aura VFX Particle Emission",
+          "display_name_zh": "精英光环特效粒子生成",
+          "summary": "负责在玩法事件发生时生成可见粒子。",
+          "summary_zh": "负责在玩法事件发生时生成可见粒子。",
+          "capability_id": "elite_aura_vfx.emit",
+          "semantic_role": "capability",
+          "capability_kind": "vfx_binding",
+          "runtime_primitives": [
+            "spawn_vfx",
+            "attach_vfx"
+          ],
+          "engine_ports": [
+            "component.set_visibility"
+          ],
+          "runtime_features": [
+            "vfx"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "spawn_particles",
+          "behaviors": [
+            {
+              "behavior_id": "elite_aura_vfx.emit.attach_to_target",
+              "ability_id": "elite_aura_vfx.emit",
+              "entity_id": "elite_aura_vfx",
+              "display_name": "Elite Aura VFX Attach To Target",
+              "display_name_zh": "精英光环特效附着目标",
+              "trigger": "effect has a tracked owner",
+              "execution": "follows the owner while the effect is active",
+              "result": "effect stays spatially coherent",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "elite_aura_vfx",
+              "required_capability_ids": [
+                "elite_aura_vfx.emit"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "effect has a tracked owner"
+              },
+              "effects": [
+                "effect stays spatially coherent"
+              ],
+              "runtime_features": [
+                "vfx"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "player",
+      "display_name": "Player Prisoner",
+      "display_name_zh": "玩家囚徒",
+      "entity_kind": "player",
+      "summary": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
+      "summary_zh": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
+      "content_tags": [
+        "player",
+        "prisoner",
+        "combat"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "player.combat",
+          "entity_id": "player",
+          "display_name": "Player Prisoner Combat",
+          "display_name_zh": "玩家囚徒战斗输入",
+          "summary": "负责攻击、取消、受击和战斗输入解析。",
+          "summary_zh": "负责攻击、取消、受击和战斗输入解析。",
+          "capability_id": "player.combat",
+          "semantic_role": "capability",
+          "capability_kind": "combat",
+          "runtime_primitives": [
+            "input_action",
+            "hit_query",
+            "apply_damage"
+          ],
+          "engine_ports": [
+            "input.action_binding",
+            "kismet.line_trace_single",
+            "gameplay_statics.apply_damage"
+          ],
+          "runtime_features": [
+            "combat",
+            "input"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "apply_damage",
+          "behaviors": [
+            {
+              "behavior_id": "player.combat.attack",
+              "ability_id": "player.combat",
+              "entity_id": "player",
+              "display_name": "Player Prisoner Attack",
+              "display_name_zh": "玩家囚徒攻击",
+              "trigger": "attack input",
+              "execution": "executes the selected weapon strike against a target",
+              "result": "target receives combat pressure",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "player",
+              "required_capability_ids": [
+                "player.combat"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "attack input"
+              },
+              "effects": [
+                "target receives combat pressure"
+              ],
+              "runtime_features": [
+                "combat",
+                "input"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "slasher",
+      "display_name": "Slasher",
+      "display_name_zh": "斩杀者",
+      "entity_kind": "enemy",
+      "summary": "斩杀者：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "斩杀者：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "ground",
+        "melee",
+        "elite"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 4,
+        "allowed_spawn_tags": [
+          "ground",
+          "melee",
+          "elite"
+        ],
+        "default_health": 6
+      },
+      "abilities": [
+        {
+          "ability_id": "slasher.offense",
+          "entity_id": "slasher",
+          "display_name": "Slasher Offense",
+          "display_name_zh": "斩杀者进攻",
+          "summary": "负责攻击预警、命中窗口和攻击结果。",
+          "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
+          "capability_id": "slasher.offense",
+          "semantic_role": "capability",
+          "capability_kind": "enemy_combat",
+          "runtime_primitives": [
+            "telegraph",
+            "hit_query",
+            "apply_damage"
+          ],
+          "engine_ports": [
+            "kismet.sphere_trace_single",
+            "gameplay_statics.apply_damage"
+          ],
+          "runtime_features": [
+            "combat",
+            "enemy_encounter"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "enemy_attack",
+          "behaviors": [
+            {
+              "behavior_id": "slasher.offense.resolve_hit",
+              "ability_id": "slasher.offense",
+              "entity_id": "slasher",
+              "display_name": "Slasher Resolve Hit",
+              "display_name_zh": "斩杀者命中结算",
+              "trigger": "active hit frame overlaps target",
+              "execution": "applies the enemy attack result",
+              "result": "player or object is damaged",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "slasher",
+              "required_capability_ids": [
+                "slasher.offense"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "active hit frame overlaps target"
+              },
+              "effects": [
+                "player or object is damaged"
+              ],
+              "runtime_features": [
+                "combat",
+                "enemy_encounter"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        },
+        {
+          "ability_id": "slasher.pursuit",
+          "entity_id": "slasher",
+          "display_name": "Slasher Pursuit",
+          "display_name_zh": "斩杀者追击",
+          "summary": "负责发现目标、接近目标和重新站位。",
+          "summary_zh": "负责发现目标、接近目标和重新站位。",
+          "capability_id": "slasher.pursuit",
+          "semantic_role": "capability",
+          "capability_kind": "enemy_pursuit",
+          "runtime_primitives": [
+            "awareness_query",
+            "move_actor"
+          ],
+          "engine_ports": [
+            "actor.get_distance_to",
+            "pawn.add_movement_input"
+          ],
+          "runtime_features": [
+            "enemy_encounter",
+            "movement"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "chase_target",
+          "behaviors": [
+            {
+              "behavior_id": "slasher.pursuit.close_gap",
+              "ability_id": "slasher.pursuit",
+              "entity_id": "slasher",
+              "display_name": "Slasher Close Gap",
+              "display_name_zh": "斩杀者接近目标",
+              "trigger": "target is reachable",
+              "execution": "moves, jumps, flies, or teleports toward attack range",
+              "result": "enemy threatens the player",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "slasher",
+              "required_capability_ids": [
+                "slasher.pursuit"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "target is reachable"
+              },
+              "effects": [
+                "enemy threatens the player"
+              ],
+              "runtime_features": [
+                "enemy_encounter",
+                "movement"
+              ],
+              "semantic_role": "behavior"
+            },
+            {
+              "behavior_id": "slasher.pursuit.detect_player",
+              "ability_id": "slasher.pursuit",
+              "entity_id": "slasher",
+              "display_name": "Slasher Detect Player",
+              "display_name_zh": "斩杀者发现玩家",
+              "trigger": "player enters awareness range",
+              "execution": "selects the player as target and turns toward them",
+              "result": "enemy starts pursuing",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "slasher",
+              "required_capability_ids": [
+                "slasher.pursuit"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "player enters awareness range"
+              },
+              "effects": [
+                "enemy starts pursuing"
+              ],
+              "runtime_features": [
+                "enemy_encounter",
+                "movement"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "non_goals": []
+}

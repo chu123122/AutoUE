@@ -1,0 +1,528 @@
+{
+  "entities": [
+    {
+      "entity_id": "cooldown_meter_hud",
+      "display_name": "Cooldown Meter HUD",
+      "display_name_zh": "冷却计时HUD",
+      "entity_kind": "hud",
+      "summary": "显示技能冷却状态。",
+      "summary_zh": "显示技能冷却状态。",
+      "content_tags": [
+        "hud",
+        "cooldown",
+        "skill"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "cooldown_meter_hud.display",
+          "entity_id": "cooldown_meter_hud",
+          "display_name": "Cooldown Meter HUD Display",
+          "display_name_zh": "冷却计时HUD显示",
+          "summary": "负责把数值、图标或地图状态呈现到屏幕。",
+          "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
+          "capability_id": "cooldown_meter_hud.display",
+          "semantic_role": "capability",
+          "capability_kind": "hud_binding",
+          "runtime_primitives": [
+            "hud_refresh",
+            "tag_state"
+          ],
+          "engine_ports": [
+            "widget.set_text",
+            "widget.set_percent"
+          ],
+          "runtime_features": [
+            "hud"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "refresh_value",
+          "behaviors": [
+            {
+              "behavior_id": "cooldown_meter_hud.display.refresh_value",
+              "ability_id": "cooldown_meter_hud.display",
+              "entity_id": "cooldown_meter_hud",
+              "display_name": "Cooldown Meter HUD Refresh Value",
+              "display_name_zh": "冷却计时HUD刷新数值",
+              "trigger": "tracked value changes",
+              "execution": "updates bars, icons, counters, or map tiles",
+              "result": "HUD reflects current state",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "cooldown_meter_hud",
+              "required_capability_ids": [
+                "cooldown_meter_hud.display"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "tracked value changes"
+              },
+              "effects": [
+                "HUD reflects current state"
+              ],
+              "runtime_features": [
+                "hud"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "curse_counter_hud",
+      "display_name": "诅咒计数 HUD",
+      "display_name_zh": "诅咒计数 HUD",
+      "entity_kind": "hud",
+      "summary": "读取 run.curse_count 的 HUD。",
+      "summary_zh": "读取 run.curse_count 的 HUD。",
+      "content_tags": [
+        "hud",
+        "curse"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "curse_counter_hud.alert",
+          "entity_id": "curse_counter_hud",
+          "display_name": "Curse Counter HUD Alert Feedback",
+          "display_name_zh": "诅咒计数HUD警示反馈",
+          "summary": "负责闪烁、强调、警示和状态变化反馈。",
+          "summary_zh": "负责闪烁、强调、警示和状态变化反馈。",
+          "capability_id": "curse_counter_hud.alert",
+          "semantic_role": "capability",
+          "capability_kind": "hud_feedback",
+          "runtime_primitives": [
+            "hud_flash",
+            "tag_state"
+          ],
+          "engine_ports": [
+            "widget.set_render_opacity"
+          ],
+          "runtime_features": [
+            "hud"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "flash_warning",
+          "behaviors": [
+            {
+              "behavior_id": "curse_counter_hud.alert.flash_warning",
+              "ability_id": "curse_counter_hud.alert",
+              "entity_id": "curse_counter_hud",
+              "display_name": "Curse Counter HUD Flash Warning",
+              "display_name_zh": "诅咒计数HUD闪烁警示",
+              "trigger": "danger or threshold is reached",
+              "execution": "plays a visual flash or shake",
+              "result": "player sees urgent feedback",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "curse_counter_hud",
+              "required_capability_ids": [
+                "curse_counter_hud.alert"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "danger or threshold is reached"
+              },
+              "effects": [
+                "player sees urgent feedback"
+              ],
+              "runtime_features": [
+                "hud"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        },
+        {
+          "ability_id": "curse_counter_hud.display",
+          "entity_id": "curse_counter_hud",
+          "display_name": "Curse Counter HUD Display",
+          "display_name_zh": "诅咒计数HUD显示",
+          "summary": "负责把数值、图标或地图状态呈现到屏幕。",
+          "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
+          "capability_id": "curse_counter_hud.display",
+          "semantic_role": "capability",
+          "capability_kind": "hud_binding",
+          "runtime_primitives": [
+            "hud_refresh",
+            "tag_state"
+          ],
+          "engine_ports": [
+            "widget.set_text",
+            "widget.set_percent"
+          ],
+          "runtime_features": [
+            "hud"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "refresh_value",
+          "behaviors": [
+            {
+              "behavior_id": "curse_counter_hud.display.refresh_value",
+              "ability_id": "curse_counter_hud.display",
+              "entity_id": "curse_counter_hud",
+              "display_name": "Curse Counter HUD Refresh Value",
+              "display_name_zh": "诅咒计数HUD刷新数值",
+              "trigger": "tracked value changes",
+              "execution": "updates bars, icons, counters, or map tiles",
+              "result": "HUD reflects current state",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "curse_counter_hud",
+              "required_capability_ids": [
+                "curse_counter_hud.display"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "tracked value changes"
+              },
+              "effects": [
+                "HUD reflects current state"
+              ],
+              "runtime_features": [
+                "hud"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "cursed_chest",
+      "display_name": "Cursed Chest",
+      "display_name_zh": "诅咒宝箱",
+      "entity_kind": "object",
+      "summary": "打开后施加诅咒并释放高价值奖励。",
+      "summary_zh": "打开后施加诅咒并释放高价值奖励。",
+      "content_tags": [
+        "reward",
+        "curse",
+        "chest"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "cursed_chest.chest.open_reward",
+          "capability_id": "cursed_chest.chest.open_reward",
+          "entity_id": "cursed_chest",
+          "display_name": "cursed_chest.chest.open_reward",
+          "display_name_zh": "打开诅咒宝箱并发放奖励。",
+          "summary": "打开诅咒宝箱并发放奖励。",
+          "summary_zh": "打开诅咒宝箱并发放奖励。",
+          "semantic_role": "capability",
+          "capability_kind": "chest_reward",
+          "action_kind": "open_reward",
+          "runtime_primitives": [
+            "grant_reward",
+            "state_write"
+          ],
+          "engine_ports": [],
+          "runtime_features": [
+            "reward",
+            "state_blackboard"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "behaviors": [
+            {
+              "behavior_id": "cursed_chest.open_reward_and_add_curse",
+              "ability_id": "cursed_chest.chest.open_reward",
+              "entity_id": "cursed_chest",
+              "primary_entity_id": "cursed_chest",
+              "display_name": "cursed_chest.open_reward_and_add_curse",
+              "display_name_zh": "打开诅咒宝箱并增加诅咒计数。",
+              "trigger": "打开诅咒宝箱并增加诅咒计数。",
+              "execution": "打开诅咒宝箱并增加诅咒计数。",
+              "result": "打开诅咒宝箱并增加诅咒计数。",
+              "required_capability_ids": [
+                "cursed_chest.chest.open_reward",
+                "cursed_chest.curse.add_curse_counter",
+                "curse_counter_hud.display"
+              ],
+              "trigger_model": {
+                "type": "input_action",
+                "source_entity_id": "player",
+                "target_entity_id": "cursed_chest"
+              },
+              "conditions": [],
+              "effects": [
+                {
+                  "type": "grant_reward"
+                },
+                {
+                  "type": "write_state",
+                  "key": "run.curse_count",
+                  "value": {
+                    "delta": 1
+                  }
+                }
+              ],
+              "verification_logs": [
+                "BehaviorTriggered cursed_chest.open_reward_and_add_curse"
+              ],
+              "semantic_role": "behavior",
+              "source_refs": [
+                "autoue-behavior-driven-runtime"
+              ],
+              "runtime_features": [
+                "hud",
+                "reward",
+                "state_blackboard"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "health_bar_hud",
+      "display_name": "Health Bar HUD",
+      "display_name_zh": "生命条HUD",
+      "entity_kind": "hud",
+      "summary": "显示玩家生命变化。",
+      "summary_zh": "显示玩家生命变化。",
+      "content_tags": [
+        "hud",
+        "health",
+        "player"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "health_bar_hud.display",
+          "entity_id": "health_bar_hud",
+          "display_name": "Health Bar HUD Display",
+          "display_name_zh": "生命条HUD显示",
+          "summary": "负责把数值、图标或地图状态呈现到屏幕。",
+          "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
+          "capability_id": "health_bar_hud.display",
+          "semantic_role": "capability",
+          "capability_kind": "hud_binding",
+          "runtime_primitives": [
+            "hud_refresh",
+            "tag_state"
+          ],
+          "engine_ports": [
+            "widget.set_text",
+            "widget.set_percent"
+          ],
+          "runtime_features": [
+            "hud"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "refresh_value",
+          "behaviors": [
+            {
+              "behavior_id": "health_bar_hud.display.refresh_value",
+              "ability_id": "health_bar_hud.display",
+              "entity_id": "health_bar_hud",
+              "display_name": "Health Bar HUD Refresh Value",
+              "display_name_zh": "生命条HUD刷新数值",
+              "trigger": "tracked value changes",
+              "execution": "updates bars, icons, counters, or map tiles",
+              "result": "HUD reflects current state",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "health_bar_hud",
+              "required_capability_ids": [
+                "health_bar_hud.display"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "tracked value changes"
+              },
+              "effects": [
+                "HUD reflects current state"
+              ],
+              "runtime_features": [
+                "hud"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "poison_pool",
+      "display_name": "Poison Pool",
+      "display_name_zh": "毒池",
+      "entity_kind": "trap",
+      "summary": "持续施加中毒的地面危险。",
+      "summary_zh": "持续施加中毒的地面危险。",
+      "content_tags": [
+        "trap",
+        "poison",
+        "hazard"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "poison_pool.hazard.apply_poison_dot",
+          "capability_id": "poison_pool.hazard.apply_poison_dot",
+          "entity_id": "poison_pool",
+          "display_name": "poison_pool.hazard.apply_poison_dot",
+          "display_name_zh": "写入 player.effects.poison_dot。",
+          "summary": "写入 player.effects.poison_dot。",
+          "summary_zh": "写入 player.effects.poison_dot。",
+          "semantic_role": "capability",
+          "capability_kind": "apply_effect",
+          "action_kind": "apply_poison_dot",
+          "runtime_primitives": [
+            "state_write",
+            "timer",
+            "periodic_damage"
+          ],
+          "engine_ports": [
+            "primitive.on_component_begin_overlap"
+          ],
+          "runtime_features": [
+            "state_blackboard",
+            "timer",
+            "combat"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "behaviors": [
+            {
+              "behavior_id": "poison_pool.poison_player_on_overlap",
+              "ability_id": "poison_pool.hazard.apply_poison_dot",
+              "entity_id": "poison_pool",
+              "primary_entity_id": "poison_pool",
+              "display_name": "poison_pool.poison_player_on_overlap",
+              "display_name_zh": "重叠后使玩家中毒。",
+              "trigger": "重叠后使玩家中毒。",
+              "execution": "重叠后使玩家中毒。",
+              "result": "重叠后使玩家中毒。",
+              "required_capability_ids": [
+                "poison_pool.hazard.apply_poison_dot",
+                "poison_vfx.emit",
+                "health_bar_hud.display"
+              ],
+              "trigger_model": {
+                "type": "overlap_enter",
+                "source_entity_id": "player",
+                "target_entity_id": "poison_pool"
+              },
+              "conditions": [],
+              "effects": [
+                {
+                  "type": "write_state",
+                  "key": "player.effects.poison_dot",
+                  "value": {
+                    "duration": 3,
+                    "damage_per_second": 5
+                  }
+                }
+              ],
+              "verification_logs": [
+                "BehaviorTriggered poison_pool.poison_player_on_overlap"
+              ],
+              "semantic_role": "behavior",
+              "source_refs": [
+                "autoue-behavior-driven-runtime"
+              ],
+              "runtime_features": [
+                "combat",
+                "hud",
+                "state_blackboard",
+                "timer",
+                "vfx"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "poison_vfx",
+      "display_name": "Poison VFX",
+      "display_name_zh": "中毒特效",
+      "entity_kind": "vfx",
+      "summary": "中毒状态粒子。",
+      "summary_zh": "中毒状态粒子。",
+      "content_tags": [
+        "vfx",
+        "particle",
+        "poison"
+      ],
+      "spawnable": false,
+      "abilities": []
+    },
+    {
+      "entity_id": "status_icon_hud",
+      "display_name": "Status Icon HUD",
+      "display_name_zh": "状态图标HUD",
+      "entity_kind": "hud",
+      "summary": "HUD widget for runtime state icons.",
+      "summary_zh": "显示运行时状态图标的 HUD 控件。",
+      "content_tags": [
+        "hud",
+        "status",
+        "buff"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "status_icon_hud.display",
+          "entity_id": "status_icon_hud",
+          "display_name": "Status Icon HUD Display",
+          "display_name_zh": "状态图标HUD显示",
+          "summary": "负责把数值、图标或地图状态呈现到屏幕。",
+          "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
+          "capability_id": "status_icon_hud.display",
+          "semantic_role": "capability",
+          "capability_kind": "hud_binding",
+          "runtime_primitives": [
+            "hud_refresh",
+            "tag_state"
+          ],
+          "engine_ports": [
+            "widget.set_text",
+            "widget.set_percent"
+          ],
+          "runtime_features": [
+            "hud"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "refresh_value",
+          "behaviors": [
+            {
+              "behavior_id": "status_icon_hud.display.refresh_value",
+              "ability_id": "status_icon_hud.display",
+              "entity_id": "status_icon_hud",
+              "display_name": "Status Icon HUD Refresh Value",
+              "display_name_zh": "状态图标HUD刷新数值",
+              "trigger": "tracked value changes",
+              "execution": "updates bars, icons, counters, or map tiles",
+              "result": "HUD reflects current state",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "status_icon_hud",
+              "required_capability_ids": [
+                "status_icon_hud.display"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "tracked value changes"
+              },
+              "effects": [
+                "HUD reflects current state"
+              ],
+              "runtime_features": [
+                "hud"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "non_goals": []
+}

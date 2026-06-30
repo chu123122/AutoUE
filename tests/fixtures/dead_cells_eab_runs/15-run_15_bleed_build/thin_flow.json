@@ -1,0 +1,131 @@
+{
+  "flows": [
+    {
+      "flow_id": "flow_bleed_vfx_emit_spawn_particles",
+      "entity_id": "bleed_vfx",
+      "ability_id": "bleed_vfx.emit",
+      "source_behavior_id": "bleed_vfx.emit.spawn_particles",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "component.set_visibility"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered bleed_vfx.emit.spawn_particles"
+      ]
+    },
+    {
+      "flow_id": "flow_blood_sword_apply_bleed_on_hit",
+      "entity_id": "blood_sword",
+      "ability_id": "blood_sword.attack.apply_bleed_on_hit",
+      "source_behavior_id": "blood_sword.apply_bleed_on_hit",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "gameplay_statics.apply_damage",
+            "component.set_visibility",
+            "widget.set_text",
+            "widget.set_percent"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered blood_sword.apply_bleed_on_hit"
+      ]
+    },
+    {
+      "flow_id": "flow_combat_damage_number_hud_display_refresh_value",
+      "entity_id": "combat_damage_number_hud",
+      "ability_id": "combat_damage_number_hud.display",
+      "source_behavior_id": "combat_damage_number_hud.display.refresh_value",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "widget.set_text",
+            "widget.set_percent"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered combat_damage_number_hud.display.refresh_value"
+      ]
+    },
+    {
+      "flow_id": "flow_player_combat_attack",
+      "entity_id": "player",
+      "ability_id": "player.combat",
+      "source_behavior_id": "player.combat.attack",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "input.action_binding",
+            "kismet.line_trace_single",
+            "gameplay_statics.apply_damage"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered player.combat.attack"
+      ]
+    },
+    {
+      "flow_id": "flow_zombie_offense_resolve_hit",
+      "entity_id": "zombie",
+      "ability_id": "zombie.offense",
+      "source_behavior_id": "zombie.offense.resolve_hit",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "kismet.sphere_trace_single",
+            "gameplay_statics.apply_damage"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered zombie.offense.resolve_hit"
+      ]
+    }
+  ]
+}

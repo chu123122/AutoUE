@@ -1,0 +1,18 @@
+{
+  "selected_entity_ids": [
+    "health_bar_hud",
+    "curse_counter_hud",
+    "status_icon_hud",
+    "cooldown_meter_hud"
+  ],
+  "selected_capability_ids": [],
+  "selected_behavior_ids": [
+    "cursed_chest.open_reward_and_add_curse",
+    "poison_pool.poison_player_on_overlap",
+    "health_bar_hud.display.refresh_value",
+    "curse_counter_hud.display.refresh_value",
+    "status_icon_hud.display.refresh_value",
+    "cooldown_meter_hud.display.refresh_value",
+    "curse_counter_hud.alert.flash_warning"
+  ]
+}

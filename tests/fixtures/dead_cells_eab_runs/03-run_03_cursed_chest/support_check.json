@@ -1,0 +1,115 @@
+{
+  "schema_version": "autoue-runtime-support-check/v1",
+  "status": "unsupported",
+  "required_runtime_modules": [
+    "action_dispatcher",
+    "behavior_orchestrator",
+    "condition_checker",
+    "entity_registry",
+    "state_blackboard",
+    "trigger_router",
+    "world_adapter"
+  ],
+  "engine_ports": [
+    "component.set_visibility",
+    "widget.set_percent",
+    "widget.set_render_opacity",
+    "widget.set_text"
+  ],
+  "supported_capabilities": [
+    {
+      "capability_kind": "hud_feedback",
+      "action_kind": "flash_warning",
+      "handler": "ActionDispatcher.setHudValue",
+      "required_runtime_modules": [
+        "world_adapter",
+        "entity_registry",
+        "state_blackboard",
+        "action_dispatcher"
+      ],
+      "engine_ports": [
+        "widget.set_render_opacity"
+      ],
+      "supported": true,
+      "reason": "",
+      "capability_id": "curse_counter_hud.alert"
+    },
+    {
+      "capability_kind": "hud_binding",
+      "action_kind": "refresh_value",
+      "handler": "ActionDispatcher.setHudValue",
+      "required_runtime_modules": [
+        "world_adapter",
+        "entity_registry",
+        "state_blackboard",
+        "action_dispatcher"
+      ],
+      "engine_ports": [
+        "widget.set_text",
+        "widget.set_percent"
+      ],
+      "supported": true,
+      "reason": "",
+      "capability_id": "curse_counter_hud.display"
+    },
+    {
+      "capability_kind": "vfx_binding",
+      "action_kind": "spawn_particles",
+      "handler": "ActionDispatcher.spawnVfx",
+      "required_runtime_modules": [
+        "world_adapter",
+        "entity_registry",
+        "action_dispatcher"
+      ],
+      "engine_ports": [
+        "component.set_visibility"
+      ],
+      "supported": true,
+      "reason": "",
+      "capability_id": "curse_skull_vfx.emit"
+    }
+  ],
+  "unsupported_capabilities": [
+    {
+      "capability_kind": "chest_reward",
+      "action_kind": "open_reward",
+      "handler": null,
+      "required_runtime_modules": [],
+      "engine_ports": [],
+      "supported": false,
+      "reason": "reward/inventory runtime is not implemented",
+      "capability_id": "cursed_chest.chest.open_reward"
+    },
+    {
+      "capability_kind": "curse_counter",
+      "action_kind": "add_curse_counter",
+      "handler": null,
+      "required_runtime_modules": [],
+      "engine_ports": [],
+      "supported": false,
+      "reason": "curse counter HUD/runtime is not implemented",
+      "capability_id": "cursed_chest.curse.add_curse_counter"
+    }
+  ],
+  "unsupported_behaviors": [
+    "cursed_chest.open_reward_and_add_curse"
+  ],
+  "behavior_by_capability": {
+    "curse_counter_hud.alert": [
+      "curse_counter_hud.alert.flash_warning"
+    ],
+    "curse_counter_hud.display": [
+      "curse_counter_hud.display.refresh_value",
+      "cursed_chest.open_reward_and_add_curse"
+    ],
+    "curse_skull_vfx.emit": [
+      "curse_skull_vfx.emit.spawn_particles"
+    ],
+    "cursed_chest.chest.open_reward": [
+      "cursed_chest.open_reward_and_add_curse"
+    ],
+    "cursed_chest.curse.add_curse_counter": [
+      "cursed_chest.open_reward_and_add_curse"
+    ]
+  }
+}

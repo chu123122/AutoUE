@@ -1,0 +1,441 @@
+{
+  "entities": [
+    {
+      "entity_id": "archer",
+      "display_name": "Archer",
+      "display_name_zh": "弓箭手",
+      "entity_kind": "enemy",
+      "summary": "弓箭手：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "弓箭手：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "ground",
+        "ranged"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 2,
+        "allowed_spawn_tags": [
+          "ground",
+          "ranged"
+        ],
+        "default_health": 2
+      },
+      "abilities": [
+        {
+          "ability_id": "archer.offense",
+          "entity_id": "archer",
+          "display_name": "Archer Offense",
+          "display_name_zh": "弓箭手进攻",
+          "summary": "负责攻击预警、命中窗口和攻击结果。",
+          "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
+          "capability_id": "archer.offense",
+          "semantic_role": "capability",
+          "capability_kind": "enemy_combat",
+          "runtime_primitives": [
+            "telegraph",
+            "hit_query",
+            "apply_damage"
+          ],
+          "engine_ports": [
+            "kismet.sphere_trace_single",
+            "gameplay_statics.apply_damage"
+          ],
+          "runtime_features": [
+            "combat",
+            "enemy_encounter"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "enemy_attack",
+          "behaviors": [
+            {
+              "behavior_id": "archer.offense.resolve_hit",
+              "ability_id": "archer.offense",
+              "entity_id": "archer",
+              "display_name": "Archer Resolve Hit",
+              "display_name_zh": "弓箭手命中结算",
+              "trigger": "active hit frame overlaps target",
+              "execution": "applies the enemy attack result",
+              "result": "player or object is damaged",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "archer",
+              "required_capability_ids": [
+                "archer.offense"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "active hit frame overlaps target"
+              },
+              "effects": [
+                "player or object is damaged"
+              ],
+              "runtime_features": [
+                "combat",
+                "enemy_encounter"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        },
+        {
+          "ability_id": "archer.pursuit",
+          "entity_id": "archer",
+          "display_name": "Archer Pursuit",
+          "display_name_zh": "弓箭手追击",
+          "summary": "负责发现目标、接近目标和重新站位。",
+          "summary_zh": "负责发现目标、接近目标和重新站位。",
+          "capability_id": "archer.pursuit",
+          "semantic_role": "capability",
+          "capability_kind": "enemy_pursuit",
+          "runtime_primitives": [
+            "awareness_query",
+            "move_actor"
+          ],
+          "engine_ports": [
+            "actor.get_distance_to",
+            "pawn.add_movement_input"
+          ],
+          "runtime_features": [
+            "enemy_encounter",
+            "movement"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "chase_target",
+          "behaviors": [
+            {
+              "behavior_id": "archer.pursuit.detect_player",
+              "ability_id": "archer.pursuit",
+              "entity_id": "archer",
+              "display_name": "Archer Detect Player",
+              "display_name_zh": "弓箭手发现玩家",
+              "trigger": "player enters awareness range",
+              "execution": "selects the player as target and turns toward them",
+              "result": "enemy starts pursuing",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "archer",
+              "required_capability_ids": [
+                "archer.pursuit"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "player enters awareness range"
+              },
+              "effects": [
+                "enemy starts pursuing"
+              ],
+              "runtime_features": [
+                "enemy_encounter",
+                "movement"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "combat_damage_number_hud",
+      "display_name": "Damage Number HUD",
+      "display_name_zh": "伤害数字HUD",
+      "entity_kind": "hud",
+      "summary": "显示战斗伤害数字。",
+      "summary_zh": "显示战斗伤害数字。",
+      "content_tags": [
+        "hud",
+        "damage",
+        "feedback"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "combat_damage_number_hud.display",
+          "entity_id": "combat_damage_number_hud",
+          "display_name": "Damage Number HUD Display",
+          "display_name_zh": "伤害数字HUD显示",
+          "summary": "负责把数值、图标或地图状态呈现到屏幕。",
+          "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
+          "capability_id": "combat_damage_number_hud.display",
+          "semantic_role": "capability",
+          "capability_kind": "hud_binding",
+          "runtime_primitives": [
+            "hud_refresh",
+            "tag_state"
+          ],
+          "engine_ports": [
+            "widget.set_text",
+            "widget.set_percent"
+          ],
+          "runtime_features": [
+            "hud"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "refresh_value",
+          "behaviors": [
+            {
+              "behavior_id": "combat_damage_number_hud.display.refresh_value",
+              "ability_id": "combat_damage_number_hud.display",
+              "entity_id": "combat_damage_number_hud",
+              "display_name": "Damage Number HUD Refresh Value",
+              "display_name_zh": "伤害数字HUD刷新数值",
+              "trigger": "tracked value changes",
+              "execution": "updates bars, icons, counters, or map tiles",
+              "result": "HUD reflects current state",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "combat_damage_number_hud",
+              "required_capability_ids": [
+                "combat_damage_number_hud.display"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "tracked value changes"
+              },
+              "effects": [
+                "HUD reflects current state"
+              ],
+              "runtime_features": [
+                "hud"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "minimap_hud",
+      "display_name": "Minimap HUD",
+      "display_name_zh": "小地图HUD",
+      "entity_kind": "hud",
+      "summary": "显示探索过的房间和出口。",
+      "summary_zh": "显示探索过的房间和出口。",
+      "content_tags": [
+        "hud",
+        "map",
+        "navigation"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "minimap_hud.display",
+          "entity_id": "minimap_hud",
+          "display_name": "Minimap HUD Display",
+          "display_name_zh": "小地图HUD显示",
+          "summary": "负责把数值、图标或地图状态呈现到屏幕。",
+          "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
+          "capability_id": "minimap_hud.display",
+          "semantic_role": "capability",
+          "capability_kind": "hud_binding",
+          "runtime_primitives": [
+            "hud_refresh",
+            "tag_state"
+          ],
+          "engine_ports": [
+            "widget.set_text",
+            "widget.set_percent"
+          ],
+          "runtime_features": [
+            "hud"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "refresh_value",
+          "behaviors": [
+            {
+              "behavior_id": "minimap_hud.display.refresh_value",
+              "ability_id": "minimap_hud.display",
+              "entity_id": "minimap_hud",
+              "display_name": "Minimap HUD Refresh Value",
+              "display_name_zh": "小地图HUD刷新数值",
+              "trigger": "tracked value changes",
+              "execution": "updates bars, icons, counters, or map tiles",
+              "result": "HUD reflects current state",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "minimap_hud",
+              "required_capability_ids": [
+                "minimap_hud.display"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "tracked value changes"
+              },
+              "effects": [
+                "HUD reflects current state"
+              ],
+              "runtime_features": [
+                "hud"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "player",
+      "display_name": "Player Prisoner",
+      "display_name_zh": "玩家囚徒",
+      "entity_kind": "player",
+      "summary": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
+      "summary_zh": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
+      "content_tags": [
+        "player",
+        "prisoner",
+        "combat"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "player.combat",
+          "entity_id": "player",
+          "display_name": "Player Prisoner Combat",
+          "display_name_zh": "玩家囚徒战斗输入",
+          "summary": "负责攻击、取消、受击和战斗输入解析。",
+          "summary_zh": "负责攻击、取消、受击和战斗输入解析。",
+          "capability_id": "player.combat",
+          "semantic_role": "capability",
+          "capability_kind": "combat",
+          "runtime_primitives": [
+            "input_action",
+            "hit_query",
+            "apply_damage"
+          ],
+          "engine_ports": [
+            "input.action_binding",
+            "kismet.line_trace_single",
+            "gameplay_statics.apply_damage"
+          ],
+          "runtime_features": [
+            "combat",
+            "input"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "apply_damage",
+          "behaviors": [
+            {
+              "behavior_id": "player.combat.attack",
+              "ability_id": "player.combat",
+              "entity_id": "player",
+              "display_name": "Player Prisoner Attack",
+              "display_name_zh": "玩家囚徒攻击",
+              "trigger": "attack input",
+              "execution": "executes the selected weapon strike against a target",
+              "result": "target receives combat pressure",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "player",
+              "required_capability_ids": [
+                "player.combat"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "attack input"
+              },
+              "effects": [
+                "target receives combat pressure"
+              ],
+              "runtime_features": [
+                "combat",
+                "input"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        },
+        {
+          "ability_id": "player.movement",
+          "entity_id": "player",
+          "display_name": "Player Prisoner Movement Control",
+          "display_name_zh": "玩家囚徒移动控制",
+          "summary": "负责奔跑、跳跃、攀爬、下落和翻滚等玩家移动决策。",
+          "summary_zh": "负责奔跑、跳跃、攀爬、下落和翻滚等玩家移动决策。",
+          "capability_id": "player.movement",
+          "semantic_role": "capability",
+          "capability_kind": "movement",
+          "runtime_primitives": [
+            "input_axis",
+            "move_actor"
+          ],
+          "engine_ports": [
+            "input.action_binding",
+            "pawn.add_movement_input"
+          ],
+          "runtime_features": [
+            "input",
+            "movement"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "move_actor",
+          "behaviors": [
+            {
+              "behavior_id": "player.movement.dodge_roll",
+              "ability_id": "player.movement",
+              "entity_id": "player",
+              "display_name": "Player Prisoner Dodge Roll",
+              "display_name_zh": "玩家囚徒翻滚闪避",
+              "trigger": "dodge input",
+              "execution": "performs an invulnerable roll with recovery",
+              "result": "player avoids a hit window",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "player",
+              "required_capability_ids": [
+                "player.movement"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "dodge input"
+              },
+              "effects": [
+                "player avoids a hit window"
+              ],
+              "runtime_features": [
+                "input",
+                "movement"
+              ],
+              "semantic_role": "behavior"
+            },
+            {
+              "behavior_id": "player.movement.run",
+              "ability_id": "player.movement",
+              "entity_id": "player",
+              "display_name": "Player Prisoner Run",
+              "display_name_zh": "玩家囚徒奔跑/横移",
+              "trigger": "movement input",
+              "execution": "accelerates, decelerates, and faces travel direction",
+              "result": "player changes horizontal position",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "player",
+              "required_capability_ids": [
+                "player.movement"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "movement input"
+              },
+              "effects": [
+                "player changes horizontal position"
+              ],
+              "runtime_features": [
+                "input",
+                "movement"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "non_goals": []
+}

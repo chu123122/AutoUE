@@ -1,0 +1,17 @@
+{
+  "selected_entity_ids": [
+    "archer",
+    "combat_damage_number_hud",
+    "minimap_hud"
+  ],
+  "selected_capability_ids": [],
+  "selected_behavior_ids": [
+    "player.movement.run",
+    "player.movement.dodge_roll",
+    "player.combat.attack",
+    "archer.pursuit.detect_player",
+    "archer.offense.resolve_hit",
+    "combat_damage_number_hud.display.refresh_value",
+    "minimap_hud.display.refresh_value"
+  ]
+}

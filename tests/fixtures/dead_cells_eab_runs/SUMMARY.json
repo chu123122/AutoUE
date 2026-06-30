@@ -1,0 +1,182 @@
+{
+  "schema_version": "autoue-dead-cells-20-runs/v1",
+  "runs": [
+    {
+      "run": "01-run_01_zombie_room",
+      "status": "unsupported",
+      "unsupported_behaviors": [
+        "player.combat.attack",
+        "zombie.offense.resolve_hit",
+        "zombie.pursuit.detect_player"
+      ]
+    },
+    {
+      "run": "02-run_02_archer_platform",
+      "status": "unsupported",
+      "unsupported_behaviors": [
+        "archer.offense.resolve_hit",
+        "archer.pursuit.detect_player",
+        "player.combat.attack",
+        "player.movement.dodge_roll",
+        "player.movement.run"
+      ]
+    },
+    {
+      "run": "03-run_03_cursed_chest",
+      "status": "unsupported",
+      "unsupported_behaviors": [
+        "cursed_chest.open_reward_and_add_curse"
+      ]
+    },
+    {
+      "run": "04-run_04_poison_pool",
+      "status": "unsupported",
+      "unsupported_behaviors": [
+        "poison_pool.poison_player_on_overlap"
+      ]
+    },
+    {
+      "run": "05-run_05_kamikaze_bat",
+      "status": "unsupported",
+      "unsupported_behaviors": [
+        "kamikaze_bat.offense.resolve_hit",
+        "kamikaze_bat.pursuit.close_gap",
+        "kamikaze_bat.pursuit.detect_player",
+        "player.movement.dodge_roll"
+      ]
+    },
+    {
+      "run": "06-run_06_shield_bearer",
+      "status": "unsupported",
+      "unsupported_behaviors": [
+        "player.combat.attack",
+        "player.movement.dodge_roll",
+        "shield_bearer.offense.resolve_hit",
+        "shield_bearer.pursuit.close_gap"
+      ]
+    },
+    {
+      "run": "07-run_07_flame_trap",
+      "status": "unsupported",
+      "unsupported_behaviors": [
+        "flame_jet_trap.apply_burn_on_hit",
+        "flame_jet_trap.arming.enter_active",
+        "flame_jet_trap.arming.show_warning",
+        "player.movement.run"
+      ]
+    },
+    {
+      "run": "08-run_08_elite_slasher",
+      "status": "unsupported",
+      "unsupported_behaviors": [
+        "player.combat.attack",
+        "slasher.offense.resolve_hit",
+        "slasher.pursuit.close_gap",
+        "slasher.pursuit.detect_player"
+      ]
+    },
+    {
+      "run": "09-run_09_concierge_boss",
+      "status": "unsupported",
+      "unsupported_behaviors": [
+        "concierge_boss.offense.resolve_hit",
+        "concierge_boss.pursuit.detect_player",
+        "player.combat.attack",
+        "player.movement.dodge_roll"
+      ]
+    },
+    {
+      "run": "10-run_10_teleporter_room",
+      "status": "unsupported",
+      "unsupported_behaviors": [
+        "biome_teleporter.activate_transition"
+      ]
+    },
+    {
+      "run": "11-run_11_scroll_reward",
+      "status": "unsupported",
+      "unsupported_behaviors": [
+        "cell_pickup.collect.grant_reward",
+        "scroll_power_pickup.collect.detect_pickup",
+        "scroll_power_pickup.collect.grant_reward",
+        "scroll_power_pickup.feedback.spawn_reward_visual"
+      ]
+    },
+    {
+      "run": "12-run_12_shop_forge",
+      "status": "unsupported",
+      "unsupported_behaviors": [
+        "forge_station.apply_item_upgrade",
+        "shop_room_vendor.purchase_item"
+      ]
+    },
+    {
+      "run": "13-run_13_saw_platform",
+      "status": "unsupported",
+      "unsupported_behaviors": [
+        "crumbling_floor.collapse_when_touched",
+        "player.movement.dodge_roll",
+        "player.movement.run",
+        "saw_blade_trap.arming.enter_active",
+        "saw_blade_trap.damage.apply_contact"
+      ]
+    },
+    {
+      "run": "14-run_14_exit_unlock",
+      "status": "unsupported",
+      "unsupported_behaviors": [
+        "player.combat.attack",
+        "zombie.offense.resolve_hit"
+      ]
+    },
+    {
+      "run": "15-run_15_bleed_build",
+      "status": "unsupported",
+      "unsupported_behaviors": [
+        "blood_sword.apply_bleed_on_hit",
+        "player.combat.attack",
+        "zombie.offense.resolve_hit"
+      ]
+    },
+    {
+      "run": "16-run_16_freeze_control",
+      "status": "supported",
+      "unsupported_behaviors": []
+    },
+    {
+      "run": "17-run_17_electric_chain",
+      "status": "unsupported",
+      "unsupported_behaviors": [
+        "electric_whip.apply_shock_chain",
+        "inquisitor.pursuit.detect_player",
+        "player.combat.attack"
+      ]
+    },
+    {
+      "run": "18-run_18_gold_cell_reward",
+      "status": "unsupported",
+      "unsupported_behaviors": [
+        "cell_pickup.collect.detect_pickup",
+        "cell_pickup.collect.grant_reward",
+        "gold_pickup.collect.detect_pickup",
+        "gold_pickup.collect.grant_reward"
+      ]
+    },
+    {
+      "run": "19-run_19_hud_state",
+      "status": "unsupported",
+      "unsupported_behaviors": [
+        "cursed_chest.open_reward_and_add_curse",
+        "poison_pool.poison_player_on_overlap"
+      ]
+    },
+    {
+      "run": "20-run_20_vfx_showcase",
+      "status": "unsupported",
+      "unsupported_behaviors": [
+        "player.combat.attack",
+        "zombie.offense.resolve_hit"
+      ]
+    }
+  ]
+}

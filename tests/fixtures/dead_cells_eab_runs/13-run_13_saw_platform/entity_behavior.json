@@ -1,0 +1,385 @@
+{
+  "entities": [
+    {
+      "entity_id": "crumbling_floor",
+      "display_name": "Crumbling Floor",
+      "display_name_zh": "塌陷地板",
+      "entity_kind": "object",
+      "summary": "受压后崩塌的平台。",
+      "summary_zh": "受压后崩塌的平台。",
+      "content_tags": [
+        "platform",
+        "breakable",
+        "floor"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "crumbling_floor.platform.collapse_when_touched",
+          "capability_id": "crumbling_floor.platform.collapse_when_touched",
+          "entity_id": "crumbling_floor",
+          "display_name": "crumbling_floor.platform.collapse_when_touched",
+          "display_name_zh": "接触后地板塌陷。",
+          "summary": "接触后地板塌陷。",
+          "summary_zh": "接触后地板塌陷。",
+          "semantic_role": "capability",
+          "capability_kind": "platform_state",
+          "action_kind": "collapse_when_touched",
+          "runtime_primitives": [
+            "overlap_zone",
+            "state_write"
+          ],
+          "engine_ports": [
+            "primitive.on_component_begin_overlap"
+          ],
+          "runtime_features": [
+            "platform",
+            "state_blackboard"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "behaviors": [
+            {
+              "behavior_id": "crumbling_floor.collapse_when_touched",
+              "ability_id": "crumbling_floor.platform.collapse_when_touched",
+              "entity_id": "crumbling_floor",
+              "primary_entity_id": "crumbling_floor",
+              "display_name": "crumbling_floor.collapse_when_touched",
+              "display_name_zh": "接触后地板塌陷。",
+              "trigger": "接触后地板塌陷。",
+              "execution": "接触后地板塌陷。",
+              "result": "接触后地板塌陷。",
+              "required_capability_ids": [
+                "crumbling_floor.platform.collapse_when_touched"
+              ],
+              "trigger_model": {
+                "type": "overlap_enter",
+                "source_entity_id": "player",
+                "target_entity_id": "crumbling_floor"
+              },
+              "conditions": [],
+              "effects": [
+                {
+                  "type": "write_state",
+                  "key": "platform.crumbling_floor.collapsed",
+                  "value": {
+                    "active": true
+                  }
+                }
+              ],
+              "verification_logs": [
+                "BehaviorTriggered crumbling_floor.collapse_when_touched"
+              ],
+              "semantic_role": "behavior",
+              "source_refs": [
+                "autoue-behavior-driven-runtime"
+              ],
+              "runtime_features": [
+                "platform",
+                "state_blackboard"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "health_bar_hud",
+      "display_name": "Health Bar HUD",
+      "display_name_zh": "生命条HUD",
+      "entity_kind": "hud",
+      "summary": "显示玩家生命变化。",
+      "summary_zh": "显示玩家生命变化。",
+      "content_tags": [
+        "hud",
+        "health",
+        "player"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "health_bar_hud.display",
+          "entity_id": "health_bar_hud",
+          "display_name": "Health Bar HUD Display",
+          "display_name_zh": "生命条HUD显示",
+          "summary": "负责把数值、图标或地图状态呈现到屏幕。",
+          "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
+          "capability_id": "health_bar_hud.display",
+          "semantic_role": "capability",
+          "capability_kind": "hud_binding",
+          "runtime_primitives": [
+            "hud_refresh",
+            "tag_state"
+          ],
+          "engine_ports": [
+            "widget.set_text",
+            "widget.set_percent"
+          ],
+          "runtime_features": [
+            "hud"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "refresh_value",
+          "behaviors": [
+            {
+              "behavior_id": "health_bar_hud.display.refresh_value",
+              "ability_id": "health_bar_hud.display",
+              "entity_id": "health_bar_hud",
+              "display_name": "Health Bar HUD Refresh Value",
+              "display_name_zh": "生命条HUD刷新数值",
+              "trigger": "tracked value changes",
+              "execution": "updates bars, icons, counters, or map tiles",
+              "result": "HUD reflects current state",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "health_bar_hud",
+              "required_capability_ids": [
+                "health_bar_hud.display"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "tracked value changes"
+              },
+              "effects": [
+                "HUD reflects current state"
+              ],
+              "runtime_features": [
+                "hud"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "player",
+      "display_name": "Player Prisoner",
+      "display_name_zh": "玩家囚徒",
+      "entity_kind": "player",
+      "summary": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
+      "summary_zh": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
+      "content_tags": [
+        "player",
+        "prisoner",
+        "combat"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "player.movement",
+          "entity_id": "player",
+          "display_name": "Player Prisoner Movement Control",
+          "display_name_zh": "玩家囚徒移动控制",
+          "summary": "负责奔跑、跳跃、攀爬、下落和翻滚等玩家移动决策。",
+          "summary_zh": "负责奔跑、跳跃、攀爬、下落和翻滚等玩家移动决策。",
+          "capability_id": "player.movement",
+          "semantic_role": "capability",
+          "capability_kind": "movement",
+          "runtime_primitives": [
+            "input_axis",
+            "move_actor"
+          ],
+          "engine_ports": [
+            "input.action_binding",
+            "pawn.add_movement_input"
+          ],
+          "runtime_features": [
+            "input",
+            "movement"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "move_actor",
+          "behaviors": [
+            {
+              "behavior_id": "player.movement.dodge_roll",
+              "ability_id": "player.movement",
+              "entity_id": "player",
+              "display_name": "Player Prisoner Dodge Roll",
+              "display_name_zh": "玩家囚徒翻滚闪避",
+              "trigger": "dodge input",
+              "execution": "performs an invulnerable roll with recovery",
+              "result": "player avoids a hit window",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "player",
+              "required_capability_ids": [
+                "player.movement"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "dodge input"
+              },
+              "effects": [
+                "player avoids a hit window"
+              ],
+              "runtime_features": [
+                "input",
+                "movement"
+              ],
+              "semantic_role": "behavior"
+            },
+            {
+              "behavior_id": "player.movement.run",
+              "ability_id": "player.movement",
+              "entity_id": "player",
+              "display_name": "Player Prisoner Run",
+              "display_name_zh": "玩家囚徒奔跑/横移",
+              "trigger": "movement input",
+              "execution": "accelerates, decelerates, and faces travel direction",
+              "result": "player changes horizontal position",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "player",
+              "required_capability_ids": [
+                "player.movement"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "movement input"
+              },
+              "effects": [
+                "player changes horizontal position"
+              ],
+              "runtime_features": [
+                "input",
+                "movement"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "saw_blade_trap",
+      "display_name": "Saw Blade Trap",
+      "display_name_zh": "锯刃陷阱",
+      "entity_kind": "trap",
+      "summary": "移动锯刃危险。",
+      "summary_zh": "移动锯刃危险。",
+      "content_tags": [
+        "trap",
+        "hazard",
+        "moving"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "saw_blade_trap.arming",
+          "entity_id": "saw_blade_trap",
+          "display_name": "Saw Blade Trap Arming",
+          "display_name_zh": "锯刃陷阱预备/激活",
+          "summary": "负责陷阱预警、激活和冷却阶段。",
+          "summary_zh": "负责陷阱预警、激活和冷却阶段。",
+          "capability_id": "saw_blade_trap.arming",
+          "semantic_role": "capability",
+          "capability_kind": "hazard_arming",
+          "runtime_primitives": [
+            "timer",
+            "warning_indicator",
+            "overlap_zone"
+          ],
+          "engine_ports": [
+            "primitive.on_component_begin_overlap"
+          ],
+          "runtime_features": [
+            "trap"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "arm_hazard",
+          "behaviors": [
+            {
+              "behavior_id": "saw_blade_trap.arming.enter_active",
+              "ability_id": "saw_blade_trap.arming",
+              "entity_id": "saw_blade_trap",
+              "display_name": "Saw Blade Trap Enter Active",
+              "display_name_zh": "锯刃陷阱进入激活",
+              "trigger": "arming delay finishes",
+              "execution": "switches the hazard to an active damage window",
+              "result": "hazard becomes threatening",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "saw_blade_trap",
+              "required_capability_ids": [
+                "saw_blade_trap.arming"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "arming delay finishes"
+              },
+              "effects": [
+                "hazard becomes threatening"
+              ],
+              "runtime_features": [
+                "trap"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        },
+        {
+          "ability_id": "saw_blade_trap.damage",
+          "entity_id": "saw_blade_trap",
+          "display_name": "Saw Blade Trap Hazard Damage",
+          "display_name_zh": "锯刃陷阱危险结算",
+          "summary": "负责对进入危险窗口的角色施加结果。",
+          "summary_zh": "负责对进入危险窗口的角色施加结果。",
+          "capability_id": "saw_blade_trap.damage",
+          "semantic_role": "capability",
+          "capability_kind": "hazard_resolution",
+          "runtime_primitives": [
+            "overlap_zone",
+            "apply_damage",
+            "reset_hazard"
+          ],
+          "engine_ports": [
+            "primitive.on_component_begin_overlap",
+            "gameplay_statics.apply_damage"
+          ],
+          "runtime_features": [
+            "state_blackboard",
+            "trap"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "apply_hazard_damage",
+          "behaviors": [
+            {
+              "behavior_id": "saw_blade_trap.damage.apply_contact",
+              "ability_id": "saw_blade_trap.damage",
+              "entity_id": "saw_blade_trap",
+              "display_name": "Saw Blade Trap Apply Contact",
+              "display_name_zh": "锯刃陷阱接触结算",
+              "trigger": "actor overlaps active hazard",
+              "execution": "applies damage or status according to hazard type",
+              "result": "actor suffers hazard result",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "saw_blade_trap",
+              "required_capability_ids": [
+                "saw_blade_trap.damage"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "actor overlaps active hazard"
+              },
+              "effects": [
+                "actor suffers hazard result"
+              ],
+              "runtime_features": [
+                "state_blackboard",
+                "trap"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "non_goals": []
+}

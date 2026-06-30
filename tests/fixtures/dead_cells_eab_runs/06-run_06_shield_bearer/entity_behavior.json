@@ -1,0 +1,411 @@
+{
+  "entities": [
+    {
+      "entity_id": "parry_spark_vfx",
+      "display_name": "Parry Spark VFX",
+      "display_name_zh": "招架火花特效",
+      "entity_kind": "vfx",
+      "summary": "盾反成功的火花反馈。",
+      "summary_zh": "盾反成功的火花反馈。",
+      "content_tags": [
+        "vfx",
+        "particle",
+        "parry"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "parry_spark_vfx.emit",
+          "entity_id": "parry_spark_vfx",
+          "display_name": "Parry Spark VFX Particle Emission",
+          "display_name_zh": "招架火花特效粒子生成",
+          "summary": "负责在玩法事件发生时生成可见粒子。",
+          "summary_zh": "负责在玩法事件发生时生成可见粒子。",
+          "capability_id": "parry_spark_vfx.emit",
+          "semantic_role": "capability",
+          "capability_kind": "vfx_binding",
+          "runtime_primitives": [
+            "spawn_vfx",
+            "attach_vfx"
+          ],
+          "engine_ports": [
+            "component.set_visibility"
+          ],
+          "runtime_features": [
+            "vfx"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "spawn_particles",
+          "behaviors": [
+            {
+              "behavior_id": "parry_spark_vfx.emit.spawn_particles",
+              "ability_id": "parry_spark_vfx.emit",
+              "entity_id": "parry_spark_vfx",
+              "display_name": "Parry Spark VFX Spawn Particles",
+              "display_name_zh": "招架火花特效生成粒子",
+              "trigger": "gameplay event fires",
+              "execution": "spawns particles at the relevant actor or world position",
+              "result": "event has visible feedback",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "parry_spark_vfx",
+              "required_capability_ids": [
+                "parry_spark_vfx.emit"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "gameplay event fires"
+              },
+              "effects": [
+                "event has visible feedback"
+              ],
+              "runtime_features": [
+                "vfx"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "player",
+      "display_name": "Player Prisoner",
+      "display_name_zh": "玩家囚徒",
+      "entity_kind": "player",
+      "summary": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
+      "summary_zh": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
+      "content_tags": [
+        "player",
+        "prisoner",
+        "combat"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "player.combat",
+          "entity_id": "player",
+          "display_name": "Player Prisoner Combat",
+          "display_name_zh": "玩家囚徒战斗输入",
+          "summary": "负责攻击、取消、受击和战斗输入解析。",
+          "summary_zh": "负责攻击、取消、受击和战斗输入解析。",
+          "capability_id": "player.combat",
+          "semantic_role": "capability",
+          "capability_kind": "combat",
+          "runtime_primitives": [
+            "input_action",
+            "hit_query",
+            "apply_damage"
+          ],
+          "engine_ports": [
+            "input.action_binding",
+            "kismet.line_trace_single",
+            "gameplay_statics.apply_damage"
+          ],
+          "runtime_features": [
+            "combat",
+            "input"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "apply_damage",
+          "behaviors": [
+            {
+              "behavior_id": "player.combat.attack",
+              "ability_id": "player.combat",
+              "entity_id": "player",
+              "display_name": "Player Prisoner Attack",
+              "display_name_zh": "玩家囚徒攻击",
+              "trigger": "attack input",
+              "execution": "executes the selected weapon strike against a target",
+              "result": "target receives combat pressure",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "player",
+              "required_capability_ids": [
+                "player.combat"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "attack input"
+              },
+              "effects": [
+                "target receives combat pressure"
+              ],
+              "runtime_features": [
+                "combat",
+                "input"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        },
+        {
+          "ability_id": "player.movement",
+          "entity_id": "player",
+          "display_name": "Player Prisoner Movement Control",
+          "display_name_zh": "玩家囚徒移动控制",
+          "summary": "负责奔跑、跳跃、攀爬、下落和翻滚等玩家移动决策。",
+          "summary_zh": "负责奔跑、跳跃、攀爬、下落和翻滚等玩家移动决策。",
+          "capability_id": "player.movement",
+          "semantic_role": "capability",
+          "capability_kind": "movement",
+          "runtime_primitives": [
+            "input_axis",
+            "move_actor"
+          ],
+          "engine_ports": [
+            "input.action_binding",
+            "pawn.add_movement_input"
+          ],
+          "runtime_features": [
+            "input",
+            "movement"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "move_actor",
+          "behaviors": [
+            {
+              "behavior_id": "player.movement.dodge_roll",
+              "ability_id": "player.movement",
+              "entity_id": "player",
+              "display_name": "Player Prisoner Dodge Roll",
+              "display_name_zh": "玩家囚徒翻滚闪避",
+              "trigger": "dodge input",
+              "execution": "performs an invulnerable roll with recovery",
+              "result": "player avoids a hit window",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "player",
+              "required_capability_ids": [
+                "player.movement"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "dodge input"
+              },
+              "effects": [
+                "player avoids a hit window"
+              ],
+              "runtime_features": [
+                "input",
+                "movement"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "shield_bearer",
+      "display_name": "Shield Bearer",
+      "display_name_zh": "持盾兵",
+      "entity_kind": "enemy",
+      "summary": "持盾兵：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "持盾兵：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "ground",
+        "shield"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 2,
+        "allowed_spawn_tags": [
+          "ground",
+          "shield"
+        ],
+        "default_health": 4
+      },
+      "abilities": [
+        {
+          "ability_id": "shield_bearer.offense",
+          "entity_id": "shield_bearer",
+          "display_name": "Shield Bearer Offense",
+          "display_name_zh": "持盾兵进攻",
+          "summary": "负责攻击预警、命中窗口和攻击结果。",
+          "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
+          "capability_id": "shield_bearer.offense",
+          "semantic_role": "capability",
+          "capability_kind": "enemy_combat",
+          "runtime_primitives": [
+            "telegraph",
+            "hit_query",
+            "apply_damage"
+          ],
+          "engine_ports": [
+            "kismet.sphere_trace_single",
+            "gameplay_statics.apply_damage"
+          ],
+          "runtime_features": [
+            "combat",
+            "enemy_encounter"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "enemy_attack",
+          "behaviors": [
+            {
+              "behavior_id": "shield_bearer.offense.resolve_hit",
+              "ability_id": "shield_bearer.offense",
+              "entity_id": "shield_bearer",
+              "display_name": "Shield Bearer Resolve Hit",
+              "display_name_zh": "持盾兵命中结算",
+              "trigger": "active hit frame overlaps target",
+              "execution": "applies the enemy attack result",
+              "result": "player or object is damaged",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "shield_bearer",
+              "required_capability_ids": [
+                "shield_bearer.offense"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "active hit frame overlaps target"
+              },
+              "effects": [
+                "player or object is damaged"
+              ],
+              "runtime_features": [
+                "combat",
+                "enemy_encounter"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        },
+        {
+          "ability_id": "shield_bearer.pursuit",
+          "entity_id": "shield_bearer",
+          "display_name": "Shield Bearer Pursuit",
+          "display_name_zh": "持盾兵追击",
+          "summary": "负责发现目标、接近目标和重新站位。",
+          "summary_zh": "负责发现目标、接近目标和重新站位。",
+          "capability_id": "shield_bearer.pursuit",
+          "semantic_role": "capability",
+          "capability_kind": "enemy_pursuit",
+          "runtime_primitives": [
+            "awareness_query",
+            "move_actor"
+          ],
+          "engine_ports": [
+            "actor.get_distance_to",
+            "pawn.add_movement_input"
+          ],
+          "runtime_features": [
+            "enemy_encounter",
+            "movement"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "chase_target",
+          "behaviors": [
+            {
+              "behavior_id": "shield_bearer.pursuit.close_gap",
+              "ability_id": "shield_bearer.pursuit",
+              "entity_id": "shield_bearer",
+              "display_name": "Shield Bearer Close Gap",
+              "display_name_zh": "持盾兵接近目标",
+              "trigger": "target is reachable",
+              "execution": "moves, jumps, flies, or teleports toward attack range",
+              "result": "enemy threatens the player",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "shield_bearer",
+              "required_capability_ids": [
+                "shield_bearer.pursuit"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "target is reachable"
+              },
+              "effects": [
+                "enemy threatens the player"
+              ],
+              "runtime_features": [
+                "enemy_encounter",
+                "movement"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "status_icon_hud",
+      "display_name": "Status Icon HUD",
+      "display_name_zh": "状态图标HUD",
+      "entity_kind": "hud",
+      "summary": "HUD widget for runtime state icons.",
+      "summary_zh": "显示运行时状态图标的 HUD 控件。",
+      "content_tags": [
+        "hud",
+        "status",
+        "buff"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "status_icon_hud.display",
+          "entity_id": "status_icon_hud",
+          "display_name": "Status Icon HUD Display",
+          "display_name_zh": "状态图标HUD显示",
+          "summary": "负责把数值、图标或地图状态呈现到屏幕。",
+          "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
+          "capability_id": "status_icon_hud.display",
+          "semantic_role": "capability",
+          "capability_kind": "hud_binding",
+          "runtime_primitives": [
+            "hud_refresh",
+            "tag_state"
+          ],
+          "engine_ports": [
+            "widget.set_text",
+            "widget.set_percent"
+          ],
+          "runtime_features": [
+            "hud"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "refresh_value",
+          "behaviors": [
+            {
+              "behavior_id": "status_icon_hud.display.refresh_value",
+              "ability_id": "status_icon_hud.display",
+              "entity_id": "status_icon_hud",
+              "display_name": "Status Icon HUD Refresh Value",
+              "display_name_zh": "状态图标HUD刷新数值",
+              "trigger": "tracked value changes",
+              "execution": "updates bars, icons, counters, or map tiles",
+              "result": "HUD reflects current state",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "status_icon_hud",
+              "required_capability_ids": [
+                "status_icon_hud.display"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "tracked value changes"
+              },
+              "effects": [
+                "HUD reflects current state"
+              ],
+              "runtime_features": [
+                "hud"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "non_goals": []
+}

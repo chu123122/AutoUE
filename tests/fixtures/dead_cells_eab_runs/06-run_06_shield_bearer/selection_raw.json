@@ -1,0 +1,16 @@
+{
+  "selected_entity_ids": [
+    "shield_bearer",
+    "parry_spark_vfx",
+    "status_icon_hud"
+  ],
+  "selected_capability_ids": [],
+  "selected_behavior_ids": [
+    "player.movement.dodge_roll",
+    "player.combat.attack",
+    "shield_bearer.pursuit.close_gap",
+    "shield_bearer.offense.resolve_hit",
+    "parry_spark_vfx.emit.spawn_particles",
+    "status_icon_hud.display.refresh_value"
+  ]
+}

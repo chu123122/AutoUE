@@ -1,0 +1,67 @@
+{
+  "schema_version": "autoue-behavior-spec/v1",
+  "source_nodes": [
+    "EntityAbilityBehaviorPlanner",
+    "ThinGameplayFlowPlanner",
+    "PuerTSRuntimeMappingPlanner"
+  ],
+  "behaviors": [
+    {
+      "behavior_id": "freeze_trap.freeze_player_on_overlap",
+      "primary_entity_id": "freeze_trap",
+      "entity_id": "freeze_trap",
+      "ability_id": "freeze_trap.sensor.detect_player_overlap",
+      "flow_id": "flow_freeze_trap_freeze_player_on_overlap",
+      "trigger": {
+        "type": "overlap_enter",
+        "source_entity_id": "player",
+        "target_entity_id": "freeze_trap"
+      },
+      "conditions": [
+        {
+          "type": "state_not_active",
+          "key": "player.effects.frozen"
+        }
+      ],
+      "actions": [
+        {
+          "type": "write_state",
+          "key": "player.effects.frozen",
+          "value": {
+            "active": true,
+            "duration": 1.25
+          }
+        },
+        {
+          "type": "movement_gate",
+          "target_entity_id": "player",
+          "blocked_by": "player.effects.frozen"
+        },
+        {
+          "type": "set_vfx_visible",
+          "entity_id": "freeze_vfx",
+          "visible_while": "player.effects.frozen"
+        },
+        {
+          "type": "camera_impulse",
+          "duration": 0.35
+        }
+      ],
+      "required_capability_ids": [
+        "freeze_trap.sensor.detect_player_overlap",
+        "freeze_trap.effect.apply_freeze_to_player",
+        "player.movement.block_while_effect_active",
+        "freeze_vfx.emit.show_freeze",
+        "side_camera.camera.apply_impulse"
+      ],
+      "engine_port_ids": [
+        "primitive.on_component_begin_overlap",
+        "component.set_visibility",
+        "camera.update_view_target"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered freeze_trap.freeze_player_on_overlap"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,403 @@
+{
+  "entities": [
+    {
+      "entity_id": "boss_health_bar_hud",
+      "display_name": "Boss Health Bar HUD",
+      "display_name_zh": "Boss血条HUD",
+      "entity_kind": "hud",
+      "summary": "显示Boss生命阶段。",
+      "summary_zh": "显示Boss生命阶段。",
+      "content_tags": [
+        "hud",
+        "boss",
+        "health"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "boss_health_bar_hud.display",
+          "entity_id": "boss_health_bar_hud",
+          "display_name": "Boss Health Bar HUD Display",
+          "display_name_zh": "Boss血条HUD显示",
+          "summary": "负责把数值、图标或地图状态呈现到屏幕。",
+          "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
+          "capability_id": "boss_health_bar_hud.display",
+          "semantic_role": "capability",
+          "capability_kind": "hud_binding",
+          "runtime_primitives": [
+            "hud_refresh",
+            "tag_state"
+          ],
+          "engine_ports": [
+            "widget.set_text",
+            "widget.set_percent"
+          ],
+          "runtime_features": [
+            "hud"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "refresh_value",
+          "behaviors": [
+            {
+              "behavior_id": "boss_health_bar_hud.display.refresh_value",
+              "ability_id": "boss_health_bar_hud.display",
+              "entity_id": "boss_health_bar_hud",
+              "display_name": "Boss Health Bar HUD Refresh Value",
+              "display_name_zh": "Boss血条HUD刷新数值",
+              "trigger": "tracked value changes",
+              "execution": "updates bars, icons, counters, or map tiles",
+              "result": "HUD reflects current state",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "boss_health_bar_hud",
+              "required_capability_ids": [
+                "boss_health_bar_hud.display"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "tracked value changes"
+              },
+              "effects": [
+                "HUD reflects current state"
+              ],
+              "runtime_features": [
+                "hud"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "concierge_boss",
+      "display_name": "Concierge Boss",
+      "display_name_zh": "看守者",
+      "entity_kind": "enemy",
+      "summary": "看守者：Boss级敌人，拥有阶段化攻击和强压制行为。",
+      "summary_zh": "看守者：Boss级敌人，拥有阶段化攻击和强压制行为。",
+      "content_tags": [
+        "enemy",
+        "boss",
+        "elite"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "concierge_boss.offense",
+          "entity_id": "concierge_boss",
+          "display_name": "Concierge Boss Offense",
+          "display_name_zh": "看守者进攻",
+          "summary": "负责攻击预警、命中窗口和攻击结果。",
+          "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
+          "capability_id": "concierge_boss.offense",
+          "semantic_role": "capability",
+          "capability_kind": "enemy_combat",
+          "runtime_primitives": [
+            "telegraph",
+            "hit_query",
+            "apply_damage"
+          ],
+          "engine_ports": [
+            "kismet.sphere_trace_single",
+            "gameplay_statics.apply_damage"
+          ],
+          "runtime_features": [
+            "combat",
+            "enemy_encounter"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "enemy_attack",
+          "behaviors": [
+            {
+              "behavior_id": "concierge_boss.offense.resolve_hit",
+              "ability_id": "concierge_boss.offense",
+              "entity_id": "concierge_boss",
+              "display_name": "Concierge Boss Resolve Hit",
+              "display_name_zh": "看守者命中结算",
+              "trigger": "active hit frame overlaps target",
+              "execution": "applies the enemy attack result",
+              "result": "player or object is damaged",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "concierge_boss",
+              "required_capability_ids": [
+                "concierge_boss.offense"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "active hit frame overlaps target"
+              },
+              "effects": [
+                "player or object is damaged"
+              ],
+              "runtime_features": [
+                "combat",
+                "enemy_encounter"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        },
+        {
+          "ability_id": "concierge_boss.pursuit",
+          "entity_id": "concierge_boss",
+          "display_name": "Concierge Boss Pursuit",
+          "display_name_zh": "看守者追击",
+          "summary": "负责发现目标、接近目标和重新站位。",
+          "summary_zh": "负责发现目标、接近目标和重新站位。",
+          "capability_id": "concierge_boss.pursuit",
+          "semantic_role": "capability",
+          "capability_kind": "enemy_pursuit",
+          "runtime_primitives": [
+            "awareness_query",
+            "move_actor"
+          ],
+          "engine_ports": [
+            "actor.get_distance_to",
+            "pawn.add_movement_input"
+          ],
+          "runtime_features": [
+            "enemy_encounter",
+            "movement"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "chase_target",
+          "behaviors": [
+            {
+              "behavior_id": "concierge_boss.pursuit.detect_player",
+              "ability_id": "concierge_boss.pursuit",
+              "entity_id": "concierge_boss",
+              "display_name": "Concierge Boss Detect Player",
+              "display_name_zh": "看守者发现玩家",
+              "trigger": "player enters awareness range",
+              "execution": "selects the player as target and turns toward them",
+              "result": "enemy starts pursuing",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "concierge_boss",
+              "required_capability_ids": [
+                "concierge_boss.pursuit"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "player enters awareness range"
+              },
+              "effects": [
+                "enemy starts pursuing"
+              ],
+              "runtime_features": [
+                "enemy_encounter",
+                "movement"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "critical_hit_vfx",
+      "display_name": "Critical Hit VFX",
+      "display_name_zh": "暴击特效",
+      "entity_kind": "vfx",
+      "summary": "暴击时的冲击爆发。",
+      "summary_zh": "暴击时的冲击爆发。",
+      "content_tags": [
+        "vfx",
+        "particle",
+        "critical"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "critical_hit_vfx.emit",
+          "entity_id": "critical_hit_vfx",
+          "display_name": "Critical Hit VFX Particle Emission",
+          "display_name_zh": "暴击特效粒子生成",
+          "summary": "负责在玩法事件发生时生成可见粒子。",
+          "summary_zh": "负责在玩法事件发生时生成可见粒子。",
+          "capability_id": "critical_hit_vfx.emit",
+          "semantic_role": "capability",
+          "capability_kind": "vfx_binding",
+          "runtime_primitives": [
+            "spawn_vfx",
+            "attach_vfx"
+          ],
+          "engine_ports": [
+            "component.set_visibility"
+          ],
+          "runtime_features": [
+            "vfx"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "spawn_particles",
+          "behaviors": [
+            {
+              "behavior_id": "critical_hit_vfx.emit.spawn_particles",
+              "ability_id": "critical_hit_vfx.emit",
+              "entity_id": "critical_hit_vfx",
+              "display_name": "Critical Hit VFX Spawn Particles",
+              "display_name_zh": "暴击特效生成粒子",
+              "trigger": "gameplay event fires",
+              "execution": "spawns particles at the relevant actor or world position",
+              "result": "event has visible feedback",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "critical_hit_vfx",
+              "required_capability_ids": [
+                "critical_hit_vfx.emit"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "gameplay event fires"
+              },
+              "effects": [
+                "event has visible feedback"
+              ],
+              "runtime_features": [
+                "vfx"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "player",
+      "display_name": "Player Prisoner",
+      "display_name_zh": "玩家囚徒",
+      "entity_kind": "player",
+      "summary": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
+      "summary_zh": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
+      "content_tags": [
+        "player",
+        "prisoner",
+        "combat"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "player.combat",
+          "entity_id": "player",
+          "display_name": "Player Prisoner Combat",
+          "display_name_zh": "玩家囚徒战斗输入",
+          "summary": "负责攻击、取消、受击和战斗输入解析。",
+          "summary_zh": "负责攻击、取消、受击和战斗输入解析。",
+          "capability_id": "player.combat",
+          "semantic_role": "capability",
+          "capability_kind": "combat",
+          "runtime_primitives": [
+            "input_action",
+            "hit_query",
+            "apply_damage"
+          ],
+          "engine_ports": [
+            "input.action_binding",
+            "kismet.line_trace_single",
+            "gameplay_statics.apply_damage"
+          ],
+          "runtime_features": [
+            "combat",
+            "input"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "apply_damage",
+          "behaviors": [
+            {
+              "behavior_id": "player.combat.attack",
+              "ability_id": "player.combat",
+              "entity_id": "player",
+              "display_name": "Player Prisoner Attack",
+              "display_name_zh": "玩家囚徒攻击",
+              "trigger": "attack input",
+              "execution": "executes the selected weapon strike against a target",
+              "result": "target receives combat pressure",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "player",
+              "required_capability_ids": [
+                "player.combat"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "attack input"
+              },
+              "effects": [
+                "target receives combat pressure"
+              ],
+              "runtime_features": [
+                "combat",
+                "input"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        },
+        {
+          "ability_id": "player.movement",
+          "entity_id": "player",
+          "display_name": "Player Prisoner Movement Control",
+          "display_name_zh": "玩家囚徒移动控制",
+          "summary": "负责奔跑、跳跃、攀爬、下落和翻滚等玩家移动决策。",
+          "summary_zh": "负责奔跑、跳跃、攀爬、下落和翻滚等玩家移动决策。",
+          "capability_id": "player.movement",
+          "semantic_role": "capability",
+          "capability_kind": "movement",
+          "runtime_primitives": [
+            "input_axis",
+            "move_actor"
+          ],
+          "engine_ports": [
+            "input.action_binding",
+            "pawn.add_movement_input"
+          ],
+          "runtime_features": [
+            "input",
+            "movement"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "move_actor",
+          "behaviors": [
+            {
+              "behavior_id": "player.movement.dodge_roll",
+              "ability_id": "player.movement",
+              "entity_id": "player",
+              "display_name": "Player Prisoner Dodge Roll",
+              "display_name_zh": "玩家囚徒翻滚闪避",
+              "trigger": "dodge input",
+              "execution": "performs an invulnerable roll with recovery",
+              "result": "player avoids a hit window",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "player",
+              "required_capability_ids": [
+                "player.movement"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "dodge input"
+              },
+              "effects": [
+                "player avoids a hit window"
+              ],
+              "runtime_features": [
+                "input",
+                "movement"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "non_goals": []
+}

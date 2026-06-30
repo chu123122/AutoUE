@@ -1,0 +1,105 @@
+{
+  "schema_version": "autoue-behavior-spec/v1",
+  "source_nodes": [
+    "EntityAbilityBehaviorPlanner",
+    "ThinGameplayFlowPlanner",
+    "PuerTSRuntimeMappingPlanner"
+  ],
+  "behaviors": [
+    {
+      "behavior_id": "health_bar_hud.display.refresh_value",
+      "primary_entity_id": "health_bar_hud",
+      "entity_id": "health_bar_hud",
+      "ability_id": "health_bar_hud.display",
+      "flow_id": "flow_health_bar_hud_display_refresh_value",
+      "trigger": {
+        "type": "legacy_text",
+        "description": "tracked value changes"
+      },
+      "conditions": [],
+      "actions": [
+        {
+          "type": "set_hud_value",
+          "entity_id": "health_bar_hud",
+          "source": "state_blackboard",
+          "capability_id": "health_bar_hud.display"
+        }
+      ],
+      "required_capability_ids": [
+        "health_bar_hud.display"
+      ],
+      "engine_port_ids": [
+        "widget.set_text",
+        "widget.set_percent"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered health_bar_hud.display.refresh_value"
+      ]
+    },
+    {
+      "behavior_id": "poison_pool.poison_player_on_overlap",
+      "primary_entity_id": "poison_pool",
+      "entity_id": "poison_pool",
+      "ability_id": "poison_pool.hazard.apply_poison_dot",
+      "flow_id": "flow_poison_pool_poison_player_on_overlap",
+      "trigger": {
+        "type": "overlap_enter",
+        "source_entity_id": "player",
+        "target_entity_id": "poison_pool"
+      },
+      "conditions": [],
+      "actions": [
+        {
+          "type": "write_state",
+          "key": "player.effects.poison_dot",
+          "value": {
+            "duration": 3,
+            "damage_per_second": 5
+          }
+        }
+      ],
+      "required_capability_ids": [
+        "poison_pool.hazard.apply_poison_dot",
+        "poison_vfx.emit",
+        "health_bar_hud.display"
+      ],
+      "engine_port_ids": [
+        "primitive.on_component_begin_overlap",
+        "component.set_visibility",
+        "widget.set_text",
+        "widget.set_percent"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered poison_pool.poison_player_on_overlap"
+      ]
+    },
+    {
+      "behavior_id": "poison_vfx.emit.spawn_particles",
+      "primary_entity_id": "poison_vfx",
+      "entity_id": "poison_vfx",
+      "ability_id": "poison_vfx.emit",
+      "flow_id": "flow_poison_vfx_emit_spawn_particles",
+      "trigger": {
+        "type": "legacy_text",
+        "description": "gameplay event fires"
+      },
+      "conditions": [],
+      "actions": [
+        {
+          "type": "spawn_vfx",
+          "entity_id": "poison_vfx",
+          "capability_id": "poison_vfx.emit"
+        }
+      ],
+      "required_capability_ids": [
+        "poison_vfx.emit"
+      ],
+      "engine_port_ids": [
+        "component.set_visibility"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered poison_vfx.emit.spawn_particles"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "selected_entity_ids": [
+    "shop_room_vendor",
+    "forge_station",
+    "gold_pickup",
+    "status_icon_hud"
+  ],
+  "selected_capability_ids": [],
+  "selected_behavior_ids": [
+    "shop_room_vendor.purchase_item",
+    "forge_station.apply_item_upgrade",
+    "status_icon_hud.display.refresh_value"
+  ]
+}

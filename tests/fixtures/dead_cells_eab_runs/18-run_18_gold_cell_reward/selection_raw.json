@@ -1,0 +1,17 @@
+{
+  "selected_entity_ids": [
+    "gold_pickup",
+    "cell_pickup",
+    "corpse_dust_vfx",
+    "status_icon_hud"
+  ],
+  "selected_capability_ids": [],
+  "selected_behavior_ids": [
+    "gold_pickup.collect.detect_pickup",
+    "gold_pickup.collect.grant_reward",
+    "cell_pickup.collect.detect_pickup",
+    "cell_pickup.collect.grant_reward",
+    "corpse_dust_vfx.emit.spawn_particles",
+    "status_icon_hud.display.refresh_value"
+  ]
+}

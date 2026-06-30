@@ -1,0 +1,228 @@
+{
+  "entities": [
+    {
+      "entity_id": "biome_teleporter",
+      "display_name": "Biome Teleporter",
+      "display_name_zh": "生物群落传送器",
+      "entity_kind": "object",
+      "summary": "已发现房间之间快速移动的装置。",
+      "summary_zh": "已发现房间之间快速移动的装置。",
+      "content_tags": [
+        "teleport",
+        "navigation",
+        "object"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "biome_teleporter.teleport.activate_transition",
+          "capability_id": "biome_teleporter.teleport.activate_transition",
+          "entity_id": "biome_teleporter",
+          "display_name": "biome_teleporter.teleport.activate_transition",
+          "display_name_zh": "激活生物群落传送。",
+          "summary": "激活生物群落传送。",
+          "summary_zh": "激活生物群落传送。",
+          "semantic_role": "capability",
+          "capability_kind": "teleport_transition",
+          "action_kind": "activate_transition",
+          "runtime_primitives": [
+            "overlap_zone",
+            "open_level",
+            "spawn_vfx"
+          ],
+          "engine_ports": [
+            "primitive.on_component_begin_overlap",
+            "gameplay_statics.open_level"
+          ],
+          "runtime_features": [
+            "teleport",
+            "vfx"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "behaviors": [
+            {
+              "behavior_id": "biome_teleporter.activate_transition",
+              "ability_id": "biome_teleporter.teleport.activate_transition",
+              "entity_id": "biome_teleporter",
+              "primary_entity_id": "biome_teleporter",
+              "display_name": "biome_teleporter.activate_transition",
+              "display_name_zh": "激活生物群落传送。",
+              "trigger": "激活生物群落传送。",
+              "execution": "激活生物群落传送。",
+              "result": "激活生物群落传送。",
+              "required_capability_ids": [
+                "biome_teleporter.teleport.activate_transition",
+                "teleport_vfx.emit",
+                "minimap_hud.display"
+              ],
+              "trigger_model": {
+                "type": "input_action",
+                "source_entity_id": "player",
+                "target_entity_id": "biome_teleporter"
+              },
+              "conditions": [],
+              "effects": [
+                {
+                  "type": "teleport",
+                  "target": "next_biome"
+                }
+              ],
+              "verification_logs": [
+                "BehaviorTriggered biome_teleporter.activate_transition"
+              ],
+              "semantic_role": "behavior",
+              "source_refs": [
+                "autoue-behavior-driven-runtime"
+              ],
+              "runtime_features": [
+                "hud",
+                "teleport",
+                "vfx"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "minimap_hud",
+      "display_name": "Minimap HUD",
+      "display_name_zh": "小地图HUD",
+      "entity_kind": "hud",
+      "summary": "显示探索过的房间和出口。",
+      "summary_zh": "显示探索过的房间和出口。",
+      "content_tags": [
+        "hud",
+        "map",
+        "navigation"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "minimap_hud.display",
+          "entity_id": "minimap_hud",
+          "display_name": "Minimap HUD Display",
+          "display_name_zh": "小地图HUD显示",
+          "summary": "负责把数值、图标或地图状态呈现到屏幕。",
+          "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
+          "capability_id": "minimap_hud.display",
+          "semantic_role": "capability",
+          "capability_kind": "hud_binding",
+          "runtime_primitives": [
+            "hud_refresh",
+            "tag_state"
+          ],
+          "engine_ports": [
+            "widget.set_text",
+            "widget.set_percent"
+          ],
+          "runtime_features": [
+            "hud"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "refresh_value",
+          "behaviors": [
+            {
+              "behavior_id": "minimap_hud.display.refresh_value",
+              "ability_id": "minimap_hud.display",
+              "entity_id": "minimap_hud",
+              "display_name": "Minimap HUD Refresh Value",
+              "display_name_zh": "小地图HUD刷新数值",
+              "trigger": "tracked value changes",
+              "execution": "updates bars, icons, counters, or map tiles",
+              "result": "HUD reflects current state",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "minimap_hud",
+              "required_capability_ids": [
+                "minimap_hud.display"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "tracked value changes"
+              },
+              "effects": [
+                "HUD reflects current state"
+              ],
+              "runtime_features": [
+                "hud"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "teleport_vfx",
+      "display_name": "Teleport VFX",
+      "display_name_zh": "传送特效",
+      "entity_kind": "vfx",
+      "summary": "传送出现和消失的粒子反馈。",
+      "summary_zh": "传送出现和消失的粒子反馈。",
+      "content_tags": [
+        "vfx",
+        "particle",
+        "teleport"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "teleport_vfx.emit",
+          "entity_id": "teleport_vfx",
+          "display_name": "Teleport VFX Particle Emission",
+          "display_name_zh": "传送特效粒子生成",
+          "summary": "负责在玩法事件发生时生成可见粒子。",
+          "summary_zh": "负责在玩法事件发生时生成可见粒子。",
+          "capability_id": "teleport_vfx.emit",
+          "semantic_role": "capability",
+          "capability_kind": "vfx_binding",
+          "runtime_primitives": [
+            "spawn_vfx",
+            "attach_vfx"
+          ],
+          "engine_ports": [
+            "component.set_visibility"
+          ],
+          "runtime_features": [
+            "vfx"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "spawn_particles",
+          "behaviors": [
+            {
+              "behavior_id": "teleport_vfx.emit.spawn_particles",
+              "ability_id": "teleport_vfx.emit",
+              "entity_id": "teleport_vfx",
+              "display_name": "Teleport VFX Spawn Particles",
+              "display_name_zh": "传送特效生成粒子",
+              "trigger": "gameplay event fires",
+              "execution": "spawns particles at the relevant actor or world position",
+              "result": "event has visible feedback",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "teleport_vfx",
+              "required_capability_ids": [
+                "teleport_vfx.emit"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "gameplay event fires"
+              },
+              "effects": [
+                "event has visible feedback"
+              ],
+              "runtime_features": [
+                "vfx"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "non_goals": []
+}

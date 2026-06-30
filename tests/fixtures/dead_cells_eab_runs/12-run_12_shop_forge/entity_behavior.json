@@ -1,0 +1,253 @@
+{
+  "entities": [
+    {
+      "entity_id": "forge_station",
+      "display_name": "Forge Station",
+      "display_name_zh": "铸造所",
+      "entity_kind": "object",
+      "summary": "升级装备品质和词缀的站点。",
+      "summary_zh": "升级装备品质和词缀的站点。",
+      "content_tags": [
+        "forge",
+        "upgrade",
+        "equipment"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "forge_station.upgrade.apply_item_upgrade",
+          "capability_id": "forge_station.upgrade.apply_item_upgrade",
+          "entity_id": "forge_station",
+          "display_name": "forge_station.upgrade.apply_item_upgrade",
+          "display_name_zh": "应用装备升级。",
+          "summary": "应用装备升级。",
+          "summary_zh": "应用装备升级。",
+          "semantic_role": "capability",
+          "capability_kind": "upgrade",
+          "action_kind": "apply_item_upgrade",
+          "runtime_primitives": [
+            "modify_equipment",
+            "spend_currency"
+          ],
+          "engine_ports": [],
+          "runtime_features": [
+            "upgrade",
+            "inventory",
+            "currency"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "behaviors": [
+            {
+              "behavior_id": "forge_station.apply_item_upgrade",
+              "ability_id": "forge_station.upgrade.apply_item_upgrade",
+              "entity_id": "forge_station",
+              "primary_entity_id": "forge_station",
+              "display_name": "forge_station.apply_item_upgrade",
+              "display_name_zh": "应用装备升级。",
+              "trigger": "应用装备升级。",
+              "execution": "应用装备升级。",
+              "result": "应用装备升级。",
+              "required_capability_ids": [
+                "forge_station.upgrade.apply_item_upgrade",
+                "status_icon_hud.display"
+              ],
+              "trigger_model": {
+                "type": "input_action",
+                "source_entity_id": "player",
+                "target_entity_id": "forge_station"
+              },
+              "conditions": [],
+              "effects": [
+                {
+                  "type": "apply_item_upgrade"
+                }
+              ],
+              "verification_logs": [
+                "BehaviorTriggered forge_station.apply_item_upgrade"
+              ],
+              "semantic_role": "behavior",
+              "source_refs": [
+                "autoue-behavior-driven-runtime"
+              ],
+              "runtime_features": [
+                "currency",
+                "hud",
+                "inventory",
+                "upgrade"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "gold_pickup",
+      "display_name": "Gold Pickup",
+      "display_name_zh": "金币",
+      "entity_kind": "pickup",
+      "summary": "敌人或容器掉落的货币。",
+      "summary_zh": "敌人或容器掉落的货币。",
+      "content_tags": [
+        "gold",
+        "currency",
+        "pickup"
+      ],
+      "spawnable": false,
+      "abilities": []
+    },
+    {
+      "entity_id": "shop_room_vendor",
+      "display_name": "Shop Room Vendor",
+      "display_name_zh": "商店商人",
+      "entity_kind": "object",
+      "summary": "出售武器、技能和补给的房间实体。",
+      "summary_zh": "出售武器、技能和补给的房间实体。",
+      "content_tags": [
+        "shop",
+        "vendor",
+        "reward"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "shop_room_vendor.transaction.purchase_item",
+          "capability_id": "shop_room_vendor.transaction.purchase_item",
+          "entity_id": "shop_room_vendor",
+          "display_name": "shop_room_vendor.transaction.purchase_item",
+          "display_name_zh": "购买商店物品。",
+          "summary": "购买商店物品。",
+          "summary_zh": "购买商店物品。",
+          "semantic_role": "capability",
+          "capability_kind": "transaction",
+          "action_kind": "purchase_item",
+          "runtime_primitives": [
+            "check_currency",
+            "spend_currency",
+            "add_item"
+          ],
+          "engine_ports": [],
+          "runtime_features": [
+            "transaction",
+            "inventory",
+            "currency"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "behaviors": [
+            {
+              "behavior_id": "shop_room_vendor.purchase_item",
+              "ability_id": "shop_room_vendor.transaction.purchase_item",
+              "entity_id": "shop_room_vendor",
+              "primary_entity_id": "shop_room_vendor",
+              "display_name": "shop_room_vendor.purchase_item",
+              "display_name_zh": "购买商店物品。",
+              "trigger": "购买商店物品。",
+              "execution": "购买商店物品。",
+              "result": "购买商店物品。",
+              "required_capability_ids": [
+                "shop_room_vendor.transaction.purchase_item",
+                "gold_pickup.collect",
+                "status_icon_hud.display"
+              ],
+              "trigger_model": {
+                "type": "input_action",
+                "source_entity_id": "player",
+                "target_entity_id": "shop_room_vendor"
+              },
+              "conditions": [],
+              "effects": [
+                {
+                  "type": "purchase_item"
+                }
+              ],
+              "verification_logs": [
+                "BehaviorTriggered shop_room_vendor.purchase_item"
+              ],
+              "semantic_role": "behavior",
+              "source_refs": [
+                "autoue-behavior-driven-runtime"
+              ],
+              "runtime_features": [
+                "currency",
+                "hud",
+                "inventory",
+                "pickup",
+                "transaction"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "status_icon_hud",
+      "display_name": "Status Icon HUD",
+      "display_name_zh": "状态图标HUD",
+      "entity_kind": "hud",
+      "summary": "HUD widget for runtime state icons.",
+      "summary_zh": "显示运行时状态图标的 HUD 控件。",
+      "content_tags": [
+        "hud",
+        "status",
+        "buff"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "status_icon_hud.display",
+          "entity_id": "status_icon_hud",
+          "display_name": "Status Icon HUD Display",
+          "display_name_zh": "状态图标HUD显示",
+          "summary": "负责把数值、图标或地图状态呈现到屏幕。",
+          "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
+          "capability_id": "status_icon_hud.display",
+          "semantic_role": "capability",
+          "capability_kind": "hud_binding",
+          "runtime_primitives": [
+            "hud_refresh",
+            "tag_state"
+          ],
+          "engine_ports": [
+            "widget.set_text",
+            "widget.set_percent"
+          ],
+          "runtime_features": [
+            "hud"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "refresh_value",
+          "behaviors": [
+            {
+              "behavior_id": "status_icon_hud.display.refresh_value",
+              "ability_id": "status_icon_hud.display",
+              "entity_id": "status_icon_hud",
+              "display_name": "Status Icon HUD Refresh Value",
+              "display_name_zh": "状态图标HUD刷新数值",
+              "trigger": "tracked value changes",
+              "execution": "updates bars, icons, counters, or map tiles",
+              "result": "HUD reflects current state",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "status_icon_hud",
+              "required_capability_ids": [
+                "status_icon_hud.display"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "tracked value changes"
+              },
+              "effects": [
+                "HUD reflects current state"
+              ],
+              "runtime_features": [
+                "hud"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "non_goals": []
+}

@@ -1,0 +1,153 @@
+{
+  "flows": [
+    {
+      "flow_id": "flow_burn_vfx_emit_spawn_particles",
+      "entity_id": "burn_vfx",
+      "ability_id": "burn_vfx.emit",
+      "source_behavior_id": "burn_vfx.emit.spawn_particles",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "component.set_visibility"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered burn_vfx.emit.spawn_particles"
+      ]
+    },
+    {
+      "flow_id": "flow_combat_damage_number_hud_display_refresh_value",
+      "entity_id": "combat_damage_number_hud",
+      "ability_id": "combat_damage_number_hud.display",
+      "source_behavior_id": "combat_damage_number_hud.display.refresh_value",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "widget.set_text",
+            "widget.set_percent"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered combat_damage_number_hud.display.refresh_value"
+      ]
+    },
+    {
+      "flow_id": "flow_kamikaze_bat_offense_resolve_hit",
+      "entity_id": "kamikaze_bat",
+      "ability_id": "kamikaze_bat.offense",
+      "source_behavior_id": "kamikaze_bat.offense.resolve_hit",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "kismet.sphere_trace_single",
+            "gameplay_statics.apply_damage"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered kamikaze_bat.offense.resolve_hit"
+      ]
+    },
+    {
+      "flow_id": "flow_kamikaze_bat_pursuit_close_gap",
+      "entity_id": "kamikaze_bat",
+      "ability_id": "kamikaze_bat.pursuit",
+      "source_behavior_id": "kamikaze_bat.pursuit.close_gap",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "actor.get_distance_to",
+            "pawn.add_movement_input"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered kamikaze_bat.pursuit.close_gap"
+      ]
+    },
+    {
+      "flow_id": "flow_kamikaze_bat_pursuit_detect_player",
+      "entity_id": "kamikaze_bat",
+      "ability_id": "kamikaze_bat.pursuit",
+      "source_behavior_id": "kamikaze_bat.pursuit.detect_player",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "actor.get_distance_to",
+            "pawn.add_movement_input"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered kamikaze_bat.pursuit.detect_player"
+      ]
+    },
+    {
+      "flow_id": "flow_player_movement_dodge_roll",
+      "entity_id": "player",
+      "ability_id": "player.movement",
+      "source_behavior_id": "player.movement.dodge_roll",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "input.action_binding",
+            "pawn.add_movement_input"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered player.movement.dodge_roll"
+      ]
+    }
+  ]
+}

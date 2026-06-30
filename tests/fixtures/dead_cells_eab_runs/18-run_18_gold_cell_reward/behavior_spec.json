@@ -1,0 +1,156 @@
+{
+  "schema_version": "autoue-behavior-spec/v1",
+  "source_nodes": [
+    "EntityAbilityBehaviorPlanner",
+    "ThinGameplayFlowPlanner",
+    "PuerTSRuntimeMappingPlanner"
+  ],
+  "behaviors": [
+    {
+      "behavior_id": "cell_pickup.collect.detect_pickup",
+      "primary_entity_id": "cell_pickup",
+      "entity_id": "cell_pickup",
+      "ability_id": "cell_pickup.collect",
+      "flow_id": "flow_cell_pickup_collect_detect_pickup",
+      "trigger": {
+        "type": "legacy_text",
+        "description": "player overlaps pickup"
+      },
+      "conditions": [],
+      "actions": [],
+      "required_capability_ids": [
+        "cell_pickup.collect"
+      ],
+      "engine_port_ids": [
+        "primitive.on_component_begin_overlap"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered cell_pickup.collect.detect_pickup"
+      ]
+    },
+    {
+      "behavior_id": "cell_pickup.collect.grant_reward",
+      "primary_entity_id": "cell_pickup",
+      "entity_id": "cell_pickup",
+      "ability_id": "cell_pickup.collect",
+      "flow_id": "flow_cell_pickup_collect_grant_reward",
+      "trigger": {
+        "type": "legacy_text",
+        "description": "collection is accepted"
+      },
+      "conditions": [],
+      "actions": [],
+      "required_capability_ids": [
+        "cell_pickup.collect"
+      ],
+      "engine_port_ids": [
+        "primitive.on_component_begin_overlap"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered cell_pickup.collect.grant_reward"
+      ]
+    },
+    {
+      "behavior_id": "corpse_dust_vfx.emit.spawn_particles",
+      "primary_entity_id": "corpse_dust_vfx",
+      "entity_id": "corpse_dust_vfx",
+      "ability_id": "corpse_dust_vfx.emit",
+      "flow_id": "flow_corpse_dust_vfx_emit_spawn_particles",
+      "trigger": {
+        "type": "legacy_text",
+        "description": "gameplay event fires"
+      },
+      "conditions": [],
+      "actions": [
+        {
+          "type": "spawn_vfx",
+          "entity_id": "corpse_dust_vfx",
+          "capability_id": "corpse_dust_vfx.emit"
+        }
+      ],
+      "required_capability_ids": [
+        "corpse_dust_vfx.emit"
+      ],
+      "engine_port_ids": [
+        "component.set_visibility"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered corpse_dust_vfx.emit.spawn_particles"
+      ]
+    },
+    {
+      "behavior_id": "gold_pickup.collect.detect_pickup",
+      "primary_entity_id": "gold_pickup",
+      "entity_id": "gold_pickup",
+      "ability_id": "gold_pickup.collect",
+      "flow_id": "flow_gold_pickup_collect_detect_pickup",
+      "trigger": {
+        "type": "legacy_text",
+        "description": "player overlaps pickup"
+      },
+      "conditions": [],
+      "actions": [],
+      "required_capability_ids": [
+        "gold_pickup.collect"
+      ],
+      "engine_port_ids": [
+        "primitive.on_component_begin_overlap"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered gold_pickup.collect.detect_pickup"
+      ]
+    },
+    {
+      "behavior_id": "gold_pickup.collect.grant_reward",
+      "primary_entity_id": "gold_pickup",
+      "entity_id": "gold_pickup",
+      "ability_id": "gold_pickup.collect",
+      "flow_id": "flow_gold_pickup_collect_grant_reward",
+      "trigger": {
+        "type": "legacy_text",
+        "description": "collection is accepted"
+      },
+      "conditions": [],
+      "actions": [],
+      "required_capability_ids": [
+        "gold_pickup.collect"
+      ],
+      "engine_port_ids": [
+        "primitive.on_component_begin_overlap"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered gold_pickup.collect.grant_reward"
+      ]
+    },
+    {
+      "behavior_id": "status_icon_hud.display.refresh_value",
+      "primary_entity_id": "status_icon_hud",
+      "entity_id": "status_icon_hud",
+      "ability_id": "status_icon_hud.display",
+      "flow_id": "flow_status_icon_hud_display_refresh_value",
+      "trigger": {
+        "type": "legacy_text",
+        "description": "tracked value changes"
+      },
+      "conditions": [],
+      "actions": [
+        {
+          "type": "set_hud_value",
+          "entity_id": "status_icon_hud",
+          "source": "state_blackboard",
+          "capability_id": "status_icon_hud.display"
+        }
+      ],
+      "required_capability_ids": [
+        "status_icon_hud.display"
+      ],
+      "engine_port_ids": [
+        "widget.set_text",
+        "widget.set_percent"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered status_icon_hud.display.refresh_value"
+      ]
+    }
+  ]
+}

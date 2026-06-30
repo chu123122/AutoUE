@@ -1,0 +1,162 @@
+{
+  "schema_version": "autoue-behavior-spec/v1",
+  "source_nodes": [
+    "EntityAbilityBehaviorPlanner",
+    "ThinGameplayFlowPlanner",
+    "PuerTSRuntimeMappingPlanner"
+  ],
+  "behaviors": [
+    {
+      "behavior_id": "crumbling_floor.collapse_when_touched",
+      "primary_entity_id": "crumbling_floor",
+      "entity_id": "crumbling_floor",
+      "ability_id": "crumbling_floor.platform.collapse_when_touched",
+      "flow_id": "flow_crumbling_floor_collapse_when_touched",
+      "trigger": {
+        "type": "overlap_enter",
+        "source_entity_id": "player",
+        "target_entity_id": "crumbling_floor"
+      },
+      "conditions": [],
+      "actions": [
+        {
+          "type": "write_state",
+          "key": "platform.crumbling_floor.collapsed",
+          "value": {
+            "active": true
+          }
+        }
+      ],
+      "required_capability_ids": [
+        "crumbling_floor.platform.collapse_when_touched"
+      ],
+      "engine_port_ids": [
+        "primitive.on_component_begin_overlap"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered crumbling_floor.collapse_when_touched"
+      ]
+    },
+    {
+      "behavior_id": "health_bar_hud.display.refresh_value",
+      "primary_entity_id": "health_bar_hud",
+      "entity_id": "health_bar_hud",
+      "ability_id": "health_bar_hud.display",
+      "flow_id": "flow_health_bar_hud_display_refresh_value",
+      "trigger": {
+        "type": "legacy_text",
+        "description": "tracked value changes"
+      },
+      "conditions": [],
+      "actions": [
+        {
+          "type": "set_hud_value",
+          "entity_id": "health_bar_hud",
+          "source": "state_blackboard",
+          "capability_id": "health_bar_hud.display"
+        }
+      ],
+      "required_capability_ids": [
+        "health_bar_hud.display"
+      ],
+      "engine_port_ids": [
+        "widget.set_text",
+        "widget.set_percent"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered health_bar_hud.display.refresh_value"
+      ]
+    },
+    {
+      "behavior_id": "player.movement.dodge_roll",
+      "primary_entity_id": "player",
+      "entity_id": "player",
+      "ability_id": "player.movement",
+      "flow_id": "flow_player_movement_dodge_roll",
+      "trigger": {
+        "type": "legacy_text",
+        "description": "dodge input"
+      },
+      "conditions": [],
+      "actions": [],
+      "required_capability_ids": [
+        "player.movement"
+      ],
+      "engine_port_ids": [
+        "input.action_binding",
+        "pawn.add_movement_input"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered player.movement.dodge_roll"
+      ]
+    },
+    {
+      "behavior_id": "player.movement.run",
+      "primary_entity_id": "player",
+      "entity_id": "player",
+      "ability_id": "player.movement",
+      "flow_id": "flow_player_movement_run",
+      "trigger": {
+        "type": "legacy_text",
+        "description": "movement input"
+      },
+      "conditions": [],
+      "actions": [],
+      "required_capability_ids": [
+        "player.movement"
+      ],
+      "engine_port_ids": [
+        "input.action_binding",
+        "pawn.add_movement_input"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered player.movement.run"
+      ]
+    },
+    {
+      "behavior_id": "saw_blade_trap.arming.enter_active",
+      "primary_entity_id": "saw_blade_trap",
+      "entity_id": "saw_blade_trap",
+      "ability_id": "saw_blade_trap.arming",
+      "flow_id": "flow_saw_blade_trap_arming_enter_active",
+      "trigger": {
+        "type": "legacy_text",
+        "description": "arming delay finishes"
+      },
+      "conditions": [],
+      "actions": [],
+      "required_capability_ids": [
+        "saw_blade_trap.arming"
+      ],
+      "engine_port_ids": [
+        "primitive.on_component_begin_overlap"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered saw_blade_trap.arming.enter_active"
+      ]
+    },
+    {
+      "behavior_id": "saw_blade_trap.damage.apply_contact",
+      "primary_entity_id": "saw_blade_trap",
+      "entity_id": "saw_blade_trap",
+      "ability_id": "saw_blade_trap.damage",
+      "flow_id": "flow_saw_blade_trap_damage_apply_contact",
+      "trigger": {
+        "type": "legacy_text",
+        "description": "actor overlaps active hazard"
+      },
+      "conditions": [],
+      "actions": [],
+      "required_capability_ids": [
+        "saw_blade_trap.damage"
+      ],
+      "engine_port_ids": [
+        "primitive.on_component_begin_overlap",
+        "gameplay_statics.apply_damage"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered saw_blade_trap.damage.apply_contact"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "selected_entity_ids": [
+    "electric_whip",
+    "inquisitor",
+    "electric_vfx",
+    "combat_damage_number_hud"
+  ],
+  "selected_capability_ids": [],
+  "selected_behavior_ids": [
+    "electric_whip.apply_shock_chain",
+    "player.combat.attack",
+    "inquisitor.pursuit.detect_player",
+    "electric_vfx.emit.spawn_particles",
+    "combat_damage_number_hud.display.refresh_value"
+  ]
+}

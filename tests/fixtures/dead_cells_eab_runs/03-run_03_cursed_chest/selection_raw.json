@@ -1,0 +1,14 @@
+{
+  "selected_entity_ids": [
+    "cursed_chest",
+    "curse_counter_hud",
+    "curse_skull_vfx"
+  ],
+  "selected_capability_ids": [],
+  "selected_behavior_ids": [
+    "cursed_chest.open_reward_and_add_curse",
+    "curse_counter_hud.display.refresh_value",
+    "curse_counter_hud.alert.flash_warning",
+    "curse_skull_vfx.emit.spawn_particles"
+  ]
+}

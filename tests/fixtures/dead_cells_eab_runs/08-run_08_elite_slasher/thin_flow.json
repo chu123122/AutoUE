@@ -1,0 +1,153 @@
+{
+  "flows": [
+    {
+      "flow_id": "flow_critical_hit_vfx_emit_spawn_particles",
+      "entity_id": "critical_hit_vfx",
+      "ability_id": "critical_hit_vfx.emit",
+      "source_behavior_id": "critical_hit_vfx.emit.spawn_particles",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "component.set_visibility"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered critical_hit_vfx.emit.spawn_particles"
+      ]
+    },
+    {
+      "flow_id": "flow_elite_aura_vfx_emit_attach_to_target",
+      "entity_id": "elite_aura_vfx",
+      "ability_id": "elite_aura_vfx.emit",
+      "source_behavior_id": "elite_aura_vfx.emit.attach_to_target",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "component.set_visibility"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered elite_aura_vfx.emit.attach_to_target"
+      ]
+    },
+    {
+      "flow_id": "flow_player_combat_attack",
+      "entity_id": "player",
+      "ability_id": "player.combat",
+      "source_behavior_id": "player.combat.attack",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "input.action_binding",
+            "kismet.line_trace_single",
+            "gameplay_statics.apply_damage"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered player.combat.attack"
+      ]
+    },
+    {
+      "flow_id": "flow_slasher_offense_resolve_hit",
+      "entity_id": "slasher",
+      "ability_id": "slasher.offense",
+      "source_behavior_id": "slasher.offense.resolve_hit",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "kismet.sphere_trace_single",
+            "gameplay_statics.apply_damage"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered slasher.offense.resolve_hit"
+      ]
+    },
+    {
+      "flow_id": "flow_slasher_pursuit_close_gap",
+      "entity_id": "slasher",
+      "ability_id": "slasher.pursuit",
+      "source_behavior_id": "slasher.pursuit.close_gap",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "actor.get_distance_to",
+            "pawn.add_movement_input"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered slasher.pursuit.close_gap"
+      ]
+    },
+    {
+      "flow_id": "flow_slasher_pursuit_detect_player",
+      "entity_id": "slasher",
+      "ability_id": "slasher.pursuit",
+      "source_behavior_id": "slasher.pursuit.detect_player",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "actor.get_distance_to",
+            "pawn.add_movement_input"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered slasher.pursuit.detect_player"
+      ]
+    }
+  ]
+}

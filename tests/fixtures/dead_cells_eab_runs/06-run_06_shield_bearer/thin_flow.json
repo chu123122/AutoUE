@@ -1,0 +1,154 @@
+{
+  "flows": [
+    {
+      "flow_id": "flow_parry_spark_vfx_emit_spawn_particles",
+      "entity_id": "parry_spark_vfx",
+      "ability_id": "parry_spark_vfx.emit",
+      "source_behavior_id": "parry_spark_vfx.emit.spawn_particles",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "component.set_visibility"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered parry_spark_vfx.emit.spawn_particles"
+      ]
+    },
+    {
+      "flow_id": "flow_player_combat_attack",
+      "entity_id": "player",
+      "ability_id": "player.combat",
+      "source_behavior_id": "player.combat.attack",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "input.action_binding",
+            "kismet.line_trace_single",
+            "gameplay_statics.apply_damage"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered player.combat.attack"
+      ]
+    },
+    {
+      "flow_id": "flow_player_movement_dodge_roll",
+      "entity_id": "player",
+      "ability_id": "player.movement",
+      "source_behavior_id": "player.movement.dodge_roll",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "input.action_binding",
+            "pawn.add_movement_input"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered player.movement.dodge_roll"
+      ]
+    },
+    {
+      "flow_id": "flow_shield_bearer_offense_resolve_hit",
+      "entity_id": "shield_bearer",
+      "ability_id": "shield_bearer.offense",
+      "source_behavior_id": "shield_bearer.offense.resolve_hit",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "kismet.sphere_trace_single",
+            "gameplay_statics.apply_damage"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered shield_bearer.offense.resolve_hit"
+      ]
+    },
+    {
+      "flow_id": "flow_shield_bearer_pursuit_close_gap",
+      "entity_id": "shield_bearer",
+      "ability_id": "shield_bearer.pursuit",
+      "source_behavior_id": "shield_bearer.pursuit.close_gap",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "actor.get_distance_to",
+            "pawn.add_movement_input"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered shield_bearer.pursuit.close_gap"
+      ]
+    },
+    {
+      "flow_id": "flow_status_icon_hud_display_refresh_value",
+      "entity_id": "status_icon_hud",
+      "ability_id": "status_icon_hud.display",
+      "source_behavior_id": "status_icon_hud.display.refresh_value",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "widget.set_text",
+            "widget.set_percent"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered status_icon_hud.display.refresh_value"
+      ]
+    }
+  ]
+}

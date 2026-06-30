@@ -1,0 +1,46 @@
+{
+  "result": "pass",
+  "status": "unsupported",
+  "support_status": "unsupported",
+  "unsupported_capabilities": [
+    {
+      "capability_kind": "chest_reward",
+      "action_kind": "open_reward",
+      "handler": null,
+      "required_runtime_modules": [],
+      "engine_ports": [],
+      "supported": false,
+      "reason": "reward/inventory runtime is not implemented",
+      "capability_id": "cursed_chest.chest.open_reward"
+    },
+    {
+      "capability_kind": "curse_counter",
+      "action_kind": "add_curse_counter",
+      "handler": null,
+      "required_runtime_modules": [],
+      "engine_ports": [],
+      "supported": false,
+      "reason": "curse counter HUD/runtime is not implemented",
+      "capability_id": "cursed_chest.curse.add_curse_counter"
+    },
+    {
+      "capability_kind": "apply_effect",
+      "action_kind": "apply_poison_dot",
+      "handler": null,
+      "required_runtime_modules": [],
+      "engine_ports": [
+        "primitive.on_component_begin_overlap"
+      ],
+      "supported": false,
+      "reason": "poison periodic damage handler is not implemented",
+      "capability_id": "poison_pool.hazard.apply_poison_dot"
+    }
+  ],
+  "unsupported_behaviors": [
+    "cursed_chest.open_reward_and_add_curse",
+    "poison_pool.poison_player_on_overlap"
+  ],
+  "generated_runtime": null,
+  "blocked_reason": "unsupported capability in RuntimeSupportMatrix",
+  "unsupported_report": "unsupported_report.json"
+}

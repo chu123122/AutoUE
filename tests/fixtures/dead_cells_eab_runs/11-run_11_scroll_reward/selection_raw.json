@@ -1,0 +1,15 @@
+{
+  "selected_entity_ids": [
+    "scroll_power_pickup",
+    "cell_pickup",
+    "status_icon_hud"
+  ],
+  "selected_capability_ids": [],
+  "selected_behavior_ids": [
+    "scroll_power_pickup.collect.detect_pickup",
+    "scroll_power_pickup.collect.grant_reward",
+    "cell_pickup.collect.grant_reward",
+    "scroll_power_pickup.feedback.spawn_reward_visual",
+    "status_icon_hud.display.refresh_value"
+  ]
+}

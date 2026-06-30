@@ -1,0 +1,386 @@
+{
+  "entities": [
+    {
+      "entity_id": "bleed_vfx",
+      "display_name": "Bleed VFX",
+      "display_name_zh": "流血特效",
+      "entity_kind": "vfx",
+      "summary": "流血状态跳动粒子。",
+      "summary_zh": "流血状态跳动粒子。",
+      "content_tags": [
+        "vfx",
+        "particle",
+        "bleed"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "bleed_vfx.emit",
+          "entity_id": "bleed_vfx",
+          "display_name": "Bleed VFX Particle Emission",
+          "display_name_zh": "流血特效粒子生成",
+          "summary": "负责在玩法事件发生时生成可见粒子。",
+          "summary_zh": "负责在玩法事件发生时生成可见粒子。",
+          "capability_id": "bleed_vfx.emit",
+          "semantic_role": "capability",
+          "capability_kind": "vfx_binding",
+          "runtime_primitives": [
+            "spawn_vfx",
+            "attach_vfx"
+          ],
+          "engine_ports": [
+            "component.set_visibility"
+          ],
+          "runtime_features": [
+            "vfx"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "spawn_particles",
+          "behaviors": [
+            {
+              "behavior_id": "bleed_vfx.emit.spawn_particles",
+              "ability_id": "bleed_vfx.emit",
+              "entity_id": "bleed_vfx",
+              "display_name": "Bleed VFX Spawn Particles",
+              "display_name_zh": "流血特效生成粒子",
+              "trigger": "gameplay event fires",
+              "execution": "spawns particles at the relevant actor or world position",
+              "result": "event has visible feedback",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "bleed_vfx",
+              "required_capability_ids": [
+                "bleed_vfx.emit"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "gameplay event fires"
+              },
+              "effects": [
+                "event has visible feedback"
+              ],
+              "runtime_features": [
+                "vfx"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "blood_sword",
+      "display_name": "Blood Sword",
+      "display_name_zh": "血之刃",
+      "entity_kind": "object",
+      "summary": "血之刃：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "summary_zh": "血之刃：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "content_tags": [
+        "weapon",
+        "melee",
+        "equipment"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "blood_sword.attack.apply_bleed_on_hit",
+          "capability_id": "blood_sword.attack.apply_bleed_on_hit",
+          "entity_id": "blood_sword",
+          "display_name": "blood_sword.attack.apply_bleed_on_hit",
+          "display_name_zh": "命中时写入 target.effects.bleed_dot。",
+          "summary": "命中时写入 target.effects.bleed_dot。",
+          "summary_zh": "命中时写入 target.effects.bleed_dot。",
+          "semantic_role": "capability",
+          "capability_kind": "weapon_effect",
+          "action_kind": "apply_bleed_on_hit",
+          "runtime_primitives": [
+            "hit_query",
+            "state_write",
+            "timer"
+          ],
+          "engine_ports": [
+            "gameplay_statics.apply_damage"
+          ],
+          "runtime_features": [
+            "combat",
+            "state_blackboard"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "behaviors": [
+            {
+              "behavior_id": "blood_sword.apply_bleed_on_hit",
+              "ability_id": "blood_sword.attack.apply_bleed_on_hit",
+              "entity_id": "blood_sword",
+              "primary_entity_id": "blood_sword",
+              "display_name": "blood_sword.apply_bleed_on_hit",
+              "display_name_zh": "命中后施加流血。",
+              "trigger": "命中后施加流血。",
+              "execution": "命中后施加流血。",
+              "result": "命中后施加流血。",
+              "required_capability_ids": [
+                "blood_sword.attack.apply_bleed_on_hit",
+                "bleed_vfx.emit",
+                "combat_damage_number_hud.display"
+              ],
+              "trigger_model": {
+                "type": "damage",
+                "source_entity_id": "player",
+                "target_entity_id": "zombie"
+              },
+              "conditions": [],
+              "effects": [
+                {
+                  "type": "write_state",
+                  "key": "target.effects.bleed_dot",
+                  "value": {
+                    "duration": 3
+                  }
+                }
+              ],
+              "verification_logs": [
+                "BehaviorTriggered blood_sword.apply_bleed_on_hit"
+              ],
+              "semantic_role": "behavior",
+              "source_refs": [
+                "autoue-behavior-driven-runtime"
+              ],
+              "runtime_features": [
+                "combat",
+                "hud",
+                "state_blackboard",
+                "vfx"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "combat_damage_number_hud",
+      "display_name": "Damage Number HUD",
+      "display_name_zh": "伤害数字HUD",
+      "entity_kind": "hud",
+      "summary": "显示战斗伤害数字。",
+      "summary_zh": "显示战斗伤害数字。",
+      "content_tags": [
+        "hud",
+        "damage",
+        "feedback"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "combat_damage_number_hud.display",
+          "entity_id": "combat_damage_number_hud",
+          "display_name": "Damage Number HUD Display",
+          "display_name_zh": "伤害数字HUD显示",
+          "summary": "负责把数值、图标或地图状态呈现到屏幕。",
+          "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
+          "capability_id": "combat_damage_number_hud.display",
+          "semantic_role": "capability",
+          "capability_kind": "hud_binding",
+          "runtime_primitives": [
+            "hud_refresh",
+            "tag_state"
+          ],
+          "engine_ports": [
+            "widget.set_text",
+            "widget.set_percent"
+          ],
+          "runtime_features": [
+            "hud"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "refresh_value",
+          "behaviors": [
+            {
+              "behavior_id": "combat_damage_number_hud.display.refresh_value",
+              "ability_id": "combat_damage_number_hud.display",
+              "entity_id": "combat_damage_number_hud",
+              "display_name": "Damage Number HUD Refresh Value",
+              "display_name_zh": "伤害数字HUD刷新数值",
+              "trigger": "tracked value changes",
+              "execution": "updates bars, icons, counters, or map tiles",
+              "result": "HUD reflects current state",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "combat_damage_number_hud",
+              "required_capability_ids": [
+                "combat_damage_number_hud.display"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "tracked value changes"
+              },
+              "effects": [
+                "HUD reflects current state"
+              ],
+              "runtime_features": [
+                "hud"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "player",
+      "display_name": "Player Prisoner",
+      "display_name_zh": "玩家囚徒",
+      "entity_kind": "player",
+      "summary": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
+      "summary_zh": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
+      "content_tags": [
+        "player",
+        "prisoner",
+        "combat"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "player.combat",
+          "entity_id": "player",
+          "display_name": "Player Prisoner Combat",
+          "display_name_zh": "玩家囚徒战斗输入",
+          "summary": "负责攻击、取消、受击和战斗输入解析。",
+          "summary_zh": "负责攻击、取消、受击和战斗输入解析。",
+          "capability_id": "player.combat",
+          "semantic_role": "capability",
+          "capability_kind": "combat",
+          "runtime_primitives": [
+            "input_action",
+            "hit_query",
+            "apply_damage"
+          ],
+          "engine_ports": [
+            "input.action_binding",
+            "kismet.line_trace_single",
+            "gameplay_statics.apply_damage"
+          ],
+          "runtime_features": [
+            "combat",
+            "input"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "apply_damage",
+          "behaviors": [
+            {
+              "behavior_id": "player.combat.attack",
+              "ability_id": "player.combat",
+              "entity_id": "player",
+              "display_name": "Player Prisoner Attack",
+              "display_name_zh": "玩家囚徒攻击",
+              "trigger": "attack input",
+              "execution": "executes the selected weapon strike against a target",
+              "result": "target receives combat pressure",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "player",
+              "required_capability_ids": [
+                "player.combat"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "attack input"
+              },
+              "effects": [
+                "target receives combat pressure"
+              ],
+              "runtime_features": [
+                "combat",
+                "input"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "zombie",
+      "display_name": "Zombie",
+      "display_name_zh": "僵尸",
+      "entity_kind": "enemy",
+      "summary": "僵尸：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "僵尸：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "ground",
+        "melee"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 1,
+        "allowed_spawn_tags": [
+          "ground",
+          "melee"
+        ],
+        "default_health": 3
+      },
+      "abilities": [
+        {
+          "ability_id": "zombie.offense",
+          "entity_id": "zombie",
+          "display_name": "Zombie Offense",
+          "display_name_zh": "僵尸进攻",
+          "summary": "负责攻击预警、命中窗口和攻击结果。",
+          "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
+          "capability_id": "zombie.offense",
+          "semantic_role": "capability",
+          "capability_kind": "enemy_combat",
+          "runtime_primitives": [
+            "telegraph",
+            "hit_query",
+            "apply_damage"
+          ],
+          "engine_ports": [
+            "kismet.sphere_trace_single",
+            "gameplay_statics.apply_damage"
+          ],
+          "runtime_features": [
+            "combat",
+            "enemy_encounter"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "enemy_attack",
+          "behaviors": [
+            {
+              "behavior_id": "zombie.offense.resolve_hit",
+              "ability_id": "zombie.offense",
+              "entity_id": "zombie",
+              "display_name": "Zombie Resolve Hit",
+              "display_name_zh": "僵尸命中结算",
+              "trigger": "active hit frame overlaps target",
+              "execution": "applies the enemy attack result",
+              "result": "player or object is damaged",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "zombie",
+              "required_capability_ids": [
+                "zombie.offense"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "active hit frame overlaps target"
+              },
+              "effects": [
+                "player or object is damaged"
+              ],
+              "runtime_features": [
+                "combat",
+                "enemy_encounter"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "non_goals": []
+}

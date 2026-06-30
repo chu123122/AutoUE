@@ -4,14 +4,28 @@ from __future__ import annotations
 
 from typing import Any
 
+from core.content_library import validate_entity_ability_behavior_against_library
 from core.encounter_validation import EncounterValidationError, validate_spawnable_enemy_entity
 from core.validation.common import WorkflowValidationError, require_list, require_string, walk_keys
 
 def validate_entity_ability_behavior_planner(node: str, data: dict[str, Any]) -> None:
-    forbidden = {"files", "path", "file_path", "target_ts_file", "implementation_slots", "content", "ts_files", "template_inputs", "engine_ports", "flow_id", "runtime_mapping_path"}
+    # EAB is definition-only: it may select library Capabilities that carry
+    # engine_ports as metadata, but it must not decide files/templates/flows/slots.
+    forbidden = {
+        "files",
+        "path",
+        "file_path",
+        "target_ts_file",
+        "implementation_slots",
+        "content",
+        "ts_files",
+        "template_inputs",
+        "flow_id",
+        "runtime_mapping_path",
+    }
     bad = sorted(forbidden.intersection(walk_keys(data)))
     if bad:
-        raise WorkflowValidationError(f"{node}: planner is definition-only and must not decide files, templates, engine ports, flows, or implementation slots: {bad}")
+        raise WorkflowValidationError(f"{node}: planner is definition-only and must not decide files, templates, flows, or implementation slots: {bad}")
     seen_entities: set[str] = set()
     for ei, entity in enumerate(require_list(node, data, "entities", non_empty=True)):
         if not isinstance(entity, dict):
@@ -47,3 +61,4 @@ def validate_entity_ability_behavior_planner(node: str, data: dict[str, Any]) ->
                     require_string(node, behavior, key, non_empty=True)
                 if "source_refs" in behavior:
                     require_list(node, behavior, "source_refs")
+    validate_entity_ability_behavior_against_library(node, data)

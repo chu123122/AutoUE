@@ -1,0 +1,114 @@
+{
+  "schema_version": "autoue-runtime-support-check/v1",
+  "status": "unsupported",
+  "required_runtime_modules": [
+    "action_dispatcher",
+    "behavior_orchestrator",
+    "condition_checker",
+    "entity_registry",
+    "state_blackboard",
+    "trigger_router",
+    "world_adapter"
+  ],
+  "engine_ports": [
+    "widget.set_percent",
+    "widget.set_text"
+  ],
+  "supported_capabilities": [
+    {
+      "capability_kind": "hud_binding",
+      "action_kind": "refresh_value",
+      "handler": "ActionDispatcher.setHudValue",
+      "required_runtime_modules": [
+        "world_adapter",
+        "entity_registry",
+        "state_blackboard",
+        "action_dispatcher"
+      ],
+      "engine_ports": [
+        "widget.set_text",
+        "widget.set_percent"
+      ],
+      "supported": true,
+      "reason": "",
+      "capability_id": "health_bar_hud.display"
+    }
+  ],
+  "unsupported_capabilities": [
+    {
+      "capability_kind": "platform_state",
+      "action_kind": "collapse_when_touched",
+      "handler": null,
+      "required_runtime_modules": [],
+      "engine_ports": [
+        "primitive.on_component_begin_overlap"
+      ],
+      "supported": false,
+      "reason": "platform collapse runtime is not implemented",
+      "capability_id": "crumbling_floor.platform.collapse_when_touched"
+    },
+    {
+      "capability_kind": "movement",
+      "action_kind": "move_actor",
+      "handler": null,
+      "required_runtime_modules": [],
+      "engine_ports": [
+        "input.action_binding",
+        "pawn.add_movement_input"
+      ],
+      "supported": false,
+      "reason": "general movement runtime is not implemented by behavior framework support matrix",
+      "capability_id": "player.movement"
+    },
+    {
+      "capability_kind": "hazard_arming",
+      "action_kind": "arm_hazard",
+      "handler": null,
+      "required_runtime_modules": [],
+      "engine_ports": [
+        "primitive.on_component_begin_overlap"
+      ],
+      "supported": false,
+      "reason": "hazard arming window runtime is not implemented",
+      "capability_id": "saw_blade_trap.arming"
+    },
+    {
+      "capability_kind": "hazard_resolution",
+      "action_kind": "apply_hazard_damage",
+      "handler": null,
+      "required_runtime_modules": [],
+      "engine_ports": [
+        "primitive.on_component_begin_overlap",
+        "gameplay_statics.apply_damage"
+      ],
+      "supported": false,
+      "reason": "hazard damage runtime is not implemented",
+      "capability_id": "saw_blade_trap.damage"
+    }
+  ],
+  "unsupported_behaviors": [
+    "crumbling_floor.collapse_when_touched",
+    "player.movement.dodge_roll",
+    "player.movement.run",
+    "saw_blade_trap.arming.enter_active",
+    "saw_blade_trap.damage.apply_contact"
+  ],
+  "behavior_by_capability": {
+    "crumbling_floor.platform.collapse_when_touched": [
+      "crumbling_floor.collapse_when_touched"
+    ],
+    "health_bar_hud.display": [
+      "health_bar_hud.display.refresh_value"
+    ],
+    "player.movement": [
+      "player.movement.dodge_roll",
+      "player.movement.run"
+    ],
+    "saw_blade_trap.arming": [
+      "saw_blade_trap.arming.enter_active"
+    ],
+    "saw_blade_trap.damage": [
+      "saw_blade_trap.damage.apply_contact"
+    ]
+  }
+}

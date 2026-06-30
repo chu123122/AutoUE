@@ -1,0 +1,2277 @@
+{
+  "schema_version": "autoue-entity-library/v3",
+  "theme": "dead_cells_content_library",
+  "count": 147,
+  "entities": [
+    {
+      "entity_id": "alchemic_carbine",
+      "display_name": "Alchemic Carbine",
+      "display_name_zh": "炼金卡宾枪",
+      "entity_kind": "object",
+      "summary": "炼金卡宾枪：远程武器实体，拥有弹药、投射物和命中反馈。",
+      "summary_zh": "炼金卡宾枪：远程武器实体，拥有弹药、投射物和命中反馈。",
+      "content_tags": [
+        "weapon",
+        "ranged",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "ammo_counter_hud",
+      "display_name": "Ammo Counter HUD",
+      "display_name_zh": "弹药计数HUD",
+      "entity_kind": "hud",
+      "summary": "显示弓弩或投射物余量。",
+      "summary_zh": "显示弓弩或投射物余量。",
+      "content_tags": [
+        "hud",
+        "ammo",
+        "ranged"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "amulet_slot",
+      "display_name": "Amulet Slot",
+      "display_name_zh": "护符槽",
+      "entity_kind": "object",
+      "summary": "承载被动属性和词缀的装备槽。",
+      "summary_zh": "承载被动属性和词缀的装备槽。",
+      "content_tags": [
+        "equipment",
+        "passive",
+        "affix"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "arbiter",
+      "display_name": "Arbiter",
+      "display_name_zh": "裁决者",
+      "entity_kind": "enemy",
+      "summary": "裁决者：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "裁决者：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "caster",
+        "ranged"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 4,
+        "allowed_spawn_tags": [
+          "caster",
+          "ranged"
+        ],
+        "default_health": 4
+      }
+    },
+    {
+      "entity_id": "archer",
+      "display_name": "Archer",
+      "display_name_zh": "弓箭手",
+      "entity_kind": "enemy",
+      "summary": "弓箭手：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "弓箭手：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "ground",
+        "ranged"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 2,
+        "allowed_spawn_tags": [
+          "ground",
+          "ranged"
+        ],
+        "default_health": 2
+      }
+    },
+    {
+      "entity_id": "armadillopack_mutation",
+      "display_name": "Armadillopack Mutation",
+      "display_name_zh": "犰狳背包变异",
+      "entity_kind": "object",
+      "summary": "犰狳背包变异：构筑变异实体，改变玩家战斗或生存规则。",
+      "summary_zh": "犰狳背包变异：构筑变异实体，改变玩家战斗或生存规则。",
+      "content_tags": [
+        "mutation",
+        "build",
+        "passive"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "assault_shield",
+      "display_name": "Assault Shield",
+      "display_name_zh": "突击盾",
+      "entity_kind": "object",
+      "summary": "突击盾：盾牌实体，拥有格挡、招架和反击反馈。",
+      "summary_zh": "突击盾：盾牌实体，拥有格挡、招架和反击反馈。",
+      "content_tags": [
+        "weapon",
+        "shield",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "automaton",
+      "display_name": "Automaton",
+      "display_name_zh": "自动机",
+      "entity_kind": "enemy",
+      "summary": "自动机：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "自动机：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "ground",
+        "ranged"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 3,
+        "allowed_spawn_tags": [
+          "ground",
+          "ranged"
+        ],
+        "default_health": 4
+      }
+    },
+    {
+      "entity_id": "balanced_blade",
+      "display_name": "Balanced Blade",
+      "display_name_zh": "均衡之刃",
+      "entity_kind": "object",
+      "summary": "均衡之刃：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "summary_zh": "均衡之刃：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "content_tags": [
+        "weapon",
+        "melee",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "biome_teleporter",
+      "display_name": "Biome Teleporter",
+      "display_name_zh": "生物群落传送器",
+      "entity_kind": "object",
+      "summary": "已发现房间之间快速移动的装置。",
+      "summary_zh": "已发现房间之间快速移动的装置。",
+      "content_tags": [
+        "teleport",
+        "navigation",
+        "object"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "bleed_vfx",
+      "display_name": "Bleed VFX",
+      "display_name_zh": "流血特效",
+      "entity_kind": "vfx",
+      "summary": "流血状态跳动粒子。",
+      "summary_zh": "流血状态跳动粒子。",
+      "content_tags": [
+        "vfx",
+        "particle",
+        "bleed"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "blood_sword",
+      "display_name": "Blood Sword",
+      "display_name_zh": "血之刃",
+      "entity_kind": "object",
+      "summary": "血之刃：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "summary_zh": "血之刃：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "content_tags": [
+        "weapon",
+        "melee",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "bloodthirsty_shield",
+      "display_name": "Bloodthirsty Shield",
+      "display_name_zh": "嗜血盾",
+      "entity_kind": "object",
+      "summary": "嗜血盾：盾牌实体，拥有格挡、招架和反击反馈。",
+      "summary_zh": "嗜血盾：盾牌实体，拥有格挡、招架和反击反馈。",
+      "content_tags": [
+        "weapon",
+        "shield",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "blueprint_pickup",
+      "display_name": "Blueprint Pickup",
+      "display_name_zh": "图纸",
+      "entity_kind": "pickup",
+      "summary": "解锁新装备或变异的蓝图。",
+      "summary_zh": "解锁新装备或变异的蓝图。",
+      "content_tags": [
+        "blueprint",
+        "unlock",
+        "pickup"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "boss_health_bar_hud",
+      "display_name": "Boss Health Bar HUD",
+      "display_name_zh": "Boss血条HUD",
+      "entity_kind": "hud",
+      "summary": "显示Boss生命阶段。",
+      "summary_zh": "显示Boss生命阶段。",
+      "content_tags": [
+        "hud",
+        "boss",
+        "health"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "boss_stem_cell_door",
+      "display_name": "Boss Stem Cell Door",
+      "display_name_zh": "Boss细胞门",
+      "entity_kind": "exit",
+      "summary": "根据Boss细胞难度限制通行。",
+      "summary_zh": "根据Boss细胞难度限制通行。",
+      "content_tags": [
+        "exit",
+        "difficulty",
+        "progression"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "bow_and_infinite_arrows",
+      "display_name": "Bow and Infinite Arrows",
+      "display_name_zh": "无限箭弓",
+      "entity_kind": "object",
+      "summary": "无限箭弓：远程武器实体，拥有弹药、投射物和命中反馈。",
+      "summary_zh": "无限箭弓：远程武器实体，拥有弹药、投射物和命中反馈。",
+      "content_tags": [
+        "weapon",
+        "ranged",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "breakable_door",
+      "display_name": "Breakable Door",
+      "display_name_zh": "可破坏门",
+      "entity_kind": "object",
+      "summary": "可被攻击打破的路径阻挡物。",
+      "summary_zh": "可被攻击打破的路径阻挡物。",
+      "content_tags": [
+        "door",
+        "breakable",
+        "object"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "broadsword",
+      "display_name": "Broadsword",
+      "display_name_zh": "阔剑",
+      "entity_kind": "object",
+      "summary": "阔剑：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "summary_zh": "阔剑：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "content_tags": [
+        "weapon",
+        "melee",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "burn_vfx",
+      "display_name": "Burn VFX",
+      "display_name_zh": "燃烧特效",
+      "entity_kind": "vfx",
+      "summary": "燃烧火焰和拖尾。",
+      "summary_zh": "燃烧火焰和拖尾。",
+      "content_tags": [
+        "vfx",
+        "particle",
+        "burn"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "buzzcutter",
+      "display_name": "Buzzcutter",
+      "display_name_zh": "飞虫",
+      "entity_kind": "enemy",
+      "summary": "飞虫：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "飞虫：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "flying",
+        "melee"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 2,
+        "allowed_spawn_tags": [
+          "flying",
+          "melee"
+        ],
+        "default_health": 2
+      }
+    },
+    {
+      "entity_id": "catcher",
+      "display_name": "Catcher",
+      "display_name_zh": "捕手",
+      "entity_kind": "enemy",
+      "summary": "捕手：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "捕手：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "ground",
+        "control"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 4,
+        "allowed_spawn_tags": [
+          "ground",
+          "control"
+        ],
+        "default_health": 5
+      }
+    },
+    {
+      "entity_id": "cell_pickup",
+      "display_name": "Cell Pickup",
+      "display_name_zh": "细胞",
+      "entity_kind": "pickup",
+      "summary": "局内收集的长期成长资源。",
+      "summary_zh": "局内收集的长期成长资源。",
+      "content_tags": [
+        "cell",
+        "meta",
+        "pickup"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "combat_damage_number_hud",
+      "display_name": "Damage Number HUD",
+      "display_name_zh": "伤害数字HUD",
+      "entity_kind": "hud",
+      "summary": "显示战斗伤害数字。",
+      "summary_zh": "显示战斗伤害数字。",
+      "content_tags": [
+        "hud",
+        "damage",
+        "feedback"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "combo_mutation",
+      "display_name": "Combo Mutation",
+      "display_name_zh": "连击变异",
+      "entity_kind": "object",
+      "summary": "连击变异：构筑变异实体，改变玩家战斗或生存规则。",
+      "summary_zh": "连击变异：构筑变异实体，改变玩家战斗或生存规则。",
+      "content_tags": [
+        "mutation",
+        "build",
+        "passive"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "concierge_boss",
+      "display_name": "Concierge Boss",
+      "display_name_zh": "看守者",
+      "entity_kind": "enemy",
+      "summary": "看守者：Boss级敌人，拥有阶段化攻击和强压制行为。",
+      "summary_zh": "看守者：Boss级敌人，拥有阶段化攻击和强压制行为。",
+      "content_tags": [
+        "enemy",
+        "boss",
+        "elite"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "conjunctivius_boss",
+      "display_name": "Conjunctivius Boss",
+      "display_name_zh": "肿胀眼魔",
+      "entity_kind": "enemy",
+      "summary": "肿胀眼魔：Boss级敌人，拥有阶段化攻击和强压制行为。",
+      "summary_zh": "肿胀眼魔：Boss级敌人，拥有阶段化攻击和强压制行为。",
+      "content_tags": [
+        "enemy",
+        "boss",
+        "elite"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "cooldown_meter_hud",
+      "display_name": "Cooldown Meter HUD",
+      "display_name_zh": "冷却计时HUD",
+      "entity_kind": "hud",
+      "summary": "显示技能冷却状态。",
+      "summary_zh": "显示技能冷却状态。",
+      "content_tags": [
+        "hud",
+        "cooldown",
+        "skill"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "corpse_dust_vfx",
+      "display_name": "Corpse Dust VFX",
+      "display_name_zh": "尸体尘散特效",
+      "entity_kind": "vfx",
+      "summary": "敌人死亡后的消散粒子。",
+      "summary_zh": "敌人死亡后的消散粒子。",
+      "content_tags": [
+        "vfx",
+        "particle",
+        "death"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "corrupted_power",
+      "display_name": "Corrupted Power",
+      "display_name_zh": "堕落力量",
+      "entity_kind": "object",
+      "summary": "堕落力量：主动技能实体，拥有释放、冷却和命中/控制效果。",
+      "summary_zh": "堕落力量：主动技能实体，拥有释放、冷却和命中/控制效果。",
+      "content_tags": [
+        "skill",
+        "cooldown",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "critical_hit_vfx",
+      "display_name": "Critical Hit VFX",
+      "display_name_zh": "暴击特效",
+      "entity_kind": "vfx",
+      "summary": "暴击时的冲击爆发。",
+      "summary_zh": "暴击时的冲击爆发。",
+      "content_tags": [
+        "vfx",
+        "particle",
+        "critical"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "crumbling_floor",
+      "display_name": "Crumbling Floor",
+      "display_name_zh": "塌陷地板",
+      "entity_kind": "object",
+      "summary": "受压后崩塌的平台。",
+      "summary_zh": "受压后崩塌的平台。",
+      "content_tags": [
+        "platform",
+        "breakable",
+        "floor"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "crusher",
+      "display_name": "Crusher",
+      "display_name_zh": "粉碎机",
+      "entity_kind": "object",
+      "summary": "粉碎机：主动技能实体，拥有释放、冷却和命中/控制效果。",
+      "summary_zh": "粉碎机：主动技能实体，拥有释放、冷却和命中/控制效果。",
+      "content_tags": [
+        "skill",
+        "cooldown",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "crusher_trap",
+      "display_name": "Crusher Trap",
+      "display_name_zh": "压碎机关",
+      "entity_kind": "trap",
+      "summary": "挤压通道中的角色。",
+      "summary_zh": "挤压通道中的角色。",
+      "content_tags": [
+        "trap",
+        "hazard",
+        "crusher"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "cudgel_shield",
+      "display_name": "Cudgel Shield",
+      "display_name_zh": "棍盾",
+      "entity_kind": "object",
+      "summary": "棍盾：盾牌实体，拥有格挡、招架和反击反馈。",
+      "summary_zh": "棍盾：盾牌实体，拥有格挡、招架和反击反馈。",
+      "content_tags": [
+        "weapon",
+        "shield",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "curse_counter_hud",
+      "display_name": "诅咒计数 HUD",
+      "display_name_zh": "诅咒计数 HUD",
+      "entity_kind": "hud",
+      "summary": "读取 run.curse_count 的 HUD。",
+      "summary_zh": "读取 run.curse_count 的 HUD。",
+      "content_tags": [
+        "hud",
+        "curse"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "curse_skull_vfx",
+      "display_name": "Curse Skull VFX",
+      "display_name_zh": "诅咒骷髅特效",
+      "entity_kind": "vfx",
+      "summary": "诅咒状态提示粒子。",
+      "summary_zh": "诅咒状态提示粒子。",
+      "content_tags": [
+        "vfx",
+        "particle",
+        "curse"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "cursed_chest",
+      "display_name": "Cursed Chest",
+      "display_name_zh": "诅咒宝箱",
+      "entity_kind": "object",
+      "summary": "打开后施加诅咒并释放高价值奖励。",
+      "summary_zh": "打开后施加诅咒并释放高价值奖励。",
+      "content_tags": [
+        "reward",
+        "curse",
+        "chest"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "death_orb",
+      "display_name": "Death Orb",
+      "display_name_zh": "死亡之球",
+      "entity_kind": "object",
+      "summary": "死亡之球：主动技能实体，拥有释放、冷却和命中/控制效果。",
+      "summary_zh": "死亡之球：主动技能实体，拥有释放、冷却和命中/控制效果。",
+      "content_tags": [
+        "skill",
+        "cooldown",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "demon",
+      "display_name": "Demon",
+      "display_name_zh": "恶魔",
+      "entity_kind": "enemy",
+      "summary": "恶魔：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "恶魔：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "flying",
+        "fire"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 4,
+        "allowed_spawn_tags": [
+          "flying",
+          "fire"
+        ],
+        "default_health": 4
+      }
+    },
+    {
+      "entity_id": "double_crossbomatic",
+      "display_name": "Double Crossb-o-matic",
+      "display_name_zh": "双向弩塔",
+      "entity_kind": "object",
+      "summary": "双向弩塔：主动技能实体，拥有释放、冷却和命中/控制效果。",
+      "summary_zh": "双向弩塔：主动技能实体，拥有释放、冷却和命中/控制效果。",
+      "content_tags": [
+        "skill",
+        "cooldown",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "electric_vfx",
+      "display_name": "Electric VFX",
+      "display_name_zh": "电击特效",
+      "entity_kind": "vfx",
+      "summary": "连锁电弧和冲击粒子。",
+      "summary_zh": "连锁电弧和冲击粒子。",
+      "content_tags": [
+        "vfx",
+        "particle",
+        "electric"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "electric_whip",
+      "display_name": "Electric Whip",
+      "display_name_zh": "电鞭",
+      "entity_kind": "object",
+      "summary": "电鞭：远程武器实体，拥有弹药、投射物和命中反馈。",
+      "summary_zh": "电鞭：远程武器实体，拥有弹药、投射物和命中反馈。",
+      "content_tags": [
+        "weapon",
+        "ranged",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "elevator_platform",
+      "display_name": "Elevator Platform",
+      "display_name_zh": "升降平台",
+      "entity_kind": "object",
+      "summary": "垂直连接房间的移动平台。",
+      "summary_zh": "垂直连接房间的移动平台。",
+      "content_tags": [
+        "platform",
+        "navigation",
+        "moving"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "elite_aura_vfx",
+      "display_name": "Elite Aura VFX",
+      "display_name_zh": "精英光环特效",
+      "entity_kind": "vfx",
+      "summary": "精英敌人身上的威胁光环。",
+      "summary_zh": "精英敌人身上的威胁光环。",
+      "content_tags": [
+        "vfx",
+        "particle",
+        "elite"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "failed_experiment",
+      "display_name": "Failed Experiment",
+      "display_name_zh": "失败实验体",
+      "entity_kind": "enemy",
+      "summary": "失败实验体：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "失败实验体：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "ground",
+        "melee"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 4,
+        "allowed_spawn_tags": [
+          "ground",
+          "melee"
+        ],
+        "default_health": 5
+      }
+    },
+    {
+      "entity_id": "falling_spike_trap",
+      "display_name": "Falling Spike Trap",
+      "display_name_zh": "坠落尖刺",
+      "entity_kind": "trap",
+      "summary": "从上方落下的尖刺危险。",
+      "summary_zh": "从上方落下的尖刺危险。",
+      "content_tags": [
+        "trap",
+        "hazard",
+        "falling"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "fire_grenade",
+      "display_name": "Fire Grenade",
+      "display_name_zh": "火焰手雷",
+      "entity_kind": "object",
+      "summary": "火焰手雷：主动技能实体，拥有释放、冷却和命中/控制效果。",
+      "summary_zh": "火焰手雷：主动技能实体，拥有释放、冷却和命中/控制效果。",
+      "content_tags": [
+        "skill",
+        "cooldown",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "firebrands",
+      "display_name": "Firebrands",
+      "display_name_zh": "火把",
+      "entity_kind": "object",
+      "summary": "火把：远程武器实体，拥有弹药、投射物和命中反馈。",
+      "summary_zh": "火把：远程武器实体，拥有弹药、投射物和命中反馈。",
+      "content_tags": [
+        "weapon",
+        "ranged",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "flame_jet_trap",
+      "display_name": "Flame Jet Trap",
+      "display_name_zh": "喷火陷阱",
+      "entity_kind": "trap",
+      "summary": "定时喷火的通道危险。",
+      "summary_zh": "定时喷火的通道危险。",
+      "content_tags": [
+        "trap",
+        "fire",
+        "hazard"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "food_pickup",
+      "display_name": "Food Pickup",
+      "display_name_zh": "食物",
+      "entity_kind": "pickup",
+      "summary": "恢复生命的补给。",
+      "summary_zh": "恢复生命的补给。",
+      "content_tags": [
+        "healing",
+        "food",
+        "pickup"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "forge_station",
+      "display_name": "Forge Station",
+      "display_name_zh": "铸造所",
+      "entity_kind": "object",
+      "summary": "升级装备品质和词缀的站点。",
+      "summary_zh": "升级装备品质和词缀的站点。",
+      "content_tags": [
+        "forge",
+        "upgrade",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "frantic_sword",
+      "display_name": "Frantic Sword",
+      "display_name_zh": "狂暴之刃",
+      "entity_kind": "object",
+      "summary": "狂暴之刃：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "summary_zh": "狂暴之刃：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "content_tags": [
+        "weapon",
+        "melee",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "freeze_trap",
+      "display_name": "冰冻陷阱",
+      "display_name_zh": "冰冻陷阱",
+      "entity_kind": "trap",
+      "summary": "检测玩家重叠并写入 player.effects.frozen。",
+      "summary_zh": "检测玩家重叠并写入 player.effects.frozen。",
+      "content_tags": [
+        "trap",
+        "freeze"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "freeze_vfx",
+      "display_name": "Freeze VFX",
+      "display_name_zh": "冰冻特效",
+      "entity_kind": "vfx",
+      "summary": "冰冻和解冻粒子。",
+      "summary_zh": "冰冻和解冻粒子。",
+      "content_tags": [
+        "vfx",
+        "particle",
+        "freeze"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "frenzy_mutation",
+      "display_name": "Frenzy Mutation",
+      "display_name_zh": "狂乱变异",
+      "entity_kind": "object",
+      "summary": "狂乱变异：构筑变异实体，改变玩家战斗或生存规则。",
+      "summary_zh": "狂乱变异：构筑变异实体，改变玩家战斗或生存规则。",
+      "content_tags": [
+        "mutation",
+        "build",
+        "passive"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "gastronomy_mutation",
+      "display_name": "Gastronomy Mutation",
+      "display_name_zh": "美食家变异",
+      "entity_kind": "object",
+      "summary": "美食家变异：构筑变异实体，改变玩家战斗或生存规则。",
+      "summary_zh": "美食家变异：构筑变异实体，改变玩家战斗或生存规则。",
+      "content_tags": [
+        "mutation",
+        "build",
+        "passive"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "giant_boss",
+      "display_name": "Giant Boss",
+      "display_name_zh": "巨人",
+      "entity_kind": "enemy",
+      "summary": "巨人：Boss级敌人，拥有阶段化攻击和强压制行为。",
+      "summary_zh": "巨人：Boss级敌人，拥有阶段化攻击和强压制行为。",
+      "content_tags": [
+        "enemy",
+        "boss",
+        "elite"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "goblin_melee",
+      "display_name": "Goblin Melee",
+      "display_name_zh": "近战哥布林",
+      "entity_kind": "enemy",
+      "summary": "近战哥布林：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "近战哥布林：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "ground",
+        "melee"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 2,
+        "allowed_spawn_tags": [
+          "ground",
+          "melee"
+        ],
+        "default_health": 2
+      }
+    },
+    {
+      "entity_id": "gold_pickup",
+      "display_name": "Gold Pickup",
+      "display_name_zh": "金币",
+      "entity_kind": "pickup",
+      "summary": "敌人或容器掉落的货币。",
+      "summary_zh": "敌人或容器掉落的货币。",
+      "content_tags": [
+        "gold",
+        "currency",
+        "pickup"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "golem",
+      "display_name": "Golem",
+      "display_name_zh": "魔像",
+      "entity_kind": "enemy",
+      "summary": "魔像：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "魔像：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "ground",
+        "heavy"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 5,
+        "allowed_spawn_tags": [
+          "ground",
+          "heavy"
+        ],
+        "default_health": 8
+      }
+    },
+    {
+      "entity_id": "grenadier",
+      "display_name": "Grenadier",
+      "display_name_zh": "掷弹兵",
+      "entity_kind": "enemy",
+      "summary": "掷弹兵：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "掷弹兵：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "ground",
+        "ranged",
+        "explosive"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 2,
+        "allowed_spawn_tags": [
+          "ground",
+          "ranged",
+          "explosive"
+        ],
+        "default_health": 3
+      }
+    },
+    {
+      "entity_id": "hand_of_the_king_boss",
+      "display_name": "Hand of the King Boss",
+      "display_name_zh": "国王之手",
+      "entity_kind": "enemy",
+      "summary": "国王之手：Boss级敌人，拥有阶段化攻击和强压制行为。",
+      "summary_zh": "国王之手：Boss级敌人，拥有阶段化攻击和强压制行为。",
+      "content_tags": [
+        "enemy",
+        "boss",
+        "elite"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "hayabusa_boots",
+      "display_name": "Hayabusa Boots",
+      "display_name_zh": "隼之靴",
+      "entity_kind": "object",
+      "summary": "隼之靴：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "summary_zh": "隼之靴：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "content_tags": [
+        "weapon",
+        "melee",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "health_bar_hud",
+      "display_name": "Health Bar HUD",
+      "display_name_zh": "生命条HUD",
+      "entity_kind": "hud",
+      "summary": "显示玩家生命变化。",
+      "summary_zh": "显示玩家生命变化。",
+      "content_tags": [
+        "hud",
+        "health",
+        "player"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "health_fountain",
+      "display_name": "Health Fountain",
+      "display_name_zh": "生命泉",
+      "entity_kind": "pickup",
+      "summary": "休整点恢复生命和血瓶。",
+      "summary_zh": "休整点恢复生命和血瓶。",
+      "content_tags": [
+        "healing",
+        "rest",
+        "pickup"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "heavy_crossbow",
+      "display_name": "Heavy Crossbow",
+      "display_name_zh": "重弩",
+      "entity_kind": "object",
+      "summary": "重弩：远程武器实体，拥有弹药、投射物和命中反馈。",
+      "summary_zh": "重弩：远程武器实体，拥有弹药、投射物和命中反馈。",
+      "content_tags": [
+        "weapon",
+        "ranged",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "ice_bow",
+      "display_name": "Ice Bow",
+      "display_name_zh": "冰弓",
+      "entity_kind": "object",
+      "summary": "冰弓：远程武器实体，拥有弹药、投射物和命中反馈。",
+      "summary_zh": "冰弓：远程武器实体，拥有弹药、投射物和命中反馈。",
+      "content_tags": [
+        "weapon",
+        "ranged",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "ice_grenade",
+      "display_name": "Ice Grenade",
+      "display_name_zh": "冰冻手雷",
+      "entity_kind": "object",
+      "summary": "冰冻手雷：主动技能实体，拥有释放、冷却和命中/控制效果。",
+      "summary_zh": "冰冻手雷：主动技能实体，拥有释放、冷却和命中/控制效果。",
+      "content_tags": [
+        "skill",
+        "cooldown",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "impaler",
+      "display_name": "Impaler",
+      "display_name_zh": "穿刺矛",
+      "entity_kind": "object",
+      "summary": "穿刺矛：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "summary_zh": "穿刺矛：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "content_tags": [
+        "weapon",
+        "melee",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "infantry_bow",
+      "display_name": "Infantry Bow",
+      "display_name_zh": "步兵短弓",
+      "entity_kind": "object",
+      "summary": "步兵短弓：远程武器实体，拥有弹药、投射物和命中反馈。",
+      "summary_zh": "步兵短弓：远程武器实体，拥有弹药、投射物和命中反馈。",
+      "content_tags": [
+        "weapon",
+        "ranged",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "infantry_grenade",
+      "display_name": "Infantry Grenade",
+      "display_name_zh": "步兵手雷",
+      "entity_kind": "object",
+      "summary": "步兵手雷：主动技能实体，拥有释放、冷却和命中/控制效果。",
+      "summary_zh": "步兵手雷：主动技能实体，拥有释放、冷却和命中/控制效果。",
+      "content_tags": [
+        "skill",
+        "cooldown",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "inquisitor",
+      "display_name": "Inquisitor",
+      "display_name_zh": "审判者",
+      "entity_kind": "enemy",
+      "summary": "审判者：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "审判者：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "caster",
+        "ranged"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 3,
+        "allowed_spawn_tags": [
+          "caster",
+          "ranged"
+        ],
+        "default_health": 3
+      }
+    },
+    {
+      "entity_id": "kamikaze_bat",
+      "display_name": "Kamikaze Bat",
+      "display_name_zh": "自爆蝙蝠",
+      "entity_kind": "enemy",
+      "summary": "自爆蝙蝠：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "自爆蝙蝠：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "flying",
+        "explosive"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 3,
+        "allowed_spawn_tags": [
+          "flying",
+          "explosive"
+        ],
+        "default_health": 1
+      }
+    },
+    {
+      "entity_id": "knife_thrower",
+      "display_name": "Knife Thrower",
+      "display_name_zh": "飞刀手",
+      "entity_kind": "enemy",
+      "summary": "飞刀手：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "飞刀手：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "ground",
+        "ranged"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 3,
+        "allowed_spawn_tags": [
+          "ground",
+          "ranged"
+        ],
+        "default_health": 3
+      }
+    },
+    {
+      "entity_id": "lancer",
+      "display_name": "Lancer",
+      "display_name_zh": "枪兵",
+      "entity_kind": "enemy",
+      "summary": "枪兵：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "枪兵：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "ground",
+        "melee"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 3,
+        "allowed_spawn_tags": [
+          "ground",
+          "melee"
+        ],
+        "default_health": 4
+      }
+    },
+    {
+      "entity_id": "level_exit_door",
+      "display_name": "Level Exit Door",
+      "display_name_zh": "关卡出口门",
+      "entity_kind": "exit",
+      "summary": "通往下一生物群落的出口门。",
+      "summary_zh": "通往下一生物群落的出口门。",
+      "content_tags": [
+        "exit",
+        "door",
+        "progression"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "librarian",
+      "display_name": "Librarian",
+      "display_name_zh": "图书馆员",
+      "entity_kind": "enemy",
+      "summary": "图书馆员：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "图书馆员：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "caster",
+        "ranged"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 4,
+        "allowed_spawn_tags": [
+          "caster",
+          "ranged"
+        ],
+        "default_health": 4
+      }
+    },
+    {
+      "entity_id": "lore_room_object",
+      "display_name": "Lore Room Object",
+      "display_name_zh": "剧情房间物件",
+      "entity_kind": "object",
+      "summary": "展示叙事互动和世界信息。",
+      "summary_zh": "展示叙事互动和世界信息。",
+      "content_tags": [
+        "lore",
+        "interaction",
+        "object"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "magnetic_grenade",
+      "display_name": "Magnetic Grenade",
+      "display_name_zh": "磁力手雷",
+      "entity_kind": "object",
+      "summary": "磁力手雷：主动技能实体，拥有释放、冷却和命中/控制效果。",
+      "summary_zh": "磁力手雷：主动技能实体，拥有释放、冷却和命中/控制效果。",
+      "content_tags": [
+        "skill",
+        "cooldown",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "malaise_meter_hud",
+      "display_name": "Malaise Meter HUD",
+      "display_name_zh": "疫病条HUD",
+      "entity_kind": "hud",
+      "summary": "显示疫病或压力进度。",
+      "summary_zh": "显示疫病或压力进度。",
+      "content_tags": [
+        "hud",
+        "malaise",
+        "status"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "marksman_bow",
+      "display_name": "Marksman Bow",
+      "display_name_zh": "神射手之弓",
+      "entity_kind": "object",
+      "summary": "神射手之弓：远程武器实体，拥有弹药、投射物和命中反馈。",
+      "summary_zh": "神射手之弓：远程武器实体，拥有弹药、投射物和命中反馈。",
+      "content_tags": [
+        "weapon",
+        "ranged",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "melee_weapon_slot",
+      "display_name": "Melee Weapon Slot",
+      "display_name_zh": "近战武器槽",
+      "entity_kind": "object",
+      "summary": "承载近战武器和攻击节奏的装备槽。",
+      "summary_zh": "承载近战武器和攻击节奏的装备槽。",
+      "content_tags": [
+        "weapon",
+        "melee",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "minimap_hud",
+      "display_name": "Minimap HUD",
+      "display_name_zh": "小地图HUD",
+      "entity_kind": "hud",
+      "summary": "显示探索过的房间和出口。",
+      "summary_zh": "显示探索过的房间和出口。",
+      "content_tags": [
+        "hud",
+        "map",
+        "navigation"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "necromancy_mutation",
+      "display_name": "Necromancy Mutation",
+      "display_name_zh": "死灵法术变异",
+      "entity_kind": "object",
+      "summary": "死灵法术变异：构筑变异实体，改变玩家战斗或生存规则。",
+      "summary_zh": "死灵法术变异：构筑变异实体，改变玩家战斗或生存规则。",
+      "content_tags": [
+        "mutation",
+        "build",
+        "passive"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "nutcracker",
+      "display_name": "Nutcracker",
+      "display_name_zh": "胡桃夹子",
+      "entity_kind": "object",
+      "summary": "胡桃夹子：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "summary_zh": "胡桃夹子：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "content_tags": [
+        "weapon",
+        "melee",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "open_wounds_mutation",
+      "display_name": "Open Wounds Mutation",
+      "display_name_zh": "开放性伤口变异",
+      "entity_kind": "object",
+      "summary": "开放性伤口变异：构筑变异实体，改变玩家战斗或生存规则。",
+      "summary_zh": "开放性伤口变异：构筑变异实体，改变玩家战斗或生存规则。",
+      "content_tags": [
+        "mutation",
+        "build",
+        "passive"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "oven_knight",
+      "display_name": "Oven Knight",
+      "display_name_zh": "炉火骑士",
+      "entity_kind": "enemy",
+      "summary": "炉火骑士：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "炉火骑士：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "ground",
+        "heavy",
+        "fire"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 5,
+        "allowed_spawn_tags": [
+          "ground",
+          "heavy",
+          "fire"
+        ],
+        "default_health": 8
+      }
+    },
+    {
+      "entity_id": "parry_shield",
+      "display_name": "Parry Shield",
+      "display_name_zh": "招架盾",
+      "entity_kind": "object",
+      "summary": "招架盾：盾牌实体，拥有格挡、招架和反击反馈。",
+      "summary_zh": "招架盾：盾牌实体，拥有格挡、招架和反击反馈。",
+      "content_tags": [
+        "weapon",
+        "shield",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "parry_spark_vfx",
+      "display_name": "Parry Spark VFX",
+      "display_name_zh": "招架火花特效",
+      "entity_kind": "vfx",
+      "summary": "盾反成功的火花反馈。",
+      "summary_zh": "盾反成功的火花反馈。",
+      "content_tags": [
+        "vfx",
+        "particle",
+        "parry"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "phaser",
+      "display_name": "Phaser",
+      "display_name_zh": "瞬移",
+      "entity_kind": "object",
+      "summary": "瞬移：主动技能实体，拥有释放、冷却和命中/控制效果。",
+      "summary_zh": "瞬移：主动技能实体，拥有释放、冷却和命中/控制效果。",
+      "content_tags": [
+        "skill",
+        "cooldown",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "pirate_captain",
+      "display_name": "Pirate Captain",
+      "display_name_zh": "海盗船长",
+      "entity_kind": "enemy",
+      "summary": "海盗船长：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "海盗船长：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "ground",
+        "explosive"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 4,
+        "allowed_spawn_tags": [
+          "ground",
+          "explosive"
+        ],
+        "default_health": 5
+      }
+    },
+    {
+      "entity_id": "player",
+      "display_name": "Player Prisoner",
+      "display_name_zh": "玩家囚徒",
+      "entity_kind": "player",
+      "summary": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
+      "summary_zh": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
+      "content_tags": [
+        "player",
+        "prisoner",
+        "combat"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "player_flask",
+      "display_name": "Health Flask",
+      "display_name_zh": "血瓶",
+      "entity_kind": "pickup",
+      "summary": "玩家局内可复用的治疗资源。",
+      "summary_zh": "玩家局内可复用的治疗资源。",
+      "content_tags": [
+        "healing",
+        "resource",
+        "pickup"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "player_mutation_panel",
+      "display_name": "Mutation Panel",
+      "display_name_zh": "变异面板",
+      "entity_kind": "object",
+      "summary": "休整点选择变异和构筑调整的界面实体。",
+      "summary_zh": "休整点选择变异和构筑调整的界面实体。",
+      "content_tags": [
+        "ui",
+        "build",
+        "mutation"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "poison_pool",
+      "display_name": "Poison Pool",
+      "display_name_zh": "毒池",
+      "entity_kind": "trap",
+      "summary": "持续施加中毒的地面危险。",
+      "summary_zh": "持续施加中毒的地面危险。",
+      "content_tags": [
+        "trap",
+        "poison",
+        "hazard"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "poison_vfx",
+      "display_name": "Poison VFX",
+      "display_name_zh": "中毒特效",
+      "entity_kind": "vfx",
+      "summary": "中毒状态粒子。",
+      "summary_zh": "中毒状态粒子。",
+      "content_tags": [
+        "vfx",
+        "particle",
+        "poison"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "powerful_grenade",
+      "display_name": "Powerful Grenade",
+      "display_name_zh": "强力手雷",
+      "entity_kind": "object",
+      "summary": "强力手雷：主动技能实体，拥有释放、冷却和命中/控制效果。",
+      "summary_zh": "强力手雷：主动技能实体，拥有释放、冷却和命中/控制效果。",
+      "content_tags": [
+        "skill",
+        "cooldown",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "pressure_plate",
+      "display_name": "Pressure Plate",
+      "display_name_zh": "压力板",
+      "entity_kind": "trigger",
+      "summary": "被踩下后激活连接机关。",
+      "summary_zh": "被踩下后激活连接机关。",
+      "content_tags": [
+        "trigger",
+        "trap",
+        "pressure"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "protector",
+      "display_name": "Protector",
+      "display_name_zh": "保护者",
+      "entity_kind": "enemy",
+      "summary": "保护者：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "保护者：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "support",
+        "aura"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 3,
+        "allowed_spawn_tags": [
+          "support",
+          "aura"
+        ],
+        "default_health": 4
+      }
+    },
+    {
+      "entity_id": "punishment_shield",
+      "display_name": "Punishment Shield",
+      "display_name_zh": "惩罚盾",
+      "entity_kind": "object",
+      "summary": "惩罚盾：盾牌实体，拥有格挡、招架和反击反馈。",
+      "summary_zh": "惩罚盾：盾牌实体，拥有格挡、招架和反击反馈。",
+      "content_tags": [
+        "weapon",
+        "shield",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "queen_boss",
+      "display_name": "Queen Boss",
+      "display_name_zh": "王后",
+      "entity_kind": "enemy",
+      "summary": "王后：Boss级敌人，拥有阶段化攻击和强压制行为。",
+      "summary_zh": "王后：Boss级敌人，拥有阶段化攻击和强压制行为。",
+      "content_tags": [
+        "enemy",
+        "boss",
+        "elite"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "quick_bow",
+      "display_name": "Quick Bow",
+      "display_name_zh": "迅捷之弓",
+      "entity_kind": "object",
+      "summary": "迅捷之弓：远程武器实体，拥有弹药、投射物和命中反馈。",
+      "summary_zh": "迅捷之弓：远程武器实体，拥有弹药、投射物和命中反馈。",
+      "content_tags": [
+        "weapon",
+        "ranged",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "rampager",
+      "display_name": "Rampager",
+      "display_name_zh": "暴怒者",
+      "entity_kind": "enemy",
+      "summary": "暴怒者：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "暴怒者：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "fast",
+        "melee"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 4,
+        "allowed_spawn_tags": [
+          "fast",
+          "melee"
+        ],
+        "default_health": 5
+      }
+    },
+    {
+      "entity_id": "rampart_shield",
+      "display_name": "Rampart Shield",
+      "display_name_zh": "壁垒盾",
+      "entity_kind": "object",
+      "summary": "壁垒盾：盾牌实体，拥有格挡、招架和反击反馈。",
+      "summary_zh": "壁垒盾：盾牌实体，拥有格挡、招架和反击反馈。",
+      "content_tags": [
+        "weapon",
+        "shield",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "rancid_rat",
+      "display_name": "Rancid Rat",
+      "display_name_zh": "腐臭鼠",
+      "entity_kind": "enemy",
+      "summary": "腐臭鼠：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "腐臭鼠：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "ground",
+        "swarm"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 1,
+        "allowed_spawn_tags": [
+          "ground",
+          "swarm"
+        ],
+        "default_health": 2
+      }
+    },
+    {
+      "entity_id": "ranged_weapon_slot",
+      "display_name": "Ranged Weapon Slot",
+      "display_name_zh": "远程武器槽",
+      "entity_kind": "object",
+      "summary": "承载弓弩、弹药和远程节奏的装备槽。",
+      "summary_zh": "承载弓弩、弹药和远程节奏的装备槽。",
+      "content_tags": [
+        "weapon",
+        "ranged",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "royal_guard",
+      "display_name": "Royal Guard",
+      "display_name_zh": "王室卫兵",
+      "entity_kind": "enemy",
+      "summary": "王室卫兵：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "王室卫兵：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "ground",
+        "elite"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 5,
+        "allowed_spawn_tags": [
+          "ground",
+          "elite"
+        ],
+        "default_health": 7
+      }
+    },
+    {
+      "entity_id": "runner",
+      "display_name": "Runner",
+      "display_name_zh": "奔行者",
+      "entity_kind": "enemy",
+      "summary": "奔行者：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "奔行者：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "fast",
+        "melee"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 3,
+        "allowed_spawn_tags": [
+          "fast",
+          "melee"
+        ],
+        "default_health": 4
+      }
+    },
+    {
+      "entity_id": "sadists_stiletto",
+      "display_name": "Sadist Stiletto",
+      "display_name_zh": "施虐者匕首",
+      "entity_kind": "object",
+      "summary": "施虐者匕首：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "summary_zh": "施虐者匕首：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "content_tags": [
+        "weapon",
+        "melee",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "saw_blade_trap",
+      "display_name": "Saw Blade Trap",
+      "display_name_zh": "锯刃陷阱",
+      "entity_kind": "trap",
+      "summary": "移动锯刃危险。",
+      "summary_zh": "移动锯刃危险。",
+      "content_tags": [
+        "trap",
+        "hazard",
+        "moving"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "scarecrow_boss",
+      "display_name": "Scarecrow Boss",
+      "display_name_zh": "稻草人",
+      "entity_kind": "enemy",
+      "summary": "稻草人：Boss级敌人，拥有阶段化攻击和强压制行为。",
+      "summary_zh": "稻草人：Boss级敌人，拥有阶段化攻击和强压制行为。",
+      "content_tags": [
+        "enemy",
+        "boss",
+        "elite"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "scorpion",
+      "display_name": "Scorpion",
+      "display_name_zh": "蝎子",
+      "entity_kind": "enemy",
+      "summary": "蝎子：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "蝎子：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "ground",
+        "poison"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 2,
+        "allowed_spawn_tags": [
+          "ground",
+          "poison"
+        ],
+        "default_health": 3
+      }
+    },
+    {
+      "entity_id": "scroll_power_pickup",
+      "display_name": "Power Scroll Pickup",
+      "display_name_zh": "力量卷轴",
+      "entity_kind": "pickup",
+      "summary": "提升伤害或生命成长的卷轴。",
+      "summary_zh": "提升伤害或生命成长的卷轴。",
+      "content_tags": [
+        "scroll",
+        "stat",
+        "pickup"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "scroll_survival_pickup",
+      "display_name": "Survival Scroll Pickup",
+      "display_name_zh": "生存卷轴",
+      "entity_kind": "pickup",
+      "summary": "提升生存和重武器构筑的卷轴。",
+      "summary_zh": "提升生存和重武器构筑的卷轴。",
+      "content_tags": [
+        "scroll",
+        "survival",
+        "pickup"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "scroll_tactics_pickup",
+      "display_name": "Tactics Scroll Pickup",
+      "display_name_zh": "战术卷轴",
+      "entity_kind": "pickup",
+      "summary": "提升远程和陷阱构筑的卷轴。",
+      "summary_zh": "提升远程和陷阱构筑的卷轴。",
+      "content_tags": [
+        "scroll",
+        "tactics",
+        "pickup"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "secret_wall_rune",
+      "display_name": "Secret Wall Rune",
+      "display_name_zh": "隐藏墙符文",
+      "entity_kind": "trigger",
+      "summary": "提示隐藏通路或奖励的墙面触发物。",
+      "summary_zh": "提示隐藏通路或奖励的墙面触发物。",
+      "content_tags": [
+        "secret",
+        "trigger",
+        "reward"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "servants_boss",
+      "display_name": "Servants Boss",
+      "display_name_zh": "仆从三姐妹",
+      "entity_kind": "enemy",
+      "summary": "仆从三姐妹：Boss级敌人，拥有阶段化攻击和强压制行为。",
+      "summary_zh": "仆从三姐妹：Boss级敌人，拥有阶段化攻击和强压制行为。",
+      "content_tags": [
+        "enemy",
+        "boss",
+        "elite"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "shield_bearer",
+      "display_name": "Shield Bearer",
+      "display_name_zh": "持盾兵",
+      "entity_kind": "enemy",
+      "summary": "持盾兵：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "持盾兵：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "ground",
+        "shield"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 2,
+        "allowed_spawn_tags": [
+          "ground",
+          "shield"
+        ],
+        "default_health": 4
+      }
+    },
+    {
+      "entity_id": "shield_bubble_vfx",
+      "display_name": "Shield Bubble VFX",
+      "display_name_zh": "护盾泡泡特效",
+      "entity_kind": "vfx",
+      "summary": "护盾吸收和破裂反馈。",
+      "summary_zh": "护盾吸收和破裂反馈。",
+      "content_tags": [
+        "vfx",
+        "particle",
+        "shield"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "shield_slot",
+      "display_name": "Shield Slot",
+      "display_name_zh": "盾牌槽",
+      "entity_kind": "object",
+      "summary": "承载格挡、招架和防御状态的装备槽。",
+      "summary_zh": "承载格挡、招架和防御状态的装备槽。",
+      "content_tags": [
+        "weapon",
+        "shield",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "shop_room_vendor",
+      "display_name": "Shop Room Vendor",
+      "display_name_zh": "商店商人",
+      "entity_kind": "object",
+      "summary": "出售武器、技能和补给的房间实体。",
+      "summary_zh": "出售武器、技能和补给的房间实体。",
+      "content_tags": [
+        "shop",
+        "vendor",
+        "reward"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "shovel",
+      "display_name": "Shovel",
+      "display_name_zh": "铲子",
+      "entity_kind": "object",
+      "summary": "铲子：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "summary_zh": "铲子：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "content_tags": [
+        "weapon",
+        "melee",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "side_camera",
+      "display_name": "侧视角相机",
+      "display_name_zh": "侧视角相机",
+      "entity_kind": "camera",
+      "summary": "侧视角相机反馈控制器。",
+      "summary_zh": "侧视角相机反馈控制器。",
+      "content_tags": [
+        "camera"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "sinew_slicer",
+      "display_name": "Sinew Slicer",
+      "display_name_zh": "碎肉者",
+      "entity_kind": "object",
+      "summary": "碎肉者：主动技能实体，拥有释放、冷却和命中/控制效果。",
+      "summary_zh": "碎肉者：主动技能实体，拥有释放、冷却和命中/控制效果。",
+      "content_tags": [
+        "skill",
+        "cooldown",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "skill_slot",
+      "display_name": "Deployable Skill Slot",
+      "display_name_zh": "技能槽",
+      "entity_kind": "object",
+      "summary": "承载手雷、炮塔和主动技能冷却的装备槽。",
+      "summary_zh": "承载手雷、炮塔和主动技能冷却的装备槽。",
+      "content_tags": [
+        "skill",
+        "cooldown",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "slasher",
+      "display_name": "Slasher",
+      "display_name_zh": "斩杀者",
+      "entity_kind": "enemy",
+      "summary": "斩杀者：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "斩杀者：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "ground",
+        "melee",
+        "elite"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 4,
+        "allowed_spawn_tags": [
+          "ground",
+          "melee",
+          "elite"
+        ],
+        "default_health": 6
+      }
+    },
+    {
+      "entity_id": "spike_trap",
+      "display_name": "Spike Trap",
+      "display_name_zh": "尖刺陷阱",
+      "entity_kind": "trap",
+      "summary": "地面尖刺危险。",
+      "summary_zh": "地面尖刺危险。",
+      "content_tags": [
+        "trap",
+        "hazard",
+        "floor"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "spite_sword",
+      "display_name": "Spite Sword",
+      "display_name_zh": "怨恨之刃",
+      "entity_kind": "object",
+      "summary": "怨恨之刃：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "summary_zh": "怨恨之刃：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "content_tags": [
+        "weapon",
+        "melee",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "starting_cell_gate",
+      "display_name": "Starting Cell Gate",
+      "display_name_zh": "初始牢房门",
+      "entity_kind": "object",
+      "summary": "开局房门，控制玩家进入第一段关卡。",
+      "summary_zh": "开局房门，控制玩家进入第一段关卡。",
+      "content_tags": [
+        "gate",
+        "room",
+        "progression"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "status_icon_hud",
+      "display_name": "Status Icon HUD",
+      "display_name_zh": "状态图标HUD",
+      "entity_kind": "hud",
+      "summary": "HUD widget for runtime state icons.",
+      "summary_zh": "显示运行时状态图标的 HUD 控件。",
+      "content_tags": [
+        "hud",
+        "status",
+        "buff"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "support_mutation",
+      "display_name": "Support Mutation",
+      "display_name_zh": "支援变异",
+      "entity_kind": "object",
+      "summary": "支援变异：构筑变异实体，改变玩家战斗或生存规则。",
+      "summary_zh": "支援变异：构筑变异实体，改变玩家战斗或生存规则。",
+      "content_tags": [
+        "mutation",
+        "build",
+        "passive"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "swift_sword",
+      "display_name": "Swift Sword",
+      "display_name_zh": "迅捷之剑",
+      "entity_kind": "object",
+      "summary": "迅捷之剑：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "summary_zh": "迅捷之剑：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "content_tags": [
+        "weapon",
+        "melee",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "symmetrical_lance",
+      "display_name": "Symmetrical Lance",
+      "display_name_zh": "对称长枪",
+      "entity_kind": "object",
+      "summary": "对称长枪：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "summary_zh": "对称长枪：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "content_tags": [
+        "weapon",
+        "melee",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "teleport_vfx",
+      "display_name": "Teleport VFX",
+      "display_name_zh": "传送特效",
+      "entity_kind": "vfx",
+      "summary": "传送出现和消失的粒子反馈。",
+      "summary_zh": "传送出现和消失的粒子反馈。",
+      "content_tags": [
+        "vfx",
+        "particle",
+        "teleport"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "throwing_knife",
+      "display_name": "Throwing Knife",
+      "display_name_zh": "飞刀",
+      "entity_kind": "object",
+      "summary": "飞刀：远程武器实体，拥有弹药、投射物和命中反馈。",
+      "summary_zh": "飞刀：远程武器实体，拥有弹药、投射物和命中反馈。",
+      "content_tags": [
+        "weapon",
+        "ranged",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "time_keeper_boss",
+      "display_name": "Time Keeper Boss",
+      "display_name_zh": "时光守护者",
+      "entity_kind": "enemy",
+      "summary": "时光守护者：Boss级敌人，拥有阶段化攻击和强压制行为。",
+      "summary_zh": "时光守护者：Boss级敌人，拥有阶段化攻击和强压制行为。",
+      "content_tags": [
+        "enemy",
+        "boss",
+        "elite"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "timed_door",
+      "display_name": "Timed Door",
+      "display_name_zh": "限时门",
+      "entity_kind": "exit",
+      "summary": "根据到达时间解锁奖励路径。",
+      "summary_zh": "根据到达时间解锁奖励路径。",
+      "content_tags": [
+        "exit",
+        "timer",
+        "reward"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "tonic",
+      "display_name": "Tonic",
+      "display_name_zh": "补药",
+      "entity_kind": "object",
+      "summary": "补药：主动技能实体，拥有释放、冷却和命中/控制效果。",
+      "summary_zh": "补药：主动技能实体，拥有释放、冷却和命中/控制效果。",
+      "content_tags": [
+        "skill",
+        "cooldown",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "tranquility_mutation",
+      "display_name": "Tranquility Mutation",
+      "display_name_zh": "宁静变异",
+      "entity_kind": "object",
+      "summary": "宁静变异：构筑变异实体，改变玩家战斗或生存规则。",
+      "summary_zh": "宁静变异：构筑变异实体，改变玩家战斗或生存规则。",
+      "content_tags": [
+        "mutation",
+        "build",
+        "passive"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "treasure_chest",
+      "display_name": "Treasure Chest",
+      "display_name_zh": "宝箱",
+      "entity_kind": "object",
+      "summary": "打开后释放装备或奖励。",
+      "summary_zh": "打开后释放装备或奖励。",
+      "content_tags": [
+        "reward",
+        "chest",
+        "loot"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "twin_daggers",
+      "display_name": "Twin Daggers",
+      "display_name_zh": "双匕首",
+      "entity_kind": "object",
+      "summary": "双匕首：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "summary_zh": "双匕首：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "content_tags": [
+        "weapon",
+        "melee",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "vengeance_mutation",
+      "display_name": "Vengeance Mutation",
+      "display_name_zh": "复仇变异",
+      "entity_kind": "object",
+      "summary": "复仇变异：构筑变异实体，改变玩家战斗或生存规则。",
+      "summary_zh": "复仇变异：构筑变异实体，改变玩家战斗或生存规则。",
+      "content_tags": [
+        "mutation",
+        "build",
+        "passive"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "war_spear",
+      "display_name": "War Spear",
+      "display_name_zh": "战争长矛",
+      "entity_kind": "object",
+      "summary": "战争长矛：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "summary_zh": "战争长矛：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。",
+      "content_tags": [
+        "weapon",
+        "melee",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "wolf_trap",
+      "display_name": "Wolf Trap",
+      "display_name_zh": "捕兽夹",
+      "entity_kind": "object",
+      "summary": "捕兽夹：主动技能实体，拥有释放、冷却和命中/控制效果。",
+      "summary_zh": "捕兽夹：主动技能实体，拥有释放、冷却和命中/控制效果。",
+      "content_tags": [
+        "skill",
+        "cooldown",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "wooden_shield",
+      "display_name": "Wooden Shield",
+      "display_name_zh": "木盾",
+      "entity_kind": "object",
+      "summary": "木盾：盾牌实体，拥有格挡、招架和反击反馈。",
+      "summary_zh": "木盾：盾牌实体，拥有格挡、招架和反击反馈。",
+      "content_tags": [
+        "weapon",
+        "shield",
+        "equipment"
+      ],
+      "spawnable": false
+    },
+    {
+      "entity_id": "zombie",
+      "display_name": "Zombie",
+      "display_name_zh": "僵尸",
+      "entity_kind": "enemy",
+      "summary": "僵尸：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "僵尸：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "ground",
+        "melee"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 1,
+        "allowed_spawn_tags": [
+          "ground",
+          "melee"
+        ],
+        "default_health": 3
+      }
+    }
+  ],
+  "library_role": "entity",
+  "state_contract": "runtime state belongs to AutoUEStateBlackboard"
+}

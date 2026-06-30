@@ -1,0 +1,68 @@
+{
+  "result": "pass",
+  "status": "unsupported",
+  "support_status": "unsupported",
+  "unsupported_capabilities": [
+    {
+      "capability_kind": "enemy_combat",
+      "action_kind": "enemy_attack",
+      "handler": null,
+      "required_runtime_modules": [],
+      "engine_ports": [
+        "kismet.sphere_trace_single",
+        "gameplay_statics.apply_damage"
+      ],
+      "supported": false,
+      "reason": "enemy encounter/combat runtime is optional and not implemented by the generic behavior framework",
+      "capability_id": "concierge_boss.offense"
+    },
+    {
+      "capability_kind": "enemy_pursuit",
+      "action_kind": "chase_target",
+      "handler": null,
+      "required_runtime_modules": [],
+      "engine_ports": [
+        "actor.get_distance_to",
+        "pawn.add_movement_input"
+      ],
+      "supported": false,
+      "reason": "enemy encounter movement runtime is optional and not implemented by the generic behavior framework",
+      "capability_id": "concierge_boss.pursuit"
+    },
+    {
+      "capability_kind": "combat",
+      "action_kind": "apply_damage",
+      "handler": null,
+      "required_runtime_modules": [],
+      "engine_ports": [
+        "input.action_binding",
+        "gameplay_statics.apply_damage"
+      ],
+      "supported": false,
+      "reason": "combat damage runtime is not implemented",
+      "capability_id": "player.combat"
+    },
+    {
+      "capability_kind": "movement",
+      "action_kind": "move_actor",
+      "handler": null,
+      "required_runtime_modules": [],
+      "engine_ports": [
+        "input.action_binding",
+        "pawn.add_movement_input"
+      ],
+      "supported": false,
+      "reason": "general movement runtime is not implemented by behavior framework support matrix",
+      "capability_id": "player.movement"
+    }
+  ],
+  "unsupported_behaviors": [
+    "concierge_boss.offense.resolve_hit",
+    "concierge_boss.pursuit.detect_player",
+    "player.combat.attack",
+    "player.movement.dodge_roll"
+  ],
+  "generated_runtime": null,
+  "blocked_reason": "unsupported capability in RuntimeSupportMatrix",
+  "unsupported_report": "unsupported_report.json"
+}

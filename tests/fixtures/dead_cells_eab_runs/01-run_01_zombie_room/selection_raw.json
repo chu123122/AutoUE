@@ -1,0 +1,17 @@
+{
+  "selected_entity_ids": [
+    "zombie",
+    "level_exit_door",
+    "health_bar_hud",
+    "combat_damage_number_hud"
+  ],
+  "selected_capability_ids": [],
+  "selected_behavior_ids": [
+    "player.combat.attack",
+    "zombie.pursuit.detect_player",
+    "zombie.offense.resolve_hit",
+    "level_exit_door.lock.evaluate_unlock",
+    "health_bar_hud.display.refresh_value",
+    "combat_damage_number_hud.display.refresh_value"
+  ]
+}

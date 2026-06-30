@@ -1,0 +1,52 @@
+{
+  "result": "pass",
+  "status": "unsupported",
+  "support_status": "unsupported",
+  "unsupported_capabilities": [
+    {
+      "capability_kind": "pickup_collection",
+      "action_kind": "grant_reward",
+      "handler": null,
+      "required_runtime_modules": [],
+      "engine_ports": [
+        "primitive.on_component_begin_overlap"
+      ],
+      "supported": false,
+      "reason": "pickup inventory/currency runtime is not implemented",
+      "capability_id": "cell_pickup.collect"
+    },
+    {
+      "capability_kind": "pickup_collection",
+      "action_kind": "grant_reward",
+      "handler": null,
+      "required_runtime_modules": [],
+      "engine_ports": [
+        "primitive.on_component_begin_overlap"
+      ],
+      "supported": false,
+      "reason": "pickup inventory/currency runtime is not implemented",
+      "capability_id": "scroll_power_pickup.collect"
+    },
+    {
+      "capability_kind": "reward_feedback",
+      "action_kind": "spawn_reward_visual",
+      "handler": null,
+      "required_runtime_modules": [],
+      "engine_ports": [
+        "component.set_visibility"
+      ],
+      "supported": false,
+      "reason": "reward feedback runtime is not implemented",
+      "capability_id": "scroll_power_pickup.feedback"
+    }
+  ],
+  "unsupported_behaviors": [
+    "cell_pickup.collect.grant_reward",
+    "scroll_power_pickup.collect.detect_pickup",
+    "scroll_power_pickup.collect.grant_reward",
+    "scroll_power_pickup.feedback.spawn_reward_visual"
+  ],
+  "generated_runtime": null,
+  "blocked_reason": "unsupported capability in RuntimeSupportMatrix",
+  "unsupported_report": "unsupported_report.json"
+}

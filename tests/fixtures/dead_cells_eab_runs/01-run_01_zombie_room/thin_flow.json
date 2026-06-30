@@ -1,0 +1,154 @@
+{
+  "flows": [
+    {
+      "flow_id": "flow_combat_damage_number_hud_display_refresh_value",
+      "entity_id": "combat_damage_number_hud",
+      "ability_id": "combat_damage_number_hud.display",
+      "source_behavior_id": "combat_damage_number_hud.display.refresh_value",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "widget.set_text",
+            "widget.set_percent"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered combat_damage_number_hud.display.refresh_value"
+      ]
+    },
+    {
+      "flow_id": "flow_health_bar_hud_display_refresh_value",
+      "entity_id": "health_bar_hud",
+      "ability_id": "health_bar_hud.display",
+      "source_behavior_id": "health_bar_hud.display.refresh_value",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "widget.set_text",
+            "widget.set_percent"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered health_bar_hud.display.refresh_value"
+      ]
+    },
+    {
+      "flow_id": "flow_level_exit_door_lock_evaluate_unlock",
+      "entity_id": "level_exit_door",
+      "ability_id": "level_exit_door.lock",
+      "source_behavior_id": "level_exit_door.lock.evaluate_unlock",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "manual.trigger"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered level_exit_door.lock.evaluate_unlock"
+      ]
+    },
+    {
+      "flow_id": "flow_player_combat_attack",
+      "entity_id": "player",
+      "ability_id": "player.combat",
+      "source_behavior_id": "player.combat.attack",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "input.action_binding",
+            "kismet.line_trace_single",
+            "gameplay_statics.apply_damage"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered player.combat.attack"
+      ]
+    },
+    {
+      "flow_id": "flow_zombie_offense_resolve_hit",
+      "entity_id": "zombie",
+      "ability_id": "zombie.offense",
+      "source_behavior_id": "zombie.offense.resolve_hit",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "kismet.sphere_trace_single",
+            "gameplay_statics.apply_damage"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered zombie.offense.resolve_hit"
+      ]
+    },
+    {
+      "flow_id": "flow_zombie_pursuit_detect_player",
+      "entity_id": "zombie",
+      "ability_id": "zombie.pursuit",
+      "source_behavior_id": "zombie.pursuit.detect_player",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "actor.get_distance_to",
+            "pawn.add_movement_input"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered zombie.pursuit.detect_player"
+      ]
+    }
+  ]
+}

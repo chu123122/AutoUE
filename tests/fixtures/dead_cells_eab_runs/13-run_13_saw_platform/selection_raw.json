@@ -1,0 +1,16 @@
+{
+  "selected_entity_ids": [
+    "saw_blade_trap",
+    "crumbling_floor",
+    "health_bar_hud"
+  ],
+  "selected_capability_ids": [],
+  "selected_behavior_ids": [
+    "player.movement.run",
+    "player.movement.dodge_roll",
+    "saw_blade_trap.arming.enter_active",
+    "saw_blade_trap.damage.apply_contact",
+    "crumbling_floor.collapse_when_touched",
+    "health_bar_hud.display.refresh_value"
+  ]
+}

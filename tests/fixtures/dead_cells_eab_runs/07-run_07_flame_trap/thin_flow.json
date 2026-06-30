@@ -1,0 +1,126 @@
+{
+  "flows": [
+    {
+      "flow_id": "flow_burn_vfx_emit_spawn_particles",
+      "entity_id": "burn_vfx",
+      "ability_id": "burn_vfx.emit",
+      "source_behavior_id": "burn_vfx.emit.spawn_particles",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "component.set_visibility"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered burn_vfx.emit.spawn_particles"
+      ]
+    },
+    {
+      "flow_id": "flow_flame_jet_trap_arming_enter_active",
+      "entity_id": "flame_jet_trap",
+      "ability_id": "flame_jet_trap.arming",
+      "source_behavior_id": "flame_jet_trap.arming.enter_active",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "primitive.on_component_begin_overlap"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered flame_jet_trap.arming.enter_active"
+      ]
+    },
+    {
+      "flow_id": "flow_flame_jet_trap_arming_show_warning",
+      "entity_id": "flame_jet_trap",
+      "ability_id": "flame_jet_trap.arming",
+      "source_behavior_id": "flame_jet_trap.arming.show_warning",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "primitive.on_component_begin_overlap"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered flame_jet_trap.arming.show_warning"
+      ]
+    },
+    {
+      "flow_id": "flow_flame_jet_trap_apply_burn_on_hit",
+      "entity_id": "flame_jet_trap",
+      "ability_id": "flame_jet_trap.hazard.apply_burn",
+      "source_behavior_id": "flame_jet_trap.apply_burn_on_hit",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "primitive.on_component_begin_overlap",
+            "component.set_visibility"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered flame_jet_trap.apply_burn_on_hit"
+      ]
+    },
+    {
+      "flow_id": "flow_player_movement_run",
+      "entity_id": "player",
+      "ability_id": "player.movement",
+      "source_behavior_id": "player.movement.run",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "input.action_binding",
+            "pawn.add_movement_input"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered player.movement.run"
+      ]
+    }
+  ]
+}

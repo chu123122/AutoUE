@@ -1,0 +1,16 @@
+{
+  "selected_entity_ids": [
+    "blood_sword",
+    "zombie",
+    "bleed_vfx",
+    "combat_damage_number_hud"
+  ],
+  "selected_capability_ids": [],
+  "selected_behavior_ids": [
+    "blood_sword.apply_bleed_on_hit",
+    "player.combat.attack",
+    "zombie.offense.resolve_hit",
+    "bleed_vfx.emit.spawn_particles",
+    "combat_damage_number_hud.display.refresh_value"
+  ]
+}

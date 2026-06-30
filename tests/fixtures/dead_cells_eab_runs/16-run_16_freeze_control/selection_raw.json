@@ -1,0 +1,12 @@
+{
+  "selected_entity_ids": [
+    "player",
+    "freeze_trap",
+    "freeze_vfx",
+    "side_camera"
+  ],
+  "selected_capability_ids": [],
+  "selected_behavior_ids": [
+    "freeze_trap.freeze_player_on_overlap"
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "schema_version": "autoue-runtime-support-check/v1",
+  "status": "unsupported",
+  "required_runtime_modules": [
+    "action_dispatcher",
+    "behavior_orchestrator",
+    "condition_checker",
+    "entity_registry",
+    "state_blackboard",
+    "trigger_router",
+    "world_adapter"
+  ],
+  "engine_ports": [
+    "component.set_visibility",
+    "widget.set_percent",
+    "widget.set_text"
+  ],
+  "supported_capabilities": [
+    {
+      "capability_kind": "vfx_binding",
+      "action_kind": "spawn_particles",
+      "handler": "ActionDispatcher.spawnVfx",
+      "required_runtime_modules": [
+        "world_adapter",
+        "entity_registry",
+        "action_dispatcher"
+      ],
+      "engine_ports": [
+        "component.set_visibility"
+      ],
+      "supported": true,
+      "reason": "",
+      "capability_id": "burn_vfx.emit"
+    },
+    {
+      "capability_kind": "hud_binding",
+      "action_kind": "refresh_value",
+      "handler": "ActionDispatcher.setHudValue",
+      "required_runtime_modules": [
+        "world_adapter",
+        "entity_registry",
+        "state_blackboard",
+        "action_dispatcher"
+      ],
+      "engine_ports": [
+        "widget.set_text",
+        "widget.set_percent"
+      ],
+      "supported": true,
+      "reason": "",
+      "capability_id": "combat_damage_number_hud.display"
+    }
+  ],
+  "unsupported_capabilities": [
+    {
+      "capability_kind": "enemy_combat",
+      "action_kind": "enemy_attack",
+      "handler": null,
+      "required_runtime_modules": [],
+      "engine_ports": [
+        "kismet.sphere_trace_single",
+        "gameplay_statics.apply_damage"
+      ],
+      "supported": false,
+      "reason": "enemy encounter/combat runtime is optional and not implemented by the generic behavior framework",
+      "capability_id": "kamikaze_bat.offense"
+    },
+    {
+      "capability_kind": "enemy_pursuit",
+      "action_kind": "chase_target",
+      "handler": null,
+      "required_runtime_modules": [],
+      "engine_ports": [
+        "actor.get_distance_to",
+        "pawn.add_movement_input"
+      ],
+      "supported": false,
+      "reason": "enemy encounter movement runtime is optional and not implemented by the generic behavior framework",
+      "capability_id": "kamikaze_bat.pursuit"
+    },
+    {
+      "capability_kind": "movement",
+      "action_kind": "move_actor",
+      "handler": null,
+      "required_runtime_modules": [],
+      "engine_ports": [
+        "input.action_binding",
+        "pawn.add_movement_input"
+      ],
+      "supported": false,
+      "reason": "general movement runtime is not implemented by behavior framework support matrix",
+      "capability_id": "player.movement"
+    }
+  ],
+  "unsupported_behaviors": [
+    "kamikaze_bat.offense.resolve_hit",
+    "kamikaze_bat.pursuit.close_gap",
+    "kamikaze_bat.pursuit.detect_player",
+    "player.movement.dodge_roll"
+  ],
+  "behavior_by_capability": {
+    "burn_vfx.emit": [
+      "burn_vfx.emit.spawn_particles"
+    ],
+    "combat_damage_number_hud.display": [
+      "combat_damage_number_hud.display.refresh_value"
+    ],
+    "kamikaze_bat.offense": [
+      "kamikaze_bat.offense.resolve_hit"
+    ],
+    "kamikaze_bat.pursuit": [
+      "kamikaze_bat.pursuit.close_gap",
+      "kamikaze_bat.pursuit.detect_player"
+    ],
+    "player.movement": [
+      "player.movement.dodge_roll"
+    ]
+  }
+}

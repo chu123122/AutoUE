@@ -1,0 +1,16 @@
+{
+  "selected_entity_ids": [
+    "zombie",
+    "level_exit_door",
+    "status_icon_hud"
+  ],
+  "selected_capability_ids": [],
+  "selected_behavior_ids": [
+    "player.combat.attack",
+    "zombie.offense.resolve_hit",
+    "level_exit_door.lock.evaluate_unlock",
+    "level_exit_door.transition.accept_entry",
+    "level_exit_door.transition.finish_transition",
+    "status_icon_hud.alert.flash_warning"
+  ]
+}

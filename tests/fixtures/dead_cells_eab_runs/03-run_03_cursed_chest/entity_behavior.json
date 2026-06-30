@@ -1,0 +1,282 @@
+{
+  "entities": [
+    {
+      "entity_id": "curse_counter_hud",
+      "display_name": "诅咒计数 HUD",
+      "display_name_zh": "诅咒计数 HUD",
+      "entity_kind": "hud",
+      "summary": "读取 run.curse_count 的 HUD。",
+      "summary_zh": "读取 run.curse_count 的 HUD。",
+      "content_tags": [
+        "hud",
+        "curse"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "curse_counter_hud.alert",
+          "entity_id": "curse_counter_hud",
+          "display_name": "Curse Counter HUD Alert Feedback",
+          "display_name_zh": "诅咒计数HUD警示反馈",
+          "summary": "负责闪烁、强调、警示和状态变化反馈。",
+          "summary_zh": "负责闪烁、强调、警示和状态变化反馈。",
+          "capability_id": "curse_counter_hud.alert",
+          "semantic_role": "capability",
+          "capability_kind": "hud_feedback",
+          "runtime_primitives": [
+            "hud_flash",
+            "tag_state"
+          ],
+          "engine_ports": [
+            "widget.set_render_opacity"
+          ],
+          "runtime_features": [
+            "hud"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "flash_warning",
+          "behaviors": [
+            {
+              "behavior_id": "curse_counter_hud.alert.flash_warning",
+              "ability_id": "curse_counter_hud.alert",
+              "entity_id": "curse_counter_hud",
+              "display_name": "Curse Counter HUD Flash Warning",
+              "display_name_zh": "诅咒计数HUD闪烁警示",
+              "trigger": "danger or threshold is reached",
+              "execution": "plays a visual flash or shake",
+              "result": "player sees urgent feedback",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "curse_counter_hud",
+              "required_capability_ids": [
+                "curse_counter_hud.alert"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "danger or threshold is reached"
+              },
+              "effects": [
+                "player sees urgent feedback"
+              ],
+              "runtime_features": [
+                "hud"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        },
+        {
+          "ability_id": "curse_counter_hud.display",
+          "entity_id": "curse_counter_hud",
+          "display_name": "Curse Counter HUD Display",
+          "display_name_zh": "诅咒计数HUD显示",
+          "summary": "负责把数值、图标或地图状态呈现到屏幕。",
+          "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
+          "capability_id": "curse_counter_hud.display",
+          "semantic_role": "capability",
+          "capability_kind": "hud_binding",
+          "runtime_primitives": [
+            "hud_refresh",
+            "tag_state"
+          ],
+          "engine_ports": [
+            "widget.set_text",
+            "widget.set_percent"
+          ],
+          "runtime_features": [
+            "hud"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "refresh_value",
+          "behaviors": [
+            {
+              "behavior_id": "curse_counter_hud.display.refresh_value",
+              "ability_id": "curse_counter_hud.display",
+              "entity_id": "curse_counter_hud",
+              "display_name": "Curse Counter HUD Refresh Value",
+              "display_name_zh": "诅咒计数HUD刷新数值",
+              "trigger": "tracked value changes",
+              "execution": "updates bars, icons, counters, or map tiles",
+              "result": "HUD reflects current state",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "curse_counter_hud",
+              "required_capability_ids": [
+                "curse_counter_hud.display"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "tracked value changes"
+              },
+              "effects": [
+                "HUD reflects current state"
+              ],
+              "runtime_features": [
+                "hud"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "curse_skull_vfx",
+      "display_name": "Curse Skull VFX",
+      "display_name_zh": "诅咒骷髅特效",
+      "entity_kind": "vfx",
+      "summary": "诅咒状态提示粒子。",
+      "summary_zh": "诅咒状态提示粒子。",
+      "content_tags": [
+        "vfx",
+        "particle",
+        "curse"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "curse_skull_vfx.emit",
+          "entity_id": "curse_skull_vfx",
+          "display_name": "Curse Skull VFX Particle Emission",
+          "display_name_zh": "诅咒骷髅特效粒子生成",
+          "summary": "负责在玩法事件发生时生成可见粒子。",
+          "summary_zh": "负责在玩法事件发生时生成可见粒子。",
+          "capability_id": "curse_skull_vfx.emit",
+          "semantic_role": "capability",
+          "capability_kind": "vfx_binding",
+          "runtime_primitives": [
+            "spawn_vfx",
+            "attach_vfx"
+          ],
+          "engine_ports": [
+            "component.set_visibility"
+          ],
+          "runtime_features": [
+            "vfx"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "spawn_particles",
+          "behaviors": [
+            {
+              "behavior_id": "curse_skull_vfx.emit.spawn_particles",
+              "ability_id": "curse_skull_vfx.emit",
+              "entity_id": "curse_skull_vfx",
+              "display_name": "Curse Skull VFX Spawn Particles",
+              "display_name_zh": "诅咒骷髅特效生成粒子",
+              "trigger": "gameplay event fires",
+              "execution": "spawns particles at the relevant actor or world position",
+              "result": "event has visible feedback",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "curse_skull_vfx",
+              "required_capability_ids": [
+                "curse_skull_vfx.emit"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "gameplay event fires"
+              },
+              "effects": [
+                "event has visible feedback"
+              ],
+              "runtime_features": [
+                "vfx"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "cursed_chest",
+      "display_name": "Cursed Chest",
+      "display_name_zh": "诅咒宝箱",
+      "entity_kind": "object",
+      "summary": "打开后施加诅咒并释放高价值奖励。",
+      "summary_zh": "打开后施加诅咒并释放高价值奖励。",
+      "content_tags": [
+        "reward",
+        "curse",
+        "chest"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "cursed_chest.chest.open_reward",
+          "capability_id": "cursed_chest.chest.open_reward",
+          "entity_id": "cursed_chest",
+          "display_name": "cursed_chest.chest.open_reward",
+          "display_name_zh": "打开诅咒宝箱并发放奖励。",
+          "summary": "打开诅咒宝箱并发放奖励。",
+          "summary_zh": "打开诅咒宝箱并发放奖励。",
+          "semantic_role": "capability",
+          "capability_kind": "chest_reward",
+          "action_kind": "open_reward",
+          "runtime_primitives": [
+            "grant_reward",
+            "state_write"
+          ],
+          "engine_ports": [],
+          "runtime_features": [
+            "reward",
+            "state_blackboard"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "behaviors": [
+            {
+              "behavior_id": "cursed_chest.open_reward_and_add_curse",
+              "ability_id": "cursed_chest.chest.open_reward",
+              "entity_id": "cursed_chest",
+              "primary_entity_id": "cursed_chest",
+              "display_name": "cursed_chest.open_reward_and_add_curse",
+              "display_name_zh": "打开诅咒宝箱并增加诅咒计数。",
+              "trigger": "打开诅咒宝箱并增加诅咒计数。",
+              "execution": "打开诅咒宝箱并增加诅咒计数。",
+              "result": "打开诅咒宝箱并增加诅咒计数。",
+              "required_capability_ids": [
+                "cursed_chest.chest.open_reward",
+                "cursed_chest.curse.add_curse_counter",
+                "curse_counter_hud.display"
+              ],
+              "trigger_model": {
+                "type": "input_action",
+                "source_entity_id": "player",
+                "target_entity_id": "cursed_chest"
+              },
+              "conditions": [],
+              "effects": [
+                {
+                  "type": "grant_reward"
+                },
+                {
+                  "type": "write_state",
+                  "key": "run.curse_count",
+                  "value": {
+                    "delta": 1
+                  }
+                }
+              ],
+              "verification_logs": [
+                "BehaviorTriggered cursed_chest.open_reward_and_add_curse"
+              ],
+              "semantic_role": "behavior",
+              "source_refs": [
+                "autoue-behavior-driven-runtime"
+              ],
+              "runtime_features": [
+                "hud",
+                "reward",
+                "state_blackboard"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "non_goals": []
+}

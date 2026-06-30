@@ -1,0 +1,16 @@
+{
+  "selected_entity_ids": [
+    "kamikaze_bat",
+    "burn_vfx",
+    "combat_damage_number_hud"
+  ],
+  "selected_capability_ids": [],
+  "selected_behavior_ids": [
+    "player.movement.dodge_roll",
+    "kamikaze_bat.pursuit.detect_player",
+    "kamikaze_bat.pursuit.close_gap",
+    "kamikaze_bat.offense.resolve_hit",
+    "burn_vfx.emit.spawn_particles",
+    "combat_damage_number_hud.display.refresh_value"
+  ]
+}

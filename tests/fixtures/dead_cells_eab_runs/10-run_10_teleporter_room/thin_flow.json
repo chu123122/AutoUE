@@ -1,0 +1,81 @@
+{
+  "flows": [
+    {
+      "flow_id": "flow_biome_teleporter_activate_transition",
+      "entity_id": "biome_teleporter",
+      "ability_id": "biome_teleporter.teleport.activate_transition",
+      "source_behavior_id": "biome_teleporter.activate_transition",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "primitive.on_component_begin_overlap",
+            "gameplay_statics.open_level",
+            "component.set_visibility",
+            "widget.set_text",
+            "widget.set_percent"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered biome_teleporter.activate_transition"
+      ]
+    },
+    {
+      "flow_id": "flow_minimap_hud_display_refresh_value",
+      "entity_id": "minimap_hud",
+      "ability_id": "minimap_hud.display",
+      "source_behavior_id": "minimap_hud.display.refresh_value",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "widget.set_text",
+            "widget.set_percent"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered minimap_hud.display.refresh_value"
+      ]
+    },
+    {
+      "flow_id": "flow_teleport_vfx_emit_spawn_particles",
+      "entity_id": "teleport_vfx",
+      "ability_id": "teleport_vfx.emit",
+      "source_behavior_id": "teleport_vfx.emit.spawn_particles",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "component.set_visibility"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered teleport_vfx.emit.spawn_particles"
+      ]
+    }
+  ]
+}

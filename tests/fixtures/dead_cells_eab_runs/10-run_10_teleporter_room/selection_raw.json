@@ -1,0 +1,13 @@
+{
+  "selected_entity_ids": [
+    "biome_teleporter",
+    "teleport_vfx",
+    "minimap_hud"
+  ],
+  "selected_capability_ids": [],
+  "selected_behavior_ids": [
+    "biome_teleporter.activate_transition",
+    "teleport_vfx.emit.spawn_particles",
+    "minimap_hud.display.refresh_value"
+  ]
+}

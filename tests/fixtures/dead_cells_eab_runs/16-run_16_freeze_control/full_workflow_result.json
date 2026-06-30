@@ -1,0 +1,6 @@
+{
+  "result": "supported",
+  "behavior_count": 1,
+  "generated_runtime": "TypeScript/content/generated/AutoUEBehaviorSpec.generated.ts",
+  "validate_output": "actual workflow validate-output must be run outside this fixture generator"
+}

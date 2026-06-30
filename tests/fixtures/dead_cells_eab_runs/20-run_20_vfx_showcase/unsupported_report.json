@@ -1,0 +1,35 @@
+{
+  "result": "unsupported",
+  "unsupported_behaviors": [
+    "player.combat.attack",
+    "zombie.offense.resolve_hit"
+  ],
+  "unsupported_capabilities": [
+    {
+      "capability_kind": "combat",
+      "action_kind": "apply_damage",
+      "handler": null,
+      "required_runtime_modules": [],
+      "engine_ports": [
+        "input.action_binding",
+        "gameplay_statics.apply_damage"
+      ],
+      "supported": false,
+      "reason": "combat damage runtime is not implemented",
+      "capability_id": "player.combat"
+    },
+    {
+      "capability_kind": "enemy_combat",
+      "action_kind": "enemy_attack",
+      "handler": null,
+      "required_runtime_modules": [],
+      "engine_ports": [
+        "kismet.sphere_trace_single",
+        "gameplay_statics.apply_damage"
+      ],
+      "supported": false,
+      "reason": "enemy encounter/combat runtime is optional and not implemented by the generic behavior framework",
+      "capability_id": "zombie.offense"
+    }
+  ]
+}

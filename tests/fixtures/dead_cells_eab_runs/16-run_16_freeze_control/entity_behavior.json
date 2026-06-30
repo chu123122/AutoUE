@@ -1,0 +1,152 @@
+{
+  "entities": [
+    {
+      "entity_id": "freeze_trap",
+      "display_name": "冰冻陷阱",
+      "display_name_zh": "冰冻陷阱",
+      "entity_kind": "trap",
+      "summary": "检测玩家重叠并写入 player.effects.frozen。",
+      "summary_zh": "检测玩家重叠并写入 player.effects.frozen。",
+      "content_tags": [
+        "trap",
+        "freeze"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "freeze_trap.sensor.detect_player_overlap",
+          "capability_id": "freeze_trap.sensor.detect_player_overlap",
+          "entity_id": "freeze_trap",
+          "display_name": "freeze_trap.sensor.detect_player_overlap",
+          "display_name_zh": "检测玩家进入冰冻陷阱。",
+          "summary": "检测玩家进入冰冻陷阱。",
+          "summary_zh": "检测玩家进入冰冻陷阱。",
+          "semantic_role": "capability",
+          "capability_kind": "sensor_overlap",
+          "action_kind": "detect_overlap",
+          "runtime_primitives": [
+            "overlap_zone"
+          ],
+          "engine_ports": [
+            "primitive.on_component_begin_overlap"
+          ],
+          "runtime_features": [
+            "trigger_router",
+            "world_adapter"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "behaviors": [
+            {
+              "behavior_id": "freeze_trap.freeze_player_on_overlap",
+              "ability_id": "freeze_trap.sensor.detect_player_overlap",
+              "entity_id": "freeze_trap",
+              "primary_entity_id": "freeze_trap",
+              "display_name": "freeze_trap.freeze_player_on_overlap",
+              "display_name_zh": "重叠后冰冻玩家并播放反馈。",
+              "trigger": "重叠后冰冻玩家并播放反馈。",
+              "execution": "重叠后冰冻玩家并播放反馈。",
+              "result": "重叠后冰冻玩家并播放反馈。",
+              "required_capability_ids": [
+                "freeze_trap.sensor.detect_player_overlap",
+                "freeze_trap.effect.apply_freeze_to_player",
+                "player.movement.block_while_effect_active",
+                "freeze_vfx.emit.show_freeze",
+                "side_camera.camera.apply_impulse"
+              ],
+              "trigger_model": {
+                "type": "overlap_enter",
+                "source_entity_id": "player",
+                "target_entity_id": "freeze_trap"
+              },
+              "conditions": [],
+              "effects": [
+                {
+                  "type": "write_state",
+                  "key": "player.effects.frozen",
+                  "value": {
+                    "active": true,
+                    "duration": 1.25
+                  }
+                },
+                {
+                  "type": "movement_gate",
+                  "target_entity_id": "player",
+                  "blocked_by": "player.effects.frozen"
+                },
+                {
+                  "type": "set_vfx_visible",
+                  "entity_id": "freeze_vfx",
+                  "visible_while": "player.effects.frozen"
+                },
+                {
+                  "type": "camera_impulse",
+                  "duration": 0.35
+                }
+              ],
+              "verification_logs": [
+                "BehaviorTriggered freeze_trap.freeze_player_on_overlap"
+              ],
+              "semantic_role": "behavior",
+              "source_refs": [
+                "autoue-behavior-driven-runtime"
+              ],
+              "runtime_features": [
+                "action_dispatcher",
+                "camera",
+                "movement",
+                "state_blackboard",
+                "trigger_router",
+                "vfx",
+                "world_adapter"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "freeze_vfx",
+      "display_name": "Freeze VFX",
+      "display_name_zh": "冰冻特效",
+      "entity_kind": "vfx",
+      "summary": "冰冻和解冻粒子。",
+      "summary_zh": "冰冻和解冻粒子。",
+      "content_tags": [
+        "vfx",
+        "particle",
+        "freeze"
+      ],
+      "spawnable": false,
+      "abilities": []
+    },
+    {
+      "entity_id": "player",
+      "display_name": "Player Prisoner",
+      "display_name_zh": "玩家囚徒",
+      "entity_kind": "player",
+      "summary": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
+      "summary_zh": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
+      "content_tags": [
+        "player",
+        "prisoner",
+        "combat"
+      ],
+      "spawnable": false,
+      "abilities": []
+    },
+    {
+      "entity_id": "side_camera",
+      "display_name": "侧视角相机",
+      "display_name_zh": "侧视角相机",
+      "entity_kind": "camera",
+      "summary": "侧视角相机反馈控制器。",
+      "summary_zh": "侧视角相机反馈控制器。",
+      "content_tags": [
+        "camera"
+      ],
+      "spawnable": false,
+      "abilities": []
+    }
+  ],
+  "non_goals": []
+}

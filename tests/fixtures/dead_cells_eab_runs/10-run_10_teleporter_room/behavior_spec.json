@@ -1,0 +1,109 @@
+{
+  "schema_version": "autoue-behavior-spec/v1",
+  "source_nodes": [
+    "EntityAbilityBehaviorPlanner",
+    "ThinGameplayFlowPlanner",
+    "PuerTSRuntimeMappingPlanner"
+  ],
+  "behaviors": [
+    {
+      "behavior_id": "biome_teleporter.activate_transition",
+      "primary_entity_id": "biome_teleporter",
+      "entity_id": "biome_teleporter",
+      "ability_id": "biome_teleporter.teleport.activate_transition",
+      "flow_id": "flow_biome_teleporter_activate_transition",
+      "trigger": {
+        "type": "input_action",
+        "source_entity_id": "player",
+        "target_entity_id": "biome_teleporter"
+      },
+      "conditions": [],
+      "actions": [
+        {
+          "type": "spawn_vfx",
+          "entity_id": "teleport_vfx",
+          "capability_id": "teleport_vfx.emit"
+        },
+        {
+          "type": "set_hud_value",
+          "entity_id": "minimap_hud",
+          "source": "state_blackboard",
+          "capability_id": "minimap_hud.display"
+        }
+      ],
+      "required_capability_ids": [
+        "biome_teleporter.teleport.activate_transition",
+        "teleport_vfx.emit",
+        "minimap_hud.display"
+      ],
+      "engine_port_ids": [
+        "primitive.on_component_begin_overlap",
+        "gameplay_statics.open_level",
+        "component.set_visibility",
+        "widget.set_text",
+        "widget.set_percent"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered biome_teleporter.activate_transition"
+      ]
+    },
+    {
+      "behavior_id": "minimap_hud.display.refresh_value",
+      "primary_entity_id": "minimap_hud",
+      "entity_id": "minimap_hud",
+      "ability_id": "minimap_hud.display",
+      "flow_id": "flow_minimap_hud_display_refresh_value",
+      "trigger": {
+        "type": "legacy_text",
+        "description": "tracked value changes"
+      },
+      "conditions": [],
+      "actions": [
+        {
+          "type": "set_hud_value",
+          "entity_id": "minimap_hud",
+          "source": "state_blackboard",
+          "capability_id": "minimap_hud.display"
+        }
+      ],
+      "required_capability_ids": [
+        "minimap_hud.display"
+      ],
+      "engine_port_ids": [
+        "widget.set_text",
+        "widget.set_percent"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered minimap_hud.display.refresh_value"
+      ]
+    },
+    {
+      "behavior_id": "teleport_vfx.emit.spawn_particles",
+      "primary_entity_id": "teleport_vfx",
+      "entity_id": "teleport_vfx",
+      "ability_id": "teleport_vfx.emit",
+      "flow_id": "flow_teleport_vfx_emit_spawn_particles",
+      "trigger": {
+        "type": "legacy_text",
+        "description": "gameplay event fires"
+      },
+      "conditions": [],
+      "actions": [
+        {
+          "type": "spawn_vfx",
+          "entity_id": "teleport_vfx",
+          "capability_id": "teleport_vfx.emit"
+        }
+      ],
+      "required_capability_ids": [
+        "teleport_vfx.emit"
+      ],
+      "engine_port_ids": [
+        "component.set_visibility"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered teleport_vfx.emit.spawn_particles"
+      ]
+    }
+  ]
+}

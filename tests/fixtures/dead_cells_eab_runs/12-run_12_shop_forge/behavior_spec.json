@@ -1,0 +1,106 @@
+{
+  "schema_version": "autoue-behavior-spec/v1",
+  "source_nodes": [
+    "EntityAbilityBehaviorPlanner",
+    "ThinGameplayFlowPlanner",
+    "PuerTSRuntimeMappingPlanner"
+  ],
+  "behaviors": [
+    {
+      "behavior_id": "forge_station.apply_item_upgrade",
+      "primary_entity_id": "forge_station",
+      "entity_id": "forge_station",
+      "ability_id": "forge_station.upgrade.apply_item_upgrade",
+      "flow_id": "flow_forge_station_apply_item_upgrade",
+      "trigger": {
+        "type": "input_action",
+        "source_entity_id": "player",
+        "target_entity_id": "forge_station"
+      },
+      "conditions": [],
+      "actions": [
+        {
+          "type": "set_hud_value",
+          "entity_id": "status_icon_hud",
+          "source": "state_blackboard",
+          "capability_id": "status_icon_hud.display"
+        }
+      ],
+      "required_capability_ids": [
+        "forge_station.upgrade.apply_item_upgrade",
+        "status_icon_hud.display"
+      ],
+      "engine_port_ids": [
+        "widget.set_text",
+        "widget.set_percent"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered forge_station.apply_item_upgrade"
+      ]
+    },
+    {
+      "behavior_id": "shop_room_vendor.purchase_item",
+      "primary_entity_id": "shop_room_vendor",
+      "entity_id": "shop_room_vendor",
+      "ability_id": "shop_room_vendor.transaction.purchase_item",
+      "flow_id": "flow_shop_room_vendor_purchase_item",
+      "trigger": {
+        "type": "input_action",
+        "source_entity_id": "player",
+        "target_entity_id": "shop_room_vendor"
+      },
+      "conditions": [],
+      "actions": [
+        {
+          "type": "set_hud_value",
+          "entity_id": "status_icon_hud",
+          "source": "state_blackboard",
+          "capability_id": "status_icon_hud.display"
+        }
+      ],
+      "required_capability_ids": [
+        "shop_room_vendor.transaction.purchase_item",
+        "gold_pickup.collect",
+        "status_icon_hud.display"
+      ],
+      "engine_port_ids": [
+        "primitive.on_component_begin_overlap",
+        "widget.set_text",
+        "widget.set_percent"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered shop_room_vendor.purchase_item"
+      ]
+    },
+    {
+      "behavior_id": "status_icon_hud.display.refresh_value",
+      "primary_entity_id": "status_icon_hud",
+      "entity_id": "status_icon_hud",
+      "ability_id": "status_icon_hud.display",
+      "flow_id": "flow_status_icon_hud_display_refresh_value",
+      "trigger": {
+        "type": "legacy_text",
+        "description": "tracked value changes"
+      },
+      "conditions": [],
+      "actions": [
+        {
+          "type": "set_hud_value",
+          "entity_id": "status_icon_hud",
+          "source": "state_blackboard",
+          "capability_id": "status_icon_hud.display"
+        }
+      ],
+      "required_capability_ids": [
+        "status_icon_hud.display"
+      ],
+      "engine_port_ids": [
+        "widget.set_text",
+        "widget.set_percent"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered status_icon_hud.display.refresh_value"
+      ]
+    }
+  ]
+}

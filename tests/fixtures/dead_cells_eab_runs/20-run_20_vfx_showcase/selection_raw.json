@@ -1,0 +1,20 @@
+{
+  "selected_entity_ids": [
+    "zombie",
+    "critical_hit_vfx",
+    "burn_vfx",
+    "poison_vfx",
+    "freeze_vfx",
+    "corpse_dust_vfx"
+  ],
+  "selected_capability_ids": [],
+  "selected_behavior_ids": [
+    "player.combat.attack",
+    "zombie.offense.resolve_hit",
+    "critical_hit_vfx.emit.spawn_particles",
+    "burn_vfx.emit.spawn_particles",
+    "poison_vfx.emit.spawn_particles",
+    "freeze_vfx.emit.spawn_particles",
+    "corpse_dust_vfx.emit.spawn_particles"
+  ]
+}

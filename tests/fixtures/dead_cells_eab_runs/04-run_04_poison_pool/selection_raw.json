@@ -1,0 +1,13 @@
+{
+  "selected_entity_ids": [
+    "poison_pool",
+    "poison_vfx",
+    "health_bar_hud"
+  ],
+  "selected_capability_ids": [],
+  "selected_behavior_ids": [
+    "poison_pool.poison_player_on_overlap",
+    "poison_vfx.emit.spawn_particles",
+    "health_bar_hud.display.refresh_value"
+  ]
+}

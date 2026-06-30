@@ -1,0 +1,17 @@
+{
+  "selected_entity_ids": [
+    "slasher",
+    "elite_aura_vfx",
+    "critical_hit_vfx",
+    "combat_damage_number_hud"
+  ],
+  "selected_capability_ids": [],
+  "selected_behavior_ids": [
+    "player.combat.attack",
+    "slasher.pursuit.detect_player",
+    "slasher.pursuit.close_gap",
+    "slasher.offense.resolve_hit",
+    "elite_aura_vfx.emit.attach_to_target",
+    "critical_hit_vfx.emit.spawn_particles"
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "flows": [
+    {
+      "flow_id": "flow_cell_pickup_collect_detect_pickup",
+      "entity_id": "cell_pickup",
+      "ability_id": "cell_pickup.collect",
+      "source_behavior_id": "cell_pickup.collect.detect_pickup",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "primitive.on_component_begin_overlap"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered cell_pickup.collect.detect_pickup"
+      ]
+    },
+    {
+      "flow_id": "flow_cell_pickup_collect_grant_reward",
+      "entity_id": "cell_pickup",
+      "ability_id": "cell_pickup.collect",
+      "source_behavior_id": "cell_pickup.collect.grant_reward",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "primitive.on_component_begin_overlap"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered cell_pickup.collect.grant_reward"
+      ]
+    },
+    {
+      "flow_id": "flow_corpse_dust_vfx_emit_spawn_particles",
+      "entity_id": "corpse_dust_vfx",
+      "ability_id": "corpse_dust_vfx.emit",
+      "source_behavior_id": "corpse_dust_vfx.emit.spawn_particles",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "component.set_visibility"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered corpse_dust_vfx.emit.spawn_particles"
+      ]
+    },
+    {
+      "flow_id": "flow_gold_pickup_collect_detect_pickup",
+      "entity_id": "gold_pickup",
+      "ability_id": "gold_pickup.collect",
+      "source_behavior_id": "gold_pickup.collect.detect_pickup",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "primitive.on_component_begin_overlap"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered gold_pickup.collect.detect_pickup"
+      ]
+    },
+    {
+      "flow_id": "flow_gold_pickup_collect_grant_reward",
+      "entity_id": "gold_pickup",
+      "ability_id": "gold_pickup.collect",
+      "source_behavior_id": "gold_pickup.collect.grant_reward",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "primitive.on_component_begin_overlap"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered gold_pickup.collect.grant_reward"
+      ]
+    },
+    {
+      "flow_id": "flow_status_icon_hud_display_refresh_value",
+      "entity_id": "status_icon_hud",
+      "ability_id": "status_icon_hud.display",
+      "source_behavior_id": "status_icon_hud.display.refresh_value",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "widget.set_text",
+            "widget.set_percent"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered status_icon_hud.display.refresh_value"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,423 @@
+{
+  "entities": [
+    {
+      "entity_id": "combat_damage_number_hud",
+      "display_name": "Damage Number HUD",
+      "display_name_zh": "伤害数字HUD",
+      "entity_kind": "hud",
+      "summary": "显示战斗伤害数字。",
+      "summary_zh": "显示战斗伤害数字。",
+      "content_tags": [
+        "hud",
+        "damage",
+        "feedback"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "combat_damage_number_hud.display",
+          "entity_id": "combat_damage_number_hud",
+          "display_name": "Damage Number HUD Display",
+          "display_name_zh": "伤害数字HUD显示",
+          "summary": "负责把数值、图标或地图状态呈现到屏幕。",
+          "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
+          "capability_id": "combat_damage_number_hud.display",
+          "semantic_role": "capability",
+          "capability_kind": "hud_binding",
+          "runtime_primitives": [
+            "hud_refresh",
+            "tag_state"
+          ],
+          "engine_ports": [
+            "widget.set_text",
+            "widget.set_percent"
+          ],
+          "runtime_features": [
+            "hud"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "refresh_value",
+          "behaviors": [
+            {
+              "behavior_id": "combat_damage_number_hud.display.refresh_value",
+              "ability_id": "combat_damage_number_hud.display",
+              "entity_id": "combat_damage_number_hud",
+              "display_name": "Damage Number HUD Refresh Value",
+              "display_name_zh": "伤害数字HUD刷新数值",
+              "trigger": "tracked value changes",
+              "execution": "updates bars, icons, counters, or map tiles",
+              "result": "HUD reflects current state",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "combat_damage_number_hud",
+              "required_capability_ids": [
+                "combat_damage_number_hud.display"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "tracked value changes"
+              },
+              "effects": [
+                "HUD reflects current state"
+              ],
+              "runtime_features": [
+                "hud"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "health_bar_hud",
+      "display_name": "Health Bar HUD",
+      "display_name_zh": "生命条HUD",
+      "entity_kind": "hud",
+      "summary": "显示玩家生命变化。",
+      "summary_zh": "显示玩家生命变化。",
+      "content_tags": [
+        "hud",
+        "health",
+        "player"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "health_bar_hud.display",
+          "entity_id": "health_bar_hud",
+          "display_name": "Health Bar HUD Display",
+          "display_name_zh": "生命条HUD显示",
+          "summary": "负责把数值、图标或地图状态呈现到屏幕。",
+          "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
+          "capability_id": "health_bar_hud.display",
+          "semantic_role": "capability",
+          "capability_kind": "hud_binding",
+          "runtime_primitives": [
+            "hud_refresh",
+            "tag_state"
+          ],
+          "engine_ports": [
+            "widget.set_text",
+            "widget.set_percent"
+          ],
+          "runtime_features": [
+            "hud"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "refresh_value",
+          "behaviors": [
+            {
+              "behavior_id": "health_bar_hud.display.refresh_value",
+              "ability_id": "health_bar_hud.display",
+              "entity_id": "health_bar_hud",
+              "display_name": "Health Bar HUD Refresh Value",
+              "display_name_zh": "生命条HUD刷新数值",
+              "trigger": "tracked value changes",
+              "execution": "updates bars, icons, counters, or map tiles",
+              "result": "HUD reflects current state",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "health_bar_hud",
+              "required_capability_ids": [
+                "health_bar_hud.display"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "tracked value changes"
+              },
+              "effects": [
+                "HUD reflects current state"
+              ],
+              "runtime_features": [
+                "hud"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "level_exit_door",
+      "display_name": "Level Exit Door",
+      "display_name_zh": "关卡出口门",
+      "entity_kind": "exit",
+      "summary": "通往下一生物群落的出口门。",
+      "summary_zh": "通往下一生物群落的出口门。",
+      "content_tags": [
+        "exit",
+        "door",
+        "progression"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "level_exit_door.lock",
+          "entity_id": "level_exit_door",
+          "display_name": "Level Exit Door Lock State",
+          "display_name_zh": "关卡出口门锁定状态",
+          "summary": "负责出口是否可用和锁定提示。",
+          "summary_zh": "负责出口是否可用和锁定提示。",
+          "capability_id": "level_exit_door.lock",
+          "semantic_role": "capability",
+          "capability_kind": "gate_lock",
+          "runtime_primitives": [
+            "condition_check",
+            "tag_state"
+          ],
+          "engine_ports": [],
+          "runtime_features": [
+            "exit"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "evaluate_unlock",
+          "behaviors": [
+            {
+              "behavior_id": "level_exit_door.lock.evaluate_unlock",
+              "ability_id": "level_exit_door.lock",
+              "entity_id": "level_exit_door",
+              "display_name": "Level Exit Door Evaluate Unlock",
+              "display_name_zh": "关卡出口门评估解锁",
+              "trigger": "completion condition changes",
+              "execution": "sets the locked or unlocked state",
+              "result": "exit communicates availability",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "level_exit_door",
+              "required_capability_ids": [
+                "level_exit_door.lock"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "completion condition changes"
+              },
+              "effects": [
+                "exit communicates availability"
+              ],
+              "runtime_features": [
+                "exit"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "player",
+      "display_name": "Player Prisoner",
+      "display_name_zh": "玩家囚徒",
+      "entity_kind": "player",
+      "summary": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
+      "summary_zh": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
+      "content_tags": [
+        "player",
+        "prisoner",
+        "combat"
+      ],
+      "spawnable": false,
+      "abilities": [
+        {
+          "ability_id": "player.combat",
+          "entity_id": "player",
+          "display_name": "Player Prisoner Combat",
+          "display_name_zh": "玩家囚徒战斗输入",
+          "summary": "负责攻击、取消、受击和战斗输入解析。",
+          "summary_zh": "负责攻击、取消、受击和战斗输入解析。",
+          "capability_id": "player.combat",
+          "semantic_role": "capability",
+          "capability_kind": "combat",
+          "runtime_primitives": [
+            "input_action",
+            "hit_query",
+            "apply_damage"
+          ],
+          "engine_ports": [
+            "input.action_binding",
+            "kismet.line_trace_single",
+            "gameplay_statics.apply_damage"
+          ],
+          "runtime_features": [
+            "combat",
+            "input"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "apply_damage",
+          "behaviors": [
+            {
+              "behavior_id": "player.combat.attack",
+              "ability_id": "player.combat",
+              "entity_id": "player",
+              "display_name": "Player Prisoner Attack",
+              "display_name_zh": "玩家囚徒攻击",
+              "trigger": "attack input",
+              "execution": "executes the selected weapon strike against a target",
+              "result": "target receives combat pressure",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "player",
+              "required_capability_ids": [
+                "player.combat"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "attack input"
+              },
+              "effects": [
+                "target receives combat pressure"
+              ],
+              "runtime_features": [
+                "combat",
+                "input"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity_id": "zombie",
+      "display_name": "Zombie",
+      "display_name_zh": "僵尸",
+      "entity_kind": "enemy",
+      "summary": "僵尸：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "summary_zh": "僵尸：死亡细胞风格敌人，负责对应攻击、追击和受击状态。",
+      "content_tags": [
+        "enemy",
+        "ground",
+        "melee"
+      ],
+      "spawnable": true,
+      "enemy_profile": {
+        "cost": 1,
+        "allowed_spawn_tags": [
+          "ground",
+          "melee"
+        ],
+        "default_health": 3
+      },
+      "abilities": [
+        {
+          "ability_id": "zombie.offense",
+          "entity_id": "zombie",
+          "display_name": "Zombie Offense",
+          "display_name_zh": "僵尸进攻",
+          "summary": "负责攻击预警、命中窗口和攻击结果。",
+          "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
+          "capability_id": "zombie.offense",
+          "semantic_role": "capability",
+          "capability_kind": "enemy_combat",
+          "runtime_primitives": [
+            "telegraph",
+            "hit_query",
+            "apply_damage"
+          ],
+          "engine_ports": [
+            "kismet.sphere_trace_single",
+            "gameplay_statics.apply_damage"
+          ],
+          "runtime_features": [
+            "combat",
+            "enemy_encounter"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "enemy_attack",
+          "behaviors": [
+            {
+              "behavior_id": "zombie.offense.resolve_hit",
+              "ability_id": "zombie.offense",
+              "entity_id": "zombie",
+              "display_name": "Zombie Resolve Hit",
+              "display_name_zh": "僵尸命中结算",
+              "trigger": "active hit frame overlaps target",
+              "execution": "applies the enemy attack result",
+              "result": "player or object is damaged",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "zombie",
+              "required_capability_ids": [
+                "zombie.offense"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "active hit frame overlaps target"
+              },
+              "effects": [
+                "player or object is damaged"
+              ],
+              "runtime_features": [
+                "combat",
+                "enemy_encounter"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        },
+        {
+          "ability_id": "zombie.pursuit",
+          "entity_id": "zombie",
+          "display_name": "Zombie Pursuit",
+          "display_name_zh": "僵尸追击",
+          "summary": "负责发现目标、接近目标和重新站位。",
+          "summary_zh": "负责发现目标、接近目标和重新站位。",
+          "capability_id": "zombie.pursuit",
+          "semantic_role": "capability",
+          "capability_kind": "enemy_pursuit",
+          "runtime_primitives": [
+            "awareness_query",
+            "move_actor"
+          ],
+          "engine_ports": [
+            "actor.get_distance_to",
+            "pawn.add_movement_input"
+          ],
+          "runtime_features": [
+            "enemy_encounter",
+            "movement"
+          ],
+          "definition": "Runtime capability; trigger/result live in Behavior Library.",
+          "action_kind": "chase_target",
+          "behaviors": [
+            {
+              "behavior_id": "zombie.pursuit.detect_player",
+              "ability_id": "zombie.pursuit",
+              "entity_id": "zombie",
+              "display_name": "Zombie Detect Player",
+              "display_name_zh": "僵尸发现玩家",
+              "trigger": "player enters awareness range",
+              "execution": "selects the player as target and turns toward them",
+              "result": "enemy starts pursuing",
+              "source_refs": [
+                "dead-cells-inspired-library"
+              ],
+              "primary_entity_id": "zombie",
+              "required_capability_ids": [
+                "zombie.pursuit"
+              ],
+              "trigger_model": {
+                "type": "legacy_text",
+                "description": "player enters awareness range"
+              },
+              "effects": [
+                "enemy starts pursuing"
+              ],
+              "runtime_features": [
+                "enemy_encounter",
+                "movement"
+              ],
+              "semantic_role": "behavior"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "non_goals": []
+}

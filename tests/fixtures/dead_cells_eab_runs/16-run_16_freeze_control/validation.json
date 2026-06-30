@@ -1,0 +1,10 @@
+{
+  "result": "pass",
+  "status": "supported",
+  "support_status": "supported",
+  "unsupported_capabilities": [],
+  "unsupported_behaviors": [],
+  "generated_runtime": "TypeScript/content/generated/AutoUEBehaviorSpec.generated.ts",
+  "blocked_reason": null,
+  "full_workflow_result": "full_workflow_result.json"
+}

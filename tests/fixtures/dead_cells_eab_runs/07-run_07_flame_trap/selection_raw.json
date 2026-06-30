@@ -1,0 +1,14 @@
+{
+  "selected_entity_ids": [
+    "flame_jet_trap",
+    "burn_vfx"
+  ],
+  "selected_capability_ids": [],
+  "selected_behavior_ids": [
+    "flame_jet_trap.arming.show_warning",
+    "flame_jet_trap.arming.enter_active",
+    "flame_jet_trap.apply_burn_on_hit",
+    "burn_vfx.emit.spawn_particles",
+    "player.movement.run"
+  ]
+}

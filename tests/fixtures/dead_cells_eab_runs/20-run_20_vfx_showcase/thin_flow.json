@@ -1,0 +1,175 @@
+{
+  "flows": [
+    {
+      "flow_id": "flow_burn_vfx_emit_spawn_particles",
+      "entity_id": "burn_vfx",
+      "ability_id": "burn_vfx.emit",
+      "source_behavior_id": "burn_vfx.emit.spawn_particles",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "component.set_visibility"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered burn_vfx.emit.spawn_particles"
+      ]
+    },
+    {
+      "flow_id": "flow_corpse_dust_vfx_emit_spawn_particles",
+      "entity_id": "corpse_dust_vfx",
+      "ability_id": "corpse_dust_vfx.emit",
+      "source_behavior_id": "corpse_dust_vfx.emit.spawn_particles",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "component.set_visibility"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered corpse_dust_vfx.emit.spawn_particles"
+      ]
+    },
+    {
+      "flow_id": "flow_critical_hit_vfx_emit_spawn_particles",
+      "entity_id": "critical_hit_vfx",
+      "ability_id": "critical_hit_vfx.emit",
+      "source_behavior_id": "critical_hit_vfx.emit.spawn_particles",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "component.set_visibility"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered critical_hit_vfx.emit.spawn_particles"
+      ]
+    },
+    {
+      "flow_id": "flow_freeze_vfx_emit_spawn_particles",
+      "entity_id": "freeze_vfx",
+      "ability_id": "freeze_vfx.emit",
+      "source_behavior_id": "freeze_vfx.emit.spawn_particles",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "component.set_visibility"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered freeze_vfx.emit.spawn_particles"
+      ]
+    },
+    {
+      "flow_id": "flow_player_combat_attack",
+      "entity_id": "player",
+      "ability_id": "player.combat",
+      "source_behavior_id": "player.combat.attack",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "input.action_binding",
+            "kismet.line_trace_single",
+            "gameplay_statics.apply_damage"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered player.combat.attack"
+      ]
+    },
+    {
+      "flow_id": "flow_poison_vfx_emit_spawn_particles",
+      "entity_id": "poison_vfx",
+      "ability_id": "poison_vfx.emit",
+      "source_behavior_id": "poison_vfx.emit.spawn_particles",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "component.set_visibility"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered poison_vfx.emit.spawn_particles"
+      ]
+    },
+    {
+      "flow_id": "flow_zombie_offense_resolve_hit",
+      "entity_id": "zombie",
+      "ability_id": "zombie.offense",
+      "source_behavior_id": "zombie.offense.resolve_hit",
+      "stages": [
+        {
+          "stage": "Event/Result",
+          "contract": "compile behavior spec",
+          "inputs": [
+            "trigger"
+          ],
+          "outputs": [
+            "actions"
+          ],
+          "engine_ports": [
+            "kismet.sphere_trace_single",
+            "gameplay_statics.apply_damage"
+          ]
+        }
+      ],
+      "verification": [
+        "BehaviorTriggered zombie.offense.resolve_hit"
+      ]
+    }
+  ]
+}

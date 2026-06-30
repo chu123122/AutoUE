@@ -1,0 +1,160 @@
+{
+  "schema_version": "autoue-behavior-spec/v1",
+  "source_nodes": [
+    "EntityAbilityBehaviorPlanner",
+    "ThinGameplayFlowPlanner",
+    "PuerTSRuntimeMappingPlanner"
+  ],
+  "behaviors": [
+    {
+      "behavior_id": "burn_vfx.emit.spawn_particles",
+      "primary_entity_id": "burn_vfx",
+      "entity_id": "burn_vfx",
+      "ability_id": "burn_vfx.emit",
+      "flow_id": "flow_burn_vfx_emit_spawn_particles",
+      "trigger": {
+        "type": "legacy_text",
+        "description": "gameplay event fires"
+      },
+      "conditions": [],
+      "actions": [
+        {
+          "type": "spawn_vfx",
+          "entity_id": "burn_vfx",
+          "capability_id": "burn_vfx.emit"
+        }
+      ],
+      "required_capability_ids": [
+        "burn_vfx.emit"
+      ],
+      "engine_port_ids": [
+        "component.set_visibility"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered burn_vfx.emit.spawn_particles"
+      ]
+    },
+    {
+      "behavior_id": "combat_damage_number_hud.display.refresh_value",
+      "primary_entity_id": "combat_damage_number_hud",
+      "entity_id": "combat_damage_number_hud",
+      "ability_id": "combat_damage_number_hud.display",
+      "flow_id": "flow_combat_damage_number_hud_display_refresh_value",
+      "trigger": {
+        "type": "legacy_text",
+        "description": "tracked value changes"
+      },
+      "conditions": [],
+      "actions": [
+        {
+          "type": "set_hud_value",
+          "entity_id": "combat_damage_number_hud",
+          "source": "state_blackboard",
+          "capability_id": "combat_damage_number_hud.display"
+        }
+      ],
+      "required_capability_ids": [
+        "combat_damage_number_hud.display"
+      ],
+      "engine_port_ids": [
+        "widget.set_text",
+        "widget.set_percent"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered combat_damage_number_hud.display.refresh_value"
+      ]
+    },
+    {
+      "behavior_id": "kamikaze_bat.offense.resolve_hit",
+      "primary_entity_id": "kamikaze_bat",
+      "entity_id": "kamikaze_bat",
+      "ability_id": "kamikaze_bat.offense",
+      "flow_id": "flow_kamikaze_bat_offense_resolve_hit",
+      "trigger": {
+        "type": "legacy_text",
+        "description": "active hit frame overlaps target"
+      },
+      "conditions": [],
+      "actions": [],
+      "required_capability_ids": [
+        "kamikaze_bat.offense"
+      ],
+      "engine_port_ids": [
+        "kismet.sphere_trace_single",
+        "gameplay_statics.apply_damage"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered kamikaze_bat.offense.resolve_hit"
+      ]
+    },
+    {
+      "behavior_id": "kamikaze_bat.pursuit.close_gap",
+      "primary_entity_id": "kamikaze_bat",
+      "entity_id": "kamikaze_bat",
+      "ability_id": "kamikaze_bat.pursuit",
+      "flow_id": "flow_kamikaze_bat_pursuit_close_gap",
+      "trigger": {
+        "type": "legacy_text",
+        "description": "target is reachable"
+      },
+      "conditions": [],
+      "actions": [],
+      "required_capability_ids": [
+        "kamikaze_bat.pursuit"
+      ],
+      "engine_port_ids": [
+        "actor.get_distance_to",
+        "pawn.add_movement_input"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered kamikaze_bat.pursuit.close_gap"
+      ]
+    },
+    {
+      "behavior_id": "kamikaze_bat.pursuit.detect_player",
+      "primary_entity_id": "kamikaze_bat",
+      "entity_id": "kamikaze_bat",
+      "ability_id": "kamikaze_bat.pursuit",
+      "flow_id": "flow_kamikaze_bat_pursuit_detect_player",
+      "trigger": {
+        "type": "legacy_text",
+        "description": "player enters awareness range"
+      },
+      "conditions": [],
+      "actions": [],
+      "required_capability_ids": [
+        "kamikaze_bat.pursuit"
+      ],
+      "engine_port_ids": [
+        "actor.get_distance_to",
+        "pawn.add_movement_input"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered kamikaze_bat.pursuit.detect_player"
+      ]
+    },
+    {
+      "behavior_id": "player.movement.dodge_roll",
+      "primary_entity_id": "player",
+      "entity_id": "player",
+      "ability_id": "player.movement",
+      "flow_id": "flow_player_movement_dodge_roll",
+      "trigger": {
+        "type": "legacy_text",
+        "description": "dodge input"
+      },
+      "conditions": [],
+      "actions": [],
+      "required_capability_ids": [
+        "player.movement"
+      ],
+      "engine_port_ids": [
+        "input.action_binding",
+        "pawn.add_movement_input"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered player.movement.dodge_roll"
+      ]
+    }
+  ]
+}
