@@ -1,4 +1,4 @@
-SCHEMA: TypeScriptInteractiveObjectGenerator
+SCHEMA: TypeScriptInteractiveTemplatePlanner
 
 Select TypeScript/PuerTS templates and fill template parameters for behavior-facing interactive objects.
 

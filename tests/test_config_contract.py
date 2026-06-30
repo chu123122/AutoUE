@@ -14,11 +14,11 @@ ORDER = [
     'ThinGameplayFlowPlanner',
     'EncounterSpecPlanner',
     'UEApiMCPFeasibilitySearcher',
-    'PuerTSRuntimeMappingPlanner',
-    'TypeScriptScriptAnalyzer',
-    'TypeScriptInteractiveObjectGenerator',
-    'TypeScriptCodeGenerator',
-    'EvaluateInstructionGenerator',
+    'PuerTSRuntimeMappingCompiler',
+    'TypeScriptImplementationSlotProjector',
+    'TypeScriptInteractiveTemplatePlanner',
+    'TypeScriptRuntimeTemplatePlanner',
+    'StaticEvaluationPlanBuilder',
 ]
 RUNTIME_MAPPING_PATH = 'flow/05-puerts-runtime-mapping.json'
 ADJ_INPUT = 'flow/04-ue-api-mcp/adjudication/input.action_binding.json'
@@ -46,9 +46,9 @@ def write_workflow_variant(tmp_path: Path, mutate):
 
 RUNTIME_FEATURES = ['action_dispatcher', 'behavior_orchestrator', 'condition_checker', 'entity_registry', 'movement_runtime', 'state_blackboard', 'trigger_router', 'world_adapter']
 DISABLED_FEATURES = ['enemy_encounter']
-BEHAVIOR_ID = 'freeze_trap.freeze_player_on_overlap'
-ABILITY_ID = 'freeze_trap.sensor.detect_player_overlap'
-FLOW_ID = 'flow_freeze_trap_freeze_player_on_overlap'
+BEHAVIOR_ID = 'hazard.behavior.freeze_on_overlap'
+CAPABILITY_IDS = ['hazard.sensor.detect_overlap', 'hazard.effect.apply_freeze', 'vfx.visibility.set_visible_while_state', 'camera.feedback.camera_impulse']
+FLOW_ID = 'flow_hazard_behavior_freeze_on_overlap'
 RUNTIME_OWNER = 'TypeScript/content/generated/AutoUEBehaviorSpec.generated.ts'
 INTERACTIVE_TS = 'TypeScript/content/generated/interactive/FreezeTrapInteractable.ts'
 ENGINE_PORTS = ['input.action_binding', 'primitive.on_component_begin_overlap', 'component.set_visibility', 'camera.update_view_target']
@@ -56,10 +56,10 @@ ADJUDICATIONS = [ADJ_INPUT, ADJ_OVERLAP, ADJ_VISIBILITY, ADJ_CAMERA]
 
 def eab():
     from core.content_library import canonicalize_selection
-    return canonicalize_selection({'selected_entity_ids': ['player', 'freeze_trap', 'freeze_vfx', 'side_camera'], 'selected_capability_ids': [], 'selected_behavior_ids': [BEHAVIOR_ID]})
+    return canonicalize_selection({'selected_entity_ids': ['freeze_trap', 'freeze_vfx', 'side_camera'], 'selected_capability_ids': CAPABILITY_IDS, 'selected_behavior_ids': [BEHAVIOR_ID]})
 
 def thin():
-    return {'flows': [{'flow_id': FLOW_ID, 'entity_id': 'freeze_trap', 'ability_id': ABILITY_ID, 'source_behavior_id': BEHAVIOR_ID, 'stages': [
+    return {'flows': [{'flow_id': FLOW_ID, 'entity_id': 'freeze_trap', 'source_behavior_id': BEHAVIOR_ID, 'stages': [
         {'stage': 'Input', 'contract': 'read input', 'inputs': ['input'], 'outputs': ['intent'], 'engine_ports': ['input.action_binding']},
         {'stage': 'SpatialQuery/HitQuery', 'contract': 'detect trap overlap', 'inputs': ['location'], 'outputs': ['trigger'], 'engine_ports': ['primitive.on_component_begin_overlap']},
         {'stage': 'Event/Result', 'contract': 'write player.effects.frozen', 'inputs': ['trigger'], 'outputs': ['frozen'], 'engine_ports': ['primitive.on_component_begin_overlap']},
@@ -88,7 +88,7 @@ def mapping():
     spec, support = behavior_spec_and_support()
     helpers = {'input.action_binding': 'TriggerRouter.bindInputAction', 'primitive.on_component_begin_overlap': 'TriggerRouter.bindOverlapEnter', 'component.set_visibility': 'WorldAdapter.setVisibility', 'camera.update_view_target': 'WorldAdapter.cameraImpulse'}
     syms = {'input.action_binding': 'UE.PlayerController.IsInputKeyDown', 'primitive.on_component_begin_overlap': 'UE.PrimitiveComponent.OnComponentBeginOverlap', 'component.set_visibility': 'UE.SceneComponent.SetVisibility', 'camera.update_view_target': 'UE.CameraComponent.K2_SetWorldLocation'}
-    return {'runtime_mapping_path': RUNTIME_MAPPING_PATH, 'behavior_spec_path': 'flow/06-behavior-spec.json', 'support_check_path': 'flow/06-runtime-support-check.json', 'runtime_features': RUNTIME_FEATURES, 'disabled_features': DISABLED_FEATURES, 'behavior_spec': spec, 'support_check': support, 'mappings': [{'entity_id': 'freeze_trap', 'ability_id': ABILITY_ID, 'behavior_id': BEHAVIOR_ID, 'flow_id': FLOW_ID, 'runtime_owner': RUNTIME_OWNER, 'implementation_carrier': 'template_rendered_ts', 'selected_runtime_owner': 'AutoUEBehaviorSpec.generated', 'existing_framework_candidates': ['AutoUE behavior runtime framework'], 'why_not_existing_framework': 'shared behavior framework renders BehaviorSpec instead of gameplay-specific TS', 'temporary_or_canonical': 'canonical', 'migration_path': 'regenerate BehaviorSpec data only', 'engine_port_mappings': [{'engine_port_id': p, 'adjudication_path': a, 'adapter_or_helper': helpers[p], 'verdict': 'hit', 'evidence_symbols': [syms[p]]} for p, a in zip(ENGINE_PORTS, ADJUDICATIONS)], 'thin_contracts': ['read input', 'detect overlap', 'write player.effects.frozen', 'show vfx', 'shake camera'], 'ability_binding': 'behavior_spec:freeze_trap.freeze_player_on_overlap', 'verification_evidence': ['StateWritten player.effects.frozen']}], 'blocked_mappings': []}
+    return {'runtime_mapping_path': RUNTIME_MAPPING_PATH, 'behavior_spec_path': 'flow/06-behavior-spec.json', 'support_check_path': 'flow/06-runtime-support-check.json', 'runtime_features': RUNTIME_FEATURES, 'disabled_features': DISABLED_FEATURES, 'behavior_spec': spec, 'support_check': support, 'mappings': [{'entity_id': 'freeze_trap', 'behavior_id': BEHAVIOR_ID, 'flow_id': FLOW_ID, 'runtime_owner': RUNTIME_OWNER, 'implementation_carrier': 'template_rendered_ts', 'selected_runtime_owner': 'AutoUEBehaviorSpec.generated', 'existing_framework_candidates': ['AutoUE behavior runtime framework'], 'why_not_existing_framework': 'shared behavior framework renders BehaviorSpec instead of gameplay-specific TS', 'temporary_or_canonical': 'canonical', 'migration_path': 'regenerate BehaviorSpec data only', 'engine_port_mappings': [{'engine_port_id': p, 'adjudication_path': a, 'adapter_or_helper': helpers[p], 'verdict': 'hit', 'evidence_symbols': [syms[p]]} for p, a in zip(ENGINE_PORTS, ADJUDICATIONS)], 'thin_contracts': ['read input', 'detect overlap', 'write player.effects.frozen', 'show vfx', 'shake camera'], 'ability_binding': 'behavior_spec:hazard.behavior.freeze_on_overlap', 'verification_evidence': ['StateWritten player.effects.frozen']}], 'blocked_mappings': []}
 
 def analyzer():
     return {'typescript_sources': [{'path': RUNTIME_OWNER, 'role': 'runtime_owner', 'notes': 'mapping'}], 'implementation_slots': [{'entity_id': 'freeze_trap', 'behavior_id': BEHAVIOR_ID, 'flow_id': FLOW_ID, 'runtime_mapping_path': RUNTIME_MAPPING_PATH, 'target_ts_file': RUNTIME_OWNER, 'reason': 'mapping'}], 'missing_slots': []}
@@ -100,14 +100,14 @@ def codegen():
     from core.BaseLLMNode import GraphState
     from custom_nodes.typescript_code_generator import build_codegen_output
     state = GraphState(llm_outputs={
-        'PuerTSRuntimeMappingPlanner': json.dumps(mapping()),
-        'TypeScriptScriptAnalyzer': json.dumps(analyzer()),
-        'TypeScriptInteractiveObjectGenerator': json.dumps(interactive()),
+        'PuerTSRuntimeMappingCompiler': json.dumps(mapping()),
+        'TypeScriptImplementationSlotProjector': json.dumps(analyzer()),
+        'TypeScriptInteractiveTemplatePlanner': json.dumps(interactive()),
     })
     return build_codegen_output(state)
 
 def eval_plan():
-    trace = {'entity_id': 'freeze_trap', 'ability_id': ABILITY_ID, 'behavior_id': BEHAVIOR_ID, 'flow_id': FLOW_ID, 'engine_port_ids': ENGINE_PORTS, 'adjudication_paths': ADJUDICATIONS, 'runtime_mapping_path': RUNTIME_MAPPING_PATH, 'ts_files': [INTERACTIVE_TS, RUNTIME_OWNER]}
+    trace = {'entity_id': 'freeze_trap', 'behavior_id': BEHAVIOR_ID, 'flow_id': FLOW_ID, 'engine_port_ids': ENGINE_PORTS, 'adjudication_paths': ADJUDICATIONS, 'runtime_mapping_path': RUNTIME_MAPPING_PATH, 'ts_files': [INTERACTIVE_TS, RUNTIME_OWNER]}
     return {'evaluation_instructions': [{'step_id': 1, 'action': 'trigger_freeze_trap', 'target': 'FreezeTrap', 'description': 'validate static adapter call trace', 'driver': 'adapter_call', 'executor_action': 'call_behavior', 'expected': [{'type': 'static_trace_present', 'key': 'ability_module_export', 'expected_value': 'getAutoUEBehaviorSpec'}, {'type': 'static_trace_present', 'key': 'interactive_adapter_export', 'expected_value': 'runFreezeTrapInteraction'}, {'type': 'static_trace_present', 'key': 'engine_ports_mapped', 'expected_value': ENGINE_PORTS}], 'trace': trace}], 'coverage': [trace]}
 
 
@@ -118,11 +118,11 @@ def good_outputs():
         'ThinGameplayFlowPlanner': json.dumps(thin()),
         'EncounterSpecPlanner': json.dumps(encounter()),
         'UEApiMCPFeasibilitySearcher': json.dumps(mcp()),
-        'PuerTSRuntimeMappingPlanner': json.dumps(mapping()),
-        'TypeScriptScriptAnalyzer': json.dumps(analyzer()),
-        'TypeScriptInteractiveObjectGenerator': json.dumps(interactive()),
-        'TypeScriptCodeGenerator': json.dumps(codegen()),
-        'EvaluateInstructionGenerator': json.dumps(eval_plan()),
+        'PuerTSRuntimeMappingCompiler': json.dumps(mapping()),
+        'TypeScriptImplementationSlotProjector': json.dumps(analyzer()),
+        'TypeScriptInteractiveTemplatePlanner': json.dumps(interactive()),
+        'TypeScriptRuntimeTemplatePlanner': json.dumps(codegen()),
+        'StaticEvaluationPlanBuilder': json.dumps(eval_plan()),
     }
 
 
@@ -160,8 +160,8 @@ def test_workflow_uses_task_specific_codex_profiles():
     workflow = json.loads((ROOT / 'config' / 'workflows' / 'puerts_ts.json').read_text(encoding='utf-8'))
     by_name = {node['name']: node for node in workflow['nodes']}
     assert by_name['UEApiMCPFeasibilitySearcher']['llm_profile'] == 'codex_cli_fast'
-    assert by_name['PuerTSRuntimeMappingPlanner']['llm_profile'] == 'codex_cli_planning'
-    assert by_name['TypeScriptCodeGenerator']['llm_profile'] == 'codex_cli_codegen'
+    assert by_name['PuerTSRuntimeMappingCompiler']['llm_profile'] == 'codex_cli_planning'
+    assert by_name['TypeScriptRuntimeTemplatePlanner']['llm_profile'] == 'codex_cli_codegen'
 
 
 def test_workflow_config_declares_validators_and_artifacts():
@@ -170,7 +170,7 @@ def test_workflow_config_declares_validators_and_artifacts():
     assert by_name['ThinGameplayFlowPlanner']['validator'] == 'thin_gameplay_flow_planner'
     assert {'kind': 'json', 'path': 'flow/03-thin-gameplay-flow.json'} in by_name['ThinGameplayFlowPlanner']['output_artifacts']
     assert {'kind': 'json', 'path_from': 'queries[].adjudication_path'} in by_name['UEApiMCPFeasibilitySearcher']['output_artifacts']
-    assert {'kind': 'typescript', 'path_from': 'template_inputs[].path'} in by_name['TypeScriptCodeGenerator']['output_artifacts']
+    assert {'kind': 'typescript', 'path_from': 'template_inputs[].path'} in by_name['TypeScriptRuntimeTemplatePlanner']['output_artifacts']
 
 
 def test_config_contract_rejects_unknown_validator(tmp_path):
@@ -235,7 +235,7 @@ def test_ts_generators_reject_raw_content_output():
     from core.workflow_validation import WorkflowValidationError, validate_node_output
     bad = {'files': [{'path': 'TypeScript/content/generated/Bad.ts', 'content': 'export const raw = true;'}], 'behavior_traces': [], 'validation_notes': []}
     try:
-        validate_node_output('TypeScriptCodeGenerator', json.dumps(bad))
+        validate_node_output('TypeScriptRuntimeTemplatePlanner', json.dumps(bad))
     except WorkflowValidationError as exc:
         assert 'raw files/content' in str(exc)
     else:
@@ -248,8 +248,8 @@ def test_planner_rejects_implementation_decisions():
     behavior = next(
         behavior
         for entity in bad['entities']
-        for ability in entity.get('abilities', [])
-        for behavior in ability.get('behaviors', [])
+        for capability in entity.get('capabilities', [])
+        for behavior in capability.get('behaviors', [])
     )
     behavior['target_ts_file'] = 'TypeScript/content/generated/X.ts'
     try:
@@ -293,7 +293,7 @@ def test_runtime_mapping_blocked_blocks_workflow_completion():
     outputs = good_outputs()
     bad = mapping()
     bad['blocked_mappings'] = [{'behavior_id': BEHAVIOR_ID}]
-    outputs['PuerTSRuntimeMappingPlanner'] = json.dumps(bad)
+    outputs['PuerTSRuntimeMappingCompiler'] = json.dumps(bad)
     try:
         validate_workflow_output_set(outputs)
     except WorkflowValidationError as exc:
@@ -307,7 +307,7 @@ def test_analyzer_requires_mapping_trace():
     bad = analyzer()
     del bad['implementation_slots'][0]['runtime_mapping_path']
     try:
-        validate_node_output('TypeScriptScriptAnalyzer', json.dumps(bad))
+        validate_node_output('TypeScriptImplementationSlotProjector', json.dumps(bad))
     except WorkflowValidationError as exc:
         assert 'runtime_mapping_path' in str(exc)
     else:
@@ -320,22 +320,22 @@ def test_typescript_script_analyzer_projects_runtime_mappings_without_llm():
 
     class ExplodingModel:
         def invoke(self, _messages):
-            raise AssertionError('TypeScriptScriptAnalyzer must not call an LLM model')
+            raise AssertionError('TypeScriptImplementationSlotProjector must not call an LLM model')
 
     state = GraphState(llm_outputs={
         'EntityAbilityBehaviorPlanner': json.dumps(eab()),
-        'PuerTSRuntimeMappingPlanner': json.dumps(mapping()),
+        'PuerTSRuntimeMappingCompiler': json.dumps(mapping()),
     })
     node = create_typescript_script_analyzer()
     node.set_model(ExplodingModel())
     node.execute(state)
-    data = json.loads(state.llm_outputs['TypeScriptScriptAnalyzer'])
+    data = json.loads(state.llm_outputs['TypeScriptImplementationSlotProjector'])
     assert data['missing_slots'] == []
     assert len(data['implementation_slots']) == 1
     slot = data['implementation_slots'][0]
     assert slot['target_ts_file'] == mapping()['mappings'][0]['runtime_owner']
     assert slot['runtime_mapping_path'] == RUNTIME_MAPPING_PATH
-    assert state.node_token_usage['TypeScriptScriptAnalyzer']['total_tokens'] == 0
+    assert state.node_token_usage['TypeScriptImplementationSlotProjector']['total_tokens'] == 0
 
 
 def test_typescript_script_analyzer_reports_missing_runtime_owner():
@@ -356,12 +356,49 @@ def test_workflow_output_set_accepts_good_trace_chain():
     assert 'primitive.on_component_begin_overlap' in result['evidence']['engine_port_ids']
 
 
+def test_partial_cross_trace_allows_generic_hud_behavior_on_multiple_entities():
+    from core.content_library import canonicalize_selection
+    from core.workflow_validation import validate_partial_workflow_outputs
+
+    entity_behavior = canonicalize_selection({
+        'selected_entity_ids': ['health_bar_hud', 'combat_damage_number_hud'],
+        'selected_capability_ids': ['hud.display.refresh_value'],
+        'selected_behavior_ids': ['hud.behavior.refresh_value'],
+    })
+    thin_flow = {
+        'flows': [
+            {
+                'flow_id': 'flow_health_bar_hud_refresh_value',
+                'entity_id': 'health_bar_hud',
+                'source_behavior_id': 'hud.behavior.refresh_value',
+                'stages': [{'stage': 'Event/Result', 'contract': 'refresh health HUD', 'inputs': ['state'], 'outputs': ['hud'], 'engine_ports': ['manual.trigger']}],
+                'verification': ['health hud refreshed'],
+            },
+            {
+                'flow_id': 'flow_combat_damage_number_hud_refresh_value',
+                'entity_id': 'combat_damage_number_hud',
+                'source_behavior_id': 'hud.behavior.refresh_value',
+                'stages': [{'stage': 'Event/Result', 'contract': 'refresh damage HUD', 'inputs': ['state'], 'outputs': ['hud'], 'engine_ports': ['manual.trigger']}],
+                'verification': ['damage hud refreshed'],
+            },
+        ]
+    }
+
+    result = validate_partial_workflow_outputs({
+        'EntityAbilityBehaviorPlanner': json.dumps(entity_behavior),
+        'ThinGameplayFlowPlanner': json.dumps(thin_flow),
+    })
+    coverage = result['evidence']['behavior_trace_coverage'] if 'behavior_trace_coverage' in result['evidence'] else {}
+    assert result['evidence']['behavior_ids'] == ['hud.behavior.refresh_value']
+    assert 'health_bar_hud::hud.behavior.refresh_value' in coverage or not coverage
+
+
 def test_workflow_output_set_rejects_unknown_behavior_trace():
     from core.workflow_validation import WorkflowValidationError, validate_workflow_output_set
     outputs = good_outputs()
     bad = analyzer()
     bad['implementation_slots'][0]['behavior_id'] = 'enemy.unknown.behavior'
-    outputs['TypeScriptScriptAnalyzer'] = json.dumps(bad)
+    outputs['TypeScriptImplementationSlotProjector'] = json.dumps(bad)
     try:
         validate_workflow_output_set(outputs)
     except WorkflowValidationError as exc:
@@ -375,7 +412,7 @@ def test_workflow_output_set_rejects_unrendered_analyzer_target():
     outputs = good_outputs()
     bad = analyzer()
     bad['implementation_slots'][0]['target_ts_file'] = 'TypeScript/content/generated/NotRendered.ts'
-    outputs['TypeScriptScriptAnalyzer'] = json.dumps(bad)
+    outputs['TypeScriptImplementationSlotProjector'] = json.dumps(bad)
     try:
         validate_workflow_output_set(outputs)
     except WorkflowValidationError as exc:
@@ -389,7 +426,7 @@ def test_workflow_output_set_rejects_eval_missing_adjudication_trace():
     outputs = good_outputs()
     bad = eval_plan()
     bad['coverage'][0]['adjudication_paths'] = [ADJ_INPUT]
-    outputs['EvaluateInstructionGenerator'] = json.dumps(bad)
+    outputs['StaticEvaluationPlanBuilder'] = json.dumps(bad)
     try:
         validate_workflow_output_set(outputs)
     except WorkflowValidationError as exc:
@@ -402,7 +439,7 @@ def test_workflow_output_set_rejects_eval_missing_adjudication_trace():
 def test_support_matrix_missing_entry_blocks_support_check():
     from core.runtime_support_matrix import CapabilitySupportMatrix, check_capability_support
 
-    check = check_capability_support([ABILITY_ID], matrix=CapabilitySupportMatrix([]))
+    check = check_capability_support([CAPABILITY_IDS[0]], matrix=CapabilitySupportMatrix([]))
     assert check['status'] == 'unsupported'
     assert check['unsupported_capabilities'][0]['missing_matrix_entry'] is True
 
@@ -418,22 +455,22 @@ def test_typescript_codegen_refuses_unsupported_runtime_mapping():
         'unsupported_behaviors': ['shop_room_vendor.transaction.purchase_item'],
     }
     state = GraphState(llm_outputs={
-        'PuerTSRuntimeMappingPlanner': json.dumps(bad_mapping),
-        'TypeScriptScriptAnalyzer': json.dumps(analyzer()),
-        'TypeScriptInteractiveObjectGenerator': json.dumps(interactive()),
+        'PuerTSRuntimeMappingCompiler': json.dumps(bad_mapping),
+        'TypeScriptImplementationSlotProjector': json.dumps(analyzer()),
+        'TypeScriptInteractiveTemplatePlanner': json.dumps(interactive()),
     })
     try:
         build_codegen_output(state)
     except RuntimeError as exc:
         assert 'refuses unsupported BehaviorSpec' in str(exc)
     else:
-        raise AssertionError('TypeScriptCodeGenerator generated TS for unsupported runtime mapping')
+        raise AssertionError('TypeScriptRuntimeTemplatePlanner generated TS for unsupported runtime mapping')
 
 def test_template_renderer_writes_from_template_not_model_content(tmp_path):
     from core.BaseLLMNode import GraphState
     from custom_nodes.template_file_writer import write_files_from_output
     state = GraphState(save_dir=str(tmp_path))
-    write_files_from_output(state, 'TypeScriptInteractiveObjectGenerator', json.dumps(interactive()))
+    write_files_from_output(state, 'TypeScriptInteractiveTemplatePlanner', json.dumps(interactive()))
     out = tmp_path / 'TypeScript' / 'content' / 'generated' / 'interactive' / 'FreezeTrapInteractable.ts'
     text = out.read_text(encoding='utf-8')
     assert 'export function runFreezeTrapInteraction' in text

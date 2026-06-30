@@ -1,4 +1,4 @@
-SCHEMA: TypeScriptCodeGenerator
+SCHEMA: TypeScriptRuntimeTemplatePlanner
 
 Select TypeScript/PuerTS templates and fill template parameters for runtime/ability files.
 
@@ -54,7 +54,7 @@ Rules:
 - Output JSON only.
 - Do not output raw source code.
 - For every analyzer implementation slot, emit one template_input whose path equals target_ts_file.
-- Emit runtime_features and disabled_features exactly as PuerTSRuntimeMappingPlanner did.
+- Emit runtime_features and disabled_features exactly as PuerTSRuntimeMappingCompiler did.
 - Emit behavior-driven support templates for the active features only.
 - For non-enemy trap/status/VFX gameplay, emit aid_runtime_orchestrator plus input_harness_runtime, movement_runtime, trap_runtime, status_runtime, vfx_runtime, aid_camera_setup, scene_manifest_helper, runtime_feature_manifest, character and gamemode adapters.
 - Do not emit enemy/spawn/encounter templates unless runtime_features includes enemy_encounter.

@@ -17,11 +17,11 @@ NODE_OUTPUT_PORTS: dict[str, str] = {
     "ThinGameplayFlowPlanner": "thin_flow",
     "EncounterSpecPlanner": "encounter_spec",
     "UEApiMCPFeasibilitySearcher": "ue_api_feasibility",
-    "PuerTSRuntimeMappingPlanner": "runtime_mapping",
-    "TypeScriptScriptAnalyzer": "ts_analyzer",
-    "TypeScriptInteractiveObjectGenerator": "interactive_ts_plan",
-    "TypeScriptCodeGenerator": "typescript_codegen",
-    "EvaluateInstructionGenerator": "evaluation_instructions",
+    "PuerTSRuntimeMappingCompiler": "runtime_mapping",
+    "TypeScriptImplementationSlotProjector": "ts_analyzer",
+    "TypeScriptInteractiveTemplatePlanner": "interactive_ts_plan",
+    "TypeScriptRuntimeTemplatePlanner": "typescript_codegen",
+    "StaticEvaluationPlanBuilder": "evaluation_instructions",
 }
 PORT_TO_NODE: dict[str, str] = {port: node for node, port in NODE_OUTPUT_PORTS.items()}
 
@@ -34,11 +34,11 @@ DEFAULT_NODE_INPUT_PORTS: dict[str, list[str]] = {
     "ThinGameplayFlowPlanner": ["user_prompt", "entity_behavior"],
     "EncounterSpecPlanner": ["entity_behavior", "thin_flow", "scene_spawn_manifest"],
     "UEApiMCPFeasibilitySearcher": ["thin_flow"],
-    "PuerTSRuntimeMappingPlanner": ["entity_behavior", "thin_flow", "ue_api_feasibility"],
-    "TypeScriptScriptAnalyzer": ["entity_behavior", "runtime_mapping"],
-    "TypeScriptInteractiveObjectGenerator": ["entity_behavior", "runtime_mapping", "ts_analyzer"],
-    "TypeScriptCodeGenerator": ["entity_behavior", "runtime_mapping", "ts_analyzer", "interactive_ts_plan"],
-    "EvaluateInstructionGenerator": [
+    "PuerTSRuntimeMappingCompiler": ["entity_behavior", "thin_flow", "ue_api_feasibility"],
+    "TypeScriptImplementationSlotProjector": ["entity_behavior", "runtime_mapping"],
+    "TypeScriptInteractiveTemplatePlanner": ["entity_behavior", "runtime_mapping", "ts_analyzer"],
+    "TypeScriptRuntimeTemplatePlanner": ["entity_behavior", "runtime_mapping", "ts_analyzer", "interactive_ts_plan"],
+    "StaticEvaluationPlanBuilder": [
         "scene_gameplay_split",
         "entity_behavior",
         "thin_flow",

@@ -244,7 +244,10 @@ class BaseLLMNode:
                 self.full_input += f"\n{feedback}"
 
             # -------- LLM call --------
-            max_validation_attempts = 3 if callable(self.output_validator) else 1
+            if getattr(self, "deterministic", False):
+                max_validation_attempts = 1
+            else:
+                max_validation_attempts = 3 if callable(self.output_validator) else 1
             validation_error = None
             output = ""
             for attempt in range(1, max_validation_attempts + 1):

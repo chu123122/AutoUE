@@ -13,11 +13,11 @@ WORKFLOW_NODE_ORDER = [
     "ThinGameplayFlowPlanner",
     "EncounterSpecPlanner",
     "UEApiMCPFeasibilitySearcher",
-    "PuerTSRuntimeMappingPlanner",
-    "TypeScriptScriptAnalyzer",
-    "TypeScriptInteractiveObjectGenerator",
-    "TypeScriptCodeGenerator",
-    "EvaluateInstructionGenerator",
+    "PuerTSRuntimeMappingCompiler",
+    "TypeScriptImplementationSlotProjector",
+    "TypeScriptInteractiveTemplatePlanner",
+    "TypeScriptRuntimeTemplatePlanner",
+    "StaticEvaluationPlanBuilder",
 ]
 RUNTIME_MAPPING_PATH = "flow/05-puerts-runtime-mapping.json"
 BANNED_FLOW_MARKERS = ("RetrieveModel", "PCGGraphComposer", "PCGPlanner", "LLMHttpServer")
@@ -29,8 +29,8 @@ BANNED_OUTPUT_MARKERS = BANNED_FLOW_MARKERS + BANNED_NATIVE_MARKERS
 CXX_FILE_RE = re.compile(r"(?i)\.(?:h|cpp)\b")
 TS_IDENT_RE = re.compile(r"^[A-Za-z_$][A-Za-z0-9_$]*$")
 ALLOWED_TEMPLATES = {
-    "TypeScriptInteractiveObjectGenerator": {"interactive_object"},
-    "TypeScriptCodeGenerator": {
+    "TypeScriptInteractiveTemplatePlanner": {"interactive_object"},
+    "TypeScriptRuntimeTemplatePlanner": {
         "ability_module",
         "runtime_bootstrap",
         "world_adapter",
@@ -56,6 +56,17 @@ ALLOWED_TEMPLATES = {
         "enemy_archetype_registry",
         "enemy_spawn_manager",
         "encounter_manager",
+        "enemy_registry",
+        "enemy_spawn_runtime",
+        "enemy_brain",
+        "enemy_perception",
+        "enemy_movement",
+        "enemy_combat",
+        "enemy_health",
+        "enemy_death_events",
+        "enemy_ability_dispatcher",
+        "enemy_projectile_runtime",
+        "enemy_encounter_manager",
     },
 }
 ALLOWED_STAGES = {"Input", "Ability/Action", "SpatialQuery/HitQuery", "Damage/Resource", "Event/Result", "Feedback/HUD", "Cleanup", "Custom"}

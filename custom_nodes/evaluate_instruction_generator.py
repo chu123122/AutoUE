@@ -5,10 +5,17 @@ from pathlib import Path
 
 from core.BaseLLMNode import BaseLLMNode, GraphState
 from core.workflow_validation import parse_node_json, validate_graph_node_output, validate_node_output
+from tools.workflow_steps.static_evaluation_plan import run_static_evaluation_plan
 
-EVALUATE_INSTRUCTION_GENERATOR_PROMPT = """SCHEMA: EvaluateInstructionGenerator
-Generate a machine-readable static validation plan for the complete TypeScript/PuerTS chain. Return JSON only.
+NODE_NAME = "StaticEvaluationPlanBuilder"
+RUNTIME_NODE = "PuerTSRuntimeMappingCompiler"
+SLOT_NODE = "TypeScriptImplementationSlotProjector"
+INTERACTIVE_NODE = "TypeScriptInteractiveTemplatePlanner"
+CODEGEN_NODE = "TypeScriptRuntimeTemplatePlanner"
+PROMPT = """SCHEMA: StaticEvaluationPlanBuilder
+确定性 Python 节点。生成完整 TypeScript/PuerTS 链路的静态验证计划。返回 JSON only。
 """
+
 
 def GetInput(node: BaseLLMNode, state: GraphState, full_input: str) -> str:
     required = {
@@ -17,23 +24,39 @@ def GetInput(node: BaseLLMNode, state: GraphState, full_input: str) -> str:
         "ThinGameplayFlowPlanner": state.llm_outputs.get("ThinGameplayFlowPlanner", ""),
         "EncounterSpecPlanner": state.llm_outputs.get("EncounterSpecPlanner", ""),
         "UEApiMCPFeasibilitySearcher": state.llm_outputs.get("UEApiMCPFeasibilitySearcher", ""),
-        "PuerTSRuntimeMappingPlanner": state.llm_outputs.get("PuerTSRuntimeMappingPlanner", ""),
-        "TypeScriptScriptAnalyzer": state.llm_outputs.get("TypeScriptScriptAnalyzer", ""),
-        "TypeScriptInteractiveObjectGenerator": state.llm_outputs.get("TypeScriptInteractiveObjectGenerator", ""),
-        "TypeScriptCodeGenerator": state.llm_outputs.get("TypeScriptCodeGenerator", ""),
+        RUNTIME_NODE: state.llm_outputs.get(RUNTIME_NODE, ""),
+        SLOT_NODE: state.llm_outputs.get(SLOT_NODE, ""),
+        INTERACTIVE_NODE: state.llm_outputs.get(INTERACTIVE_NODE, ""),
+        CODEGEN_NODE: state.llm_outputs.get(CODEGEN_NODE, ""),
     }
     missing = [name for name, value in required.items() if not value.strip()]
     if missing:
-        raise RuntimeError(f"EvaluateInstructionGenerator missing upstream outputs: {missing}")
-    return (
-        f"Scene Description:\n{getattr(state, 'scene_description', '')}\n\n"
-        f"Gameplay Description:\n{getattr(state, 'gameplay_description', '')}\n\n"
-        + "\n\n".join(f"{name} JSON:\n{value}" for name, value in required.items())
-        + "\n\nThe workflow emits a static adapter_call plan that the Python runtime harness can validate. Use driver=adapter_call only and expected.type=static_trace_present only. Do not claim PIE/runtime pass."
-    )
+        raise RuntimeError(f"{NODE_NAME} missing upstream outputs: {missing}")
+    return "Deterministic static evaluation plan build."
+
+
+class DeterministicStaticEvaluationPlanBuilder(BaseLLMNode):
+    deterministic = True
+
+    def call_model(self, full_input: str, state: GraphState):
+        if self.name not in state.node_token_usage:
+            state.node_token_usage[self.name] = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+        output = run_static_evaluation_plan({
+            "scene_gameplay_split": state.llm_outputs.get("SceneAndGameplaySplitter", ""),
+            "entity_behavior": state.llm_outputs.get("EntityAbilityBehaviorPlanner", ""),
+            "thin_flow": state.llm_outputs.get("ThinGameplayFlowPlanner", ""),
+            "encounter_spec": state.llm_outputs.get("EncounterSpecPlanner", ""),
+            "ue_api_feasibility": state.llm_outputs.get("UEApiMCPFeasibilitySearcher", ""),
+            "runtime_mapping": state.llm_outputs.get(RUNTIME_NODE, ""),
+            "ts_slots": state.llm_outputs.get(SLOT_NODE, ""),
+            "interactive_ts_plan": state.llm_outputs.get(INTERACTIVE_NODE, ""),
+            "typescript_codegen": state.llm_outputs.get(CODEGEN_NODE, ""),
+        })
+        return json.dumps(output, ensure_ascii=False, indent=2)
+
 
 def SaveInstructionjson(state: GraphState, output: str) -> None:
-    data = parse_node_json("EvaluateInstructionGenerator", validate_node_output("EvaluateInstructionGenerator", output))
+    data = parse_node_json(NODE_NAME, validate_node_output(NODE_NAME, output, validator_id="evaluate_instruction_generator"))
     save_dir = getattr(state, "save_dir", "")
     if not save_dir:
         raise RuntimeError("state.save_dir is required for instructions.json emission")
@@ -43,10 +66,11 @@ def SaveInstructionjson(state: GraphState, output: str) -> None:
     file_path.write_text(json.dumps(data, ensure_ascii=False, indent=4), encoding="utf-8")
     print(f"[SUCCESS] instructions.json saved to: {file_path}")
 
+
 def create_evaluate_instruction_generator() -> BaseLLMNode:
-    return BaseLLMNode(
-        name="EvaluateInstructionGenerator",
-        prompt=EVALUATE_INSTRUCTION_GENERATOR_PROMPT,
+    return DeterministicStaticEvaluationPlanBuilder(
+        name=NODE_NAME,
+        prompt=PROMPT,
         enable_feedback=False,
         extra_prompt_action=GetInput,
         output_validator=validate_graph_node_output,

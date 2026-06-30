@@ -28,10 +28,41 @@ def validate_puerts_runtime_mapping_planner(node: str, data: dict[str, Any]) -> 
         raise WorkflowValidationError(f"{node}: disabled_features must contain non-empty strings")
     if "enemy_encounter" in runtime_features and "enemy_encounter" in disabled_features:
         raise WorkflowValidationError(f"{node}: enemy_encounter cannot be both enabled and disabled")
+    if "enemy_runtime" in runtime_features:
+        required_modules = {"enemy_registry", "enemy_death_events", "encounter_manager"}
+        missing_modules = sorted(required_modules - set(runtime_features))
+        if missing_modules:
+            raise WorkflowValidationError(f"{node}: enemy_runtime missing required runtime modules: {missing_modules}")
+        for behavior in behavior_spec.get("behaviors", []):
+            if not isinstance(behavior, dict) or behavior.get("runtime_domain") != "enemy_runtime":
+                continue
+            resolved = behavior.get("resolved_capabilities")
+            if not isinstance(resolved, list) or not resolved:
+                raise WorkflowValidationError(f"{node}: enemy_runtime behavior requires resolved_capabilities")
+            for capability in resolved:
+                if not isinstance(capability, dict):
+                    raise WorkflowValidationError(f"{node}: resolved_capabilities entries must be objects")
+                capability_id = str(capability.get("capability_id") or "")
+                if not capability_id.startswith(("enemy.", "encounter.complete.")):
+                    raise WorkflowValidationError(f"{node}: enemy_runtime consumed non-canonical capability: {capability_id}")
+                if not capability.get("handler"):
+                    raise WorkflowValidationError(f"{node}: resolved capability missing handler: {capability_id}")
+                if not isinstance(capability.get("params"), dict):
+                    raise WorkflowValidationError(f"{node}: resolved capability missing params: {capability_id}")
+            actions = {action.get("type") for action in behavior.get("actions", []) if isinstance(action, dict)}
+            if "enemy_spawn_actor" in actions:
+                spawn = next((item for item in resolved if isinstance(item, dict) and item.get("capability_id") == "enemy.spawn.spawn_actor"), {})
+                params = spawn.get("params", {}) if isinstance(spawn, dict) else {}
+                if not isinstance(params, dict) or not params.get("actor_class_path"):
+                    raise WorkflowValidationError(f"{node}: enemy_spawn requires actor_class_path in resolved spawn params")
+            if "enemy_emit_death_event" in actions and "encounter_complete_when_all_dead" not in actions:
+                raise WorkflowValidationError(f"{node}: enemy_death requires alive count trace via encounter completion action")
+            if any(action_type in actions for action_type in {"enemy_melee_attack", "enemy_projectile_attack", "enemy_self_destruct"}) and "enemy_receive_damage" not in actions:
+                raise WorkflowValidationError(f"{node}: enemy_attack requires enemy health damage path")
     for mi, mapping in enumerate(require_list(node, data, "mappings", non_empty=True)):
         if not isinstance(mapping, dict):
             raise WorkflowValidationError(f"{node}: mappings[{mi}] must be object")
-        for key in ("entity_id", "ability_id", "behavior_id", "flow_id", "runtime_owner", "selected_runtime_owner", "ability_binding"):
+        for key in ("entity_id", "behavior_id", "flow_id", "runtime_owner", "selected_runtime_owner", "ability_binding"):
             require_string(node, mapping, key, non_empty=True)
         validate_ts_path(node, mapping["runtime_owner"], label=f"mappings[{mi}].runtime_owner")
         carrier = require_string(node, mapping, "implementation_carrier", non_empty=True)

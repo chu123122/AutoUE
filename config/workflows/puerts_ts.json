@@ -148,7 +148,7 @@
       ]
     },
     {
-      "name": "PuerTSRuntimeMappingPlanner",
+      "name": "PuerTSRuntimeMappingCompiler",
       "factory": "custom_nodes.puerts_runtime_mapping_planner:create_puerts_runtime_mapping_planner",
       "prompt_file": "prompts/06-puerts_runtime_mapping_planner.md",
       "enabled": true,
@@ -182,7 +182,7 @@
       ]
     },
     {
-      "name": "TypeScriptScriptAnalyzer",
+      "name": "TypeScriptImplementationSlotProjector",
       "factory": "custom_nodes.typescript_script_analyzer:create_typescript_script_analyzer",
       "prompt_file": "prompts/07-typescript_script_analyzer.md",
       "enabled": true,
@@ -203,7 +203,7 @@
       ]
     },
     {
-      "name": "TypeScriptInteractiveObjectGenerator",
+      "name": "TypeScriptInteractiveTemplatePlanner",
       "factory": "custom_nodes.typescript_interactive_object_generator:create_typescript_interactive_object_generator",
       "prompt_file": "prompts/08-typescript_interactive_object_generator.md",
       "enabled": true,
@@ -229,7 +229,7 @@
       ]
     },
     {
-      "name": "TypeScriptCodeGenerator",
+      "name": "TypeScriptRuntimeTemplatePlanner",
       "factory": "custom_nodes.typescript_code_generator:create_typescript_code_generator",
       "prompt_file": "prompts/09-typescript_code_generator.md",
       "enabled": true,
@@ -256,7 +256,7 @@
       ]
     },
     {
-      "name": "EvaluateInstructionGenerator",
+      "name": "StaticEvaluationPlanBuilder",
       "factory": "custom_nodes.evaluate_instruction_generator:create_evaluate_instruction_generator",
       "prompt_file": "prompts/10-evaluate_instruction_generator.md",
       "enabled": true,
@@ -296,18 +296,18 @@
     "codex_cli_fast": [
       "SceneAndGameplaySplitter",
       "UEApiMCPFeasibilitySearcher",
-      "EvaluateInstructionGenerator"
+      "StaticEvaluationPlanBuilder"
     ],
     "codex_cli_planning": [
       "EntityAbilityBehaviorPlanner",
       "ThinGameplayFlowPlanner",
       "EncounterSpecPlanner",
-      "PuerTSRuntimeMappingPlanner",
-      "TypeScriptScriptAnalyzer"
+      "PuerTSRuntimeMappingCompiler",
+      "TypeScriptImplementationSlotProjector"
     ],
     "codex_cli_codegen": [
-      "TypeScriptInteractiveObjectGenerator",
-      "TypeScriptCodeGenerator"
+      "TypeScriptInteractiveTemplatePlanner",
+      "TypeScriptRuntimeTemplatePlanner"
     ]
   }
 }

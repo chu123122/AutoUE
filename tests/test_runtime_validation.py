@@ -19,7 +19,6 @@ def good_runtime_root(tmp_path, *, omit: set[str] | None = None):
     interactive_ts = "TypeScript/content/generated/interactive/SmokeInteractable.ts"
     trace = {
         "entity_id": "player",
-        "ability_id": "player.combat",
         "behavior_id": "player.combat.attack",
         "flow_id": "flow_player_combat_attack",
         "engine_port_ids": ["input.action_binding", "damage.apply"],
@@ -51,8 +50,7 @@ def good_runtime_root(tmp_path, *, omit: set[str] | None = None):
         "mappings": [
             {
                 "entity_id": "player",
-                "ability_id": "player.combat",
-                "behavior_id": "player.combat.attack",
+                        "behavior_id": "player.combat.attack",
                 "flow_id": "flow_player_combat_attack",
                 "runtime_owner": ability_ts,
                 "implementation_carrier": "template_rendered_ts",

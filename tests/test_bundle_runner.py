@@ -20,9 +20,9 @@ ADJ_CAMERA = 'flow/04-ue-api-mcp/adjudication/camera.update_view_target.json'
 
 RUNTIME_FEATURES = ['action_dispatcher', 'behavior_orchestrator', 'condition_checker', 'entity_registry', 'movement_runtime', 'state_blackboard', 'trigger_router', 'world_adapter']
 DISABLED_FEATURES = ['enemy_encounter']
-BEHAVIOR_ID = 'freeze_trap.freeze_player_on_overlap'
-ABILITY_ID = 'freeze_trap.sensor.detect_player_overlap'
-FLOW_ID = 'flow_freeze_trap_freeze_player_on_overlap'
+BEHAVIOR_ID = 'hazard.behavior.freeze_on_overlap'
+CAPABILITY_IDS = ['hazard.sensor.detect_overlap', 'hazard.effect.apply_freeze', 'vfx.visibility.set_visible_while_state', 'camera.feedback.camera_impulse']
+FLOW_ID = 'flow_hazard_behavior_freeze_on_overlap'
 RUNTIME_OWNER = 'TypeScript/content/generated/AutoUEBehaviorSpec.generated.ts'
 INTERACTIVE_TS = 'TypeScript/content/generated/interactive/FreezeTrapInteractable.ts'
 ENGINE_PORTS = ['input.action_binding', 'primitive.on_component_begin_overlap', 'component.set_visibility', 'camera.update_view_target']
@@ -30,10 +30,10 @@ ADJUDICATIONS = [ADJ_INPUT, ADJ_OVERLAP, ADJ_VISIBILITY, ADJ_CAMERA]
 
 def eab():
     from core.content_library import canonicalize_selection
-    return canonicalize_selection({'selected_entity_ids': ['player', 'freeze_trap', 'freeze_vfx', 'side_camera'], 'selected_capability_ids': [], 'selected_behavior_ids': [BEHAVIOR_ID]})
+    return canonicalize_selection({'selected_entity_ids': ['freeze_trap', 'freeze_vfx', 'side_camera'], 'selected_capability_ids': CAPABILITY_IDS, 'selected_behavior_ids': [BEHAVIOR_ID]})
 
 def thin():
-    return {'flows': [{'flow_id': FLOW_ID, 'entity_id': 'freeze_trap', 'ability_id': ABILITY_ID, 'source_behavior_id': BEHAVIOR_ID, 'stages': [
+    return {'flows': [{'flow_id': FLOW_ID, 'entity_id': 'freeze_trap', 'source_behavior_id': BEHAVIOR_ID, 'stages': [
         {'stage': 'Input', 'contract': 'read input', 'inputs': ['input'], 'outputs': ['intent'], 'engine_ports': ['input.action_binding']},
         {'stage': 'SpatialQuery/HitQuery', 'contract': 'detect trap overlap', 'inputs': ['location'], 'outputs': ['trigger'], 'engine_ports': ['primitive.on_component_begin_overlap']},
         {'stage': 'Event/Result', 'contract': 'write player.effects.frozen', 'inputs': ['trigger'], 'outputs': ['frozen'], 'engine_ports': ['primitive.on_component_begin_overlap']},
@@ -62,7 +62,7 @@ def mapping():
     spec, support = behavior_spec_and_support()
     helpers = {'input.action_binding': 'TriggerRouter.bindInputAction', 'primitive.on_component_begin_overlap': 'TriggerRouter.bindOverlapEnter', 'component.set_visibility': 'WorldAdapter.setVisibility', 'camera.update_view_target': 'WorldAdapter.cameraImpulse'}
     syms = {'input.action_binding': 'UE.PlayerController.IsInputKeyDown', 'primitive.on_component_begin_overlap': 'UE.PrimitiveComponent.OnComponentBeginOverlap', 'component.set_visibility': 'UE.SceneComponent.SetVisibility', 'camera.update_view_target': 'UE.CameraComponent.K2_SetWorldLocation'}
-    return {'runtime_mapping_path': RUNTIME_MAPPING_PATH, 'behavior_spec_path': 'flow/06-behavior-spec.json', 'support_check_path': 'flow/06-runtime-support-check.json', 'runtime_features': RUNTIME_FEATURES, 'disabled_features': DISABLED_FEATURES, 'behavior_spec': spec, 'support_check': support, 'mappings': [{'entity_id': 'freeze_trap', 'ability_id': ABILITY_ID, 'behavior_id': BEHAVIOR_ID, 'flow_id': FLOW_ID, 'runtime_owner': RUNTIME_OWNER, 'implementation_carrier': 'template_rendered_ts', 'selected_runtime_owner': 'AutoUEBehaviorSpec.generated', 'existing_framework_candidates': ['AutoUE behavior runtime framework'], 'why_not_existing_framework': 'shared behavior framework renders BehaviorSpec instead of gameplay-specific TS', 'temporary_or_canonical': 'canonical', 'migration_path': 'regenerate BehaviorSpec data only', 'engine_port_mappings': [{'engine_port_id': p, 'adjudication_path': a, 'adapter_or_helper': helpers[p], 'verdict': 'hit', 'evidence_symbols': [syms[p]]} for p, a in zip(ENGINE_PORTS, ADJUDICATIONS)], 'thin_contracts': ['read input', 'detect overlap', 'write player.effects.frozen', 'show vfx', 'shake camera'], 'ability_binding': 'behavior_spec:freeze_trap.freeze_player_on_overlap', 'verification_evidence': ['StateWritten player.effects.frozen']}], 'blocked_mappings': []}
+    return {'runtime_mapping_path': RUNTIME_MAPPING_PATH, 'behavior_spec_path': 'flow/06-behavior-spec.json', 'support_check_path': 'flow/06-runtime-support-check.json', 'runtime_features': RUNTIME_FEATURES, 'disabled_features': DISABLED_FEATURES, 'behavior_spec': spec, 'support_check': support, 'mappings': [{'entity_id': 'freeze_trap', 'behavior_id': BEHAVIOR_ID, 'flow_id': FLOW_ID, 'runtime_owner': RUNTIME_OWNER, 'implementation_carrier': 'template_rendered_ts', 'selected_runtime_owner': 'AutoUEBehaviorSpec.generated', 'existing_framework_candidates': ['AutoUE behavior runtime framework'], 'why_not_existing_framework': 'shared behavior framework renders BehaviorSpec instead of gameplay-specific TS', 'temporary_or_canonical': 'canonical', 'migration_path': 'regenerate BehaviorSpec data only', 'engine_port_mappings': [{'engine_port_id': p, 'adjudication_path': a, 'adapter_or_helper': helpers[p], 'verdict': 'hit', 'evidence_symbols': [syms[p]]} for p, a in zip(ENGINE_PORTS, ADJUDICATIONS)], 'thin_contracts': ['read input', 'detect overlap', 'write player.effects.frozen', 'show vfx', 'shake camera'], 'ability_binding': 'behavior_spec:hazard.behavior.freeze_on_overlap', 'verification_evidence': ['StateWritten player.effects.frozen']}], 'blocked_mappings': []}
 
 def analyzer():
     return {'typescript_sources': [{'path': RUNTIME_OWNER, 'role': 'runtime_owner', 'notes': 'mapping'}], 'implementation_slots': [{'entity_id': 'freeze_trap', 'behavior_id': BEHAVIOR_ID, 'flow_id': FLOW_ID, 'runtime_mapping_path': RUNTIME_MAPPING_PATH, 'target_ts_file': RUNTIME_OWNER, 'reason': 'mapping'}], 'missing_slots': []}
@@ -74,14 +74,14 @@ def codegen():
     from core.BaseLLMNode import GraphState
     from custom_nodes.typescript_code_generator import build_codegen_output
     state = GraphState(llm_outputs={
-        'PuerTSRuntimeMappingPlanner': json.dumps(mapping()),
-        'TypeScriptScriptAnalyzer': json.dumps(analyzer()),
-        'TypeScriptInteractiveObjectGenerator': json.dumps(interactive()),
+        'PuerTSRuntimeMappingCompiler': json.dumps(mapping()),
+        'TypeScriptImplementationSlotProjector': json.dumps(analyzer()),
+        'TypeScriptInteractiveTemplatePlanner': json.dumps(interactive()),
     })
     return build_codegen_output(state)
 
 def eval_plan():
-    trace = {'entity_id': 'freeze_trap', 'ability_id': ABILITY_ID, 'behavior_id': BEHAVIOR_ID, 'flow_id': FLOW_ID, 'engine_port_ids': ENGINE_PORTS, 'adjudication_paths': ADJUDICATIONS, 'runtime_mapping_path': RUNTIME_MAPPING_PATH, 'ts_files': [INTERACTIVE_TS, RUNTIME_OWNER]}
+    trace = {'entity_id': 'freeze_trap', 'behavior_id': BEHAVIOR_ID, 'flow_id': FLOW_ID, 'engine_port_ids': ENGINE_PORTS, 'adjudication_paths': ADJUDICATIONS, 'runtime_mapping_path': RUNTIME_MAPPING_PATH, 'ts_files': [INTERACTIVE_TS, RUNTIME_OWNER]}
     return {'evaluation_instructions': [{'step_id': 1, 'action': 'trigger_freeze_trap', 'target': 'FreezeTrap', 'description': 'validate static adapter call trace', 'driver': 'adapter_call', 'executor_action': 'call_behavior', 'expected': [{'type': 'static_trace_present', 'key': 'ability_module_export', 'expected_value': 'getAutoUEBehaviorSpec'}, {'type': 'static_trace_present', 'key': 'interactive_adapter_export', 'expected_value': 'runFreezeTrapInteraction'}, {'type': 'static_trace_present', 'key': 'engine_ports_mapped', 'expected_value': ENGINE_PORTS}], 'trace': trace}], 'coverage': [trace]}
 
 
@@ -100,15 +100,15 @@ def write_json_port(bundle: RunBundle, port: str, data: dict, producer: str):
 def test_bundle_runner_executes_deterministic_analyzer_without_llm(tmp_path):
     bundle = RunBundle.create(tmp_path / 'bundle', workflow='puerts_ts_encounter_flow', user_prompt='trigger a freeze trap')
     write_json_port(bundle, 'entity_behavior', eab(), 'EntityAbilityBehaviorPlanner')
-    write_json_port(bundle, 'runtime_mapping', mapping(), 'PuerTSRuntimeMappingPlanner')
-    (node, spec), runtime, workflow = load_node('TypeScriptScriptAnalyzer')
+    write_json_port(bundle, 'runtime_mapping', mapping(), 'PuerTSRuntimeMappingCompiler')
+    (node, spec), runtime, workflow = load_node('TypeScriptImplementationSlotProjector')
     execute_node(bundle, node, spec, runtime, workflow)
     assert bundle.has_port('ts_analyzer')
     data = bundle.read_port_json('ts_analyzer')
     assert data['missing_slots'] == []
     assert data['implementation_slots'][0]['target_ts_file'] == mapping()['mappings'][0]['runtime_owner']
-    assert (bundle.root / 'llm_outputs' / 'TypeScriptScriptAnalyzer.txt').exists()
-    assert bundle.manifest['trace']['token_usage']['TypeScriptScriptAnalyzer']['total_tokens'] == 0
+    assert (bundle.root / 'llm_outputs' / 'TypeScriptImplementationSlotProjector.txt').exists()
+    assert bundle.manifest['trace']['token_usage']['TypeScriptImplementationSlotProjector']['total_tokens'] == 0
 
 
 def test_bundle_runner_encounter_spec_skips_scene_manifest_for_non_enemy_flow(tmp_path):
@@ -129,12 +129,12 @@ def test_bundle_runner_codegen_materializes_declared_typescript(tmp_path):
         ('thin_flow', thin(), 'ThinGameplayFlowPlanner'),
         ('encounter_spec', encounter(), 'EncounterSpecPlanner'),
         ('ue_api_feasibility', mcp(), 'UEApiMCPFeasibilitySearcher'),
-        ('runtime_mapping', mapping(), 'PuerTSRuntimeMappingPlanner'),
-        ('ts_analyzer', analyzer(), 'TypeScriptScriptAnalyzer'),
-        ('interactive_ts_plan', interactive(), 'TypeScriptInteractiveObjectGenerator'),
+        ('runtime_mapping', mapping(), 'PuerTSRuntimeMappingCompiler'),
+        ('ts_analyzer', analyzer(), 'TypeScriptImplementationSlotProjector'),
+        ('interactive_ts_plan', interactive(), 'TypeScriptInteractiveTemplatePlanner'),
     ]:
         write_json_port(bundle, port, data, producer)
-    (node, spec), runtime, workflow = load_node('TypeScriptCodeGenerator')
+    (node, spec), runtime, workflow = load_node('TypeScriptRuntimeTemplatePlanner')
     execute_node(bundle, node, spec, runtime, workflow)
     assert bundle.has_port('typescript_codegen')
     assert (bundle.root / 'TypeScript' / 'content' / 'generated' / 'AutoUEBehaviorSpec.generated.ts').exists()
@@ -149,14 +149,14 @@ def test_node_cli_run_and_validate_roundtrip(tmp_path):
     next_bundle = tmp_path / 'next'
     bundle = RunBundle.create(prev, workflow='puerts_ts_encounter_flow', user_prompt='trigger a freeze trap')
     write_json_port(bundle, 'entity_behavior', eab(), 'EntityAbilityBehaviorPlanner')
-    write_json_port(bundle, 'runtime_mapping', mapping(), 'PuerTSRuntimeMappingPlanner')
+    write_json_port(bundle, 'runtime_mapping', mapping(), 'PuerTSRuntimeMappingCompiler')
     bundle.save()
     run = subprocess.run([
         sys.executable, 'autoue.py', 'node', 'run', '--llm-profile', 'scripted_smoke',
-        '--node', 'TypeScriptScriptAnalyzer', '--input-bundle', str(prev), '--output-bundle', str(next_bundle)
+        '--node', 'TypeScriptImplementationSlotProjector', '--input-bundle', str(prev), '--output-bundle', str(next_bundle)
     ], cwd=ROOT, text=True, capture_output=True, check=True)
-    assert 'TypeScriptScriptAnalyzer' in run.stdout
+    assert 'TypeScriptImplementationSlotProjector' in run.stdout
     val = subprocess.run([
-        sys.executable, 'autoue.py', 'node', 'validate', '--node', 'TypeScriptScriptAnalyzer', '--bundle', str(next_bundle)
+        sys.executable, 'autoue.py', 'node', 'validate', '--node', 'TypeScriptImplementationSlotProjector', '--bundle', str(next_bundle)
     ], cwd=ROOT, text=True, capture_output=True, check=True)
     assert json.loads(val.stdout)['result'] == 'pass'

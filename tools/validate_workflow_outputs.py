@@ -126,7 +126,7 @@ def validate_configured_artifacts(root: Path, workflow: dict, data: dict, errors
 
 def validate_declared_files(root: Path, data: dict, errors: list[str]) -> list[str]:
     emitted: list[str] = []
-    for node in ['TypeScriptInteractiveObjectGenerator', 'TypeScriptCodeGenerator']:
+    for node in ['TypeScriptInteractiveTemplatePlanner', 'TypeScriptRuntimeTemplatePlanner']:
         node_data = data.get(node, {}) if isinstance(data, dict) else {}
         for item in node_data.get('template_inputs', []) if isinstance(node_data, dict) else []:
             rel = item.get('path', '') if isinstance(item, dict) else ''
@@ -137,7 +137,7 @@ def validate_declared_files(root: Path, data: dict, errors: list[str]) -> list[s
 
 
 def _enemy_encounter_enabled(data: dict) -> bool:
-    for node_name in ("PuerTSRuntimeMappingPlanner", "TypeScriptCodeGenerator"):
+    for node_name in ("PuerTSRuntimeMappingCompiler", "TypeScriptRuntimeTemplatePlanner"):
         node = data.get(node_name, {}) if isinstance(data, dict) else {}
         if isinstance(node, dict) and "enemy_encounter" in node.get("runtime_features", []):
             return True

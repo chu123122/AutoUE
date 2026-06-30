@@ -1,4 +1,4 @@
-SCHEMA: PuerTSRuntimeMappingPlanner
+SCHEMA: PuerTSRuntimeMappingCompiler
 
 Map thin gameplay flows, behavior capabilities, and UE API MCP adjudications into concrete PuerTS runtime carriers and runtime feature flags.
 
@@ -10,7 +10,6 @@ Required JSON shape:
   "mappings": [
     {
       "entity_id": "entity id",
-      "ability_id": "legacy parent capability id",
       "behavior_id": "behavior id",
       "flow_id": "flow id",
       "runtime_owner": "TypeScript/content/generated/ExampleAbility.ts",
@@ -30,7 +29,7 @@ Required JSON shape:
         }
       ],
       "thin_contracts": ["contract summary"],
-      "ability_binding": "how this behavior should be invoked from PuerTS",
+      "ability_binding": "behavior invocation binding label for PuerTS",
       "verification_evidence": ["what later validation should check"]
     }
   ],
@@ -41,7 +40,7 @@ Rules:
 - Output JSON only.
 - Create one mapping per behavior.
 - runtime_mapping_path must be exactly flow/05-puerts-runtime-mapping.json.
-- runtime_owner should be the behavior-level generated TypeScript ability file under TypeScript/content/generated/.
+- runtime_owner should be the behavior-level generated TypeScript capability/runtime file under TypeScript/content/generated/.
 - runtime_features must be the union of features actually needed by selected behaviors.
 - Put enemy_encounter in runtime_features only if behaviors require enemy spawn, enemy AI, enemy death, or encounter completion.
 - If enemy_encounter is absent, include it in disabled_features.

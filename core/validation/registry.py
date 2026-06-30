@@ -42,11 +42,11 @@ NODE_VALIDATOR_IDS: dict[str, str] = {
     "ThinGameplayFlowPlanner": "thin_gameplay_flow_planner",
     "EncounterSpecPlanner": "encounter_spec_planner",
     "UEApiMCPFeasibilitySearcher": "ue_api_mcp_feasibility_searcher",
-    "PuerTSRuntimeMappingPlanner": "puerts_runtime_mapping_planner",
-    "TypeScriptScriptAnalyzer": "typescript_script_analyzer",
-    "TypeScriptInteractiveObjectGenerator": "typescript_interactive_object_generator",
-    "TypeScriptCodeGenerator": "typescript_code_generator",
-    "EvaluateInstructionGenerator": "evaluate_instruction_generator",
+    "PuerTSRuntimeMappingCompiler": "puerts_runtime_mapping_planner",
+    "TypeScriptImplementationSlotProjector": "typescript_script_analyzer",
+    "TypeScriptInteractiveTemplatePlanner": "typescript_interactive_object_generator",
+    "TypeScriptRuntimeTemplatePlanner": "typescript_code_generator",
+    "StaticEvaluationPlanBuilder": "evaluate_instruction_generator",
 }
 
 NODE_VALIDATORS: dict[str, NodeValidator] = {
