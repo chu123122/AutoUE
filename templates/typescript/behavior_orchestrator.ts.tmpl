@@ -11,7 +11,7 @@ import { createAutoUEVfxRuntime, AutoUEVfxRuntime } from './AutoUEVfxRuntime';
 const LOG_PREFIX = '[AUTOUE_GENERATED]';
 const ROOM_Y = 0;
 const FLOOR_Z = 92;
-const EXIT_X = 820;
+const EXIT_X = -820;
 const EXIT_RADIUS = 165;
 const FREEZE_STATE_KEY = 'player.effects.frozen';
 const FREEZE_SECONDS = 1.25;
@@ -29,6 +29,8 @@ function addTag(actor: UE.Actor, tag: string): void { try { actor.Tags.Add(tag);
 function clearTags(actor: UE.Actor): void { try { (actor.Tags as any).Empty(); } catch (_) {} }
 function makeMaterial(owner: UE.Object, r: number, g: number, b: number): UE.MaterialInstanceDynamic | undefined { try { const base = UE.Material.Load('/Engine/BasicShapes/BasicShapeMaterial'); if (!base) return undefined; const mat = UE.KismetMaterialLibrary.CreateDynamicMaterialInstance(owner, base); mat.SetVectorParameterValue('Color', new UE.LinearColor(r, g, b, 1)); return mat; } catch (_) { return undefined; } }
 function makeWorldMesh(owner: UE.Character, name: string, world: UE.Vector, scale: UE.Vector, color: UE.LinearColor): UE.StaticMeshComponent | undefined { try { const c = new UE.StaticMeshComponent(owner, name); const mesh = UE.StaticMesh.Load('/Engine/BasicShapes/Cube'); if (mesh) c.SetStaticMesh(mesh); c.SetRelativeScale3D(scale); const mat = makeMaterial(owner, color.R, color.G, color.B); if (mat) c.SetMaterial(0, mat); c.SetCollisionEnabled(UE.ECollisionEnabled.QueryOnly); c.SetAbsolute(true, false, false); c.RegisterComponent(); (c as any).K2_SetWorldLocation(world, false, undefined, true); try { c.ComponentTags.Add(name); } catch (_) {} return c; } catch (e) { log(`WorldMeshCreateFailed name=${name} error=${e}`); return undefined; } }
+function ensurePlayerVisual(actor: UE.Character): void { const self = actor as any; if (self._autoueGeneratedPlayerVisual) return; try { const c = new UE.StaticMeshComponent(actor, 'AutoUEGenerated_PlayerVisual'); const mesh = UE.StaticMesh.Load('/Engine/BasicShapes/Cube'); if (mesh) c.SetStaticMesh(mesh); c.SetRelativeScale3D(new UE.Vector(0.85, 0.85, 1.35)); const mat = makeMaterial(actor, 1.0, 0.55, 0.05); if (mat) c.SetMaterial(0, mat); c.SetupAttachment(actor.RootComponent, ''); c.SetCollisionEnabled(UE.ECollisionEnabled.NoCollision); c.RegisterComponent(); (c as any).K2_SetRelativeLocation(new UE.Vector(0, 0, 0), false, undefined, true); try { c.ComponentTags.Add('AUTOUE_GENERATED_PLAYER_VISUAL'); } catch (_) {} self._autoueGeneratedPlayerVisual = c; log('PlayerVisualReady=1'); } catch (e) { log(`PlayerVisualCreateFailed error=${e}`); } }
+function ensureSceneLight(actor: UE.Character): void { const self = actor as any; if (self._autoueGeneratedKeyLight) return; try { const light = new UE.PointLightComponent(actor, 'AutoUEGenerated_KeyLight'); light.Intensity = 9000; light.AttenuationRadius = 3200; try { light.LightColor = new UE.Color(255, 244, 220, 255); } catch (_) {} light.SetAbsolute(true, false, false); light.RegisterComponent(); (light as any).K2_SetWorldLocation(new UE.Vector(EXIT_X * 0.5, ROOM_Y - 220, FLOOR_Z + 650), false, undefined, true); try { light.ComponentTags.Add('AUTOUE_GENERATED_KEY_LIGHT'); } catch (_) {} self._autoueGeneratedKeyLight = light; log('SceneLightReady=1'); } catch (e) { log(`SceneLightCreateFailed error=${e}`); } }
 
 function initialState(): GeneratedState { return { elapsed: 0, cameraShakeUntil: 0, exitReached: false, roomComplete: false, trapArmed: true, trapTriggerCount: 0 }; }
 function inputRuntime(actor: UE.Character): AutoUEInputHarnessRuntime { const self = actor as any; if (!self._autoueInputRuntime) self._autoueInputRuntime = createAutoUEInputHarnessRuntime({}); return self._autoueInputRuntime; }
@@ -83,6 +85,8 @@ function resetGeneratedRuntime(actor: UE.Character): void {
 export function beginAutoUEGeneratedCharacter(actor: UE.Character): void {
   const self = actor as any;
   configureAutoUEGeneratedCharacter(actor);
+  ensurePlayerVisual(actor);
+  ensureSceneLight(actor);
   if (!self._autoueGeneratedFloor) self._autoueGeneratedFloor = makeWorldMesh(actor, 'AutoUEGenerated_RoomFloor', new UE.Vector(EXIT_X * 0.5, ROOM_Y, 25), new UE.Vector(10, 2.0, 0.08), new UE.LinearColor(0.18, 0.18, 0.18, 1));
   if (!self._autoueGeneratedTrap) self._autoueGeneratedTrap = makeWorldMesh(actor, 'AutoUEGenerated_IceTrap', new UE.Vector(160, ROOM_Y, FLOOR_Z), new UE.Vector(0.65, 0.65, 0.2), new UE.LinearColor(0.2, 0.8, 1, 1));
   if (!self._autoueGeneratedExit) self._autoueGeneratedExit = makeWorldMesh(actor, 'AutoUEGenerated_Exit', new UE.Vector(EXIT_X, ROOM_Y, FLOOR_Z), new UE.Vector(0.35, 1.0, 1.65), new UE.LinearColor(0.05, 0.9, 0.15, 1));

@@ -26,15 +26,15 @@ export function {{export_name}}(_context: {{interface_name}} = {}): AutoUEInputH
   return {
     read(actor: UE.Actor, pc: UE.PlayerController | undefined, elapsed: number): AutoUEHarnessInput {
       input.resetRequested = hasTag(actor, INPUT_RESET);
-      if (hasTag(actor, INPUT_LEFT)) { input.axis = -1; input.axisUntil = elapsed + INPUT_PULSE_SECONDS; }
-      if (hasTag(actor, INPUT_RIGHT)) { input.axis = 1; input.axisUntil = elapsed + INPUT_PULSE_SECONDS; }
-      if (hasTag(actor, INPUT_RIGHT_1S)) { input.axis = 1; input.axisUntil = elapsed + 1.0; }
-      if (hasTag(actor, INPUT_RIGHT_3S)) { input.axis = 1; input.axisUntil = elapsed + 3.0; }
+      if (hasTag(actor, INPUT_LEFT)) { input.axis = 1; input.axisUntil = elapsed + INPUT_PULSE_SECONDS; }
+      if (hasTag(actor, INPUT_RIGHT)) { input.axis = -1; input.axisUntil = elapsed + INPUT_PULSE_SECONDS; }
+      if (hasTag(actor, INPUT_RIGHT_1S)) { input.axis = -1; input.axisUntil = elapsed + 1.0; }
+      if (hasTag(actor, INPUT_RIGHT_3S)) { input.axis = -1; input.axisUntil = elapsed + 3.0; }
       if (hasTag(actor, INPUT_DASH)) input.dashUntil = elapsed + 0.35;
       if (hasTag(actor, INPUT_ATTACK)) input.attackPulseUntil = elapsed + 0.12;
       const left = keyDown(pc, 'A') || keyDown(pc, 'Left');
       const right = keyDown(pc, 'D') || keyDown(pc, 'Right');
-      const keyAxis = (right ? 1 : 0) - (left ? 1 : 0);
+      const keyAxis = (left ? 1 : 0) - (right ? 1 : 0);
       if (keyAxis) { input.axis = keyAxis; input.axisUntil = elapsed + INPUT_PULSE_SECONDS; }
       if (keyDown(pc, 'LeftShift') || keyDown(pc, 'RightShift')) input.dashUntil = elapsed + 0.35;
       return input;

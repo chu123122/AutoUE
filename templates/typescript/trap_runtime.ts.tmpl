@@ -3,7 +3,7 @@ import UE = require('ue');
 export interface {{interface_name}} { runId?: string; }
 export type AutoUETrapRuntime = { tick(actor: UE.Actor, elapsed: number, isFrozen: boolean): { triggered: boolean; rearmed: boolean; trapArmed: boolean; triggerCount: number; distance: number }; reset(): void; snapshot(actor: UE.Actor): Record<string, unknown>; };
 
-const TRAP_X = 160;
+const TRAP_X = -160;
 const ROOM_Y = 0;
 const FLOOR_Z = 92;
 const TRAP_RADIUS = 95;
