@@ -31,25 +31,25 @@
 <text x="670.0" y="740" text-anchor="middle" font-family="Microsoft YaHei, Segoe UI, Arial" font-size="13" fill="#52616f">cation 证据</text>
 <line x1="670.0" y1="640" x2="670.0" y2="666" stroke="#2f5597" stroke-width="2.4" marker-end="url(#arrow)"/>
 <rect x="390" y="778" width="560" height="74" rx="14" fill="#dae8fc" stroke="#6c8ebf" stroke-width="2" filter="url(#shadow)"/>
-<text x="670.0" y="806" text-anchor="middle" font-family="Microsoft YaHei, Segoe UI, Arial" font-size="17" font-weight="700" fill="#1f2d3d">6. PuerTSRuntimeMappingPlanner</text>
+<text x="670.0" y="806" text-anchor="middle" font-family="Microsoft YaHei, Segoe UI, Arial" font-size="17" font-weight="700" fill="#1f2d3d">6. PuerTSRuntimeMappingCompiler</text>
 <text x="670.0" y="830" text-anchor="middle" font-family="Microsoft YaHei, Segoe UI, Arial" font-size="13" fill="#52616f">把行为、engine_ports 映射到 PuerTS runtim</text>
 <text x="670.0" y="848" text-anchor="middle" font-family="Microsoft YaHei, Segoe UI, Arial" font-size="13" fill="#52616f">e owner</text>
 <line x1="670.0" y1="748" x2="670.0" y2="774" stroke="#2f5597" stroke-width="2.4" marker-end="url(#arrow)"/>
 <rect x="390" y="886" width="560" height="74" rx="14" fill="#dae8fc" stroke="#6c8ebf" stroke-width="2" filter="url(#shadow)"/>
-<text x="670.0" y="914" text-anchor="middle" font-family="Microsoft YaHei, Segoe UI, Arial" font-size="17" font-weight="700" fill="#1f2d3d">7. TypeScriptScriptAnalyzer</text>
+<text x="670.0" y="914" text-anchor="middle" font-family="Microsoft YaHei, Segoe UI, Arial" font-size="17" font-weight="700" fill="#1f2d3d">7. TypeScriptImplementationSlotProjector</text>
 <text x="670.0" y="938" text-anchor="middle" font-family="Microsoft YaHei, Segoe UI, Arial" font-size="13" fill="#52616f">确认 TS 实现槽位与目标文件</text>
 <line x1="670.0" y1="856" x2="670.0" y2="882" stroke="#2f5597" stroke-width="2.4" marker-end="url(#arrow)"/>
 <rect x="390" y="994" width="560" height="74" rx="14" fill="#dae8fc" stroke="#6c8ebf" stroke-width="2" filter="url(#shadow)"/>
-<text x="670.0" y="1022" text-anchor="middle" font-family="Microsoft YaHei, Segoe UI, Arial" font-size="17" font-weight="700" fill="#1f2d3d">8. TypeScriptInteractiveObjectGenerator</text>
+<text x="670.0" y="1022" text-anchor="middle" font-family="Microsoft YaHei, Segoe UI, Arial" font-size="17" font-weight="700" fill="#1f2d3d">8. TypeScriptInteractiveTemplatePlanner</text>
 <text x="670.0" y="1046" text-anchor="middle" font-family="Microsoft YaHei, Segoe UI, Arial" font-size="13" fill="#52616f">渲染交互对象 TypeScript 模板</text>
 <line x1="670.0" y1="964" x2="670.0" y2="990" stroke="#2f5597" stroke-width="2.4" marker-end="url(#arrow)"/>
 <rect x="390" y="1102" width="560" height="74" rx="14" fill="#dae8fc" stroke="#6c8ebf" stroke-width="2" filter="url(#shadow)"/>
-<text x="670.0" y="1130" text-anchor="middle" font-family="Microsoft YaHei, Segoe UI, Arial" font-size="17" font-weight="700" fill="#1f2d3d">9. TypeScriptCodeGenerator</text>
+<text x="670.0" y="1130" text-anchor="middle" font-family="Microsoft YaHei, Segoe UI, Arial" font-size="17" font-weight="700" fill="#1f2d3d">9. TypeScriptRuntimeTemplatePlanner</text>
 <text x="670.0" y="1154" text-anchor="middle" font-family="Microsoft YaHei, Segoe UI, Arial" font-size="13" fill="#52616f">渲染 AIDev adapter / runtime / encou</text>
 <text x="670.0" y="1172" text-anchor="middle" font-family="Microsoft YaHei, Segoe UI, Arial" font-size="13" fill="#52616f">nter TS 模板</text>
 <line x1="670.0" y1="1072" x2="670.0" y2="1098" stroke="#2f5597" stroke-width="2.4" marker-end="url(#arrow)"/>
 <rect x="390" y="1210" width="560" height="74" rx="14" fill="#dae8fc" stroke="#6c8ebf" stroke-width="2" filter="url(#shadow)"/>
-<text x="670.0" y="1238" text-anchor="middle" font-family="Microsoft YaHei, Segoe UI, Arial" font-size="17" font-weight="700" fill="#1f2d3d">10. EvaluateInstructionGenerator</text>
+<text x="670.0" y="1238" text-anchor="middle" font-family="Microsoft YaHei, Segoe UI, Arial" font-size="17" font-weight="700" fill="#1f2d3d">10. StaticEvaluationPlanBuilder</text>
 <text x="670.0" y="1262" text-anchor="middle" font-family="Microsoft YaHei, Segoe UI, Arial" font-size="13" fill="#52616f">生成 eval instructions 与 runtime val</text>
 <text x="670.0" y="1280" text-anchor="middle" font-family="Microsoft YaHei, Segoe UI, Arial" font-size="13" fill="#52616f">idation trace</text>
 <line x1="670.0" y1="1180" x2="670.0" y2="1206" stroke="#2f5597" stroke-width="2.4" marker-end="url(#arrow)"/>

@@ -10,11 +10,11 @@ SceneAndGameplaySplitter
 → ThinGameplayFlowPlanner
 → EncounterSpecPlanner
 → UEApiMCPFeasibilitySearcher
-→ PuerTSRuntimeMappingPlanner
-→ TypeScriptScriptAnalyzer
-→ TypeScriptInteractiveObjectGenerator
-→ TypeScriptCodeGenerator
-→ EvaluateInstructionGenerator
+→ PuerTSRuntimeMappingCompiler
+→ TypeScriptImplementationSlotProjector
+→ TypeScriptInteractiveTemplatePlanner
+→ TypeScriptRuntimeTemplatePlanner
+→ StaticEvaluationPlanBuilder
 ```
 
 ## Setup

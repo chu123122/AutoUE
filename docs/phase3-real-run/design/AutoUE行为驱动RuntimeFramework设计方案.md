@@ -200,7 +200,7 @@ EntityAbilityBehaviorPlanner output
   "schema_version": "autoue-behavior-spec/v1",
   "behaviors": [
     {
-      "behavior_id": "freeze_trap.freeze_player_on_overlap",
+      "behavior_id": "hazard.behavior.freeze_on_overlap",
       "primary_entity_id": "freeze_trap",
       "trigger": {
         "type": "overlap_enter",
@@ -235,7 +235,7 @@ EntityAbilityBehaviorPlanner output
         "side_camera.camera.apply_impulse"
       ],
       "verification_logs": [
-        "BehaviorTriggered freeze_trap.freeze_player_on_overlap",
+        "BehaviorTriggered hazard.behavior.freeze_on_overlap",
         "StateWritten player.effects.frozen",
         "VfxVisible freeze_vfx",
         "CameraImpulse"
@@ -407,7 +407,7 @@ UE Delegate / Input / Timer / Tick
 ```ts
 freezeTrap.Collision.OnComponentBeginOverlap.Add((overlapped, otherActor) => {
   if (entityRegistry.is(otherActor, "player")) {
-    orchestrator.runBehavior("freeze_trap.freeze_player_on_overlap");
+    orchestrator.runBehavior("hazard.behavior.freeze_on_overlap");
   }
 });
 ```
