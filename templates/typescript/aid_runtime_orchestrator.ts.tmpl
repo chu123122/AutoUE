@@ -91,7 +91,7 @@ export function beginAutoUEGeneratedCharacter(actor: UE.Character): void {
   resetGeneratedRuntime(actor);
   const manifest = getAutoUEGeneratedSceneManifest({});
   const spec = getAutoUEBehaviorSpec({});
-  log(`BeginPlay behavior=${BEHAVIOR_ID} specBehaviors=${(spec.behaviors as unknown[]).length} features=${RUNTIME_FEATURES.join(',')} disabled=${DISABLED_FEATURES.join(',')} manifestActors=${(manifest.actors as unknown[]).length}`);
+  log(`BeginPlay behavior=${BEHAVIOR_ID} specBehaviors=${(spec.behaviors as readonly unknown[]).length} features=${RUNTIME_FEATURES.join(',')} disabled=${DISABLED_FEATURES.join(',')} manifestActors=${(manifest.actors as readonly unknown[]).length}`);
   log('HarnessReady tags=AUTOUE_INPUT_RIGHT,AUTOUE_INPUT_RIGHT_1S,AUTOUE_INPUT_RIGHT_3S,AUTOUE_INPUT_LEFT,AUTOUE_INPUT_DASH,AUTOUE_INPUT_ATTACK,AUTOUE_INPUT_RESET');
 }
 
@@ -131,4 +131,3 @@ export function latestAutoUEGeneratedSnapshot(actor: UE.Actor): Record<string, u
   const character = actor as UE.Character;
   return { ...state, pawnX: loc(actor).X, exitX: EXIT_X, frozen: isFrozen(character), state_blackboard: stateBlackboard(character).snapshot(), input: inputRuntime(character).snapshot(), movement: movementRuntime(character).snapshot(actor), trap: trapRuntime(character).snapshot(actor), vfx: vfxRuntime(character).snapshot(character), cameraShakeActive: state.elapsed < state.cameraShakeUntil, runtime_features: RUNTIME_FEATURES, disabled_features: DISABLED_FEATURES };
 }
-
