@@ -2,6 +2,8 @@
 .vscode/
 __pycache__/
 .pytest_cache/
+.pytest-tmp/
+test_tmp/
 .venv/
 .env
 .env.local

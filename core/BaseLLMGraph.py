@@ -38,8 +38,8 @@ class BaseLLMGraph:
         if not isinstance(node, BaseLLMNode):
             raise TypeError("AddNode() only accepts objects of type BaseLLMNode.")
 
-        # Uniformly set the model
-        if self.model is not None:
+        # 只在节点没有单独模型时使用图默认模型；否则会覆盖 workflow 里的 per-node llm_profile。
+        if self.model is not None and node.model is None:
             node.set_model(self.model)
 
         # === Lock to avoid race conditions in concurrent scenarios ===

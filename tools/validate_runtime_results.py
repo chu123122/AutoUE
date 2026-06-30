@@ -12,10 +12,10 @@ if str(ROOT) not in sys.path:
 from core.runtime_validation import validate_runtime_summary
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser(description="Validate a saved Phase3 runtime-summary.json.")
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Validate a saved runtime-summary.json.")
     parser.add_argument("--root", required=True, help="Demo output root containing runtime/runtime-summary.json")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     result = validate_runtime_summary(args.root)
     print(json.dumps(result, ensure_ascii=False, indent=2))

@@ -6,6 +6,8 @@ from typing import Any, Mapping
 
 from core.config import repo_path
 from core.BaseLLMNode import BaseLLMNode
+from core.validation.registry import default_validator_id_for_node, resolve_validator
+from core.validation.workflow import validate_graph_node_output
 
 
 def read_prompt_text(txt_path: str | Path) -> str:
@@ -38,4 +40,13 @@ def create_node_from_spec(spec: Mapping[str, Any]) -> BaseLLMNode:
         node.isDebug = bool(spec["debug"])
     if spec.get("name") and node.name != spec["name"]:
         node.name = spec["name"]
+    validator_id = spec.get("validator") or default_validator_id_for_node(node.name)
+    # Resolve during loading so a typo in workflow config fails before any LLM call.
+    resolve_validator(validator_id)
+    node.validator_id = validator_id
+    node.output_artifacts = list(spec.get("output_artifacts") or [])
+    if spec.get("llm_profile"):
+        node.llm_profile = spec["llm_profile"]
+    if not callable(getattr(node, "output_validator", None)):
+        node.output_validator = validate_graph_node_output
     return node

@@ -12,11 +12,11 @@ if str(ROOT) not in sys.path:
 from core.runtime_validation import run_runtime_validation
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser(description="Run Phase3 Python runtime validation harness for one AutoUE demo output root.")
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Run Python runtime validation harness for one AutoUE demo output root.")
     parser.add_argument("--root", required=True, help="Demo output root, e.g. data/output-real-008/demo_1")
     parser.add_argument("--write-summary", action="store_true", help="Write runtime/runtime-summary.json and runtime/runtime-log.jsonl")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     summary = run_runtime_validation(args.root, write_outputs=args.write_summary)
     print(json.dumps(summary, ensure_ascii=False, indent=2))

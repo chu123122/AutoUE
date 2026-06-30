@@ -9,8 +9,9 @@ def write_json(path, data):
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
-def good_runtime_root(tmp_path):
+def good_runtime_root(tmp_path, *, omit: set[str] | None = None):
     root = tmp_path / "demo_1"
+    omit = omit or set()
     adj_input = "flow/04-ue-api-mcp/adjudication/input.action_binding.json"
     adj_damage = "flow/04-ue-api-mcp/adjudication/damage.apply.json"
     runtime_mapping_path = "flow/05-puerts-runtime-mapping.json"
@@ -67,14 +68,20 @@ def good_runtime_root(tmp_path):
         ],
         "blocked_mappings": [],
     }
-    write_json(root / "MyPCG/eval/instructions.json", instructions)
-    write_json(root / runtime_mapping_path, mapping)
-    write_json(root / adj_input, {"verdict": "hit"})
-    write_json(root / adj_damage, {"verdict": "hit"})
-    (root / ability_ts).parent.mkdir(parents=True, exist_ok=True)
-    (root / ability_ts).write_text("export function tickSmokeGame() { return 'ok'; }\n", encoding="utf-8")
-    (root / interactive_ts).parent.mkdir(parents=True, exist_ok=True)
-    (root / interactive_ts).write_text("export function runSmokeInteraction() { return 'ok'; }\n", encoding="utf-8")
+    if "instructions" not in omit:
+        write_json(root / "MyPCG/eval/instructions.json", instructions)
+    if "runtime_mapping" not in omit:
+        write_json(root / runtime_mapping_path, mapping)
+    if "adj_input" not in omit:
+        write_json(root / adj_input, {"verdict": "hit"})
+    if "adj_damage" not in omit:
+        write_json(root / adj_damage, {"verdict": "hit"})
+    if "ability_ts" not in omit:
+        (root / ability_ts).parent.mkdir(parents=True, exist_ok=True)
+        (root / ability_ts).write_text("export function tickSmokeGame() { return 'ok'; }\n", encoding="utf-8")
+    if "interactive_ts" not in omit:
+        (root / interactive_ts).parent.mkdir(parents=True, exist_ok=True)
+        (root / interactive_ts).write_text("export function runSmokeInteraction() { return 'ok'; }\n", encoding="utf-8")
     return root
 
 
@@ -112,8 +119,7 @@ def test_runtime_validation_fails_missing_instructions(tmp_path):
 def test_runtime_validation_fails_missing_ts_file(tmp_path):
     from core.runtime_validation import run_runtime_validation
 
-    root = good_runtime_root(tmp_path)
-    (root / "TypeScript/content/generated/SmokeGame.ts").unlink()
+    root = good_runtime_root(tmp_path, omit={"ability_ts"})
     summary = run_runtime_validation(root)
 
     assert summary["result"] == "fail"
@@ -123,8 +129,7 @@ def test_runtime_validation_fails_missing_ts_file(tmp_path):
 def test_runtime_validation_fails_missing_mcp_adjudication(tmp_path):
     from core.runtime_validation import run_runtime_validation
 
-    root = good_runtime_root(tmp_path)
-    (root / "flow/04-ue-api-mcp/adjudication/damage.apply.json").unlink()
+    root = good_runtime_root(tmp_path, omit={"adj_damage"})
     summary = run_runtime_validation(root)
 
     assert summary["result"] == "fail"
@@ -134,8 +139,7 @@ def test_runtime_validation_fails_missing_mcp_adjudication(tmp_path):
 def test_runtime_validation_fails_missing_runtime_mapping(tmp_path):
     from core.runtime_validation import run_runtime_validation
 
-    root = good_runtime_root(tmp_path)
-    (root / "flow/05-puerts-runtime-mapping.json").unlink()
+    root = good_runtime_root(tmp_path, omit={"runtime_mapping"})
     summary = run_runtime_validation(root)
 
     assert summary["result"] == "fail"
@@ -169,7 +173,7 @@ def test_runtime_validation_fails_unknown_expected_type(tmp_path):
 
 
 def test_run_workflow_runtime_validation_failure_returns_nonzero(tmp_path, monkeypatch):
-    import autogenerate_qwen
+    from core import workflow_runner
 
     input_dir = tmp_path / "input"
     input_dir.mkdir()
@@ -180,9 +184,9 @@ def test_run_workflow_runtime_validation_failure_returns_nonzero(tmp_path, monke
         def invoke(self, initial_state):
             return {}
 
-    monkeypatch.setattr(autogenerate_qwen, "build_graph", lambda *args, **kwargs: (FakeGraph(), []))
-    monkeypatch.setattr(autogenerate_qwen, "run_runtime_validation_for_demo", lambda demo_output_dir: {"result": "fail", "errors": ["boom"]})
-    monkeypatch.setattr(autogenerate_qwen, "DEMO_FINISH_LOG_PATH", tmp_path / "demo_finish_log.txt")
+    monkeypatch.setattr(workflow_runner, "build_graph", lambda *args, **kwargs: (FakeGraph(), []))
+    monkeypatch.setattr(workflow_runner, "run_runtime_validation_for_demo", lambda demo_output_dir: {"result": "fail", "errors": ["boom"]})
+    monkeypatch.setattr(workflow_runner, "WORKFLOW_FINISH_LOG_PATH", tmp_path / "demo_finish_log.txt")
 
     args = SimpleNamespace(
         config=None,
@@ -193,4 +197,4 @@ def test_run_workflow_runtime_validation_failure_returns_nonzero(tmp_path, monke
         run_runtime_validation=True,
     )
 
-    assert autogenerate_qwen.run_workflow(args) == 1
+    assert workflow_runner.run_workflow(args) == 1
