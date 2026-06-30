@@ -6,7 +6,6 @@
     "behavior_orchestrator",
     "condition_checker",
     "entity_registry",
-    "movement_runtime",
     "state_blackboard",
     "trigger_router",
     "world_adapter"
@@ -31,7 +30,7 @@
       ],
       "supported": true,
       "reason": "",
-      "capability_id": "freeze_trap.sensor.detect_player_overlap"
+      "capability_id": "hazard.sensor.detect_overlap"
     },
     {
       "capability_kind": "apply_effect",
@@ -44,21 +43,7 @@
       "engine_ports": [],
       "supported": true,
       "reason": "",
-      "capability_id": "freeze_trap.effect.apply_freeze_to_player"
-    },
-    {
-      "capability_kind": "movement_gate",
-      "action_kind": "block_by_state",
-      "handler": "ActionDispatcher.movementGate",
-      "required_runtime_modules": [
-        "state_blackboard",
-        "action_dispatcher",
-        "movement_runtime"
-      ],
-      "engine_ports": [],
-      "supported": true,
-      "reason": "",
-      "capability_id": "player.movement.block_while_effect_active"
+      "capability_id": "hazard.effect.apply_freeze"
     },
     {
       "capability_kind": "vfx_binding",
@@ -75,7 +60,7 @@
       ],
       "supported": true,
       "reason": "",
-      "capability_id": "freeze_vfx.emit.show_freeze"
+      "capability_id": "vfx.visibility.set_visible_while_state"
     },
     {
       "capability_kind": "camera_feedback",
@@ -90,26 +75,23 @@
       ],
       "supported": true,
       "reason": "",
-      "capability_id": "side_camera.camera.apply_impulse"
+      "capability_id": "camera.feedback.camera_impulse"
     }
   ],
   "unsupported_capabilities": [],
   "unsupported_behaviors": [],
   "behavior_by_capability": {
-    "freeze_trap.effect.apply_freeze_to_player": [
-      "freeze_trap.freeze_player_on_overlap"
+    "camera.feedback.camera_impulse": [
+      "hazard.behavior.freeze_on_overlap"
     ],
-    "freeze_trap.sensor.detect_player_overlap": [
-      "freeze_trap.freeze_player_on_overlap"
+    "hazard.effect.apply_freeze": [
+      "hazard.behavior.freeze_on_overlap"
     ],
-    "freeze_vfx.emit.show_freeze": [
-      "freeze_trap.freeze_player_on_overlap"
+    "hazard.sensor.detect_overlap": [
+      "hazard.behavior.freeze_on_overlap"
     ],
-    "player.movement.block_while_effect_active": [
-      "freeze_trap.freeze_player_on_overlap"
-    ],
-    "side_camera.camera.apply_impulse": [
-      "freeze_trap.freeze_player_on_overlap"
+    "vfx.visibility.set_visible_while_state": [
+      "hazard.behavior.freeze_on_overlap"
     ]
   }
 }

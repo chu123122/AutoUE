@@ -1,0 +1,1431 @@
+{
+  "schema_version": "autoue-behavior-spec/v1",
+  "source_nodes": [
+    "EntityAbilityBehaviorPlanner",
+    "ThinGameplayFlowPlanner",
+    "PuerTSRuntimeMappingCompiler"
+  ],
+  "behaviors": [
+    {
+      "behavior_id": "enemy.behavior.keep_distance_and_projectile",
+      "bound_entity_id": "archer",
+      "primary_entity_id": "archer",
+      "entity_id": "archer",
+      "runtime_domain": "enemy_runtime",
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_spawn_runtime",
+        "enemy_perception",
+        "enemy_movement",
+        "enemy_combat",
+        "enemy_projectile_runtime",
+        "enemy_health",
+        "enemy_death_events",
+        "encounter_manager"
+      ],
+      "runtime_params": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_ARCHER",
+        "default_hp": 24,
+        "move_speed": 235,
+        "sense_radius": 1100,
+        "attack_range": 620,
+        "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+        "keep_distance": 420,
+        "spawn_tags": [
+          "ground",
+          "ranged"
+        ],
+        "bound_entity_id": "archer",
+        "entity_id": "archer"
+      },
+      "resolved_capabilities": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "capability_kind": "enemy_spawn",
+          "action_kind": "spawn_actor",
+          "handler": "EnemySpawnRuntime.spawnEnemy",
+          "params": {
+            "spawn_tags": [
+              "ground",
+              "ranged"
+            ],
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_ARCHER",
+            "default_hp": 24,
+            "move_speed": 235,
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          },
+          "source_entity_binding": {
+            "entity_id": "archer",
+            "capability_id": "enemy.spawn.spawn_actor"
+          }
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "capability_kind": "enemy_sensor",
+          "action_kind": "detect_player_by_distance",
+          "handler": "EnemyPerception.detectPlayer",
+          "params": {
+            "target_entity_id": "player",
+            "sense_radius": 1100,
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          },
+          "source_entity_binding": {
+            "entity_id": "archer",
+            "capability_id": "enemy.sensor.detect_player_by_distance"
+          }
+        },
+        {
+          "capability_id": "enemy.movement.keep_distance",
+          "capability_kind": "enemy_movement",
+          "action_kind": "keep_distance",
+          "handler": "EnemyMovement.keepDistance",
+          "params": {
+            "target_entity_id": "player",
+            "move_speed": 235,
+            "keep_distance": 420,
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          },
+          "source_entity_binding": {
+            "entity_id": "archer",
+            "capability_id": "enemy.movement.keep_distance"
+          }
+        },
+        {
+          "capability_id": "enemy.attack.projectile_spawn",
+          "capability_kind": "enemy_attack",
+          "action_kind": "projectile_spawn",
+          "handler": "EnemyCombat.spawnProjectile",
+          "params": {
+            "target_entity_id": "player",
+            "attack_damage": 8,
+            "attack_range": 620,
+            "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+            "projectile_speed": 900,
+            "cooldown_seconds": 1.6,
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          },
+          "source_entity_binding": {
+            "entity_id": "archer",
+            "capability_id": "enemy.attack.projectile_spawn"
+          }
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "capability_kind": "enemy_health",
+          "action_kind": "receive_damage",
+          "handler": "EnemyHealth.applyDamage",
+          "params": {
+            "max_hp": 24,
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          },
+          "source_entity_binding": {
+            "entity_id": "archer",
+            "capability_id": "enemy.health.receive_damage"
+          }
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "capability_kind": "enemy_death",
+          "action_kind": "emit_death_event",
+          "handler": "EnemyDeathEvents.emitDeath",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true,
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          },
+          "source_entity_binding": {
+            "entity_id": "archer",
+            "capability_id": "enemy.death.emit_death_event"
+          }
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "capability_kind": "encounter",
+          "action_kind": "complete_when_all_dead",
+          "handler": "EncounterManager.completeWhenAllDead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed",
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          },
+          "source_entity_binding": {
+            "entity_id": "archer",
+            "capability_id": "encounter.complete.complete_when_all_dead"
+          }
+        }
+      ],
+      "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
+      "trigger": {
+        "kind": "on_event"
+      },
+      "conditions": [],
+      "actions": [
+        {
+          "type": "enemy_spawn_actor",
+          "capability_id": "enemy.spawn.spawn_actor",
+          "entity_id": "archer",
+          "params": {
+            "spawn_tags": [
+              "ground",
+              "ranged"
+            ],
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_ARCHER",
+            "default_hp": 24,
+            "move_speed": 235,
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          }
+        },
+        {
+          "type": "enemy_detect_player",
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "entity_id": "archer",
+          "params": {
+            "target_entity_id": "player",
+            "sense_radius": 1100,
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          }
+        },
+        {
+          "type": "enemy_keep_distance",
+          "capability_id": "enemy.movement.keep_distance",
+          "entity_id": "archer",
+          "params": {
+            "target_entity_id": "player",
+            "move_speed": 235,
+            "keep_distance": 420,
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          },
+          "target_entity_id": "player"
+        },
+        {
+          "type": "enemy_projectile_attack",
+          "capability_id": "enemy.attack.projectile_spawn",
+          "entity_id": "archer",
+          "params": {
+            "target_entity_id": "player",
+            "attack_damage": 8,
+            "attack_range": 620,
+            "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+            "projectile_speed": 900,
+            "cooldown_seconds": 1.6,
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          },
+          "target_entity_id": "player"
+        },
+        {
+          "type": "enemy_receive_damage",
+          "capability_id": "enemy.health.receive_damage",
+          "entity_id": "archer",
+          "params": {
+            "max_hp": 24,
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          }
+        },
+        {
+          "type": "enemy_emit_death_event",
+          "capability_id": "enemy.death.emit_death_event",
+          "entity_id": "archer",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true,
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          }
+        },
+        {
+          "type": "encounter_complete_when_all_dead",
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "entity_id": "archer",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed",
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          }
+        }
+      ],
+      "required_capability_ids": [
+        "enemy.spawn.spawn_actor",
+        "enemy.sensor.detect_player_by_distance",
+        "enemy.movement.keep_distance",
+        "enemy.attack.projectile_spawn",
+        "enemy.health.receive_damage",
+        "enemy.death.emit_death_event",
+        "encounter.complete.complete_when_all_dead"
+      ],
+      "engine_port_ids": [
+        "actor.spawn",
+        "actor.get_distance_to",
+        "actor.set_actor_location",
+        "projectile.spawn",
+        "actor.on_take_any_damage",
+        "actor.on_destroyed",
+        "encounter.alive_count"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered enemy.behavior.keep_distance_and_projectile",
+        "ActionDispatched enemy_spawn_actor",
+        "ActionDispatched enemy_detect_player",
+        "ActionDispatched enemy_keep_distance",
+        "ActionDispatched enemy_projectile_attack",
+        "ActionDispatched enemy_receive_damage",
+        "ActionDispatched enemy_emit_death_event",
+        "ActionDispatched encounter_complete_when_all_dead"
+      ]
+    },
+    {
+      "behavior_id": "enemy.behavior.chase_and_self_destruct",
+      "bound_entity_id": "kamikaze_bat",
+      "primary_entity_id": "kamikaze_bat",
+      "entity_id": "kamikaze_bat",
+      "runtime_domain": "enemy_runtime",
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_spawn_runtime",
+        "enemy_perception",
+        "enemy_movement",
+        "enemy_combat",
+        "enemy_health",
+        "enemy_death_events",
+        "encounter_manager"
+      ],
+      "runtime_params": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_KAMIKAZE_BAT",
+        "default_hp": 16,
+        "move_speed": 380,
+        "sense_radius": 950,
+        "attack_range": 120,
+        "spawn_tags": [
+          "explosive",
+          "flying"
+        ],
+        "bound_entity_id": "kamikaze_bat",
+        "entity_id": "kamikaze_bat"
+      },
+      "resolved_capabilities": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "capability_kind": "enemy_spawn",
+          "action_kind": "spawn_actor",
+          "handler": "EnemySpawnRuntime.spawnEnemy",
+          "params": {
+            "spawn_tags": [
+              "explosive",
+              "flying"
+            ],
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_KAMIKAZE_BAT",
+            "default_hp": 16,
+            "move_speed": 380,
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          },
+          "source_entity_binding": {
+            "entity_id": "kamikaze_bat",
+            "capability_id": "enemy.spawn.spawn_actor"
+          }
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "capability_kind": "enemy_sensor",
+          "action_kind": "detect_player_by_distance",
+          "handler": "EnemyPerception.detectPlayer",
+          "params": {
+            "target_entity_id": "player",
+            "sense_radius": 950,
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          },
+          "source_entity_binding": {
+            "entity_id": "kamikaze_bat",
+            "capability_id": "enemy.sensor.detect_player_by_distance"
+          }
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "capability_kind": "enemy_movement",
+          "action_kind": "chase_target",
+          "handler": "EnemyMovement.chaseTarget",
+          "params": {
+            "target_entity_id": "player",
+            "move_speed": 380,
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          },
+          "source_entity_binding": {
+            "entity_id": "kamikaze_bat",
+            "capability_id": "enemy.movement.chase_target"
+          }
+        },
+        {
+          "capability_id": "enemy.attack.self_destruct",
+          "capability_kind": "enemy_attack",
+          "action_kind": "self_destruct",
+          "handler": "EnemyCombat.selfDestruct",
+          "params": {
+            "kill_self": true,
+            "target_entity_id": "player",
+            "attack_damage": 18,
+            "attack_range": 120,
+            "explosion_radius": 180,
+            "cooldown_seconds": 0.5,
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          },
+          "source_entity_binding": {
+            "entity_id": "kamikaze_bat",
+            "capability_id": "enemy.attack.self_destruct"
+          }
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "capability_kind": "enemy_health",
+          "action_kind": "receive_damage",
+          "handler": "EnemyHealth.applyDamage",
+          "params": {
+            "max_hp": 16,
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          },
+          "source_entity_binding": {
+            "entity_id": "kamikaze_bat",
+            "capability_id": "enemy.health.receive_damage"
+          }
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "capability_kind": "enemy_death",
+          "action_kind": "emit_death_event",
+          "handler": "EnemyDeathEvents.emitDeath",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true,
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          },
+          "source_entity_binding": {
+            "entity_id": "kamikaze_bat",
+            "capability_id": "enemy.death.emit_death_event"
+          }
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "capability_kind": "encounter",
+          "action_kind": "complete_when_all_dead",
+          "handler": "EncounterManager.completeWhenAllDead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed",
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          },
+          "source_entity_binding": {
+            "entity_id": "kamikaze_bat",
+            "capability_id": "encounter.complete.complete_when_all_dead"
+          }
+        }
+      ],
+      "flow_id": "flow_enemy_behavior_chase_and_self_destruct",
+      "trigger": {
+        "kind": "on_event"
+      },
+      "conditions": [],
+      "actions": [
+        {
+          "type": "enemy_spawn_actor",
+          "capability_id": "enemy.spawn.spawn_actor",
+          "entity_id": "kamikaze_bat",
+          "params": {
+            "spawn_tags": [
+              "explosive",
+              "flying"
+            ],
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_KAMIKAZE_BAT",
+            "default_hp": 16,
+            "move_speed": 380,
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          }
+        },
+        {
+          "type": "enemy_detect_player",
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "entity_id": "kamikaze_bat",
+          "params": {
+            "target_entity_id": "player",
+            "sense_radius": 950,
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          }
+        },
+        {
+          "type": "enemy_chase_target",
+          "capability_id": "enemy.movement.chase_target",
+          "entity_id": "kamikaze_bat",
+          "params": {
+            "target_entity_id": "player",
+            "move_speed": 380,
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          },
+          "target_entity_id": "player"
+        },
+        {
+          "type": "enemy_self_destruct",
+          "capability_id": "enemy.attack.self_destruct",
+          "entity_id": "kamikaze_bat",
+          "params": {
+            "kill_self": true,
+            "target_entity_id": "player",
+            "attack_damage": 18,
+            "attack_range": 120,
+            "explosion_radius": 180,
+            "cooldown_seconds": 0.5,
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          },
+          "target_entity_id": "player"
+        },
+        {
+          "type": "enemy_receive_damage",
+          "capability_id": "enemy.health.receive_damage",
+          "entity_id": "kamikaze_bat",
+          "params": {
+            "max_hp": 16,
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          }
+        },
+        {
+          "type": "enemy_emit_death_event",
+          "capability_id": "enemy.death.emit_death_event",
+          "entity_id": "kamikaze_bat",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true,
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          }
+        },
+        {
+          "type": "encounter_complete_when_all_dead",
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "entity_id": "kamikaze_bat",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed",
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          }
+        }
+      ],
+      "required_capability_ids": [
+        "enemy.spawn.spawn_actor",
+        "enemy.sensor.detect_player_by_distance",
+        "enemy.movement.chase_target",
+        "enemy.attack.self_destruct",
+        "enemy.health.receive_damage",
+        "enemy.death.emit_death_event",
+        "encounter.complete.complete_when_all_dead"
+      ],
+      "engine_port_ids": [
+        "actor.spawn",
+        "actor.get_distance_to",
+        "actor.set_actor_location",
+        "gameplay_statics.apply_damage",
+        "actor.destroy",
+        "actor.on_take_any_damage",
+        "actor.on_destroyed",
+        "encounter.alive_count"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered enemy.behavior.chase_and_self_destruct",
+        "ActionDispatched enemy_spawn_actor",
+        "ActionDispatched enemy_detect_player",
+        "ActionDispatched enemy_chase_target",
+        "ActionDispatched enemy_self_destruct",
+        "ActionDispatched enemy_receive_damage",
+        "ActionDispatched enemy_emit_death_event",
+        "ActionDispatched encounter_complete_when_all_dead"
+      ]
+    },
+    {
+      "behavior_id": "enemy.behavior.block_then_counter",
+      "bound_entity_id": "shield_bearer",
+      "primary_entity_id": "shield_bearer",
+      "entity_id": "shield_bearer",
+      "runtime_domain": "enemy_runtime",
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_spawn_runtime",
+        "enemy_perception",
+        "enemy_movement",
+        "enemy_combat",
+        "enemy_health",
+        "enemy_death_events",
+        "encounter_manager"
+      ],
+      "runtime_params": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_SHIELD_BEARER",
+        "default_hp": 42,
+        "move_speed": 220,
+        "sense_radius": 850,
+        "attack_range": 150,
+        "spawn_tags": [
+          "ground",
+          "shield"
+        ],
+        "bound_entity_id": "shield_bearer",
+        "entity_id": "shield_bearer"
+      },
+      "resolved_capabilities": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "capability_kind": "enemy_spawn",
+          "action_kind": "spawn_actor",
+          "handler": "EnemySpawnRuntime.spawnEnemy",
+          "params": {
+            "spawn_tags": [
+              "ground",
+              "shield"
+            ],
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_SHIELD_BEARER",
+            "default_hp": 42,
+            "move_speed": 220,
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          },
+          "source_entity_binding": {
+            "entity_id": "shield_bearer",
+            "capability_id": "enemy.spawn.spawn_actor"
+          }
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "capability_kind": "enemy_sensor",
+          "action_kind": "detect_player_by_distance",
+          "handler": "EnemyPerception.detectPlayer",
+          "params": {
+            "target_entity_id": "player",
+            "sense_radius": 850,
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          },
+          "source_entity_binding": {
+            "entity_id": "shield_bearer",
+            "capability_id": "enemy.sensor.detect_player_by_distance"
+          }
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "capability_kind": "enemy_movement",
+          "action_kind": "chase_target",
+          "handler": "EnemyMovement.chaseTarget",
+          "params": {
+            "target_entity_id": "player",
+            "move_speed": 220,
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          },
+          "source_entity_binding": {
+            "entity_id": "shield_bearer",
+            "capability_id": "enemy.movement.chase_target"
+          }
+        },
+        {
+          "capability_id": "enemy.defense.directional_block",
+          "capability_kind": "enemy_defense",
+          "action_kind": "directional_block",
+          "handler": "EnemyCombat.resolveDirectionalBlock",
+          "params": {
+            "source_entity_id": "player",
+            "block_angle_degrees": 120,
+            "damage_reduction": 1.0,
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          },
+          "source_entity_binding": {
+            "entity_id": "shield_bearer",
+            "capability_id": "enemy.defense.directional_block"
+          }
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "capability_kind": "enemy_attack",
+          "action_kind": "melee_hitbox",
+          "handler": "EnemyCombat.resolveMeleeHit",
+          "params": {
+            "hitbox_radius": 90,
+            "target_entity_id": "player",
+            "attack_damage": 10,
+            "attack_range": 150,
+            "cooldown_seconds": 1.2,
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          },
+          "source_entity_binding": {
+            "entity_id": "shield_bearer",
+            "capability_id": "enemy.attack.melee_hitbox"
+          }
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "capability_kind": "enemy_health",
+          "action_kind": "receive_damage",
+          "handler": "EnemyHealth.applyDamage",
+          "params": {
+            "max_hp": 42,
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          },
+          "source_entity_binding": {
+            "entity_id": "shield_bearer",
+            "capability_id": "enemy.health.receive_damage"
+          }
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "capability_kind": "enemy_death",
+          "action_kind": "emit_death_event",
+          "handler": "EnemyDeathEvents.emitDeath",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true,
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          },
+          "source_entity_binding": {
+            "entity_id": "shield_bearer",
+            "capability_id": "enemy.death.emit_death_event"
+          }
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "capability_kind": "encounter",
+          "action_kind": "complete_when_all_dead",
+          "handler": "EncounterManager.completeWhenAllDead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed",
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          },
+          "source_entity_binding": {
+            "entity_id": "shield_bearer",
+            "capability_id": "encounter.complete.complete_when_all_dead"
+          }
+        }
+      ],
+      "flow_id": "flow_enemy_behavior_block_then_counter",
+      "trigger": {
+        "kind": "on_event"
+      },
+      "conditions": [],
+      "actions": [
+        {
+          "type": "enemy_spawn_actor",
+          "capability_id": "enemy.spawn.spawn_actor",
+          "entity_id": "shield_bearer",
+          "params": {
+            "spawn_tags": [
+              "ground",
+              "shield"
+            ],
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_SHIELD_BEARER",
+            "default_hp": 42,
+            "move_speed": 220,
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          }
+        },
+        {
+          "type": "enemy_detect_player",
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "entity_id": "shield_bearer",
+          "params": {
+            "target_entity_id": "player",
+            "sense_radius": 850,
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          }
+        },
+        {
+          "type": "enemy_chase_target",
+          "capability_id": "enemy.movement.chase_target",
+          "entity_id": "shield_bearer",
+          "params": {
+            "target_entity_id": "player",
+            "move_speed": 220,
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          },
+          "target_entity_id": "player"
+        },
+        {
+          "type": "enemy_directional_block",
+          "capability_id": "enemy.defense.directional_block",
+          "entity_id": "shield_bearer",
+          "params": {
+            "source_entity_id": "player",
+            "block_angle_degrees": 120,
+            "damage_reduction": 1.0,
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          },
+          "source_entity_id": "player"
+        },
+        {
+          "type": "enemy_melee_attack",
+          "capability_id": "enemy.attack.melee_hitbox",
+          "entity_id": "shield_bearer",
+          "params": {
+            "hitbox_radius": 90,
+            "target_entity_id": "player",
+            "attack_damage": 10,
+            "attack_range": 150,
+            "cooldown_seconds": 1.2,
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          },
+          "target_entity_id": "player"
+        },
+        {
+          "type": "enemy_receive_damage",
+          "capability_id": "enemy.health.receive_damage",
+          "entity_id": "shield_bearer",
+          "params": {
+            "max_hp": 42,
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          }
+        },
+        {
+          "type": "enemy_emit_death_event",
+          "capability_id": "enemy.death.emit_death_event",
+          "entity_id": "shield_bearer",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true,
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          }
+        },
+        {
+          "type": "encounter_complete_when_all_dead",
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "entity_id": "shield_bearer",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed",
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          }
+        }
+      ],
+      "required_capability_ids": [
+        "enemy.spawn.spawn_actor",
+        "enemy.sensor.detect_player_by_distance",
+        "enemy.movement.chase_target",
+        "enemy.defense.directional_block",
+        "enemy.attack.melee_hitbox",
+        "enemy.health.receive_damage",
+        "enemy.death.emit_death_event",
+        "encounter.complete.complete_when_all_dead"
+      ],
+      "engine_port_ids": [
+        "actor.spawn",
+        "actor.get_distance_to",
+        "actor.set_actor_location",
+        "actor.get_forward_vector",
+        "kismet.sphere_trace_single",
+        "gameplay_statics.apply_damage",
+        "actor.on_take_any_damage",
+        "actor.on_destroyed",
+        "encounter.alive_count"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered enemy.behavior.block_then_counter",
+        "ActionDispatched enemy_spawn_actor",
+        "ActionDispatched enemy_detect_player",
+        "ActionDispatched enemy_chase_target",
+        "ActionDispatched enemy_directional_block",
+        "ActionDispatched enemy_melee_attack",
+        "ActionDispatched enemy_receive_damage",
+        "ActionDispatched enemy_emit_death_event",
+        "ActionDispatched encounter_complete_when_all_dead"
+      ]
+    },
+    {
+      "behavior_id": "enemy.behavior.chase_and_melee",
+      "bound_entity_id": "shield_bearer",
+      "primary_entity_id": "shield_bearer",
+      "entity_id": "shield_bearer",
+      "runtime_domain": "enemy_runtime",
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_spawn_runtime",
+        "enemy_perception",
+        "enemy_movement",
+        "enemy_combat",
+        "enemy_health",
+        "enemy_death_events",
+        "encounter_manager"
+      ],
+      "runtime_params": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_SHIELD_BEARER",
+        "default_hp": 42,
+        "move_speed": 220,
+        "sense_radius": 850,
+        "attack_range": 150,
+        "spawn_tags": [
+          "ground",
+          "shield"
+        ],
+        "bound_entity_id": "shield_bearer",
+        "entity_id": "shield_bearer"
+      },
+      "resolved_capabilities": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "capability_kind": "enemy_spawn",
+          "action_kind": "spawn_actor",
+          "handler": "EnemySpawnRuntime.spawnEnemy",
+          "params": {
+            "spawn_tags": [
+              "ground",
+              "shield"
+            ],
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_SHIELD_BEARER",
+            "default_hp": 42,
+            "move_speed": 220,
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          },
+          "source_entity_binding": {
+            "entity_id": "shield_bearer",
+            "capability_id": "enemy.spawn.spawn_actor"
+          }
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "capability_kind": "enemy_sensor",
+          "action_kind": "detect_player_by_distance",
+          "handler": "EnemyPerception.detectPlayer",
+          "params": {
+            "target_entity_id": "player",
+            "sense_radius": 850,
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          },
+          "source_entity_binding": {
+            "entity_id": "shield_bearer",
+            "capability_id": "enemy.sensor.detect_player_by_distance"
+          }
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "capability_kind": "enemy_movement",
+          "action_kind": "chase_target",
+          "handler": "EnemyMovement.chaseTarget",
+          "params": {
+            "target_entity_id": "player",
+            "move_speed": 220,
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          },
+          "source_entity_binding": {
+            "entity_id": "shield_bearer",
+            "capability_id": "enemy.movement.chase_target"
+          }
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "capability_kind": "enemy_attack",
+          "action_kind": "melee_hitbox",
+          "handler": "EnemyCombat.resolveMeleeHit",
+          "params": {
+            "hitbox_radius": 90,
+            "target_entity_id": "player",
+            "attack_damage": 10,
+            "attack_range": 150,
+            "cooldown_seconds": 1.2,
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          },
+          "source_entity_binding": {
+            "entity_id": "shield_bearer",
+            "capability_id": "enemy.attack.melee_hitbox"
+          }
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "capability_kind": "enemy_health",
+          "action_kind": "receive_damage",
+          "handler": "EnemyHealth.applyDamage",
+          "params": {
+            "max_hp": 42,
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          },
+          "source_entity_binding": {
+            "entity_id": "shield_bearer",
+            "capability_id": "enemy.health.receive_damage"
+          }
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "capability_kind": "enemy_death",
+          "action_kind": "emit_death_event",
+          "handler": "EnemyDeathEvents.emitDeath",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true,
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          },
+          "source_entity_binding": {
+            "entity_id": "shield_bearer",
+            "capability_id": "enemy.death.emit_death_event"
+          }
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "capability_kind": "encounter",
+          "action_kind": "complete_when_all_dead",
+          "handler": "EncounterManager.completeWhenAllDead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed",
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          },
+          "source_entity_binding": {
+            "entity_id": "shield_bearer",
+            "capability_id": "encounter.complete.complete_when_all_dead"
+          }
+        }
+      ],
+      "flow_id": "flow_enemy_behavior_chase_and_melee",
+      "trigger": {
+        "kind": "on_event"
+      },
+      "conditions": [],
+      "actions": [
+        {
+          "type": "enemy_spawn_actor",
+          "capability_id": "enemy.spawn.spawn_actor",
+          "entity_id": "shield_bearer",
+          "params": {
+            "spawn_tags": [
+              "ground",
+              "shield"
+            ],
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_SHIELD_BEARER",
+            "default_hp": 42,
+            "move_speed": 220,
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          }
+        },
+        {
+          "type": "enemy_detect_player",
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "entity_id": "shield_bearer",
+          "params": {
+            "target_entity_id": "player",
+            "sense_radius": 850,
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          }
+        },
+        {
+          "type": "enemy_chase_target",
+          "capability_id": "enemy.movement.chase_target",
+          "entity_id": "shield_bearer",
+          "params": {
+            "target_entity_id": "player",
+            "move_speed": 220,
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          },
+          "target_entity_id": "player"
+        },
+        {
+          "type": "enemy_melee_attack",
+          "capability_id": "enemy.attack.melee_hitbox",
+          "entity_id": "shield_bearer",
+          "params": {
+            "hitbox_radius": 90,
+            "target_entity_id": "player",
+            "attack_damage": 10,
+            "attack_range": 150,
+            "cooldown_seconds": 1.2,
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          },
+          "target_entity_id": "player"
+        },
+        {
+          "type": "enemy_receive_damage",
+          "capability_id": "enemy.health.receive_damage",
+          "entity_id": "shield_bearer",
+          "params": {
+            "max_hp": 42,
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          }
+        },
+        {
+          "type": "enemy_emit_death_event",
+          "capability_id": "enemy.death.emit_death_event",
+          "entity_id": "shield_bearer",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true,
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          }
+        },
+        {
+          "type": "encounter_complete_when_all_dead",
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "entity_id": "shield_bearer",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed",
+            "bound_entity_id": "shield_bearer",
+            "entity_id": "shield_bearer"
+          }
+        }
+      ],
+      "required_capability_ids": [
+        "enemy.spawn.spawn_actor",
+        "enemy.sensor.detect_player_by_distance",
+        "enemy.movement.chase_target",
+        "enemy.attack.melee_hitbox",
+        "enemy.health.receive_damage",
+        "enemy.death.emit_death_event",
+        "encounter.complete.complete_when_all_dead"
+      ],
+      "engine_port_ids": [
+        "actor.spawn",
+        "actor.get_distance_to",
+        "actor.set_actor_location",
+        "kismet.sphere_trace_single",
+        "gameplay_statics.apply_damage",
+        "actor.on_take_any_damage",
+        "actor.on_destroyed",
+        "encounter.alive_count"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered enemy.behavior.chase_and_melee",
+        "ActionDispatched enemy_spawn_actor",
+        "ActionDispatched enemy_detect_player",
+        "ActionDispatched enemy_chase_target",
+        "ActionDispatched enemy_melee_attack",
+        "ActionDispatched enemy_receive_damage",
+        "ActionDispatched enemy_emit_death_event",
+        "ActionDispatched encounter_complete_when_all_dead"
+      ]
+    },
+    {
+      "behavior_id": "enemy.behavior.chase_and_melee",
+      "bound_entity_id": "zombie",
+      "primary_entity_id": "zombie",
+      "entity_id": "zombie",
+      "runtime_domain": "enemy_runtime",
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_spawn_runtime",
+        "enemy_perception",
+        "enemy_movement",
+        "enemy_combat",
+        "enemy_health",
+        "enemy_death_events",
+        "encounter_manager"
+      ],
+      "runtime_params": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_ZOMBIE",
+        "default_hp": 30,
+        "move_speed": 260,
+        "sense_radius": 900,
+        "attack_range": 160,
+        "spawn_tags": [
+          "ground",
+          "melee"
+        ],
+        "bound_entity_id": "zombie",
+        "entity_id": "zombie"
+      },
+      "resolved_capabilities": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "capability_kind": "enemy_spawn",
+          "action_kind": "spawn_actor",
+          "handler": "EnemySpawnRuntime.spawnEnemy",
+          "params": {
+            "spawn_tags": [
+              "ground",
+              "melee"
+            ],
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_ZOMBIE",
+            "default_hp": 30,
+            "move_speed": 260,
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          },
+          "source_entity_binding": {
+            "entity_id": "zombie",
+            "capability_id": "enemy.spawn.spawn_actor"
+          }
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "capability_kind": "enemy_sensor",
+          "action_kind": "detect_player_by_distance",
+          "handler": "EnemyPerception.detectPlayer",
+          "params": {
+            "target_entity_id": "player",
+            "sense_radius": 900,
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          },
+          "source_entity_binding": {
+            "entity_id": "zombie",
+            "capability_id": "enemy.sensor.detect_player_by_distance"
+          }
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "capability_kind": "enemy_movement",
+          "action_kind": "chase_target",
+          "handler": "EnemyMovement.chaseTarget",
+          "params": {
+            "target_entity_id": "player",
+            "move_speed": 260,
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          },
+          "source_entity_binding": {
+            "entity_id": "zombie",
+            "capability_id": "enemy.movement.chase_target"
+          }
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "capability_kind": "enemy_attack",
+          "action_kind": "melee_hitbox",
+          "handler": "EnemyCombat.resolveMeleeHit",
+          "params": {
+            "hitbox_radius": 90,
+            "target_entity_id": "player",
+            "attack_damage": 10,
+            "attack_range": 160,
+            "cooldown_seconds": 1.2,
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          },
+          "source_entity_binding": {
+            "entity_id": "zombie",
+            "capability_id": "enemy.attack.melee_hitbox"
+          }
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "capability_kind": "enemy_health",
+          "action_kind": "receive_damage",
+          "handler": "EnemyHealth.applyDamage",
+          "params": {
+            "max_hp": 30,
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          },
+          "source_entity_binding": {
+            "entity_id": "zombie",
+            "capability_id": "enemy.health.receive_damage"
+          }
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "capability_kind": "enemy_death",
+          "action_kind": "emit_death_event",
+          "handler": "EnemyDeathEvents.emitDeath",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true,
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          },
+          "source_entity_binding": {
+            "entity_id": "zombie",
+            "capability_id": "enemy.death.emit_death_event"
+          }
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "capability_kind": "encounter",
+          "action_kind": "complete_when_all_dead",
+          "handler": "EncounterManager.completeWhenAllDead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed",
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          },
+          "source_entity_binding": {
+            "entity_id": "zombie",
+            "capability_id": "encounter.complete.complete_when_all_dead"
+          }
+        }
+      ],
+      "flow_id": "flow_enemy_behavior_chase_and_melee",
+      "trigger": {
+        "kind": "on_event"
+      },
+      "conditions": [],
+      "actions": [
+        {
+          "type": "enemy_spawn_actor",
+          "capability_id": "enemy.spawn.spawn_actor",
+          "entity_id": "zombie",
+          "params": {
+            "spawn_tags": [
+              "ground",
+              "melee"
+            ],
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_ZOMBIE",
+            "default_hp": 30,
+            "move_speed": 260,
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          }
+        },
+        {
+          "type": "enemy_detect_player",
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "entity_id": "zombie",
+          "params": {
+            "target_entity_id": "player",
+            "sense_radius": 900,
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          }
+        },
+        {
+          "type": "enemy_chase_target",
+          "capability_id": "enemy.movement.chase_target",
+          "entity_id": "zombie",
+          "params": {
+            "target_entity_id": "player",
+            "move_speed": 260,
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          },
+          "target_entity_id": "player"
+        },
+        {
+          "type": "enemy_melee_attack",
+          "capability_id": "enemy.attack.melee_hitbox",
+          "entity_id": "zombie",
+          "params": {
+            "hitbox_radius": 90,
+            "target_entity_id": "player",
+            "attack_damage": 10,
+            "attack_range": 160,
+            "cooldown_seconds": 1.2,
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          },
+          "target_entity_id": "player"
+        },
+        {
+          "type": "enemy_receive_damage",
+          "capability_id": "enemy.health.receive_damage",
+          "entity_id": "zombie",
+          "params": {
+            "max_hp": 30,
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          }
+        },
+        {
+          "type": "enemy_emit_death_event",
+          "capability_id": "enemy.death.emit_death_event",
+          "entity_id": "zombie",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true,
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          }
+        },
+        {
+          "type": "encounter_complete_when_all_dead",
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "entity_id": "zombie",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed",
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          }
+        }
+      ],
+      "required_capability_ids": [
+        "enemy.spawn.spawn_actor",
+        "enemy.sensor.detect_player_by_distance",
+        "enemy.movement.chase_target",
+        "enemy.attack.melee_hitbox",
+        "enemy.health.receive_damage",
+        "enemy.death.emit_death_event",
+        "encounter.complete.complete_when_all_dead"
+      ],
+      "engine_port_ids": [
+        "actor.spawn",
+        "actor.get_distance_to",
+        "actor.set_actor_location",
+        "kismet.sphere_trace_single",
+        "gameplay_statics.apply_damage",
+        "actor.on_take_any_damage",
+        "actor.on_destroyed",
+        "encounter.alive_count"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered enemy.behavior.chase_and_melee",
+        "ActionDispatched enemy_spawn_actor",
+        "ActionDispatched enemy_detect_player",
+        "ActionDispatched enemy_chase_target",
+        "ActionDispatched enemy_melee_attack",
+        "ActionDispatched enemy_receive_damage",
+        "ActionDispatched enemy_emit_death_event",
+        "ActionDispatched encounter_complete_when_all_dead"
+      ]
+    }
+  ]
+}

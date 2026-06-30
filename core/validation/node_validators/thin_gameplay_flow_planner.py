@@ -10,7 +10,7 @@ def validate_thin_gameplay_flow_planner(node: str, data: dict[str, Any]) -> None
     for fi, flow in enumerate(require_list(node, data, "flows", non_empty=True)):
         if not isinstance(flow, dict):
             raise WorkflowValidationError(f"{node}: flows[{fi}] must be object")
-        for key in ("flow_id", "source_behavior_id", "entity_id", "ability_id"):
+        for key in ("flow_id", "source_behavior_id", "entity_id"):
             require_string(node, flow, key, non_empty=True)
         ports = set()
         for si, stage in enumerate(require_list(node, flow, "stages", non_empty=True)):

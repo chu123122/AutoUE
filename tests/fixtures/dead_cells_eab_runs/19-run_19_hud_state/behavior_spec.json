@@ -3,18 +3,41 @@
   "source_nodes": [
     "EntityAbilityBehaviorPlanner",
     "ThinGameplayFlowPlanner",
-    "PuerTSRuntimeMappingPlanner"
+    "PuerTSRuntimeMappingCompiler"
   ],
   "behaviors": [
     {
-      "behavior_id": "cooldown_meter_hud.display.refresh_value",
+      "behavior_id": "hud.behavior.refresh_value",
+      "bound_entity_id": "cooldown_meter_hud",
       "primary_entity_id": "cooldown_meter_hud",
       "entity_id": "cooldown_meter_hud",
-      "ability_id": "cooldown_meter_hud.display",
-      "flow_id": "flow_cooldown_meter_hud_display_refresh_value",
+      "runtime_domain": "behavior_runtime",
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "state_blackboard",
+        "action_dispatcher"
+      ],
+      "runtime_params": {},
+      "resolved_capabilities": [
+        {
+          "capability_id": "hud.display.refresh_value",
+          "capability_kind": "hud_binding",
+          "action_kind": "refresh_value",
+          "handler": "ActionDispatcher.setHudValue",
+          "params": {
+            "bound_entity_id": "cooldown_meter_hud",
+            "entity_id": "cooldown_meter_hud"
+          },
+          "source_entity_binding": {
+            "entity_id": "cooldown_meter_hud",
+            "capability_id": "hud.display.refresh_value"
+          }
+        }
+      ],
+      "flow_id": "flow_hud_behavior_refresh_value",
       "trigger": {
-        "type": "legacy_text",
-        "description": "tracked value changes"
+        "kind": "on_event"
       },
       "conditions": [],
       "actions": [
@@ -22,51 +45,52 @@
           "type": "set_hud_value",
           "entity_id": "cooldown_meter_hud",
           "source": "state_blackboard",
-          "capability_id": "cooldown_meter_hud.display"
+          "capability_id": "hud.display.refresh_value"
         }
       ],
       "required_capability_ids": [
-        "cooldown_meter_hud.display"
+        "hud.display.refresh_value"
       ],
       "engine_port_ids": [
-        "widget.set_text",
-        "widget.set_percent"
+        "manual.trigger"
       ],
       "verification_logs": [
-        "BehaviorTriggered cooldown_meter_hud.display.refresh_value"
+        "BehaviorTriggered hud.behavior.refresh_value",
+        "ActionDispatched set_hud_value"
       ]
     },
     {
-      "behavior_id": "curse_counter_hud.alert.flash_warning",
+      "behavior_id": "hud.behavior.refresh_value",
+      "bound_entity_id": "curse_counter_hud",
       "primary_entity_id": "curse_counter_hud",
       "entity_id": "curse_counter_hud",
-      "ability_id": "curse_counter_hud.alert",
-      "flow_id": "flow_curse_counter_hud_alert_flash_warning",
-      "trigger": {
-        "type": "legacy_text",
-        "description": "danger or threshold is reached"
-      },
-      "conditions": [],
-      "actions": [],
-      "required_capability_ids": [
-        "curse_counter_hud.alert"
+      "runtime_domain": "behavior_runtime",
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "state_blackboard",
+        "action_dispatcher"
       ],
-      "engine_port_ids": [
-        "widget.set_render_opacity"
+      "runtime_params": {},
+      "resolved_capabilities": [
+        {
+          "capability_id": "hud.display.refresh_value",
+          "capability_kind": "hud_binding",
+          "action_kind": "refresh_value",
+          "handler": "ActionDispatcher.setHudValue",
+          "params": {
+            "bound_entity_id": "curse_counter_hud",
+            "entity_id": "curse_counter_hud"
+          },
+          "source_entity_binding": {
+            "entity_id": "curse_counter_hud",
+            "capability_id": "hud.display.refresh_value"
+          }
+        }
       ],
-      "verification_logs": [
-        "BehaviorTriggered curse_counter_hud.alert.flash_warning"
-      ]
-    },
-    {
-      "behavior_id": "curse_counter_hud.display.refresh_value",
-      "primary_entity_id": "curse_counter_hud",
-      "entity_id": "curse_counter_hud",
-      "ability_id": "curse_counter_hud.display",
-      "flow_id": "flow_curse_counter_hud_display_refresh_value",
+      "flow_id": "flow_hud_behavior_refresh_value",
       "trigger": {
-        "type": "legacy_text",
-        "description": "tracked value changes"
+        "kind": "on_event"
       },
       "conditions": [],
       "actions": [
@@ -74,62 +98,52 @@
           "type": "set_hud_value",
           "entity_id": "curse_counter_hud",
           "source": "state_blackboard",
-          "capability_id": "curse_counter_hud.display"
+          "capability_id": "hud.display.refresh_value"
         }
       ],
       "required_capability_ids": [
-        "curse_counter_hud.display"
+        "hud.display.refresh_value"
       ],
       "engine_port_ids": [
-        "widget.set_text",
-        "widget.set_percent"
+        "manual.trigger"
       ],
       "verification_logs": [
-        "BehaviorTriggered curse_counter_hud.display.refresh_value"
+        "BehaviorTriggered hud.behavior.refresh_value",
+        "ActionDispatched set_hud_value"
       ]
     },
     {
-      "behavior_id": "cursed_chest.open_reward_and_add_curse",
-      "primary_entity_id": "cursed_chest",
-      "entity_id": "cursed_chest",
-      "ability_id": "cursed_chest.chest.open_reward",
-      "flow_id": "flow_cursed_chest_open_reward_and_add_curse",
-      "trigger": {
-        "type": "input_action",
-        "source_entity_id": "player",
-        "target_entity_id": "cursed_chest"
-      },
-      "conditions": [],
-      "actions": [
-        {
-          "type": "set_hud_value",
-          "entity_id": "curse_counter_hud",
-          "source": "state_blackboard",
-          "capability_id": "curse_counter_hud.display"
-        }
-      ],
-      "required_capability_ids": [
-        "cursed_chest.chest.open_reward",
-        "cursed_chest.curse.add_curse_counter",
-        "curse_counter_hud.display"
-      ],
-      "engine_port_ids": [
-        "widget.set_text",
-        "widget.set_percent"
-      ],
-      "verification_logs": [
-        "BehaviorTriggered cursed_chest.open_reward_and_add_curse"
-      ]
-    },
-    {
-      "behavior_id": "health_bar_hud.display.refresh_value",
+      "behavior_id": "hud.behavior.refresh_value",
+      "bound_entity_id": "health_bar_hud",
       "primary_entity_id": "health_bar_hud",
       "entity_id": "health_bar_hud",
-      "ability_id": "health_bar_hud.display",
-      "flow_id": "flow_health_bar_hud_display_refresh_value",
+      "runtime_domain": "behavior_runtime",
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "state_blackboard",
+        "action_dispatcher"
+      ],
+      "runtime_params": {},
+      "resolved_capabilities": [
+        {
+          "capability_id": "hud.display.refresh_value",
+          "capability_kind": "hud_binding",
+          "action_kind": "refresh_value",
+          "handler": "ActionDispatcher.setHudValue",
+          "params": {
+            "bound_entity_id": "health_bar_hud",
+            "entity_id": "health_bar_hud"
+          },
+          "source_entity_binding": {
+            "entity_id": "health_bar_hud",
+            "capability_id": "hud.display.refresh_value"
+          }
+        }
+      ],
+      "flow_id": "flow_hud_behavior_refresh_value",
       "trigger": {
-        "type": "legacy_text",
-        "description": "tracked value changes"
+        "kind": "on_event"
       },
       "conditions": [],
       "actions": [
@@ -137,66 +151,52 @@
           "type": "set_hud_value",
           "entity_id": "health_bar_hud",
           "source": "state_blackboard",
-          "capability_id": "health_bar_hud.display"
+          "capability_id": "hud.display.refresh_value"
         }
       ],
       "required_capability_ids": [
-        "health_bar_hud.display"
+        "hud.display.refresh_value"
       ],
       "engine_port_ids": [
-        "widget.set_text",
-        "widget.set_percent"
+        "manual.trigger"
       ],
       "verification_logs": [
-        "BehaviorTriggered health_bar_hud.display.refresh_value"
+        "BehaviorTriggered hud.behavior.refresh_value",
+        "ActionDispatched set_hud_value"
       ]
     },
     {
-      "behavior_id": "poison_pool.poison_player_on_overlap",
-      "primary_entity_id": "poison_pool",
-      "entity_id": "poison_pool",
-      "ability_id": "poison_pool.hazard.apply_poison_dot",
-      "flow_id": "flow_poison_pool_poison_player_on_overlap",
-      "trigger": {
-        "type": "overlap_enter",
-        "source_entity_id": "player",
-        "target_entity_id": "poison_pool"
-      },
-      "conditions": [],
-      "actions": [
+      "behavior_id": "hud.behavior.refresh_value",
+      "bound_entity_id": "status_icon_hud",
+      "primary_entity_id": "status_icon_hud",
+      "entity_id": "status_icon_hud",
+      "runtime_domain": "behavior_runtime",
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "state_blackboard",
+        "action_dispatcher"
+      ],
+      "runtime_params": {},
+      "resolved_capabilities": [
         {
-          "type": "write_state",
-          "key": "player.effects.poison_dot",
-          "value": {
-            "duration": 3,
-            "damage_per_second": 5
+          "capability_id": "hud.display.refresh_value",
+          "capability_kind": "hud_binding",
+          "action_kind": "refresh_value",
+          "handler": "ActionDispatcher.setHudValue",
+          "params": {
+            "bound_entity_id": "status_icon_hud",
+            "entity_id": "status_icon_hud"
+          },
+          "source_entity_binding": {
+            "entity_id": "status_icon_hud",
+            "capability_id": "hud.display.refresh_value"
           }
         }
       ],
-      "required_capability_ids": [
-        "poison_pool.hazard.apply_poison_dot",
-        "poison_vfx.emit",
-        "health_bar_hud.display"
-      ],
-      "engine_port_ids": [
-        "primitive.on_component_begin_overlap",
-        "component.set_visibility",
-        "widget.set_text",
-        "widget.set_percent"
-      ],
-      "verification_logs": [
-        "BehaviorTriggered poison_pool.poison_player_on_overlap"
-      ]
-    },
-    {
-      "behavior_id": "status_icon_hud.display.refresh_value",
-      "primary_entity_id": "status_icon_hud",
-      "entity_id": "status_icon_hud",
-      "ability_id": "status_icon_hud.display",
-      "flow_id": "flow_status_icon_hud_display_refresh_value",
+      "flow_id": "flow_hud_behavior_refresh_value",
       "trigger": {
-        "type": "legacy_text",
-        "description": "tracked value changes"
+        "kind": "on_event"
       },
       "conditions": [],
       "actions": [
@@ -204,18 +204,18 @@
           "type": "set_hud_value",
           "entity_id": "status_icon_hud",
           "source": "state_blackboard",
-          "capability_id": "status_icon_hud.display"
+          "capability_id": "hud.display.refresh_value"
         }
       ],
       "required_capability_ids": [
-        "status_icon_hud.display"
+        "hud.display.refresh_value"
       ],
       "engine_port_ids": [
-        "widget.set_text",
-        "widget.set_percent"
+        "manual.trigger"
       ],
       "verification_logs": [
-        "BehaviorTriggered status_icon_hud.display.refresh_value"
+        "BehaviorTriggered hud.behavior.refresh_value",
+        "ActionDispatched set_hud_value"
       ]
     }
   ]

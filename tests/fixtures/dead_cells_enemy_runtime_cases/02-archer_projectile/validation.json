@@ -1,0 +1,6 @@
+{
+  "result": "pass",
+  "verification_level": "repo-level static",
+  "tsc": "not_run",
+  "pie": "not_run"
+}

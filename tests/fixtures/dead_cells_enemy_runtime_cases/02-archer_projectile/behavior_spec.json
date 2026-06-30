@@ -1,0 +1,292 @@
+{
+  "schema_version": "autoue-behavior-spec/v1",
+  "source_nodes": [
+    "EntityAbilityBehaviorPlanner",
+    "ThinGameplayFlowPlanner",
+    "PuerTSRuntimeMappingCompiler"
+  ],
+  "behaviors": [
+    {
+      "behavior_id": "enemy.behavior.keep_distance_and_projectile",
+      "bound_entity_id": "archer",
+      "primary_entity_id": "archer",
+      "entity_id": "archer",
+      "runtime_domain": "enemy_runtime",
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_spawn_runtime",
+        "enemy_perception",
+        "enemy_movement",
+        "enemy_combat",
+        "enemy_projectile_runtime",
+        "enemy_health",
+        "enemy_death_events",
+        "encounter_manager"
+      ],
+      "runtime_params": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_ARCHER",
+        "default_hp": 24,
+        "move_speed": 235,
+        "sense_radius": 1100,
+        "attack_range": 620,
+        "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+        "keep_distance": 420,
+        "spawn_tags": [
+          "ground",
+          "ranged"
+        ],
+        "bound_entity_id": "archer",
+        "entity_id": "archer"
+      },
+      "resolved_capabilities": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "capability_kind": "enemy_spawn",
+          "action_kind": "spawn_actor",
+          "handler": "EnemySpawnRuntime.spawnEnemy",
+          "params": {
+            "spawn_tags": [
+              "ground",
+              "ranged"
+            ],
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_ARCHER",
+            "default_hp": 24,
+            "move_speed": 235,
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          },
+          "source_entity_binding": {
+            "entity_id": "archer",
+            "capability_id": "enemy.spawn.spawn_actor"
+          }
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "capability_kind": "enemy_sensor",
+          "action_kind": "detect_player_by_distance",
+          "handler": "EnemyPerception.detectPlayer",
+          "params": {
+            "target_entity_id": "player",
+            "sense_radius": 1100,
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          },
+          "source_entity_binding": {
+            "entity_id": "archer",
+            "capability_id": "enemy.sensor.detect_player_by_distance"
+          }
+        },
+        {
+          "capability_id": "enemy.movement.keep_distance",
+          "capability_kind": "enemy_movement",
+          "action_kind": "keep_distance",
+          "handler": "EnemyMovement.keepDistance",
+          "params": {
+            "target_entity_id": "player",
+            "move_speed": 235,
+            "keep_distance": 420,
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          },
+          "source_entity_binding": {
+            "entity_id": "archer",
+            "capability_id": "enemy.movement.keep_distance"
+          }
+        },
+        {
+          "capability_id": "enemy.attack.projectile_spawn",
+          "capability_kind": "enemy_attack",
+          "action_kind": "projectile_spawn",
+          "handler": "EnemyCombat.spawnProjectile",
+          "params": {
+            "target_entity_id": "player",
+            "attack_damage": 8,
+            "attack_range": 620,
+            "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+            "projectile_speed": 900,
+            "cooldown_seconds": 1.6,
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          },
+          "source_entity_binding": {
+            "entity_id": "archer",
+            "capability_id": "enemy.attack.projectile_spawn"
+          }
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "capability_kind": "enemy_health",
+          "action_kind": "receive_damage",
+          "handler": "EnemyHealth.applyDamage",
+          "params": {
+            "max_hp": 24,
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          },
+          "source_entity_binding": {
+            "entity_id": "archer",
+            "capability_id": "enemy.health.receive_damage"
+          }
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "capability_kind": "enemy_death",
+          "action_kind": "emit_death_event",
+          "handler": "EnemyDeathEvents.emitDeath",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true,
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          },
+          "source_entity_binding": {
+            "entity_id": "archer",
+            "capability_id": "enemy.death.emit_death_event"
+          }
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "capability_kind": "encounter",
+          "action_kind": "complete_when_all_dead",
+          "handler": "EncounterManager.completeWhenAllDead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed",
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          },
+          "source_entity_binding": {
+            "entity_id": "archer",
+            "capability_id": "encounter.complete.complete_when_all_dead"
+          }
+        }
+      ],
+      "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
+      "trigger": {
+        "kind": "on_event"
+      },
+      "conditions": [],
+      "actions": [
+        {
+          "type": "enemy_spawn_actor",
+          "capability_id": "enemy.spawn.spawn_actor",
+          "entity_id": "archer",
+          "params": {
+            "spawn_tags": [
+              "ground",
+              "ranged"
+            ],
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_ARCHER",
+            "default_hp": 24,
+            "move_speed": 235,
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          }
+        },
+        {
+          "type": "enemy_detect_player",
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "entity_id": "archer",
+          "params": {
+            "target_entity_id": "player",
+            "sense_radius": 1100,
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          }
+        },
+        {
+          "type": "enemy_keep_distance",
+          "capability_id": "enemy.movement.keep_distance",
+          "entity_id": "archer",
+          "params": {
+            "target_entity_id": "player",
+            "move_speed": 235,
+            "keep_distance": 420,
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          },
+          "target_entity_id": "player"
+        },
+        {
+          "type": "enemy_projectile_attack",
+          "capability_id": "enemy.attack.projectile_spawn",
+          "entity_id": "archer",
+          "params": {
+            "target_entity_id": "player",
+            "attack_damage": 8,
+            "attack_range": 620,
+            "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+            "projectile_speed": 900,
+            "cooldown_seconds": 1.6,
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          },
+          "target_entity_id": "player"
+        },
+        {
+          "type": "enemy_receive_damage",
+          "capability_id": "enemy.health.receive_damage",
+          "entity_id": "archer",
+          "params": {
+            "max_hp": 24,
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          }
+        },
+        {
+          "type": "enemy_emit_death_event",
+          "capability_id": "enemy.death.emit_death_event",
+          "entity_id": "archer",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true,
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          }
+        },
+        {
+          "type": "encounter_complete_when_all_dead",
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "entity_id": "archer",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed",
+            "bound_entity_id": "archer",
+            "entity_id": "archer"
+          }
+        }
+      ],
+      "required_capability_ids": [
+        "enemy.spawn.spawn_actor",
+        "enemy.sensor.detect_player_by_distance",
+        "enemy.movement.keep_distance",
+        "enemy.attack.projectile_spawn",
+        "enemy.health.receive_damage",
+        "enemy.death.emit_death_event",
+        "encounter.complete.complete_when_all_dead"
+      ],
+      "engine_port_ids": [
+        "actor.spawn",
+        "actor.get_distance_to",
+        "actor.set_actor_location",
+        "projectile.spawn",
+        "actor.on_take_any_damage",
+        "actor.on_destroyed",
+        "encounter.alive_count"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered enemy.behavior.keep_distance_and_projectile",
+        "ActionDispatched enemy_spawn_actor",
+        "ActionDispatched enemy_detect_player",
+        "ActionDispatched enemy_keep_distance",
+        "ActionDispatched enemy_projectile_attack",
+        "ActionDispatched enemy_receive_damage",
+        "ActionDispatched enemy_emit_death_event",
+        "ActionDispatched encounter_complete_when_all_dead"
+      ]
+    }
+  ]
+}

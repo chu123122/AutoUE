@@ -1,6 +1,6 @@
 {
   "schema_version": "autoue-runtime-support-check/v1",
-  "status": "unsupported",
+  "status": "supported",
   "required_runtime_modules": [
     "action_dispatcher",
     "behavior_orchestrator",
@@ -32,7 +32,7 @@
       ],
       "supported": true,
       "reason": "",
-      "capability_id": "combat_damage_number_hud.display"
+      "capability_id": "hud.display.refresh_value"
     },
     {
       "capability_kind": "vfx_binding",
@@ -48,72 +48,17 @@
       ],
       "supported": true,
       "reason": "",
-      "capability_id": "electric_vfx.emit"
+      "capability_id": "vfx.spawn.spawn_particles"
     }
   ],
-  "unsupported_capabilities": [
-    {
-      "capability_kind": "chain_lightning",
-      "action_kind": "apply_shock_chain",
-      "handler": null,
-      "required_runtime_modules": [],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "component.set_visibility"
-      ],
-      "supported": false,
-      "reason": "chain lightning runtime is not implemented",
-      "capability_id": "electric_whip.attack.apply_shock_chain"
-    },
-    {
-      "capability_kind": "enemy_pursuit",
-      "action_kind": "chase_target",
-      "handler": null,
-      "required_runtime_modules": [],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "supported": false,
-      "reason": "enemy encounter movement runtime is optional and not implemented by the generic behavior framework",
-      "capability_id": "inquisitor.pursuit"
-    },
-    {
-      "capability_kind": "combat",
-      "action_kind": "apply_damage",
-      "handler": null,
-      "required_runtime_modules": [],
-      "engine_ports": [
-        "input.action_binding",
-        "gameplay_statics.apply_damage"
-      ],
-      "supported": false,
-      "reason": "combat damage runtime is not implemented",
-      "capability_id": "player.combat"
-    }
-  ],
-  "unsupported_behaviors": [
-    "electric_whip.apply_shock_chain",
-    "inquisitor.pursuit.detect_player",
-    "player.combat.attack"
-  ],
+  "unsupported_capabilities": [],
+  "unsupported_behaviors": [],
   "behavior_by_capability": {
-    "combat_damage_number_hud.display": [
-      "combat_damage_number_hud.display.refresh_value",
-      "electric_whip.apply_shock_chain"
+    "hud.display.refresh_value": [
+      "hud.behavior.refresh_value"
     ],
-    "electric_vfx.emit": [
-      "electric_vfx.emit.spawn_particles",
-      "electric_whip.apply_shock_chain"
-    ],
-    "electric_whip.attack.apply_shock_chain": [
-      "electric_whip.apply_shock_chain"
-    ],
-    "inquisitor.pursuit": [
-      "inquisitor.pursuit.detect_player"
-    ],
-    "player.combat": [
-      "player.combat.attack"
+    "vfx.spawn.spawn_particles": [
+      "vfx.behavior.spawn_particles"
     ]
   }
 }

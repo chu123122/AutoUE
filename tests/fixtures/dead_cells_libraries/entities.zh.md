@@ -1,151 +1,152 @@
-# 死亡细胞实体库（Entity Library，不含音效）
+# 死亡细胞实体库（不含音效）
 
-Entity 是可绑定/可显示/可生成/可引用对象；运行时状态进入 StateBlackboard。
+实体是可绑定、可显示、可生成或可引用的对象；运行时状态进入状态黑板，不在实体库里伪装成玩法对象。
 
-- `alchemic_carbine` 炼金卡宾枪
-- `ammo_counter_hud` 弹药计数HUD
-- `amulet_slot` 护符槽
-- `arbiter` 裁决者
-- `archer` 弓箭手
-- `armadillopack_mutation` 犰狳背包变异
-- `assault_shield` 突击盾
-- `automaton` 自动机
-- `balanced_blade` 均衡之刃
-- `biome_teleporter` 生物群落传送器
-- `bleed_vfx` 流血特效
-- `blood_sword` 血之刃
-- `bloodthirsty_shield` 嗜血盾
-- `blueprint_pickup` 图纸
-- `boss_health_bar_hud` Boss血条HUD
-- `boss_stem_cell_door` Boss细胞门
-- `bow_and_infinite_arrows` 无限箭弓
-- `breakable_door` 可破坏门
-- `broadsword` 阔剑
-- `burn_vfx` 燃烧特效
-- `buzzcutter` 飞虫
-- `catcher` 捕手
-- `cell_pickup` 细胞
-- `combat_damage_number_hud` 伤害数字HUD
-- `combo_mutation` 连击变异
-- `concierge_boss` 看守者
-- `conjunctivius_boss` 肿胀眼魔
-- `cooldown_meter_hud` 冷却计时HUD
-- `corpse_dust_vfx` 尸体尘散特效
-- `corrupted_power` 堕落力量
-- `critical_hit_vfx` 暴击特效
-- `crumbling_floor` 塌陷地板
-- `crusher` 粉碎机
-- `crusher_trap` 压碎机关
-- `cudgel_shield` 棍盾
-- `curse_counter_hud` 诅咒计数 HUD
-- `curse_skull_vfx` 诅咒骷髅特效
-- `cursed_chest` 诅咒宝箱
-- `death_orb` 死亡之球
-- `demon` 恶魔
-- `double_crossbomatic` 双向弩塔
-- `electric_vfx` 电击特效
-- `electric_whip` 电鞭
-- `elevator_platform` 升降平台
-- `elite_aura_vfx` 精英光环特效
-- `failed_experiment` 失败实验体
-- `falling_spike_trap` 坠落尖刺
-- `fire_grenade` 火焰手雷
-- `firebrands` 火把
-- `flame_jet_trap` 喷火陷阱
-- `food_pickup` 食物
-- `forge_station` 铸造所
-- `frantic_sword` 狂暴之刃
-- `freeze_trap` 冰冻陷阱
-- `freeze_vfx` 冰冻特效
-- `frenzy_mutation` 狂乱变异
-- `gastronomy_mutation` 美食家变异
-- `giant_boss` 巨人
-- `goblin_melee` 近战哥布林
-- `gold_pickup` 金币
-- `golem` 魔像
-- `grenadier` 掷弹兵
-- `hand_of_the_king_boss` 国王之手
-- `hayabusa_boots` 隼之靴
-- `health_bar_hud` 生命条HUD
-- `health_fountain` 生命泉
-- `heavy_crossbow` 重弩
-- `ice_bow` 冰弓
-- `ice_grenade` 冰冻手雷
-- `impaler` 穿刺矛
-- `infantry_bow` 步兵短弓
-- `infantry_grenade` 步兵手雷
-- `inquisitor` 审判者
-- `kamikaze_bat` 自爆蝙蝠
-- `knife_thrower` 飞刀手
-- `lancer` 枪兵
-- `level_exit_door` 关卡出口门
-- `librarian` 图书馆员
-- `lore_room_object` 剧情房间物件
-- `magnetic_grenade` 磁力手雷
-- `malaise_meter_hud` 疫病条HUD
-- `marksman_bow` 神射手之弓
-- `melee_weapon_slot` 近战武器槽
-- `minimap_hud` 小地图HUD
-- `necromancy_mutation` 死灵法术变异
-- `nutcracker` 胡桃夹子
-- `open_wounds_mutation` 开放性伤口变异
-- `oven_knight` 炉火骑士
-- `parry_shield` 招架盾
-- `parry_spark_vfx` 招架火花特效
-- `phaser` 瞬移
-- `pirate_captain` 海盗船长
-- `player` 玩家囚徒
-- `player_flask` 血瓶
-- `player_mutation_panel` 变异面板
-- `poison_pool` 毒池
-- `poison_vfx` 中毒特效
-- `powerful_grenade` 强力手雷
-- `pressure_plate` 压力板
-- `protector` 保护者
-- `punishment_shield` 惩罚盾
-- `queen_boss` 王后
-- `quick_bow` 迅捷之弓
-- `rampager` 暴怒者
-- `rampart_shield` 壁垒盾
-- `rancid_rat` 腐臭鼠
-- `ranged_weapon_slot` 远程武器槽
-- `royal_guard` 王室卫兵
-- `runner` 奔行者
-- `sadists_stiletto` 施虐者匕首
-- `saw_blade_trap` 锯刃陷阱
-- `scarecrow_boss` 稻草人
-- `scorpion` 蝎子
-- `scroll_power_pickup` 力量卷轴
-- `scroll_survival_pickup` 生存卷轴
-- `scroll_tactics_pickup` 战术卷轴
-- `secret_wall_rune` 隐藏墙符文
-- `servants_boss` 仆从三姐妹
-- `shield_bearer` 持盾兵
-- `shield_bubble_vfx` 护盾泡泡特效
-- `shield_slot` 盾牌槽
-- `shop_room_vendor` 商店商人
-- `shovel` 铲子
-- `side_camera` 侧视角相机
-- `sinew_slicer` 碎肉者
-- `skill_slot` 技能槽
-- `slasher` 斩杀者
-- `spike_trap` 尖刺陷阱
-- `spite_sword` 怨恨之刃
-- `starting_cell_gate` 初始牢房门
-- `status_icon_hud` 状态图标HUD
-- `support_mutation` 支援变异
-- `swift_sword` 迅捷之剑
-- `symmetrical_lance` 对称长枪
-- `teleport_vfx` 传送特效
-- `throwing_knife` 飞刀
-- `time_keeper_boss` 时光守护者
-- `timed_door` 限时门
-- `tonic` 补药
-- `tranquility_mutation` 宁静变异
-- `treasure_chest` 宝箱
-- `twin_daggers` 双匕首
-- `vengeance_mutation` 复仇变异
-- `war_spear` 战争长矛
-- `wolf_trap` 捕兽夹
-- `wooden_shield` 木盾
-- `zombie` 僵尸
+- `alchemic_carbine`：炼金卡宾枪。炼金卡宾枪：远程武器实体，拥有弹药、投射物和命中反馈。
+- `ammo_counter_hud`：弹药计数界面。显示弓弩或投射物余量。
+- `amulet_slot`：护符槽。承载被动属性和词缀的装备槽。
+- `arbiter`：裁决者。裁决者：死亡细胞风格敌人，负责对应攻击、追击和受击状态。
+- `archer`：弓箭手。弓箭手：死亡细胞风格敌人，负责对应攻击、追击和受击状态。
+- `armadillopack_mutation`：犰狳背包变异。犰狳背包变异：构筑变异实体，改变玩家战斗或生存规则。
+- `assault_shield`：突击盾。突击盾：盾牌实体，拥有格挡、招架和反击反馈。
+- `automaton`：自动机。自动机：死亡细胞风格敌人，负责对应攻击、追击和受击状态。
+- `balanced_blade`：均衡之刃。均衡之刃：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。
+- `biome_teleporter`：生物群落传送器。已发现房间之间快速移动的装置。
+- `bleed_vfx`：流血特效。流血状态跳动粒子。
+- `blood_sword`：血之刃。血之刃：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。
+- `bloodthirsty_shield`：嗜血盾。嗜血盾：盾牌实体，拥有格挡、招架和反击反馈。
+- `blueprint_pickup`：图纸。解锁新装备或变异的蓝图。
+- `boss_health_bar_hud`：首领血条界面。显示首领生命阶段。
+- `boss_stem_cell_door`：首领细胞门。根据首领细胞难度限制通行。
+- `bow_and_infinite_arrows`：无限箭弓。无限箭弓：远程武器实体，拥有弹药、投射物和命中反馈。
+- `breakable_door`：可破坏门。可被攻击打破的路径阻挡物。
+- `broadsword`：阔剑。阔剑：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。
+- `burn_vfx`：燃烧特效。燃烧火焰和拖尾。
+- `buzzcutter`：飞虫。飞虫：死亡细胞风格敌人，负责对应攻击、追击和受击状态。
+- `catcher`：捕手。捕手：死亡细胞风格敌人，负责对应攻击、追击和受击状态。
+- `cell_pickup`：细胞。局内收集的长期成长资源。
+- `combat_damage_number_hud`：伤害数字界面。显示战斗伤害数字。
+- `combo_mutation`：连击变异。连击变异：构筑变异实体，改变玩家战斗或生存规则。
+- `concierge_boss`：看守者。看守者：首领级敌人，拥有阶段化攻击和强压制行为。
+- `conjunctivius_boss`：肿胀眼魔。肿胀眼魔：首领级敌人，拥有阶段化攻击和强压制行为。
+- `cooldown_meter_hud`：冷却计时界面。显示技能冷却状态。
+- `corpse_dust_vfx`：尸体尘散特效。敌人死亡后的消散粒子。
+- `corrupted_power`：堕落力量。堕落力量：主动技能实体，拥有释放、冷却和命中/控制效果。
+- `critical_hit_vfx`：暴击特效。暴击时的冲击爆发。
+- `crumbling_floor`：塌陷地板。受压后崩塌的平台。
+- `crusher`：粉碎机。粉碎机：主动技能实体，拥有释放、冷却和命中/控制效果。
+- `crusher_trap`：压碎机关。挤压通道中的角色。
+- `cudgel_shield`：棍盾。棍盾：盾牌实体，拥有格挡、招架和反击反馈。
+- `curse_counter_hud`：诅咒计数界面。读取本局诅咒计数的界面。
+- `curse_skull_vfx`：诅咒骷髅特效。诅咒状态提示粒子。
+- `cursed_chest`：诅咒宝箱。打开后施加诅咒并释放高价值奖励。
+- `death_orb`：死亡之球。死亡之球：主动技能实体，拥有释放、冷却和命中/控制效果。
+- `demon`：恶魔。恶魔：死亡细胞风格敌人，负责对应攻击、追击和受击状态。
+- `double_crossbomatic`：双向弩塔。双向弩塔：主动技能实体，拥有释放、冷却和命中/控制效果。
+- `electric_vfx`：电击特效。连锁电弧和冲击粒子。
+- `electric_whip`：电鞭。电鞭：远程武器实体，拥有弹药、投射物和命中反馈。
+- `elevator_platform`：升降平台。垂直连接房间的移动平台。
+- `elite_aura_vfx`：精英光环特效。精英敌人身上的威胁光环。
+- `failed_experiment`：失败实验体。失败实验体：死亡细胞风格敌人，负责对应攻击、追击和受击状态。
+- `falling_spike_trap`：坠落尖刺。从上方落下的尖刺危险。
+- `fire_grenade`：火焰手雷。火焰手雷：主动技能实体，拥有释放、冷却和命中/控制效果。
+- `firebrands`：火把。火把：远程武器实体，拥有弹药、投射物和命中反馈。
+- `flame_jet_trap`：喷火陷阱。定时喷火的通道危险。
+- `food_pickup`：食物。恢复生命的补给。
+- `forge_station`：铸造所。升级装备品质和词缀的站点。
+- `frantic_sword`：狂暴之刃。狂暴之刃：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。
+- `freeze_trap`：冰冻陷阱。检测玩家重叠并写入玩家的冰冻状态。
+- `freeze_vfx`：冰冻特效。冰冻和解冻粒子。
+- `frenzy_mutation`：狂乱变异。狂乱变异：构筑变异实体，改变玩家战斗或生存规则。
+- `gastronomy_mutation`：美食家变异。美食家变异：构筑变异实体，改变玩家战斗或生存规则。
+- `giant_boss`：巨人。巨人：首领级敌人，拥有阶段化攻击和强压制行为。
+- `goblin_melee`：近战哥布林。近战哥布林：死亡细胞风格敌人，负责对应攻击、追击和受击状态。
+- `gold_pickup`：金币。敌人或容器掉落的货币。
+- `golem`：魔像。魔像：死亡细胞风格敌人，负责对应攻击、追击和受击状态。
+- `grenadier`：掷弹兵。掷弹兵：死亡细胞风格敌人，负责对应攻击、追击和受击状态。
+- `hand_of_the_king_boss`：国王之手。国王之手：首领级敌人，拥有阶段化攻击和强压制行为。
+- `hayabusa_boots`：隼之靴。隼之靴：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。
+- `health_bar_hud`：生命条界面。显示玩家生命变化。
+- `health_fountain`：生命泉。休整点恢复生命和血瓶。
+- `heavy_crossbow`：重弩。重弩：远程武器实体，拥有弹药、投射物和命中反馈。
+- `ice_bow`：冰弓。冰弓：远程武器实体，拥有弹药、投射物和命中反馈。
+- `ice_grenade`：冰冻手雷。冰冻手雷：主动技能实体，拥有释放、冷却和命中/控制效果。
+- `impaler`：穿刺矛。穿刺矛：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。
+- `infantry_bow`：步兵短弓。步兵短弓：远程武器实体，拥有弹药、投射物和命中反馈。
+- `infantry_grenade`：步兵手雷。步兵手雷：主动技能实体，拥有释放、冷却和命中/控制效果。
+- `inquisitor`：审判者。审判者：死亡细胞风格敌人，负责对应攻击、追击和受击状态。
+- `kamikaze_bat`：自爆蝙蝠。自爆蝙蝠：死亡细胞风格敌人，负责对应攻击、追击和受击状态。
+- `knife_thrower`：飞刀手。飞刀手：死亡细胞风格敌人，负责对应攻击、追击和受击状态。
+- `lancer`：枪兵。枪兵：死亡细胞风格敌人，负责对应攻击、追击和受击状态。
+- `level_exit_door`：关卡出口门。通往下一生物群落的出口门。
+- `librarian`：图书馆员。图书馆员：死亡细胞风格敌人，负责对应攻击、追击和受击状态。
+- `lore_room_object`：剧情房间物件。展示叙事互动和世界信息。
+- `magnetic_grenade`：磁力手雷。磁力手雷：主动技能实体，拥有释放、冷却和命中/控制效果。
+- `malaise_meter_hud`：疫病条界面。显示疫病或压力进度。
+- `marksman_bow`：神射手之弓。神射手之弓：远程武器实体，拥有弹药、投射物和命中反馈。
+- `melee_weapon_slot`：近战武器槽。承载近战武器和攻击节奏的装备槽。
+- `minimap_hud`：小地图界面。显示探索过的房间和出口。
+- `necromancy_mutation`：死灵法术变异。死灵法术变异：构筑变异实体，改变玩家战斗或生存规则。
+- `nutcracker`：胡桃夹子。胡桃夹子：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。
+- `open_wounds_mutation`：开放性伤口变异。开放性伤口变异：构筑变异实体，改变玩家战斗或生存规则。
+- `oven_knight`：炉火骑士。炉火骑士：死亡细胞风格敌人，负责对应攻击、追击和受击状态。
+- `parry_shield`：招架盾。招架盾：盾牌实体，拥有格挡、招架和反击反馈。
+- `parry_spark_vfx`：招架火花特效。盾反成功的火花反馈。
+- `phaser`：瞬移。瞬移：主动技能实体，拥有释放、冷却和命中/控制效果。
+- `pirate_captain`：海盗船长。海盗船长：死亡细胞风格敌人，负责对应攻击、追击和受击状态。
+- `player`：玩家囚徒。玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。
+- `player_flask`：血瓶。玩家局内可复用的治疗资源。
+- `player_mutation_panel`：变异面板。休整点选择变异和构筑调整的界面实体。
+- `poison_pool`：毒池。持续施加中毒的地面危险。
+- `poison_vfx`：中毒特效。中毒状态粒子。
+- `powerful_grenade`：强力手雷。强力手雷：主动技能实体，拥有释放、冷却和命中/控制效果。
+- `pressure_plate`：压力板。被踩下后激活连接机关。
+- `protector`：保护者。保护者：死亡细胞风格敌人，负责对应攻击、追击和受击状态。
+- `punishment_shield`：惩罚盾。惩罚盾：盾牌实体，拥有格挡、招架和反击反馈。
+- `queen_boss`：王后。王后：首领级敌人，拥有阶段化攻击和强压制行为。
+- `quick_bow`：迅捷之弓。迅捷之弓：远程武器实体，拥有弹药、投射物和命中反馈。
+- `rampager`：暴怒者。暴怒者：死亡细胞风格敌人，负责对应攻击、追击和受击状态。
+- `rampart_shield`：壁垒盾。壁垒盾：盾牌实体，拥有格挡、招架和反击反馈。
+- `rancid_rat`：腐臭鼠。腐臭鼠：死亡细胞风格敌人，负责对应攻击、追击和受击状态。
+- `ranged_weapon_slot`：远程武器槽。承载弓弩、弹药和远程节奏的装备槽。
+- `room_encounter`：房间遭遇战。房间遭遇战：统计本次生成敌人的存活数量，全部死亡后触发完成。
+- `royal_guard`：王室卫兵。王室卫兵：死亡细胞风格敌人，负责对应攻击、追击和受击状态。
+- `runner`：奔行者。奔行者：死亡细胞风格敌人，负责对应攻击、追击和受击状态。
+- `sadists_stiletto`：施虐者匕首。施虐者匕首：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。
+- `saw_blade_trap`：锯刃陷阱。移动锯刃危险。
+- `scarecrow_boss`：稻草人。稻草人：首领级敌人，拥有阶段化攻击和强压制行为。
+- `scorpion`：蝎子。蝎子：死亡细胞风格敌人，负责对应攻击、追击和受击状态。
+- `scroll_power_pickup`：力量卷轴。提升伤害或生命成长的卷轴。
+- `scroll_survival_pickup`：生存卷轴。提升生存和重武器构筑的卷轴。
+- `scroll_tactics_pickup`：战术卷轴。提升远程和陷阱构筑的卷轴。
+- `secret_wall_rune`：隐藏墙符文。提示隐藏通路或奖励的墙面触发物。
+- `servants_boss`：仆从三姐妹。仆从三姐妹：首领级敌人，拥有阶段化攻击和强压制行为。
+- `shield_bearer`：持盾兵。持盾兵：死亡细胞风格敌人，负责对应攻击、追击和受击状态。
+- `shield_bubble_vfx`：护盾泡泡特效。护盾吸收和破裂反馈。
+- `shield_slot`：盾牌槽。承载格挡、招架和防御状态的装备槽。
+- `shop_room_vendor`：商店商人。出售武器、技能和补给的房间实体。
+- `shovel`：铲子。铲子：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。
+- `side_camera`：侧视角相机。侧视角相机反馈控制器。
+- `sinew_slicer`：碎肉者。碎肉者：主动技能实体，拥有释放、冷却和命中/控制效果。
+- `skill_slot`：技能槽。承载手雷、炮塔和主动技能冷却的装备槽。
+- `slasher`：斩杀者。斩杀者：死亡细胞风格敌人，负责对应攻击、追击和受击状态。
+- `spike_trap`：尖刺陷阱。地面尖刺危险。
+- `spite_sword`：怨恨之刃。怨恨之刃：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。
+- `starting_cell_gate`：初始牢房门。开局房门，控制玩家进入第一段关卡。
+- `status_icon_hud`：状态图标界面。显示运行时状态图标的 界面 控件。
+- `support_mutation`：支援变异。支援变异：构筑变异实体，改变玩家战斗或生存规则。
+- `swift_sword`：迅捷之剑。迅捷之剑：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。
+- `symmetrical_lance`：对称长枪。对称长枪：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。
+- `teleport_vfx`：传送特效。传送出现和消失的粒子反馈。
+- `throwing_knife`：飞刀。飞刀：远程武器实体，拥有弹药、投射物和命中反馈。
+- `time_keeper_boss`：时光守护者。时光守护者：首领级敌人，拥有阶段化攻击和强压制行为。
+- `timed_door`：限时门。根据到达时间解锁奖励路径。
+- `tonic`：补药。补药：主动技能实体，拥有释放、冷却和命中/控制效果。
+- `tranquility_mutation`：宁静变异。宁静变异：构筑变异实体，改变玩家战斗或生存规则。
+- `treasure_chest`：宝箱。打开后释放装备或奖励。
+- `twin_daggers`：双匕首。双匕首：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。
+- `vengeance_mutation`：复仇变异。复仇变异：构筑变异实体，改变玩家战斗或生存规则。
+- `war_spear`：战争长矛。战争长矛：近战武器实体，拥有攻击节奏、命中窗口和暴击条件。
+- `wolf_trap`：捕兽夹。捕兽夹：主动技能实体，拥有释放、冷却和命中/控制效果。
+- `wooden_shield`：木盾。木盾：盾牌实体，拥有格挡、招架和反击反馈。
+- `zombie`：僵尸。僵尸：死亡细胞风格敌人，负责对应攻击、追击和受击状态。

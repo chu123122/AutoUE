@@ -1,4 +1,5 @@
 {
+  "schema_version": "autoue-eab-canonical/v2",
   "entities": [
     {
       "entity_id": "level_exit_door",
@@ -13,211 +14,142 @@
         "progression"
       ],
       "spawnable": false,
-      "abilities": [
+      "capability_bindings": [
         {
-          "ability_id": "level_exit_door.lock",
-          "entity_id": "level_exit_door",
-          "display_name": "Level Exit Door Lock State",
-          "display_name_zh": "关卡出口门锁定状态",
-          "summary": "负责出口是否可用和锁定提示。",
-          "summary_zh": "负责出口是否可用和锁定提示。",
-          "capability_id": "level_exit_door.lock",
+          "capability_id": "encounter.exit.unlock_exit",
+          "params": {},
+          "tags": [
+            "exit",
+            "door",
+            "progression"
+          ]
+        },
+        {
+          "capability_id": "level.transition.activate",
+          "params": {},
+          "tags": [
+            "exit",
+            "door",
+            "progression"
+          ]
+        }
+      ],
+      "capabilities": [
+        {
+          "capability_id": "encounter.exit.unlock_exit",
+          "display_name": "Encounter Exit Unlock_Exit",
+          "display_name_zh": "解锁出口",
+          "summary": "解锁出口",
+          "summary_zh": "解锁出口",
           "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
           "capability_kind": "gate_lock",
-          "runtime_primitives": [
-            "condition_check",
-            "tag_state"
-          ],
+          "action_kind": "evaluate_unlock",
+          "runtime_handler": "ActionDispatcher.unlockExit",
+          "params_schema": {},
+          "default_params": {},
           "engine_ports": [],
           "runtime_features": [
-            "exit"
+            "state_blackboard",
+            "action_dispatcher"
           ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "evaluate_unlock",
           "behaviors": [
             {
-              "behavior_id": "level_exit_door.lock.evaluate_unlock",
-              "ability_id": "level_exit_door.lock",
-              "entity_id": "level_exit_door",
-              "display_name": "Level Exit Door Evaluate Unlock",
-              "display_name_zh": "关卡出口门评估解锁",
-              "trigger": "completion condition changes",
-              "execution": "sets the locked or unlocked state",
-              "result": "exit communicates availability",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "level_exit_door",
+              "behavior_id": "exit.behavior.unlock_and_transition",
+              "display_name": "Exit Behavior Unlock_And_Transition",
+              "display_name_zh": "解锁并切换关卡",
+              "summary": "解锁并切换关卡",
+              "summary_zh": "解锁并切换关卡",
+              "semantic_role": "behavior",
+              "behavior_kind": "level_exit",
+              "primary_entity_kind": "door",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
               "required_capability_ids": [
-                "level_exit_door.lock"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "completion condition changes"
-              },
-              "effects": [
-                "exit communicates availability"
+                "encounter.exit.unlock_exit",
+                "level.transition.activate"
               ],
               "runtime_features": [
-                "exit"
+                "world_adapter",
+                "entity_registry",
+                "state_blackboard",
+                "action_dispatcher"
               ],
-              "semantic_role": "behavior"
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "unlock_exit",
+                  "uses": "encounter.exit.unlock_exit"
+                },
+                {
+                  "step": "activate",
+                  "uses": "level.transition.activate"
+                }
+              ]
             }
           ]
         },
         {
-          "ability_id": "level_exit_door.transition",
-          "entity_id": "level_exit_door",
-          "display_name": "Level Exit Door Transition",
-          "display_name_zh": "关卡出口门区域切换",
-          "summary": "负责玩家进入出口和切换下一关。",
-          "summary_zh": "负责玩家进入出口和切换下一关。",
-          "capability_id": "level_exit_door.transition",
+          "capability_id": "level.transition.activate",
+          "display_name": "Level Transition Activate",
+          "display_name_zh": "关卡切换",
+          "summary": "关卡切换",
+          "summary_zh": "关卡切换",
           "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
           "capability_kind": "level_transition",
-          "runtime_primitives": [
-            "overlap_zone",
-            "open_level"
-          ],
+          "action_kind": "activate_transition",
+          "runtime_handler": "ActionDispatcher.openExit",
+          "params_schema": {},
+          "default_params": {},
           "engine_ports": [
             "primitive.on_component_begin_overlap",
             "gameplay_statics.open_level"
           ],
           "runtime_features": [
-            "exit"
+            "world_adapter",
+            "entity_registry",
+            "action_dispatcher"
           ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "activate_transition",
           "behaviors": [
             {
-              "behavior_id": "level_exit_door.transition.accept_entry",
-              "ability_id": "level_exit_door.transition",
-              "entity_id": "level_exit_door",
-              "display_name": "Level Exit Door Accept Entry",
-              "display_name_zh": "关卡出口门接受进入",
-              "trigger": "player interacts while unlocked",
-              "execution": "starts transition, fade, or room completion",
-              "result": "player progresses to next area",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "level_exit_door",
+              "behavior_id": "exit.behavior.unlock_and_transition",
+              "display_name": "Exit Behavior Unlock_And_Transition",
+              "display_name_zh": "解锁并切换关卡",
+              "summary": "解锁并切换关卡",
+              "summary_zh": "解锁并切换关卡",
+              "semantic_role": "behavior",
+              "behavior_kind": "level_exit",
+              "primary_entity_kind": "door",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
               "required_capability_ids": [
-                "level_exit_door.transition"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "player interacts while unlocked"
-              },
-              "effects": [
-                "player progresses to next area"
+                "encounter.exit.unlock_exit",
+                "level.transition.activate"
               ],
               "runtime_features": [
-                "exit"
-              ],
-              "semantic_role": "behavior"
-            },
-            {
-              "behavior_id": "level_exit_door.transition.finish_transition",
-              "ability_id": "level_exit_door.transition",
-              "entity_id": "level_exit_door",
-              "display_name": "Level Exit Door Finish Transition",
-              "display_name_zh": "关卡出口门完成切换",
-              "trigger": "handoff completes",
-              "execution": "cleans up current-room state",
-              "result": "next area can load",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "level_exit_door",
-              "required_capability_ids": [
-                "level_exit_door.transition"
+                "world_adapter",
+                "entity_registry",
+                "state_blackboard",
+                "action_dispatcher"
               ],
               "trigger_model": {
-                "type": "legacy_text",
-                "description": "handoff completes"
+                "kind": "on_event"
               },
-              "effects": [
-                "next area can load"
-              ],
-              "runtime_features": [
-                "exit"
-              ],
-              "semantic_role": "behavior"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "entity_id": "player",
-      "display_name": "Player Prisoner",
-      "display_name_zh": "玩家囚徒",
-      "entity_kind": "player",
-      "summary": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
-      "summary_zh": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
-      "content_tags": [
-        "player",
-        "prisoner",
-        "combat"
-      ],
-      "spawnable": false,
-      "abilities": [
-        {
-          "ability_id": "player.combat",
-          "entity_id": "player",
-          "display_name": "Player Prisoner Combat",
-          "display_name_zh": "玩家囚徒战斗输入",
-          "summary": "负责攻击、取消、受击和战斗输入解析。",
-          "summary_zh": "负责攻击、取消、受击和战斗输入解析。",
-          "capability_id": "player.combat",
-          "semantic_role": "capability",
-          "capability_kind": "combat",
-          "runtime_primitives": [
-            "input_action",
-            "hit_query",
-            "apply_damage"
-          ],
-          "engine_ports": [
-            "input.action_binding",
-            "kismet.line_trace_single",
-            "gameplay_statics.apply_damage"
-          ],
-          "runtime_features": [
-            "combat",
-            "input"
-          ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "apply_damage",
-          "behaviors": [
-            {
-              "behavior_id": "player.combat.attack",
-              "ability_id": "player.combat",
-              "entity_id": "player",
-              "display_name": "Player Prisoner Attack",
-              "display_name_zh": "玩家囚徒攻击",
-              "trigger": "attack input",
-              "execution": "executes the selected weapon strike against a target",
-              "result": "target receives combat pressure",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "player",
-              "required_capability_ids": [
-                "player.combat"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "attack input"
-              },
-              "effects": [
-                "target receives combat pressure"
-              ],
-              "runtime_features": [
-                "combat",
-                "input"
-              ],
-              "semantic_role": "behavior"
+              "flow": [
+                {
+                  "step": "unlock_exit",
+                  "uses": "encounter.exit.unlock_exit"
+                },
+                {
+                  "step": "activate",
+                  "uses": "level.transition.activate"
+                }
+              ]
             }
           ]
         }
@@ -236,57 +168,81 @@
         "buff"
       ],
       "spawnable": false,
-      "abilities": [
+      "capability_bindings": [
         {
-          "ability_id": "status_icon_hud.alert",
-          "entity_id": "status_icon_hud",
-          "display_name": "Status Icon HUD Alert Feedback",
-          "display_name_zh": "状态图标HUD警示反馈",
-          "summary": "负责闪烁、强调、警示和状态变化反馈。",
-          "summary_zh": "负责闪烁、强调、警示和状态变化反馈。",
-          "capability_id": "status_icon_hud.alert",
+          "capability_id": "hud.display.refresh_value",
+          "params": {},
+          "tags": [
+            "hud",
+            "status",
+            "buff"
+          ]
+        },
+        {
+          "capability_id": "hud.feedback.flash_warning",
+          "params": {},
+          "tags": [
+            "hud",
+            "status",
+            "buff"
+          ]
+        }
+      ],
+      "capabilities": [
+        {
+          "capability_id": "hud.display.refresh_value",
+          "display_name": "Hud Display Refresh_Value",
+          "display_name_zh": "刷新 HUD 数值",
+          "summary": "刷新 HUD 数值",
+          "summary_zh": "刷新 HUD 数值",
           "semantic_role": "capability",
-          "capability_kind": "hud_feedback",
-          "runtime_primitives": [
-            "hud_flash",
-            "tag_state"
-          ],
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "hud_binding",
+          "action_kind": "refresh_value",
+          "runtime_handler": "ActionDispatcher.setHudValue",
+          "params_schema": {},
+          "default_params": {},
           "engine_ports": [
-            "widget.set_render_opacity"
+            "widget.set_text",
+            "widget.set_percent"
           ],
           "runtime_features": [
-            "hud"
+            "world_adapter",
+            "entity_registry",
+            "state_blackboard",
+            "action_dispatcher"
           ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "flash_warning",
           "behaviors": [
             {
-              "behavior_id": "status_icon_hud.alert.flash_warning",
-              "ability_id": "status_icon_hud.alert",
-              "entity_id": "status_icon_hud",
-              "display_name": "Status Icon HUD Flash Warning",
-              "display_name_zh": "状态图标HUD闪烁警示",
-              "trigger": "danger or threshold is reached",
-              "execution": "plays a visual flash or shake",
-              "result": "player sees urgent feedback",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "status_icon_hud",
+              "behavior_id": "hud.behavior.refresh_value",
+              "display_name": "Hud Behavior Refresh_Value",
+              "display_name_zh": "刷新 HUD 数值",
+              "summary": "刷新 HUD 数值",
+              "summary_zh": "刷新 HUD 数值",
+              "semantic_role": "behavior",
+              "behavior_kind": "hud_update",
+              "primary_entity_kind": "hud",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
               "required_capability_ids": [
-                "status_icon_hud.alert"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "danger or threshold is reached"
-              },
-              "effects": [
-                "player sees urgent feedback"
+                "hud.display.refresh_value"
               ],
               "runtime_features": [
-                "hud"
+                "world_adapter",
+                "entity_registry",
+                "state_blackboard",
+                "action_dispatcher"
               ],
-              "semantic_role": "behavior"
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "refresh_value",
+                  "uses": "hud.display.refresh_value"
+                }
+              ]
             }
           ]
         }
@@ -313,61 +269,809 @@
         ],
         "default_health": 3
       },
-      "abilities": [
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_ZOMBIE",
+        "default_hp": 30,
+        "move_speed": 260,
+        "sense_radius": 900,
+        "attack_range": 160
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
         {
-          "ability_id": "zombie.offense",
-          "entity_id": "zombie",
-          "display_name": "Zombie Offense",
-          "display_name_zh": "僵尸进攻",
-          "summary": "负责攻击预警、命中窗口和攻击结果。",
-          "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-          "capability_id": "zombie.offense",
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_ZOMBIE",
+            "default_hp": 30,
+            "move_speed": 260,
+            "spawn_tags": [
+              "ground",
+              "melee"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 900,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 260,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 160,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 30
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ],
+      "capabilities": [
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "display_name": "Encounter Complete Complete_When_All_Dead",
+          "display_name_zh": "全部死亡后完成遭遇",
+          "summary": "全部死亡后完成遭遇",
+          "summary_zh": "全部死亡后完成遭遇",
           "semantic_role": "capability",
-          "capability_kind": "enemy_combat",
-          "runtime_primitives": [
-            "telegraph",
-            "hit_query",
-            "apply_damage"
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "encounter",
+          "action_kind": "complete_when_all_dead",
+          "runtime_handler": "EncounterManager.completeWhenAllDead",
+          "params_schema": {
+            "completion_event_name": {
+              "type": "string",
+              "required": true
+            },
+            "completion_state_key": {
+              "type": "string",
+              "required": true
+            }
+          },
+          "default_params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "engine_ports": [
+            "encounter.alive_count"
           ],
+          "runtime_features": [
+            "enemy_runtime",
+            "encounter_manager",
+            "enemy_registry"
+          ],
+          "behaviors": [
+            {
+              "behavior_id": "enemy.behavior.chase_and_melee",
+              "display_name": "Enemy Behavior Chase_And_Melee",
+              "display_name_zh": "敌人追击近战",
+              "summary": "敌人追击近战",
+              "summary_zh": "敌人追击近战",
+              "semantic_role": "behavior",
+              "behavior_kind": "enemy_combat_loop",
+              "primary_entity_kind": "enemy",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
+              "required_capability_ids": [
+                "enemy.spawn.spawn_actor",
+                "enemy.sensor.detect_player_by_distance",
+                "enemy.movement.chase_target",
+                "enemy.attack.melee_hitbox",
+                "enemy.health.receive_damage",
+                "enemy.death.emit_death_event",
+                "encounter.complete.complete_when_all_dead"
+              ],
+              "runtime_features": [
+                "enemy_runtime",
+                "enemy_spawn_runtime",
+                "enemy_perception",
+                "enemy_movement",
+                "enemy_combat",
+                "enemy_health",
+                "enemy_death_events",
+                "encounter_manager"
+              ],
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "spawn_actor",
+                  "uses": "enemy.spawn.spawn_actor"
+                },
+                {
+                  "step": "detect_player_by_distance",
+                  "uses": "enemy.sensor.detect_player_by_distance"
+                },
+                {
+                  "step": "chase_target",
+                  "uses": "enemy.movement.chase_target"
+                },
+                {
+                  "step": "melee_hitbox",
+                  "uses": "enemy.attack.melee_hitbox"
+                },
+                {
+                  "step": "receive_damage",
+                  "uses": "enemy.health.receive_damage"
+                },
+                {
+                  "step": "emit_death_event",
+                  "uses": "enemy.death.emit_death_event"
+                },
+                {
+                  "step": "complete_when_all_dead",
+                  "uses": "encounter.complete.complete_when_all_dead"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "display_name": "Enemy Attack Melee_Hitbox",
+          "display_name_zh": "近战碰撞盒攻击",
+          "summary": "近战碰撞盒攻击",
+          "summary_zh": "近战碰撞盒攻击",
+          "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "enemy_attack",
+          "action_kind": "melee_hitbox",
+          "runtime_handler": "EnemyCombat.resolveMeleeHit",
+          "params_schema": {
+            "attack_damage": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "attack_range": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "cooldown_seconds": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "target_entity_id": {
+              "type": "string",
+              "required": true
+            }
+          },
+          "default_params": {
+            "hitbox_radius": 90,
+            "target_entity_id": "player"
+          },
           "engine_ports": [
             "kismet.sphere_trace_single",
             "gameplay_statics.apply_damage"
           ],
           "runtime_features": [
-            "combat",
-            "enemy_encounter"
+            "enemy_runtime",
+            "enemy_combat",
+            "enemy_registry",
+            "world_adapter"
           ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "enemy_attack",
           "behaviors": [
             {
-              "behavior_id": "zombie.offense.resolve_hit",
-              "ability_id": "zombie.offense",
-              "entity_id": "zombie",
-              "display_name": "Zombie Resolve Hit",
-              "display_name_zh": "僵尸命中结算",
-              "trigger": "active hit frame overlaps target",
-              "execution": "applies the enemy attack result",
-              "result": "player or object is damaged",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "zombie",
+              "behavior_id": "enemy.behavior.chase_and_melee",
+              "display_name": "Enemy Behavior Chase_And_Melee",
+              "display_name_zh": "敌人追击近战",
+              "summary": "敌人追击近战",
+              "summary_zh": "敌人追击近战",
+              "semantic_role": "behavior",
+              "behavior_kind": "enemy_combat_loop",
+              "primary_entity_kind": "enemy",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
               "required_capability_ids": [
-                "zombie.offense"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "active hit frame overlaps target"
-              },
-              "effects": [
-                "player or object is damaged"
+                "enemy.spawn.spawn_actor",
+                "enemy.sensor.detect_player_by_distance",
+                "enemy.movement.chase_target",
+                "enemy.attack.melee_hitbox",
+                "enemy.health.receive_damage",
+                "enemy.death.emit_death_event",
+                "encounter.complete.complete_when_all_dead"
               ],
               "runtime_features": [
-                "combat",
-                "enemy_encounter"
+                "enemy_runtime",
+                "enemy_spawn_runtime",
+                "enemy_perception",
+                "enemy_movement",
+                "enemy_combat",
+                "enemy_health",
+                "enemy_death_events",
+                "encounter_manager"
               ],
-              "semantic_role": "behavior"
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "spawn_actor",
+                  "uses": "enemy.spawn.spawn_actor"
+                },
+                {
+                  "step": "detect_player_by_distance",
+                  "uses": "enemy.sensor.detect_player_by_distance"
+                },
+                {
+                  "step": "chase_target",
+                  "uses": "enemy.movement.chase_target"
+                },
+                {
+                  "step": "melee_hitbox",
+                  "uses": "enemy.attack.melee_hitbox"
+                },
+                {
+                  "step": "receive_damage",
+                  "uses": "enemy.health.receive_damage"
+                },
+                {
+                  "step": "emit_death_event",
+                  "uses": "enemy.death.emit_death_event"
+                },
+                {
+                  "step": "complete_when_all_dead",
+                  "uses": "encounter.complete.complete_when_all_dead"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "display_name": "Enemy Death Emit_Death_Event",
+          "display_name_zh": "发出死亡事件",
+          "summary": "发出死亡事件",
+          "summary_zh": "发出死亡事件",
+          "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "enemy_death",
+          "action_kind": "emit_death_event",
+          "runtime_handler": "EnemyDeathEvents.emitDeath",
+          "params_schema": {
+            "death_event_name": {
+              "type": "string",
+              "required": true
+            },
+            "decrement_alive_count": {
+              "type": "bool",
+              "required": true
+            }
+          },
+          "default_params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "engine_ports": [
+            "actor.on_destroyed"
+          ],
+          "runtime_features": [
+            "enemy_runtime",
+            "enemy_death_events",
+            "enemy_registry",
+            "encounter_manager"
+          ],
+          "behaviors": [
+            {
+              "behavior_id": "enemy.behavior.chase_and_melee",
+              "display_name": "Enemy Behavior Chase_And_Melee",
+              "display_name_zh": "敌人追击近战",
+              "summary": "敌人追击近战",
+              "summary_zh": "敌人追击近战",
+              "semantic_role": "behavior",
+              "behavior_kind": "enemy_combat_loop",
+              "primary_entity_kind": "enemy",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
+              "required_capability_ids": [
+                "enemy.spawn.spawn_actor",
+                "enemy.sensor.detect_player_by_distance",
+                "enemy.movement.chase_target",
+                "enemy.attack.melee_hitbox",
+                "enemy.health.receive_damage",
+                "enemy.death.emit_death_event",
+                "encounter.complete.complete_when_all_dead"
+              ],
+              "runtime_features": [
+                "enemy_runtime",
+                "enemy_spawn_runtime",
+                "enemy_perception",
+                "enemy_movement",
+                "enemy_combat",
+                "enemy_health",
+                "enemy_death_events",
+                "encounter_manager"
+              ],
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "spawn_actor",
+                  "uses": "enemy.spawn.spawn_actor"
+                },
+                {
+                  "step": "detect_player_by_distance",
+                  "uses": "enemy.sensor.detect_player_by_distance"
+                },
+                {
+                  "step": "chase_target",
+                  "uses": "enemy.movement.chase_target"
+                },
+                {
+                  "step": "melee_hitbox",
+                  "uses": "enemy.attack.melee_hitbox"
+                },
+                {
+                  "step": "receive_damage",
+                  "uses": "enemy.health.receive_damage"
+                },
+                {
+                  "step": "emit_death_event",
+                  "uses": "enemy.death.emit_death_event"
+                },
+                {
+                  "step": "complete_when_all_dead",
+                  "uses": "encounter.complete.complete_when_all_dead"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "display_name": "Enemy Health Receive_Damage",
+          "display_name_zh": "敌人接收伤害",
+          "summary": "敌人接收伤害",
+          "summary_zh": "敌人接收伤害",
+          "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "enemy_health",
+          "action_kind": "receive_damage",
+          "runtime_handler": "EnemyHealth.applyDamage",
+          "params_schema": {
+            "max_hp": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            }
+          },
+          "default_params": {},
+          "engine_ports": [
+            "gameplay_statics.apply_damage",
+            "actor.on_take_any_damage"
+          ],
+          "runtime_features": [
+            "enemy_runtime",
+            "enemy_health",
+            "enemy_registry",
+            "world_adapter"
+          ],
+          "behaviors": [
+            {
+              "behavior_id": "enemy.behavior.chase_and_melee",
+              "display_name": "Enemy Behavior Chase_And_Melee",
+              "display_name_zh": "敌人追击近战",
+              "summary": "敌人追击近战",
+              "summary_zh": "敌人追击近战",
+              "semantic_role": "behavior",
+              "behavior_kind": "enemy_combat_loop",
+              "primary_entity_kind": "enemy",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
+              "required_capability_ids": [
+                "enemy.spawn.spawn_actor",
+                "enemy.sensor.detect_player_by_distance",
+                "enemy.movement.chase_target",
+                "enemy.attack.melee_hitbox",
+                "enemy.health.receive_damage",
+                "enemy.death.emit_death_event",
+                "encounter.complete.complete_when_all_dead"
+              ],
+              "runtime_features": [
+                "enemy_runtime",
+                "enemy_spawn_runtime",
+                "enemy_perception",
+                "enemy_movement",
+                "enemy_combat",
+                "enemy_health",
+                "enemy_death_events",
+                "encounter_manager"
+              ],
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "spawn_actor",
+                  "uses": "enemy.spawn.spawn_actor"
+                },
+                {
+                  "step": "detect_player_by_distance",
+                  "uses": "enemy.sensor.detect_player_by_distance"
+                },
+                {
+                  "step": "chase_target",
+                  "uses": "enemy.movement.chase_target"
+                },
+                {
+                  "step": "melee_hitbox",
+                  "uses": "enemy.attack.melee_hitbox"
+                },
+                {
+                  "step": "receive_damage",
+                  "uses": "enemy.health.receive_damage"
+                },
+                {
+                  "step": "emit_death_event",
+                  "uses": "enemy.death.emit_death_event"
+                },
+                {
+                  "step": "complete_when_all_dead",
+                  "uses": "encounter.complete.complete_when_all_dead"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "display_name": "Enemy Movement Chase_Target",
+          "display_name_zh": "追击目标",
+          "summary": "追击目标",
+          "summary_zh": "追击目标",
+          "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "enemy_movement",
+          "action_kind": "chase_target",
+          "runtime_handler": "EnemyMovement.chaseTarget",
+          "params_schema": {
+            "move_speed": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "target_entity_id": {
+              "type": "string",
+              "required": true
+            }
+          },
+          "default_params": {
+            "target_entity_id": "player"
+          },
+          "engine_ports": [
+            "actor.get_distance_to",
+            "actor.set_actor_location"
+          ],
+          "runtime_features": [
+            "enemy_runtime",
+            "enemy_movement",
+            "enemy_registry",
+            "world_adapter"
+          ],
+          "behaviors": [
+            {
+              "behavior_id": "enemy.behavior.chase_and_melee",
+              "display_name": "Enemy Behavior Chase_And_Melee",
+              "display_name_zh": "敌人追击近战",
+              "summary": "敌人追击近战",
+              "summary_zh": "敌人追击近战",
+              "semantic_role": "behavior",
+              "behavior_kind": "enemy_combat_loop",
+              "primary_entity_kind": "enemy",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
+              "required_capability_ids": [
+                "enemy.spawn.spawn_actor",
+                "enemy.sensor.detect_player_by_distance",
+                "enemy.movement.chase_target",
+                "enemy.attack.melee_hitbox",
+                "enemy.health.receive_damage",
+                "enemy.death.emit_death_event",
+                "encounter.complete.complete_when_all_dead"
+              ],
+              "runtime_features": [
+                "enemy_runtime",
+                "enemy_spawn_runtime",
+                "enemy_perception",
+                "enemy_movement",
+                "enemy_combat",
+                "enemy_health",
+                "enemy_death_events",
+                "encounter_manager"
+              ],
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "spawn_actor",
+                  "uses": "enemy.spawn.spawn_actor"
+                },
+                {
+                  "step": "detect_player_by_distance",
+                  "uses": "enemy.sensor.detect_player_by_distance"
+                },
+                {
+                  "step": "chase_target",
+                  "uses": "enemy.movement.chase_target"
+                },
+                {
+                  "step": "melee_hitbox",
+                  "uses": "enemy.attack.melee_hitbox"
+                },
+                {
+                  "step": "receive_damage",
+                  "uses": "enemy.health.receive_damage"
+                },
+                {
+                  "step": "emit_death_event",
+                  "uses": "enemy.death.emit_death_event"
+                },
+                {
+                  "step": "complete_when_all_dead",
+                  "uses": "encounter.complete.complete_when_all_dead"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "display_name": "Enemy Sensor Detect_Player_By_Distance",
+          "display_name_zh": "按距离感知玩家",
+          "summary": "按距离感知玩家",
+          "summary_zh": "按距离感知玩家",
+          "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "enemy_sensor",
+          "action_kind": "detect_player_by_distance",
+          "runtime_handler": "EnemyPerception.detectPlayer",
+          "params_schema": {
+            "sense_radius": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "target_entity_id": {
+              "type": "string",
+              "required": true
+            }
+          },
+          "default_params": {
+            "target_entity_id": "player"
+          },
+          "engine_ports": [
+            "actor.get_distance_to"
+          ],
+          "runtime_features": [
+            "enemy_runtime",
+            "enemy_perception",
+            "enemy_registry",
+            "world_adapter"
+          ],
+          "behaviors": [
+            {
+              "behavior_id": "enemy.behavior.chase_and_melee",
+              "display_name": "Enemy Behavior Chase_And_Melee",
+              "display_name_zh": "敌人追击近战",
+              "summary": "敌人追击近战",
+              "summary_zh": "敌人追击近战",
+              "semantic_role": "behavior",
+              "behavior_kind": "enemy_combat_loop",
+              "primary_entity_kind": "enemy",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
+              "required_capability_ids": [
+                "enemy.spawn.spawn_actor",
+                "enemy.sensor.detect_player_by_distance",
+                "enemy.movement.chase_target",
+                "enemy.attack.melee_hitbox",
+                "enemy.health.receive_damage",
+                "enemy.death.emit_death_event",
+                "encounter.complete.complete_when_all_dead"
+              ],
+              "runtime_features": [
+                "enemy_runtime",
+                "enemy_spawn_runtime",
+                "enemy_perception",
+                "enemy_movement",
+                "enemy_combat",
+                "enemy_health",
+                "enemy_death_events",
+                "encounter_manager"
+              ],
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "spawn_actor",
+                  "uses": "enemy.spawn.spawn_actor"
+                },
+                {
+                  "step": "detect_player_by_distance",
+                  "uses": "enemy.sensor.detect_player_by_distance"
+                },
+                {
+                  "step": "chase_target",
+                  "uses": "enemy.movement.chase_target"
+                },
+                {
+                  "step": "melee_hitbox",
+                  "uses": "enemy.attack.melee_hitbox"
+                },
+                {
+                  "step": "receive_damage",
+                  "uses": "enemy.health.receive_damage"
+                },
+                {
+                  "step": "emit_death_event",
+                  "uses": "enemy.death.emit_death_event"
+                },
+                {
+                  "step": "complete_when_all_dead",
+                  "uses": "encounter.complete.complete_when_all_dead"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "display_name": "Enemy Spawn Spawn_Actor",
+          "display_name_zh": "生成敌人 Actor",
+          "summary": "生成敌人 Actor",
+          "summary_zh": "生成敌人 Actor",
+          "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "enemy_spawn",
+          "action_kind": "spawn_actor",
+          "runtime_handler": "EnemySpawnRuntime.spawnEnemy",
+          "params_schema": {
+            "actor_class_path": {
+              "type": "string",
+              "required": true
+            },
+            "enemy_tag": {
+              "type": "string",
+              "required": true
+            },
+            "default_hp": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "move_speed": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            }
+          },
+          "default_params": {
+            "spawn_tags": []
+          },
+          "engine_ports": [
+            "actor.spawn"
+          ],
+          "runtime_features": [
+            "enemy_runtime",
+            "enemy_spawn_runtime",
+            "enemy_registry",
+            "world_adapter"
+          ],
+          "behaviors": [
+            {
+              "behavior_id": "enemy.behavior.chase_and_melee",
+              "display_name": "Enemy Behavior Chase_And_Melee",
+              "display_name_zh": "敌人追击近战",
+              "summary": "敌人追击近战",
+              "summary_zh": "敌人追击近战",
+              "semantic_role": "behavior",
+              "behavior_kind": "enemy_combat_loop",
+              "primary_entity_kind": "enemy",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
+              "required_capability_ids": [
+                "enemy.spawn.spawn_actor",
+                "enemy.sensor.detect_player_by_distance",
+                "enemy.movement.chase_target",
+                "enemy.attack.melee_hitbox",
+                "enemy.health.receive_damage",
+                "enemy.death.emit_death_event",
+                "encounter.complete.complete_when_all_dead"
+              ],
+              "runtime_features": [
+                "enemy_runtime",
+                "enemy_spawn_runtime",
+                "enemy_perception",
+                "enemy_movement",
+                "enemy_combat",
+                "enemy_health",
+                "enemy_death_events",
+                "encounter_manager"
+              ],
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "spawn_actor",
+                  "uses": "enemy.spawn.spawn_actor"
+                },
+                {
+                  "step": "detect_player_by_distance",
+                  "uses": "enemy.sensor.detect_player_by_distance"
+                },
+                {
+                  "step": "chase_target",
+                  "uses": "enemy.movement.chase_target"
+                },
+                {
+                  "step": "melee_hitbox",
+                  "uses": "enemy.attack.melee_hitbox"
+                },
+                {
+                  "step": "receive_damage",
+                  "uses": "enemy.health.receive_damage"
+                },
+                {
+                  "step": "emit_death_event",
+                  "uses": "enemy.death.emit_death_event"
+                },
+                {
+                  "step": "complete_when_all_dead",
+                  "uses": "encounter.complete.complete_when_all_dead"
+                }
+              ]
             }
           ]
         }

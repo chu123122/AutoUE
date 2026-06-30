@@ -1,14 +1,13 @@
 {
   "flows": [
     {
-      "flow_id": "flow_boss_health_bar_hud_display_refresh_value",
+      "flow_id": "flow_hud_behavior_refresh_value",
       "entity_id": "boss_health_bar_hud",
-      "ability_id": "boss_health_bar_hud.display",
-      "source_behavior_id": "boss_health_bar_hud.display.refresh_value",
+      "source_behavior_id": "hud.behavior.refresh_value",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -16,24 +15,23 @@
             "actions"
           ],
           "engine_ports": [
-            "widget.set_text",
-            "widget.set_percent"
+            "manual.trigger"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered boss_health_bar_hud.display.refresh_value"
+        "BehaviorTriggered hud.behavior.refresh_value",
+        "ActionDispatched set_hud_value"
       ]
     },
     {
-      "flow_id": "flow_concierge_boss_offense_resolve_hit",
+      "flow_id": "flow_enemy_behavior_chase_and_melee",
       "entity_id": "concierge_boss",
-      "ability_id": "concierge_boss.offense",
-      "source_behavior_id": "concierge_boss.offense.resolve_hit",
+      "source_behavior_id": "enemy.behavior.chase_and_melee",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -41,113 +39,20 @@
             "actions"
           ],
           "engine_ports": [
-            "kismet.sphere_trace_single",
+            "actor.spawn",
             "gameplay_statics.apply_damage"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered concierge_boss.offense.resolve_hit"
-      ]
-    },
-    {
-      "flow_id": "flow_concierge_boss_pursuit_detect_player",
-      "entity_id": "concierge_boss",
-      "ability_id": "concierge_boss.pursuit",
-      "source_behavior_id": "concierge_boss.pursuit.detect_player",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "actor.get_distance_to",
-            "pawn.add_movement_input"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered concierge_boss.pursuit.detect_player"
-      ]
-    },
-    {
-      "flow_id": "flow_critical_hit_vfx_emit_spawn_particles",
-      "entity_id": "critical_hit_vfx",
-      "ability_id": "critical_hit_vfx.emit",
-      "source_behavior_id": "critical_hit_vfx.emit.spawn_particles",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "component.set_visibility"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered critical_hit_vfx.emit.spawn_particles"
-      ]
-    },
-    {
-      "flow_id": "flow_player_combat_attack",
-      "entity_id": "player",
-      "ability_id": "player.combat",
-      "source_behavior_id": "player.combat.attack",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "input.action_binding",
-            "kismet.line_trace_single",
-            "gameplay_statics.apply_damage"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered player.combat.attack"
-      ]
-    },
-    {
-      "flow_id": "flow_player_movement_dodge_roll",
-      "entity_id": "player",
-      "ability_id": "player.movement",
-      "source_behavior_id": "player.movement.dodge_roll",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "input.action_binding",
-            "pawn.add_movement_input"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered player.movement.dodge_roll"
+        "BehaviorTriggered enemy.behavior.chase_and_melee",
+        "ActionDispatched enemy_spawn_actor",
+        "ActionDispatched enemy_detect_player",
+        "ActionDispatched enemy_chase_target",
+        "ActionDispatched enemy_melee_attack",
+        "ActionDispatched enemy_receive_damage",
+        "ActionDispatched enemy_emit_death_event",
+        "ActionDispatched encounter_complete_when_all_dead"
       ]
     }
   ]

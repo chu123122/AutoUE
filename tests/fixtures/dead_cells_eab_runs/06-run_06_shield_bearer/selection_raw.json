@@ -4,13 +4,21 @@
     "parry_spark_vfx",
     "status_icon_hud"
   ],
-  "selected_capability_ids": [],
+  "selected_capability_ids": [
+    "enemy.spawn.spawn_actor",
+    "enemy.sensor.detect_player_by_distance",
+    "enemy.movement.chase_target",
+    "enemy.defense.directional_block",
+    "enemy.attack.melee_hitbox",
+    "enemy.health.receive_damage",
+    "enemy.death.emit_death_event",
+    "encounter.complete.complete_when_all_dead",
+    "vfx.spawn.spawn_particles",
+    "hud.display.refresh_value"
+  ],
   "selected_behavior_ids": [
-    "player.movement.dodge_roll",
-    "player.combat.attack",
-    "shield_bearer.pursuit.close_gap",
-    "shield_bearer.offense.resolve_hit",
-    "parry_spark_vfx.emit.spawn_particles",
-    "status_icon_hud.display.refresh_value"
+    "enemy.behavior.block_then_counter",
+    "vfx.behavior.spawn_particles",
+    "hud.behavior.refresh_value"
   ]
 }

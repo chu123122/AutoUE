@@ -1,14 +1,13 @@
 {
   "flows": [
     {
-      "flow_id": "flow_curse_counter_hud_alert_flash_warning",
+      "flow_id": "flow_hud_behavior_refresh_value",
       "entity_id": "curse_counter_hud",
-      "ability_id": "curse_counter_hud.alert",
-      "source_behavior_id": "curse_counter_hud.alert.flash_warning",
+      "source_behavior_id": "hud.behavior.refresh_value",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -16,48 +15,23 @@
             "actions"
           ],
           "engine_ports": [
-            "widget.set_render_opacity"
+            "manual.trigger"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered curse_counter_hud.alert.flash_warning"
+        "BehaviorTriggered hud.behavior.refresh_value",
+        "ActionDispatched set_hud_value"
       ]
     },
     {
-      "flow_id": "flow_curse_counter_hud_display_refresh_value",
-      "entity_id": "curse_counter_hud",
-      "ability_id": "curse_counter_hud.display",
-      "source_behavior_id": "curse_counter_hud.display.refresh_value",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "widget.set_text",
-            "widget.set_percent"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered curse_counter_hud.display.refresh_value"
-      ]
-    },
-    {
-      "flow_id": "flow_curse_skull_vfx_emit_spawn_particles",
+      "flow_id": "flow_vfx_behavior_spawn_particles",
       "entity_id": "curse_skull_vfx",
-      "ability_id": "curse_skull_vfx.emit",
-      "source_behavior_id": "curse_skull_vfx.emit.spawn_particles",
+      "source_behavior_id": "vfx.behavior.spawn_particles",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -65,37 +39,13 @@
             "actions"
           ],
           "engine_ports": [
-            "component.set_visibility"
+            "manual.trigger"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered curse_skull_vfx.emit.spawn_particles"
-      ]
-    },
-    {
-      "flow_id": "flow_cursed_chest_open_reward_and_add_curse",
-      "entity_id": "cursed_chest",
-      "ability_id": "cursed_chest.chest.open_reward",
-      "source_behavior_id": "cursed_chest.open_reward_and_add_curse",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "widget.set_text",
-            "widget.set_percent"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered cursed_chest.open_reward_and_add_curse"
+        "BehaviorTriggered vfx.behavior.spawn_particles",
+        "ActionDispatched spawn_vfx"
       ]
     }
   ]

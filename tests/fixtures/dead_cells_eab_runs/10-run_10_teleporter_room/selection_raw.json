@@ -4,10 +4,12 @@
     "teleport_vfx",
     "minimap_hud"
   ],
-  "selected_capability_ids": [],
+  "selected_capability_ids": [
+    "vfx.spawn.spawn_particles",
+    "hud.display.refresh_value"
+  ],
   "selected_behavior_ids": [
-    "biome_teleporter.activate_transition",
-    "teleport_vfx.emit.spawn_particles",
-    "minimap_hud.display.refresh_value"
+    "vfx.behavior.spawn_particles",
+    "hud.behavior.refresh_value"
   ]
 }

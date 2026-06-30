@@ -15,7 +15,7 @@ Rules:
 - Output JSON only.
 - Select IDs only from the candidate set provided at runtime.
 - The second library is Capability Library. Do not treat capability as high-level gameplay skill.
-- Legacy key selected_ability_ids is accepted for compatibility, but selected_capability_ids is canonical.
+- Legacy key selected_ability_ids is forbidden. Use selected_capability_ids only.
 - Entity = thing in world/UI/logic.
 - Capability = low-level runtime ability/component, no trigger/result.
 - Behavior = trigger + required capabilities + effects.

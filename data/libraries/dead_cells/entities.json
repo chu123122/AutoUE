@@ -1,7 +1,8 @@
 {
-  "schema_version": "autoue-entity-library/v3",
-  "theme": "dead_cells_content_library",
-  "count": 147,
+  "schema_version": "autoue-dead-cells-capability-prototypes/v1",
+  "theme": "dead_cells",
+  "library_role": "entity_library",
+  "count": 148,
   "entities": [
     {
       "entity_id": "alchemic_carbine",
@@ -15,7 +16,8 @@
         "ranged",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "ammo_counter_hud",
@@ -29,7 +31,27 @@
         "ammo",
         "ranged"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "hud.display.refresh_value",
+          "params": {},
+          "tags": [
+            "hud",
+            "ammo",
+            "ranged"
+          ]
+        },
+        {
+          "capability_id": "hud.feedback.flash_warning",
+          "params": {},
+          "tags": [
+            "hud",
+            "ammo",
+            "ranged"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "amulet_slot",
@@ -43,7 +65,8 @@
         "passive",
         "affix"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "arbiter",
@@ -65,7 +88,84 @@
           "ranged"
         ],
         "default_health": 4
-      }
+      },
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_ARBITER",
+        "default_hp": 40,
+        "move_speed": 245,
+        "sense_radius": 900,
+        "attack_range": 520
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_ARBITER",
+            "default_hp": 40,
+            "move_speed": 245,
+            "spawn_tags": [
+              "caster",
+              "ranged"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 900,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.keep_distance",
+          "params": {
+            "move_speed": 245,
+            "keep_distance": 420,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.projectile_spawn",
+          "params": {
+            "attack_damage": 8,
+            "attack_range": 520,
+            "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+            "projectile_speed": 900,
+            "cooldown_seconds": 1.6,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 40
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "archer",
@@ -87,7 +187,86 @@
           "ranged"
         ],
         "default_health": 2
-      }
+      },
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_ARCHER",
+        "default_hp": 24,
+        "move_speed": 235,
+        "sense_radius": 1100,
+        "attack_range": 620,
+        "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+        "keep_distance": 420
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_ARCHER",
+            "default_hp": 24,
+            "move_speed": 235,
+            "spawn_tags": [
+              "ground",
+              "ranged"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 1100,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.keep_distance",
+          "params": {
+            "move_speed": 235,
+            "keep_distance": 420,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.projectile_spawn",
+          "params": {
+            "attack_damage": 8,
+            "attack_range": 620,
+            "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+            "projectile_speed": 900,
+            "cooldown_seconds": 1.6,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 24
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "armadillopack_mutation",
@@ -101,7 +280,8 @@
         "build",
         "passive"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "assault_shield",
@@ -115,7 +295,8 @@
         "shield",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "automaton",
@@ -137,7 +318,84 @@
           "ranged"
         ],
         "default_health": 4
-      }
+      },
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_AUTOMATON",
+        "default_hp": 40,
+        "move_speed": 245,
+        "sense_radius": 900,
+        "attack_range": 520
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_AUTOMATON",
+            "default_hp": 40,
+            "move_speed": 245,
+            "spawn_tags": [
+              "ground",
+              "ranged"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 900,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.keep_distance",
+          "params": {
+            "move_speed": 245,
+            "keep_distance": 420,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.projectile_spawn",
+          "params": {
+            "attack_damage": 8,
+            "attack_range": 520,
+            "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+            "projectile_speed": 900,
+            "cooldown_seconds": 1.6,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 40
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "balanced_blade",
@@ -151,7 +409,8 @@
         "melee",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "biome_teleporter",
@@ -165,7 +424,18 @@
         "navigation",
         "object"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "teleport.transition.activate",
+          "params": {},
+          "tags": [
+            "teleport",
+            "navigation",
+            "object"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "bleed_vfx",
@@ -179,7 +449,27 @@
         "particle",
         "bleed"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "vfx.lifecycle.cleanup_after_duration",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "bleed"
+          ]
+        },
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "bleed"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "blood_sword",
@@ -193,7 +483,18 @@
         "melee",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "weapon.effect.apply_bleed_on_hit",
+          "params": {},
+          "tags": [
+            "weapon",
+            "melee",
+            "equipment"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "bloodthirsty_shield",
@@ -207,7 +508,8 @@
         "shield",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "blueprint_pickup",
@@ -221,7 +523,27 @@
         "unlock",
         "pickup"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "pickup.collect.grant_reward",
+          "params": {},
+          "tags": [
+            "blueprint",
+            "unlock",
+            "pickup"
+          ]
+        },
+        {
+          "capability_id": "pickup.feedback.spawn_reward_visual",
+          "params": {},
+          "tags": [
+            "blueprint",
+            "unlock",
+            "pickup"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "boss_health_bar_hud",
@@ -235,7 +557,27 @@
         "boss",
         "health"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "hud.display.refresh_value",
+          "params": {},
+          "tags": [
+            "hud",
+            "boss",
+            "health"
+          ]
+        },
+        {
+          "capability_id": "hud.feedback.flash_warning",
+          "params": {},
+          "tags": [
+            "hud",
+            "boss",
+            "health"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "boss_stem_cell_door",
@@ -249,7 +591,27 @@
         "difficulty",
         "progression"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "encounter.exit.unlock_exit",
+          "params": {},
+          "tags": [
+            "exit",
+            "difficulty",
+            "progression"
+          ]
+        },
+        {
+          "capability_id": "level.transition.activate",
+          "params": {},
+          "tags": [
+            "exit",
+            "difficulty",
+            "progression"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "bow_and_infinite_arrows",
@@ -263,7 +625,8 @@
         "ranged",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "breakable_door",
@@ -277,7 +640,8 @@
         "breakable",
         "object"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "broadsword",
@@ -291,7 +655,8 @@
         "melee",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "burn_vfx",
@@ -305,7 +670,27 @@
         "particle",
         "burn"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "vfx.lifecycle.cleanup_after_duration",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "burn"
+          ]
+        },
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "burn"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "buzzcutter",
@@ -327,7 +712,82 @@
           "melee"
         ],
         "default_health": 2
-      }
+      },
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_BUZZCUTTER",
+        "default_hp": 20,
+        "move_speed": 340,
+        "sense_radius": 900,
+        "attack_range": 155
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_BUZZCUTTER",
+            "default_hp": 20,
+            "move_speed": 340,
+            "spawn_tags": [
+              "flying",
+              "melee"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 900,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 340,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 155,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 20
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "catcher",
@@ -349,7 +809,82 @@
           "control"
         ],
         "default_health": 5
-      }
+      },
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_CATCHER",
+        "default_hp": 50,
+        "move_speed": 245,
+        "sense_radius": 900,
+        "attack_range": 155
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_CATCHER",
+            "default_hp": 50,
+            "move_speed": 245,
+            "spawn_tags": [
+              "control",
+              "ground"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 900,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 245,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 155,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 50
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "cell_pickup",
@@ -363,7 +898,27 @@
         "meta",
         "pickup"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "pickup.collect.grant_reward",
+          "params": {},
+          "tags": [
+            "cell",
+            "meta",
+            "pickup"
+          ]
+        },
+        {
+          "capability_id": "pickup.feedback.spawn_reward_visual",
+          "params": {},
+          "tags": [
+            "cell",
+            "meta",
+            "pickup"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "combat_damage_number_hud",
@@ -377,7 +932,27 @@
         "damage",
         "feedback"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "hud.display.refresh_value",
+          "params": {},
+          "tags": [
+            "hud",
+            "damage",
+            "feedback"
+          ]
+        },
+        {
+          "capability_id": "hud.feedback.flash_warning",
+          "params": {},
+          "tags": [
+            "hud",
+            "damage",
+            "feedback"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "combo_mutation",
@@ -391,7 +966,8 @@
         "build",
         "passive"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "concierge_boss",
@@ -405,7 +981,90 @@
         "boss",
         "elite"
       ],
-      "spawnable": false
+      "spawnable": true,
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_CONCIERGE_BOSS",
+        "default_hp": 20,
+        "move_speed": 240,
+        "sense_radius": 850,
+        "attack_range": 150
+      },
+      "runtime_profile": "enemy_runtime",
+      "enemy_profile": {
+        "allowed_spawn_tags": [
+          "boss",
+          "elite"
+        ],
+        "default_health": 2,
+        "cost": 2
+      },
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_CONCIERGE_BOSS",
+            "default_hp": 20,
+            "move_speed": 240,
+            "spawn_tags": [
+              "boss",
+              "elite"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 850,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 240,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 150,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 20
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "conjunctivius_boss",
@@ -419,7 +1078,90 @@
         "boss",
         "elite"
       ],
-      "spawnable": false
+      "spawnable": true,
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_CONJUNCTIVIUS_BOSS",
+        "default_hp": 20,
+        "move_speed": 240,
+        "sense_radius": 850,
+        "attack_range": 150
+      },
+      "runtime_profile": "enemy_runtime",
+      "enemy_profile": {
+        "allowed_spawn_tags": [
+          "boss",
+          "elite"
+        ],
+        "default_health": 2,
+        "cost": 2
+      },
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_CONJUNCTIVIUS_BOSS",
+            "default_hp": 20,
+            "move_speed": 240,
+            "spawn_tags": [
+              "boss",
+              "elite"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 850,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 240,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 150,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 20
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "cooldown_meter_hud",
@@ -433,7 +1175,27 @@
         "cooldown",
         "skill"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "hud.display.refresh_value",
+          "params": {},
+          "tags": [
+            "hud",
+            "cooldown",
+            "skill"
+          ]
+        },
+        {
+          "capability_id": "hud.feedback.flash_warning",
+          "params": {},
+          "tags": [
+            "hud",
+            "cooldown",
+            "skill"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "corpse_dust_vfx",
@@ -447,7 +1209,27 @@
         "particle",
         "death"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "vfx.lifecycle.cleanup_after_duration",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "death"
+          ]
+        },
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "death"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "corrupted_power",
@@ -461,7 +1243,8 @@
         "cooldown",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "critical_hit_vfx",
@@ -475,7 +1258,27 @@
         "particle",
         "critical"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "vfx.lifecycle.cleanup_after_duration",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "critical"
+          ]
+        },
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "critical"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "crumbling_floor",
@@ -489,7 +1292,18 @@
         "breakable",
         "floor"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "platform.state.collapse_when_touched",
+          "params": {},
+          "tags": [
+            "platform",
+            "breakable",
+            "floor"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "crusher",
@@ -503,7 +1317,8 @@
         "cooldown",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "crusher_trap",
@@ -517,7 +1332,27 @@
         "hazard",
         "crusher"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "hazard.arming.arm_hazard",
+          "params": {},
+          "tags": [
+            "trap",
+            "hazard",
+            "crusher"
+          ]
+        },
+        {
+          "capability_id": "hazard.damage.apply_hazard_damage",
+          "params": {},
+          "tags": [
+            "trap",
+            "hazard",
+            "crusher"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "cudgel_shield",
@@ -531,7 +1366,8 @@
         "shield",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "curse_counter_hud",
@@ -544,7 +1380,25 @@
         "hud",
         "curse"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "hud.display.refresh_value",
+          "params": {},
+          "tags": [
+            "hud",
+            "curse"
+          ]
+        },
+        {
+          "capability_id": "hud.feedback.flash_warning",
+          "params": {},
+          "tags": [
+            "hud",
+            "curse"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "curse_skull_vfx",
@@ -558,7 +1412,27 @@
         "particle",
         "curse"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "vfx.lifecycle.cleanup_after_duration",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "curse"
+          ]
+        },
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "curse"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "cursed_chest",
@@ -572,7 +1446,27 @@
         "curse",
         "chest"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "chest.open_reward",
+          "params": {},
+          "tags": [
+            "reward",
+            "curse",
+            "chest"
+          ]
+        },
+        {
+          "capability_id": "curse.add_counter",
+          "params": {},
+          "tags": [
+            "reward",
+            "curse",
+            "chest"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "death_orb",
@@ -586,7 +1480,8 @@
         "cooldown",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "demon",
@@ -608,7 +1503,82 @@
           "fire"
         ],
         "default_health": 4
-      }
+      },
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_DEMON",
+        "default_hp": 40,
+        "move_speed": 340,
+        "sense_radius": 900,
+        "attack_range": 155
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_DEMON",
+            "default_hp": 40,
+            "move_speed": 340,
+            "spawn_tags": [
+              "fire",
+              "flying"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 900,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 340,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 155,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 40
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "double_crossbomatic",
@@ -622,7 +1592,8 @@
         "cooldown",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "electric_vfx",
@@ -636,7 +1607,27 @@
         "particle",
         "electric"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "vfx.lifecycle.cleanup_after_duration",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "electric"
+          ]
+        },
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "electric"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "electric_whip",
@@ -650,7 +1641,18 @@
         "ranged",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "weapon.effect.apply_shock_chain",
+          "params": {},
+          "tags": [
+            "weapon",
+            "ranged",
+            "equipment"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "elevator_platform",
@@ -664,7 +1666,8 @@
         "navigation",
         "moving"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "elite_aura_vfx",
@@ -678,7 +1681,27 @@
         "particle",
         "elite"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "vfx.lifecycle.cleanup_after_duration",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "elite"
+          ]
+        },
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "elite"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "failed_experiment",
@@ -700,7 +1723,82 @@
           "melee"
         ],
         "default_health": 5
-      }
+      },
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_FAILED_EXPERIMENT",
+        "default_hp": 50,
+        "move_speed": 245,
+        "sense_radius": 900,
+        "attack_range": 155
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_FAILED_EXPERIMENT",
+            "default_hp": 50,
+            "move_speed": 245,
+            "spawn_tags": [
+              "ground",
+              "melee"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 900,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 245,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 155,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 50
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "falling_spike_trap",
@@ -714,7 +1812,27 @@
         "hazard",
         "falling"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "hazard.arming.arm_hazard",
+          "params": {},
+          "tags": [
+            "trap",
+            "hazard",
+            "falling"
+          ]
+        },
+        {
+          "capability_id": "hazard.damage.apply_hazard_damage",
+          "params": {},
+          "tags": [
+            "trap",
+            "hazard",
+            "falling"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "fire_grenade",
@@ -728,7 +1846,8 @@
         "cooldown",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "firebrands",
@@ -742,7 +1861,8 @@
         "ranged",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "flame_jet_trap",
@@ -756,7 +1876,36 @@
         "fire",
         "hazard"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "hazard.arming.arm_hazard",
+          "params": {},
+          "tags": [
+            "trap",
+            "fire",
+            "hazard"
+          ]
+        },
+        {
+          "capability_id": "hazard.damage.apply_hazard_damage",
+          "params": {},
+          "tags": [
+            "trap",
+            "fire",
+            "hazard"
+          ]
+        },
+        {
+          "capability_id": "hazard.effect.apply_burn",
+          "params": {},
+          "tags": [
+            "trap",
+            "fire",
+            "hazard"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "food_pickup",
@@ -770,7 +1919,27 @@
         "food",
         "pickup"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "pickup.collect.grant_reward",
+          "params": {},
+          "tags": [
+            "healing",
+            "food",
+            "pickup"
+          ]
+        },
+        {
+          "capability_id": "pickup.feedback.spawn_reward_visual",
+          "params": {},
+          "tags": [
+            "healing",
+            "food",
+            "pickup"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "forge_station",
@@ -784,7 +1953,18 @@
         "upgrade",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "upgrade.apply_item_upgrade",
+          "params": {},
+          "tags": [
+            "forge",
+            "upgrade",
+            "equipment"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "frantic_sword",
@@ -798,7 +1978,8 @@
         "melee",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "freeze_trap",
@@ -811,7 +1992,41 @@
         "trap",
         "freeze"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "hazard.effect.apply_freeze",
+          "params": {},
+          "tags": [
+            "trap",
+            "freeze"
+          ]
+        },
+        {
+          "capability_id": "hazard.sensor.detect_overlap",
+          "params": {},
+          "tags": [
+            "trap",
+            "freeze"
+          ]
+        },
+        {
+          "capability_id": "vfx.visibility.set_visible_while_state",
+          "params": {},
+          "tags": [
+            "trap",
+            "freeze"
+          ]
+        },
+        {
+          "capability_id": "camera.feedback.camera_impulse",
+          "params": {},
+          "tags": [
+            "trap",
+            "freeze"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "freeze_vfx",
@@ -825,7 +2040,36 @@
         "particle",
         "freeze"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "vfx.lifecycle.cleanup_after_duration",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "freeze"
+          ]
+        },
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "freeze"
+          ]
+        },
+        {
+          "capability_id": "vfx.visibility.set_visible_while_state",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "freeze"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "frenzy_mutation",
@@ -839,7 +2083,8 @@
         "build",
         "passive"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "gastronomy_mutation",
@@ -853,7 +2098,8 @@
         "build",
         "passive"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "giant_boss",
@@ -867,7 +2113,90 @@
         "boss",
         "elite"
       ],
-      "spawnable": false
+      "spawnable": true,
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_GIANT_BOSS",
+        "default_hp": 20,
+        "move_speed": 240,
+        "sense_radius": 850,
+        "attack_range": 150
+      },
+      "runtime_profile": "enemy_runtime",
+      "enemy_profile": {
+        "allowed_spawn_tags": [
+          "boss",
+          "elite"
+        ],
+        "default_health": 2,
+        "cost": 2
+      },
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_GIANT_BOSS",
+            "default_hp": 20,
+            "move_speed": 240,
+            "spawn_tags": [
+              "boss",
+              "elite"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 850,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 240,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 150,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 20
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "goblin_melee",
@@ -889,7 +2218,82 @@
           "melee"
         ],
         "default_health": 2
-      }
+      },
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_GOBLIN_MELEE",
+        "default_hp": 20,
+        "move_speed": 245,
+        "sense_radius": 900,
+        "attack_range": 155
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_GOBLIN_MELEE",
+            "default_hp": 20,
+            "move_speed": 245,
+            "spawn_tags": [
+              "ground",
+              "melee"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 900,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 245,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 155,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 20
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "gold_pickup",
@@ -903,7 +2307,27 @@
         "currency",
         "pickup"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "pickup.collect.grant_reward",
+          "params": {},
+          "tags": [
+            "gold",
+            "currency",
+            "pickup"
+          ]
+        },
+        {
+          "capability_id": "pickup.feedback.spawn_reward_visual",
+          "params": {},
+          "tags": [
+            "gold",
+            "currency",
+            "pickup"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "golem",
@@ -925,7 +2349,82 @@
           "heavy"
         ],
         "default_health": 8
-      }
+      },
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_GOLEM",
+        "default_hp": 80,
+        "move_speed": 245,
+        "sense_radius": 900,
+        "attack_range": 155
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_GOLEM",
+            "default_hp": 80,
+            "move_speed": 245,
+            "spawn_tags": [
+              "ground",
+              "heavy"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 900,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 245,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 155,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 80
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "grenadier",
@@ -949,7 +2448,85 @@
           "explosive"
         ],
         "default_health": 3
-      }
+      },
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_GRENADIER",
+        "default_hp": 30,
+        "move_speed": 245,
+        "sense_radius": 900,
+        "attack_range": 520
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_GRENADIER",
+            "default_hp": 30,
+            "move_speed": 245,
+            "spawn_tags": [
+              "explosive",
+              "ground",
+              "ranged"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 900,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.keep_distance",
+          "params": {
+            "move_speed": 245,
+            "keep_distance": 420,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.projectile_spawn",
+          "params": {
+            "attack_damage": 8,
+            "attack_range": 520,
+            "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+            "projectile_speed": 900,
+            "cooldown_seconds": 1.6,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 30
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "hand_of_the_king_boss",
@@ -963,7 +2540,90 @@
         "boss",
         "elite"
       ],
-      "spawnable": false
+      "spawnable": true,
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_HAND_OF_THE_KING_BOSS",
+        "default_hp": 20,
+        "move_speed": 240,
+        "sense_radius": 850,
+        "attack_range": 150
+      },
+      "runtime_profile": "enemy_runtime",
+      "enemy_profile": {
+        "allowed_spawn_tags": [
+          "boss",
+          "elite"
+        ],
+        "default_health": 2,
+        "cost": 2
+      },
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_HAND_OF_THE_KING_BOSS",
+            "default_hp": 20,
+            "move_speed": 240,
+            "spawn_tags": [
+              "boss",
+              "elite"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 850,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 240,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 150,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 20
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "hayabusa_boots",
@@ -977,7 +2637,8 @@
         "melee",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "health_bar_hud",
@@ -991,7 +2652,27 @@
         "health",
         "player"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "hud.display.refresh_value",
+          "params": {},
+          "tags": [
+            "hud",
+            "health",
+            "player"
+          ]
+        },
+        {
+          "capability_id": "hud.feedback.flash_warning",
+          "params": {},
+          "tags": [
+            "hud",
+            "health",
+            "player"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "health_fountain",
@@ -1005,7 +2686,27 @@
         "rest",
         "pickup"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "pickup.collect.grant_reward",
+          "params": {},
+          "tags": [
+            "healing",
+            "rest",
+            "pickup"
+          ]
+        },
+        {
+          "capability_id": "pickup.feedback.spawn_reward_visual",
+          "params": {},
+          "tags": [
+            "healing",
+            "rest",
+            "pickup"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "heavy_crossbow",
@@ -1019,7 +2720,8 @@
         "ranged",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "ice_bow",
@@ -1033,7 +2735,8 @@
         "ranged",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "ice_grenade",
@@ -1047,7 +2750,8 @@
         "cooldown",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "impaler",
@@ -1061,7 +2765,8 @@
         "melee",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "infantry_bow",
@@ -1075,7 +2780,8 @@
         "ranged",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "infantry_grenade",
@@ -1089,7 +2795,8 @@
         "cooldown",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "inquisitor",
@@ -1111,7 +2818,84 @@
           "ranged"
         ],
         "default_health": 3
-      }
+      },
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_INQUISITOR",
+        "default_hp": 30,
+        "move_speed": 245,
+        "sense_radius": 900,
+        "attack_range": 520
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_INQUISITOR",
+            "default_hp": 30,
+            "move_speed": 245,
+            "spawn_tags": [
+              "caster",
+              "ranged"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 900,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.keep_distance",
+          "params": {
+            "move_speed": 245,
+            "keep_distance": 420,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.projectile_spawn",
+          "params": {
+            "attack_damage": 8,
+            "attack_range": 520,
+            "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+            "projectile_speed": 900,
+            "cooldown_seconds": 1.6,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 30
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "kamikaze_bat",
@@ -1133,7 +2917,83 @@
           "explosive"
         ],
         "default_health": 1
-      }
+      },
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_KAMIKAZE_BAT",
+        "default_hp": 16,
+        "move_speed": 380,
+        "sense_radius": 950,
+        "attack_range": 120
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_KAMIKAZE_BAT",
+            "default_hp": 16,
+            "move_speed": 380,
+            "spawn_tags": [
+              "explosive",
+              "flying"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 950,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 380,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 16
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.self_destruct",
+          "params": {
+            "attack_damage": 18,
+            "attack_range": 120,
+            "explosion_radius": 180,
+            "cooldown_seconds": 0.5,
+            "kill_self": true,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "knife_thrower",
@@ -1155,7 +3015,84 @@
           "ranged"
         ],
         "default_health": 3
-      }
+      },
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_KNIFE_THROWER",
+        "default_hp": 30,
+        "move_speed": 245,
+        "sense_radius": 900,
+        "attack_range": 520
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_KNIFE_THROWER",
+            "default_hp": 30,
+            "move_speed": 245,
+            "spawn_tags": [
+              "ground",
+              "ranged"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 900,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.keep_distance",
+          "params": {
+            "move_speed": 245,
+            "keep_distance": 420,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.projectile_spawn",
+          "params": {
+            "attack_damage": 8,
+            "attack_range": 520,
+            "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+            "projectile_speed": 900,
+            "cooldown_seconds": 1.6,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 30
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "lancer",
@@ -1177,7 +3114,82 @@
           "melee"
         ],
         "default_health": 4
-      }
+      },
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_LANCER",
+        "default_hp": 40,
+        "move_speed": 245,
+        "sense_radius": 900,
+        "attack_range": 155
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_LANCER",
+            "default_hp": 40,
+            "move_speed": 245,
+            "spawn_tags": [
+              "ground",
+              "melee"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 900,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 245,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 155,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 40
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "level_exit_door",
@@ -1191,7 +3203,27 @@
         "door",
         "progression"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "encounter.exit.unlock_exit",
+          "params": {},
+          "tags": [
+            "exit",
+            "door",
+            "progression"
+          ]
+        },
+        {
+          "capability_id": "level.transition.activate",
+          "params": {},
+          "tags": [
+            "exit",
+            "door",
+            "progression"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "librarian",
@@ -1213,7 +3245,84 @@
           "ranged"
         ],
         "default_health": 4
-      }
+      },
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_LIBRARIAN",
+        "default_hp": 40,
+        "move_speed": 245,
+        "sense_radius": 900,
+        "attack_range": 520
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_LIBRARIAN",
+            "default_hp": 40,
+            "move_speed": 245,
+            "spawn_tags": [
+              "caster",
+              "ranged"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 900,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.keep_distance",
+          "params": {
+            "move_speed": 245,
+            "keep_distance": 420,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.projectile_spawn",
+          "params": {
+            "attack_damage": 8,
+            "attack_range": 520,
+            "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+            "projectile_speed": 900,
+            "cooldown_seconds": 1.6,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 40
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "lore_room_object",
@@ -1227,7 +3336,8 @@
         "interaction",
         "object"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "magnetic_grenade",
@@ -1241,7 +3351,8 @@
         "cooldown",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "malaise_meter_hud",
@@ -1255,7 +3366,27 @@
         "malaise",
         "status"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "hud.display.refresh_value",
+          "params": {},
+          "tags": [
+            "hud",
+            "malaise",
+            "status"
+          ]
+        },
+        {
+          "capability_id": "hud.feedback.flash_warning",
+          "params": {},
+          "tags": [
+            "hud",
+            "malaise",
+            "status"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "marksman_bow",
@@ -1269,7 +3400,8 @@
         "ranged",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "melee_weapon_slot",
@@ -1283,7 +3415,8 @@
         "melee",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "minimap_hud",
@@ -1297,7 +3430,27 @@
         "map",
         "navigation"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "hud.display.refresh_value",
+          "params": {},
+          "tags": [
+            "hud",
+            "map",
+            "navigation"
+          ]
+        },
+        {
+          "capability_id": "hud.feedback.flash_warning",
+          "params": {},
+          "tags": [
+            "hud",
+            "map",
+            "navigation"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "necromancy_mutation",
@@ -1311,7 +3464,8 @@
         "build",
         "passive"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "nutcracker",
@@ -1325,7 +3479,8 @@
         "melee",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "open_wounds_mutation",
@@ -1339,7 +3494,8 @@
         "build",
         "passive"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "oven_knight",
@@ -1363,7 +3519,83 @@
           "fire"
         ],
         "default_health": 8
-      }
+      },
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_OVEN_KNIGHT",
+        "default_hp": 80,
+        "move_speed": 245,
+        "sense_radius": 900,
+        "attack_range": 155
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_OVEN_KNIGHT",
+            "default_hp": 80,
+            "move_speed": 245,
+            "spawn_tags": [
+              "fire",
+              "ground",
+              "heavy"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 900,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 245,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 155,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 80
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "parry_shield",
@@ -1377,7 +3609,8 @@
         "shield",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "parry_spark_vfx",
@@ -1391,7 +3624,27 @@
         "particle",
         "parry"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "vfx.lifecycle.cleanup_after_duration",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "parry"
+          ]
+        },
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "parry"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "phaser",
@@ -1405,7 +3658,8 @@
         "cooldown",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "pirate_captain",
@@ -1427,7 +3681,82 @@
           "explosive"
         ],
         "default_health": 5
-      }
+      },
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_PIRATE_CAPTAIN",
+        "default_hp": 50,
+        "move_speed": 245,
+        "sense_radius": 900,
+        "attack_range": 155
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_PIRATE_CAPTAIN",
+            "default_hp": 50,
+            "move_speed": 245,
+            "spawn_tags": [
+              "explosive",
+              "ground"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 900,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 245,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 155,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 50
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "player",
@@ -1441,7 +3770,36 @@
         "prisoner",
         "combat"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "player.attack.apply_damage",
+          "params": {},
+          "tags": [
+            "player",
+            "prisoner",
+            "combat"
+          ]
+        },
+        {
+          "capability_id": "player.movement.block_by_state",
+          "params": {},
+          "tags": [
+            "player",
+            "prisoner",
+            "combat"
+          ]
+        },
+        {
+          "capability_id": "player.movement.move_actor",
+          "params": {},
+          "tags": [
+            "player",
+            "prisoner",
+            "combat"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "player_flask",
@@ -1455,7 +3813,27 @@
         "resource",
         "pickup"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "pickup.collect.grant_reward",
+          "params": {},
+          "tags": [
+            "healing",
+            "resource",
+            "pickup"
+          ]
+        },
+        {
+          "capability_id": "pickup.feedback.spawn_reward_visual",
+          "params": {},
+          "tags": [
+            "healing",
+            "resource",
+            "pickup"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "player_mutation_panel",
@@ -1469,7 +3847,8 @@
         "build",
         "mutation"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "poison_pool",
@@ -1483,7 +3862,36 @@
         "poison",
         "hazard"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "hazard.arming.arm_hazard",
+          "params": {},
+          "tags": [
+            "trap",
+            "poison",
+            "hazard"
+          ]
+        },
+        {
+          "capability_id": "hazard.damage.apply_hazard_damage",
+          "params": {},
+          "tags": [
+            "trap",
+            "poison",
+            "hazard"
+          ]
+        },
+        {
+          "capability_id": "hazard.effect.apply_poison_dot",
+          "params": {},
+          "tags": [
+            "trap",
+            "poison",
+            "hazard"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "poison_vfx",
@@ -1497,7 +3905,27 @@
         "particle",
         "poison"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "vfx.lifecycle.cleanup_after_duration",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "poison"
+          ]
+        },
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "poison"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "powerful_grenade",
@@ -1511,7 +3939,8 @@
         "cooldown",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "pressure_plate",
@@ -1525,7 +3954,18 @@
         "trap",
         "pressure"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "hazard.effect.apply_freeze",
+          "params": {},
+          "tags": [
+            "trigger",
+            "trap",
+            "pressure"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "protector",
@@ -1547,7 +3987,82 @@
           "aura"
         ],
         "default_health": 4
-      }
+      },
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_PROTECTOR",
+        "default_hp": 40,
+        "move_speed": 245,
+        "sense_radius": 900,
+        "attack_range": 155
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_PROTECTOR",
+            "default_hp": 40,
+            "move_speed": 245,
+            "spawn_tags": [
+              "aura",
+              "support"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 900,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 245,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 155,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 40
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "punishment_shield",
@@ -1561,7 +4076,8 @@
         "shield",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "queen_boss",
@@ -1575,7 +4091,90 @@
         "boss",
         "elite"
       ],
-      "spawnable": false
+      "spawnable": true,
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_QUEEN_BOSS",
+        "default_hp": 20,
+        "move_speed": 240,
+        "sense_radius": 850,
+        "attack_range": 150
+      },
+      "runtime_profile": "enemy_runtime",
+      "enemy_profile": {
+        "allowed_spawn_tags": [
+          "boss",
+          "elite"
+        ],
+        "default_health": 2,
+        "cost": 2
+      },
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_QUEEN_BOSS",
+            "default_hp": 20,
+            "move_speed": 240,
+            "spawn_tags": [
+              "boss",
+              "elite"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 850,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 240,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 150,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 20
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "quick_bow",
@@ -1589,7 +4188,8 @@
         "ranged",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "rampager",
@@ -1611,7 +4211,82 @@
           "melee"
         ],
         "default_health": 5
-      }
+      },
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_RAMPAGER",
+        "default_hp": 50,
+        "move_speed": 245,
+        "sense_radius": 900,
+        "attack_range": 155
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_RAMPAGER",
+            "default_hp": 50,
+            "move_speed": 245,
+            "spawn_tags": [
+              "fast",
+              "melee"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 900,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 245,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 155,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 50
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "rampart_shield",
@@ -1625,7 +4300,8 @@
         "shield",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "rancid_rat",
@@ -1647,7 +4323,82 @@
           "swarm"
         ],
         "default_health": 2
-      }
+      },
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_RANCID_RAT",
+        "default_hp": 20,
+        "move_speed": 245,
+        "sense_radius": 900,
+        "attack_range": 155
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_RANCID_RAT",
+            "default_hp": 20,
+            "move_speed": 245,
+            "spawn_tags": [
+              "ground",
+              "swarm"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 900,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 245,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 155,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 20
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "ranged_weapon_slot",
@@ -1661,7 +4412,42 @@
         "ranged",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
+    },
+    {
+      "entity_id": "room_encounter",
+      "display_name": "Room Encounter",
+      "display_name_zh": "房间遭遇战",
+      "entity_kind": "encounter",
+      "summary": "房间遭遇战：统计本次生成敌人的存活数量，全部死亡后触发完成。",
+      "summary_zh": "房间遭遇战：统计本次生成敌人的存活数量，全部死亡后触发完成。",
+      "content_tags": [
+        "encounter",
+        "completion",
+        "enemy"
+      ],
+      "spawnable": false,
+      "runtime_profile": "enemy_encounter_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {},
+          "tags": [
+            "encounter",
+            "completion",
+            "enemy"
+          ]
+        }
+      ],
+      "enemy_profile": {
+        "cost": 1,
+        "allowed_spawn_tags": [
+          "encounter",
+          "completion"
+        ],
+        "default_health": 1
+      }
     },
     {
       "entity_id": "royal_guard",
@@ -1683,7 +4469,82 @@
           "elite"
         ],
         "default_health": 7
-      }
+      },
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_ROYAL_GUARD",
+        "default_hp": 70,
+        "move_speed": 245,
+        "sense_radius": 900,
+        "attack_range": 155
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_ROYAL_GUARD",
+            "default_hp": 70,
+            "move_speed": 245,
+            "spawn_tags": [
+              "elite",
+              "ground"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 900,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 245,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 155,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 70
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "runner",
@@ -1705,7 +4566,82 @@
           "melee"
         ],
         "default_health": 4
-      }
+      },
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_RUNNER",
+        "default_hp": 40,
+        "move_speed": 245,
+        "sense_radius": 900,
+        "attack_range": 155
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_RUNNER",
+            "default_hp": 40,
+            "move_speed": 245,
+            "spawn_tags": [
+              "fast",
+              "melee"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 900,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 245,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 155,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 40
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "sadists_stiletto",
@@ -1719,7 +4655,8 @@
         "melee",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "saw_blade_trap",
@@ -1733,7 +4670,27 @@
         "hazard",
         "moving"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "hazard.arming.arm_hazard",
+          "params": {},
+          "tags": [
+            "trap",
+            "hazard",
+            "moving"
+          ]
+        },
+        {
+          "capability_id": "hazard.damage.apply_hazard_damage",
+          "params": {},
+          "tags": [
+            "trap",
+            "hazard",
+            "moving"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "scarecrow_boss",
@@ -1747,7 +4704,90 @@
         "boss",
         "elite"
       ],
-      "spawnable": false
+      "spawnable": true,
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_SCARECROW_BOSS",
+        "default_hp": 20,
+        "move_speed": 240,
+        "sense_radius": 850,
+        "attack_range": 150
+      },
+      "runtime_profile": "enemy_runtime",
+      "enemy_profile": {
+        "allowed_spawn_tags": [
+          "boss",
+          "elite"
+        ],
+        "default_health": 2,
+        "cost": 2
+      },
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_SCARECROW_BOSS",
+            "default_hp": 20,
+            "move_speed": 240,
+            "spawn_tags": [
+              "boss",
+              "elite"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 850,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 240,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 150,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 20
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "scorpion",
@@ -1769,7 +4809,82 @@
           "poison"
         ],
         "default_health": 3
-      }
+      },
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_SCORPION",
+        "default_hp": 30,
+        "move_speed": 245,
+        "sense_radius": 900,
+        "attack_range": 155
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_SCORPION",
+            "default_hp": 30,
+            "move_speed": 245,
+            "spawn_tags": [
+              "ground",
+              "poison"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 900,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 245,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 155,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 30
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "scroll_power_pickup",
@@ -1783,7 +4898,27 @@
         "stat",
         "pickup"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "pickup.collect.grant_reward",
+          "params": {},
+          "tags": [
+            "scroll",
+            "stat",
+            "pickup"
+          ]
+        },
+        {
+          "capability_id": "pickup.feedback.spawn_reward_visual",
+          "params": {},
+          "tags": [
+            "scroll",
+            "stat",
+            "pickup"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "scroll_survival_pickup",
@@ -1797,7 +4932,27 @@
         "survival",
         "pickup"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "pickup.collect.grant_reward",
+          "params": {},
+          "tags": [
+            "scroll",
+            "survival",
+            "pickup"
+          ]
+        },
+        {
+          "capability_id": "pickup.feedback.spawn_reward_visual",
+          "params": {},
+          "tags": [
+            "scroll",
+            "survival",
+            "pickup"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "scroll_tactics_pickup",
@@ -1811,7 +4966,27 @@
         "tactics",
         "pickup"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "pickup.collect.grant_reward",
+          "params": {},
+          "tags": [
+            "scroll",
+            "tactics",
+            "pickup"
+          ]
+        },
+        {
+          "capability_id": "pickup.feedback.spawn_reward_visual",
+          "params": {},
+          "tags": [
+            "scroll",
+            "tactics",
+            "pickup"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "secret_wall_rune",
@@ -1825,7 +5000,18 @@
         "trigger",
         "reward"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "hazard.effect.apply_freeze",
+          "params": {},
+          "tags": [
+            "secret",
+            "trigger",
+            "reward"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "servants_boss",
@@ -1839,7 +5025,90 @@
         "boss",
         "elite"
       ],
-      "spawnable": false
+      "spawnable": true,
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_SERVANTS_BOSS",
+        "default_hp": 20,
+        "move_speed": 240,
+        "sense_radius": 850,
+        "attack_range": 150
+      },
+      "runtime_profile": "enemy_runtime",
+      "enemy_profile": {
+        "allowed_spawn_tags": [
+          "boss",
+          "elite"
+        ],
+        "default_health": 2,
+        "cost": 2
+      },
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_SERVANTS_BOSS",
+            "default_hp": 20,
+            "move_speed": 240,
+            "spawn_tags": [
+              "boss",
+              "elite"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 850,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 240,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 150,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 20
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "shield_bearer",
@@ -1861,7 +5130,91 @@
           "shield"
         ],
         "default_health": 4
-      }
+      },
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_SHIELD_BEARER",
+        "default_hp": 42,
+        "move_speed": 220,
+        "sense_radius": 850,
+        "attack_range": 150
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_SHIELD_BEARER",
+            "default_hp": 42,
+            "move_speed": 220,
+            "spawn_tags": [
+              "ground",
+              "shield"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 850,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 220,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 150,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 42
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.defense.directional_block",
+          "params": {
+            "block_angle_degrees": 120,
+            "damage_reduction": 1.0,
+            "source_entity_id": "player"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "shield_bubble_vfx",
@@ -1875,7 +5228,27 @@
         "particle",
         "shield"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "vfx.lifecycle.cleanup_after_duration",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "shield"
+          ]
+        },
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "shield"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "shield_slot",
@@ -1889,7 +5262,8 @@
         "shield",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "shop_room_vendor",
@@ -1903,7 +5277,18 @@
         "vendor",
         "reward"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "economy.transaction.purchase_item",
+          "params": {},
+          "tags": [
+            "shop",
+            "vendor",
+            "reward"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "shovel",
@@ -1917,7 +5302,8 @@
         "melee",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "side_camera",
@@ -1929,7 +5315,23 @@
       "content_tags": [
         "camera"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "pickup.feedback.spawn_reward_visual",
+          "params": {},
+          "tags": [
+            "camera"
+          ]
+        },
+        {
+          "capability_id": "camera.feedback.camera_impulse",
+          "params": {},
+          "tags": [
+            "camera"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "sinew_slicer",
@@ -1943,7 +5345,8 @@
         "cooldown",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "skill_slot",
@@ -1957,7 +5360,8 @@
         "cooldown",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "slasher",
@@ -1981,7 +5385,83 @@
           "elite"
         ],
         "default_health": 6
-      }
+      },
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_SLASHER",
+        "default_hp": 60,
+        "move_speed": 245,
+        "sense_radius": 900,
+        "attack_range": 155
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_SLASHER",
+            "default_hp": 60,
+            "move_speed": 245,
+            "spawn_tags": [
+              "elite",
+              "ground",
+              "melee"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 900,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 245,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 155,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 60
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "spike_trap",
@@ -1995,7 +5475,27 @@
         "hazard",
         "floor"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "hazard.arming.arm_hazard",
+          "params": {},
+          "tags": [
+            "trap",
+            "hazard",
+            "floor"
+          ]
+        },
+        {
+          "capability_id": "hazard.damage.apply_hazard_damage",
+          "params": {},
+          "tags": [
+            "trap",
+            "hazard",
+            "floor"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "spite_sword",
@@ -2009,7 +5509,8 @@
         "melee",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "starting_cell_gate",
@@ -2023,7 +5524,8 @@
         "room",
         "progression"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "status_icon_hud",
@@ -2037,7 +5539,27 @@
         "status",
         "buff"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "hud.display.refresh_value",
+          "params": {},
+          "tags": [
+            "hud",
+            "status",
+            "buff"
+          ]
+        },
+        {
+          "capability_id": "hud.feedback.flash_warning",
+          "params": {},
+          "tags": [
+            "hud",
+            "status",
+            "buff"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "support_mutation",
@@ -2051,7 +5573,8 @@
         "build",
         "passive"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "swift_sword",
@@ -2065,7 +5588,8 @@
         "melee",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "symmetrical_lance",
@@ -2079,7 +5603,8 @@
         "melee",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "teleport_vfx",
@@ -2093,7 +5618,27 @@
         "particle",
         "teleport"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "vfx.lifecycle.cleanup_after_duration",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "teleport"
+          ]
+        },
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "teleport"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "throwing_knife",
@@ -2107,7 +5652,8 @@
         "ranged",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "time_keeper_boss",
@@ -2121,7 +5667,90 @@
         "boss",
         "elite"
       ],
-      "spawnable": false
+      "spawnable": true,
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_TIME_KEEPER_BOSS",
+        "default_hp": 20,
+        "move_speed": 240,
+        "sense_radius": 850,
+        "attack_range": 150
+      },
+      "runtime_profile": "enemy_runtime",
+      "enemy_profile": {
+        "allowed_spawn_tags": [
+          "boss",
+          "elite"
+        ],
+        "default_health": 2,
+        "cost": 2
+      },
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_TIME_KEEPER_BOSS",
+            "default_hp": 20,
+            "move_speed": 240,
+            "spawn_tags": [
+              "boss",
+              "elite"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 850,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 240,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 150,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 20
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     },
     {
       "entity_id": "timed_door",
@@ -2135,7 +5764,27 @@
         "timer",
         "reward"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": [
+        {
+          "capability_id": "encounter.exit.unlock_exit",
+          "params": {},
+          "tags": [
+            "exit",
+            "timer",
+            "reward"
+          ]
+        },
+        {
+          "capability_id": "level.transition.activate",
+          "params": {},
+          "tags": [
+            "exit",
+            "timer",
+            "reward"
+          ]
+        }
+      ]
     },
     {
       "entity_id": "tonic",
@@ -2149,7 +5798,8 @@
         "cooldown",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "tranquility_mutation",
@@ -2163,7 +5813,8 @@
         "build",
         "passive"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "treasure_chest",
@@ -2177,7 +5828,8 @@
         "chest",
         "loot"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "twin_daggers",
@@ -2191,7 +5843,8 @@
         "melee",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "vengeance_mutation",
@@ -2205,7 +5858,8 @@
         "build",
         "passive"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "war_spear",
@@ -2219,7 +5873,8 @@
         "melee",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "wolf_trap",
@@ -2233,7 +5888,8 @@
         "cooldown",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "wooden_shield",
@@ -2247,7 +5903,8 @@
         "shield",
         "equipment"
       ],
-      "spawnable": false
+      "spawnable": false,
+      "capability_bindings": []
     },
     {
       "entity_id": "zombie",
@@ -2269,9 +5926,82 @@
           "melee"
         ],
         "default_health": 3
-      }
+      },
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_ZOMBIE",
+        "default_hp": 30,
+        "move_speed": 260,
+        "sense_radius": 900,
+        "attack_range": 160
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_ZOMBIE",
+            "default_hp": 30,
+            "move_speed": 260,
+            "spawn_tags": [
+              "ground",
+              "melee"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 900,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 260,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "params": {
+            "attack_damage": 10,
+            "attack_range": 160,
+            "hitbox_radius": 90,
+            "cooldown_seconds": 1.2,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 30
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ]
     }
-  ],
-  "library_role": "entity",
-  "state_contract": "runtime state belongs to AutoUEStateBlackboard"
+  ]
 }

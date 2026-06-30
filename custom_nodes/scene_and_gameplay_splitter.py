@@ -3,7 +3,8 @@ import json
 from core.BaseLLMNode import BaseLLMNode, GraphState
 from core.workflow_validation import validate_graph_node_output, validate_node_output
 SCENE_AND_GAMEPLAY_SPLITTER_PROMPT = """SCHEMA: SceneAndGameplaySplitter
-Split the user request into scene_description and gameplay_description. Return JSON only.
+Split the user request into concrete scene_description and gameplay_description. Return JSON only.
+Do not merely restate genre labels; expand genre shorthand into representative visible scene facts and gameplay facts.
 """
 def SplitUserDescription(state: GraphState, output: str) -> None:
     data = json.loads(validate_node_output("SceneAndGameplaySplitter", output))

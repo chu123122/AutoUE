@@ -8,7 +8,6 @@ Required JSON shape:
     {
       "flow_id": "stable_flow_id",
       "entity_id": "entity id from planner",
-      "ability_id": "legacy parent capability id from planner output",
       "source_behavior_id": "behavior id from planner",
       "stages": [
         {
@@ -29,7 +28,7 @@ Rules:
 - Create exactly one flow for every behavior.
 - Do not choose TypeScript files.
 - Do not write code.
-- Treat ability_id as the legacy field name for parent capability_id.
+- Do not output legacy ability_id. Use source_behavior_id plus behavior.required_capability_ids from planner context.
 - Use behavior.required_capability_ids and capability.runtime_primitives to choose 1-2 narrow engine_ports per flow.
 - engine_ports are query seeds for UE API MCP. Use stable snake/dot ids such as input.action_binding, primitive.on_component_begin_overlap, component.set_visibility, pawn.add_movement_input, camera.update_view_target, gameplay_statics.apply_damage.
 - Every flow must have at least one engine_port.

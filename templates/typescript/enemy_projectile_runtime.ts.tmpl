@@ -1,0 +1,6 @@
+export interface {{interface_name}} { readonly worldAdapter: any; readonly log?: (message: string) => void; }
+export class AutoUEEnemyProjectileRuntime {
+  constructor(private readonly context: {{interface_name}}) {}
+  spawnProjectile(classPath: string, transform: Record<string, any>, velocity?: any): any { return this.context.worldAdapter.spawnProjectile(classPath, transform, velocity); }
+}
+export function {{export_name}}(context: {{interface_name}}): AutoUEEnemyProjectileRuntime { return new AutoUEEnemyProjectileRuntime(context); }

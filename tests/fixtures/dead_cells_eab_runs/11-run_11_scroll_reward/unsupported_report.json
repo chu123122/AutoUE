@@ -1,11 +1,6 @@
 {
-  "result": "unsupported",
-  "unsupported_behaviors": [
-    "cell_pickup.collect.grant_reward",
-    "scroll_power_pickup.collect.detect_pickup",
-    "scroll_power_pickup.collect.grant_reward",
-    "scroll_power_pickup.feedback.spawn_reward_visual"
-  ],
+  "schema_version": "autoue-unsupported-report/v1",
+  "status": "unsupported",
   "unsupported_capabilities": [
     {
       "capability_kind": "pickup_collection",
@@ -17,19 +12,7 @@
       ],
       "supported": false,
       "reason": "pickup inventory/currency runtime is not implemented",
-      "capability_id": "cell_pickup.collect"
-    },
-    {
-      "capability_kind": "pickup_collection",
-      "action_kind": "grant_reward",
-      "handler": null,
-      "required_runtime_modules": [],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "supported": false,
-      "reason": "pickup inventory/currency runtime is not implemented",
-      "capability_id": "scroll_power_pickup.collect"
+      "capability_id": "pickup.collect.grant_reward"
     },
     {
       "capability_kind": "reward_feedback",
@@ -41,7 +24,11 @@
       ],
       "supported": false,
       "reason": "reward feedback runtime is not implemented",
-      "capability_id": "scroll_power_pickup.feedback"
+      "capability_id": "pickup.feedback.spawn_reward_visual"
     }
-  ]
+  ],
+  "unsupported_behaviors": [
+    "pickup.behavior.collect_reward"
+  ],
+  "reason": "SupportMatrix rejected at least one selected canonical capability/behavior; TypeScript generation must not proceed for this case."
 }

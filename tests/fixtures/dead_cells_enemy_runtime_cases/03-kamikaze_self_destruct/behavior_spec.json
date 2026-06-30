@@ -1,0 +1,288 @@
+{
+  "schema_version": "autoue-behavior-spec/v1",
+  "source_nodes": [
+    "EntityAbilityBehaviorPlanner",
+    "ThinGameplayFlowPlanner",
+    "PuerTSRuntimeMappingCompiler"
+  ],
+  "behaviors": [
+    {
+      "behavior_id": "enemy.behavior.chase_and_self_destruct",
+      "bound_entity_id": "kamikaze_bat",
+      "primary_entity_id": "kamikaze_bat",
+      "entity_id": "kamikaze_bat",
+      "runtime_domain": "enemy_runtime",
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_spawn_runtime",
+        "enemy_perception",
+        "enemy_movement",
+        "enemy_combat",
+        "enemy_health",
+        "enemy_death_events",
+        "encounter_manager"
+      ],
+      "runtime_params": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_KAMIKAZE_BAT",
+        "default_hp": 16,
+        "move_speed": 380,
+        "sense_radius": 950,
+        "attack_range": 120,
+        "spawn_tags": [
+          "explosive",
+          "flying"
+        ],
+        "bound_entity_id": "kamikaze_bat",
+        "entity_id": "kamikaze_bat"
+      },
+      "resolved_capabilities": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "capability_kind": "enemy_spawn",
+          "action_kind": "spawn_actor",
+          "handler": "EnemySpawnRuntime.spawnEnemy",
+          "params": {
+            "spawn_tags": [
+              "explosive",
+              "flying"
+            ],
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_KAMIKAZE_BAT",
+            "default_hp": 16,
+            "move_speed": 380,
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          },
+          "source_entity_binding": {
+            "entity_id": "kamikaze_bat",
+            "capability_id": "enemy.spawn.spawn_actor"
+          }
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "capability_kind": "enemy_sensor",
+          "action_kind": "detect_player_by_distance",
+          "handler": "EnemyPerception.detectPlayer",
+          "params": {
+            "target_entity_id": "player",
+            "sense_radius": 950,
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          },
+          "source_entity_binding": {
+            "entity_id": "kamikaze_bat",
+            "capability_id": "enemy.sensor.detect_player_by_distance"
+          }
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "capability_kind": "enemy_movement",
+          "action_kind": "chase_target",
+          "handler": "EnemyMovement.chaseTarget",
+          "params": {
+            "target_entity_id": "player",
+            "move_speed": 380,
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          },
+          "source_entity_binding": {
+            "entity_id": "kamikaze_bat",
+            "capability_id": "enemy.movement.chase_target"
+          }
+        },
+        {
+          "capability_id": "enemy.attack.self_destruct",
+          "capability_kind": "enemy_attack",
+          "action_kind": "self_destruct",
+          "handler": "EnemyCombat.selfDestruct",
+          "params": {
+            "kill_self": true,
+            "target_entity_id": "player",
+            "attack_damage": 18,
+            "attack_range": 120,
+            "explosion_radius": 180,
+            "cooldown_seconds": 0.5,
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          },
+          "source_entity_binding": {
+            "entity_id": "kamikaze_bat",
+            "capability_id": "enemy.attack.self_destruct"
+          }
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "capability_kind": "enemy_health",
+          "action_kind": "receive_damage",
+          "handler": "EnemyHealth.applyDamage",
+          "params": {
+            "max_hp": 16,
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          },
+          "source_entity_binding": {
+            "entity_id": "kamikaze_bat",
+            "capability_id": "enemy.health.receive_damage"
+          }
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "capability_kind": "enemy_death",
+          "action_kind": "emit_death_event",
+          "handler": "EnemyDeathEvents.emitDeath",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true,
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          },
+          "source_entity_binding": {
+            "entity_id": "kamikaze_bat",
+            "capability_id": "enemy.death.emit_death_event"
+          }
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "capability_kind": "encounter",
+          "action_kind": "complete_when_all_dead",
+          "handler": "EncounterManager.completeWhenAllDead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed",
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          },
+          "source_entity_binding": {
+            "entity_id": "kamikaze_bat",
+            "capability_id": "encounter.complete.complete_when_all_dead"
+          }
+        }
+      ],
+      "flow_id": "flow_enemy_behavior_chase_and_self_destruct",
+      "trigger": {
+        "kind": "on_event"
+      },
+      "conditions": [],
+      "actions": [
+        {
+          "type": "enemy_spawn_actor",
+          "capability_id": "enemy.spawn.spawn_actor",
+          "entity_id": "kamikaze_bat",
+          "params": {
+            "spawn_tags": [
+              "explosive",
+              "flying"
+            ],
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_KAMIKAZE_BAT",
+            "default_hp": 16,
+            "move_speed": 380,
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          }
+        },
+        {
+          "type": "enemy_detect_player",
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "entity_id": "kamikaze_bat",
+          "params": {
+            "target_entity_id": "player",
+            "sense_radius": 950,
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          }
+        },
+        {
+          "type": "enemy_chase_target",
+          "capability_id": "enemy.movement.chase_target",
+          "entity_id": "kamikaze_bat",
+          "params": {
+            "target_entity_id": "player",
+            "move_speed": 380,
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          },
+          "target_entity_id": "player"
+        },
+        {
+          "type": "enemy_self_destruct",
+          "capability_id": "enemy.attack.self_destruct",
+          "entity_id": "kamikaze_bat",
+          "params": {
+            "kill_self": true,
+            "target_entity_id": "player",
+            "attack_damage": 18,
+            "attack_range": 120,
+            "explosion_radius": 180,
+            "cooldown_seconds": 0.5,
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          },
+          "target_entity_id": "player"
+        },
+        {
+          "type": "enemy_receive_damage",
+          "capability_id": "enemy.health.receive_damage",
+          "entity_id": "kamikaze_bat",
+          "params": {
+            "max_hp": 16,
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          }
+        },
+        {
+          "type": "enemy_emit_death_event",
+          "capability_id": "enemy.death.emit_death_event",
+          "entity_id": "kamikaze_bat",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true,
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          }
+        },
+        {
+          "type": "encounter_complete_when_all_dead",
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "entity_id": "kamikaze_bat",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed",
+            "bound_entity_id": "kamikaze_bat",
+            "entity_id": "kamikaze_bat"
+          }
+        }
+      ],
+      "required_capability_ids": [
+        "enemy.spawn.spawn_actor",
+        "enemy.sensor.detect_player_by_distance",
+        "enemy.movement.chase_target",
+        "enemy.attack.self_destruct",
+        "enemy.health.receive_damage",
+        "enemy.death.emit_death_event",
+        "encounter.complete.complete_when_all_dead"
+      ],
+      "engine_port_ids": [
+        "actor.spawn",
+        "actor.get_distance_to",
+        "actor.set_actor_location",
+        "gameplay_statics.apply_damage",
+        "actor.destroy",
+        "actor.on_take_any_damage",
+        "actor.on_destroyed",
+        "encounter.alive_count"
+      ],
+      "verification_logs": [
+        "BehaviorTriggered enemy.behavior.chase_and_self_destruct",
+        "ActionDispatched enemy_spawn_actor",
+        "ActionDispatched enemy_detect_player",
+        "ActionDispatched enemy_chase_target",
+        "ActionDispatched enemy_self_destruct",
+        "ActionDispatched enemy_receive_damage",
+        "ActionDispatched enemy_emit_death_event",
+        "ActionDispatched encounter_complete_when_all_dead"
+      ]
+    }
+  ]
+}

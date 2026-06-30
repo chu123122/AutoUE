@@ -4,13 +4,14 @@
     "crumbling_floor",
     "health_bar_hud"
   ],
-  "selected_capability_ids": [],
+  "selected_capability_ids": [
+    "hazard.sensor.detect_overlap",
+    "hazard.arming.arm_hazard",
+    "hazard.damage.apply_hazard_damage",
+    "hud.display.refresh_value"
+  ],
   "selected_behavior_ids": [
-    "player.movement.run",
-    "player.movement.dodge_roll",
-    "saw_blade_trap.arming.enter_active",
-    "saw_blade_trap.damage.apply_contact",
-    "crumbling_floor.collapse_when_touched",
-    "health_bar_hud.display.refresh_value"
+    "hazard.behavior.arm_and_damage",
+    "hud.behavior.refresh_value"
   ]
 }

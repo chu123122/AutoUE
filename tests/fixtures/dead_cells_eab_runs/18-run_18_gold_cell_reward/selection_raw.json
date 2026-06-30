@@ -5,13 +5,15 @@
     "corpse_dust_vfx",
     "status_icon_hud"
   ],
-  "selected_capability_ids": [],
+  "selected_capability_ids": [
+    "pickup.collect.grant_reward",
+    "pickup.feedback.spawn_reward_visual",
+    "vfx.spawn.spawn_particles",
+    "hud.display.refresh_value"
+  ],
   "selected_behavior_ids": [
-    "gold_pickup.collect.detect_pickup",
-    "gold_pickup.collect.grant_reward",
-    "cell_pickup.collect.detect_pickup",
-    "cell_pickup.collect.grant_reward",
-    "corpse_dust_vfx.emit.spawn_particles",
-    "status_icon_hud.display.refresh_value"
+    "pickup.behavior.collect_reward",
+    "vfx.behavior.spawn_particles",
+    "hud.behavior.refresh_value"
   ]
 }

@@ -4,10 +4,16 @@
     "poison_vfx",
     "health_bar_hud"
   ],
-  "selected_capability_ids": [],
+  "selected_capability_ids": [
+    "hazard.sensor.detect_overlap",
+    "hazard.arming.arm_hazard",
+    "hazard.damage.apply_hazard_damage",
+    "vfx.spawn.spawn_particles",
+    "hud.display.refresh_value"
+  ],
   "selected_behavior_ids": [
-    "poison_pool.poison_player_on_overlap",
-    "poison_vfx.emit.spawn_particles",
-    "health_bar_hud.display.refresh_value"
+    "hazard.behavior.arm_and_damage",
+    "vfx.behavior.spawn_particles",
+    "hud.behavior.refresh_value"
   ]
 }

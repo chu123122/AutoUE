@@ -3,19 +3,84 @@
   "source_nodes": [
     "EntityAbilityBehaviorPlanner",
     "ThinGameplayFlowPlanner",
-    "PuerTSRuntimeMappingPlanner"
+    "PuerTSRuntimeMappingCompiler"
   ],
   "behaviors": [
     {
-      "behavior_id": "freeze_trap.freeze_player_on_overlap",
+      "behavior_id": "hazard.behavior.freeze_on_overlap",
+      "bound_entity_id": "freeze_trap",
       "primary_entity_id": "freeze_trap",
       "entity_id": "freeze_trap",
-      "ability_id": "freeze_trap.sensor.detect_player_overlap",
-      "flow_id": "flow_freeze_trap_freeze_player_on_overlap",
+      "runtime_domain": "behavior_runtime",
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "trigger_router",
+        "state_blackboard",
+        "action_dispatcher"
+      ],
+      "runtime_params": {},
+      "resolved_capabilities": [
+        {
+          "capability_id": "hazard.sensor.detect_overlap",
+          "capability_kind": "sensor_overlap",
+          "action_kind": "detect_overlap",
+          "handler": "TriggerRouter.bindOverlapEnter",
+          "params": {
+            "bound_entity_id": "freeze_trap",
+            "entity_id": "freeze_trap"
+          },
+          "source_entity_binding": {
+            "entity_id": "freeze_trap",
+            "capability_id": "hazard.sensor.detect_overlap"
+          }
+        },
+        {
+          "capability_id": "hazard.effect.apply_freeze",
+          "capability_kind": "apply_effect",
+          "action_kind": "apply_freeze",
+          "handler": "ActionDispatcher.writeState",
+          "params": {
+            "bound_entity_id": "freeze_trap",
+            "entity_id": "freeze_trap"
+          },
+          "source_entity_binding": {
+            "entity_id": "freeze_trap",
+            "capability_id": "hazard.effect.apply_freeze"
+          }
+        },
+        {
+          "capability_id": "vfx.visibility.set_visible_while_state",
+          "capability_kind": "vfx_binding",
+          "action_kind": "set_visible_while_state",
+          "handler": "ActionDispatcher.setVfxVisible",
+          "params": {
+            "bound_entity_id": "freeze_trap",
+            "entity_id": "freeze_trap"
+          },
+          "source_entity_binding": {
+            "entity_id": "freeze_trap",
+            "capability_id": "vfx.visibility.set_visible_while_state"
+          }
+        },
+        {
+          "capability_id": "camera.feedback.camera_impulse",
+          "capability_kind": "camera_feedback",
+          "action_kind": "camera_impulse",
+          "handler": "ActionDispatcher.cameraImpulse",
+          "params": {
+            "bound_entity_id": "freeze_trap",
+            "entity_id": "freeze_trap"
+          },
+          "source_entity_binding": {
+            "entity_id": "freeze_trap",
+            "capability_id": "camera.feedback.camera_impulse"
+          }
+        }
+      ],
+      "flow_id": "flow_hazard_behavior_freeze_on_overlap",
       "trigger": {
-        "type": "overlap_enter",
-        "source_entity_id": "player",
-        "target_entity_id": "freeze_trap"
+        "kind": "on_event"
       },
       "conditions": [
         {
@@ -30,37 +95,35 @@
           "value": {
             "active": true,
             "duration": 1.25
-          }
-        },
-        {
-          "type": "movement_gate",
-          "target_entity_id": "player",
-          "blocked_by": "player.effects.frozen"
+          },
+          "capability_id": "hazard.effect.apply_freeze"
         },
         {
           "type": "set_vfx_visible",
-          "entity_id": "freeze_vfx",
-          "visible_while": "player.effects.frozen"
+          "entity_id": "freeze_trap",
+          "visible_while": "player.effects.frozen",
+          "capability_id": "vfx.visibility.set_visible_while_state"
         },
         {
           "type": "camera_impulse",
-          "duration": 0.35
+          "duration": 0.35,
+          "capability_id": "camera.feedback.camera_impulse"
         }
       ],
       "required_capability_ids": [
-        "freeze_trap.sensor.detect_player_overlap",
-        "freeze_trap.effect.apply_freeze_to_player",
-        "player.movement.block_while_effect_active",
-        "freeze_vfx.emit.show_freeze",
-        "side_camera.camera.apply_impulse"
+        "hazard.sensor.detect_overlap",
+        "hazard.effect.apply_freeze",
+        "vfx.visibility.set_visible_while_state",
+        "camera.feedback.camera_impulse"
       ],
       "engine_port_ids": [
-        "primitive.on_component_begin_overlap",
-        "component.set_visibility",
-        "camera.update_view_target"
+        "manual.trigger"
       ],
       "verification_logs": [
-        "BehaviorTriggered freeze_trap.freeze_player_on_overlap"
+        "BehaviorTriggered hazard.behavior.freeze_on_overlap",
+        "ActionDispatched write_state",
+        "ActionDispatched set_vfx_visible",
+        "ActionDispatched camera_impulse"
       ]
     }
   ]

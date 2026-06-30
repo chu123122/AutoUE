@@ -1,53 +1,6 @@
 {
   "result": "pass",
-  "status": "unsupported",
-  "support_status": "unsupported",
-  "unsupported_capabilities": [
-    {
-      "capability_kind": "hazard_arming",
-      "action_kind": "arm_hazard",
-      "handler": null,
-      "required_runtime_modules": [],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "supported": false,
-      "reason": "hazard arming window runtime is not implemented",
-      "capability_id": "flame_jet_trap.arming"
-    },
-    {
-      "capability_kind": "apply_effect",
-      "action_kind": "apply_burn",
-      "handler": null,
-      "required_runtime_modules": [],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "supported": false,
-      "reason": "burn effect handler is not implemented",
-      "capability_id": "flame_jet_trap.hazard.apply_burn"
-    },
-    {
-      "capability_kind": "movement",
-      "action_kind": "move_actor",
-      "handler": null,
-      "required_runtime_modules": [],
-      "engine_ports": [
-        "input.action_binding",
-        "pawn.add_movement_input"
-      ],
-      "supported": false,
-      "reason": "general movement runtime is not implemented by behavior framework support matrix",
-      "capability_id": "player.movement"
-    }
-  ],
-  "unsupported_behaviors": [
-    "flame_jet_trap.apply_burn_on_hit",
-    "flame_jet_trap.arming.enter_active",
-    "flame_jet_trap.arming.show_warning",
-    "player.movement.run"
-  ],
-  "generated_runtime": null,
-  "blocked_reason": "unsupported capability in RuntimeSupportMatrix",
-  "unsupported_report": "unsupported_report.json"
+  "status": "supported",
+  "unsupported_capabilities": [],
+  "unsupported_behaviors": []
 }

@@ -1,16 +1,35 @@
 {
   "schema_version": "autoue-runtime-support-check/v1",
-  "status": "unsupported",
+  "status": "supported",
   "required_runtime_modules": [
     "action_dispatcher",
     "behavior_orchestrator",
     "condition_checker",
+    "encounter_manager",
+    "enemy_combat",
+    "enemy_death_events",
+    "enemy_health",
+    "enemy_movement",
+    "enemy_perception",
+    "enemy_registry",
+    "enemy_runtime",
+    "enemy_spawn_runtime",
     "entity_registry",
     "state_blackboard",
     "trigger_router",
     "world_adapter"
   ],
   "engine_ports": [
+    "actor.get_distance_to",
+    "actor.on_destroyed",
+    "actor.on_take_any_damage",
+    "actor.set_actor_location",
+    "actor.spawn",
+    "encounter.alive_count",
+    "gameplay_statics.apply_damage",
+    "gameplay_statics.open_level",
+    "kismet.sphere_trace_single",
+    "primitive.on_component_begin_overlap",
     "widget.set_percent",
     "widget.set_text"
   ],
@@ -31,25 +50,7 @@
       ],
       "supported": true,
       "reason": "",
-      "capability_id": "combat_damage_number_hud.display"
-    },
-    {
-      "capability_kind": "hud_binding",
-      "action_kind": "refresh_value",
-      "handler": "ActionDispatcher.setHudValue",
-      "required_runtime_modules": [
-        "world_adapter",
-        "entity_registry",
-        "state_blackboard",
-        "action_dispatcher"
-      ],
-      "engine_ports": [
-        "widget.set_text",
-        "widget.set_percent"
-      ],
-      "supported": true,
-      "reason": "",
-      "capability_id": "health_bar_hud.display"
+      "capability_id": "hud.display.refresh_value"
     },
     {
       "capability_kind": "gate_lock",
@@ -62,73 +63,179 @@
       "engine_ports": [],
       "supported": true,
       "reason": "",
-      "capability_id": "level_exit_door.lock"
-    }
-  ],
-  "unsupported_capabilities": [
-    {
-      "capability_kind": "combat",
-      "action_kind": "apply_damage",
-      "handler": null,
-      "required_runtime_modules": [],
-      "engine_ports": [
-        "input.action_binding",
-        "gameplay_statics.apply_damage"
-      ],
-      "supported": false,
-      "reason": "combat damage runtime is not implemented",
-      "capability_id": "player.combat"
+      "capability_id": "encounter.exit.unlock_exit"
     },
     {
-      "capability_kind": "enemy_combat",
-      "action_kind": "enemy_attack",
-      "handler": null,
-      "required_runtime_modules": [],
+      "capability_kind": "level_transition",
+      "action_kind": "activate_transition",
+      "handler": "ActionDispatcher.openExit",
+      "required_runtime_modules": [
+        "world_adapter",
+        "entity_registry",
+        "action_dispatcher"
+      ],
+      "engine_ports": [
+        "primitive.on_component_begin_overlap",
+        "gameplay_statics.open_level"
+      ],
+      "supported": true,
+      "reason": "",
+      "capability_id": "level.transition.activate"
+    },
+    {
+      "capability_kind": "enemy_spawn",
+      "action_kind": "spawn_actor",
+      "handler": "EnemySpawnRuntime.spawnEnemy",
+      "required_runtime_modules": [
+        "enemy_runtime",
+        "enemy_spawn_runtime",
+        "enemy_registry",
+        "world_adapter"
+      ],
+      "engine_ports": [
+        "actor.spawn"
+      ],
+      "supported": true,
+      "reason": "",
+      "capability_id": "enemy.spawn.spawn_actor"
+    },
+    {
+      "capability_kind": "enemy_sensor",
+      "action_kind": "detect_player_by_distance",
+      "handler": "EnemyPerception.detectPlayer",
+      "required_runtime_modules": [
+        "enemy_runtime",
+        "enemy_perception",
+        "enemy_registry",
+        "world_adapter"
+      ],
+      "engine_ports": [
+        "actor.get_distance_to"
+      ],
+      "supported": true,
+      "reason": "",
+      "capability_id": "enemy.sensor.detect_player_by_distance"
+    },
+    {
+      "capability_kind": "enemy_movement",
+      "action_kind": "chase_target",
+      "handler": "EnemyMovement.chaseTarget",
+      "required_runtime_modules": [
+        "enemy_runtime",
+        "enemy_movement",
+        "enemy_registry",
+        "world_adapter"
+      ],
+      "engine_ports": [
+        "actor.get_distance_to",
+        "actor.set_actor_location"
+      ],
+      "supported": true,
+      "reason": "",
+      "capability_id": "enemy.movement.chase_target"
+    },
+    {
+      "capability_kind": "enemy_attack",
+      "action_kind": "melee_hitbox",
+      "handler": "EnemyCombat.resolveMeleeHit",
+      "required_runtime_modules": [
+        "enemy_runtime",
+        "enemy_combat",
+        "enemy_registry",
+        "world_adapter"
+      ],
       "engine_ports": [
         "kismet.sphere_trace_single",
         "gameplay_statics.apply_damage"
       ],
-      "supported": false,
-      "reason": "enemy encounter/combat runtime is optional and not implemented by the generic behavior framework",
-      "capability_id": "zombie.offense"
+      "supported": true,
+      "reason": "",
+      "capability_id": "enemy.attack.melee_hitbox"
     },
     {
-      "capability_kind": "enemy_pursuit",
-      "action_kind": "chase_target",
-      "handler": null,
-      "required_runtime_modules": [],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
+      "capability_kind": "enemy_health",
+      "action_kind": "receive_damage",
+      "handler": "EnemyHealth.applyDamage",
+      "required_runtime_modules": [
+        "enemy_runtime",
+        "enemy_health",
+        "enemy_registry",
+        "world_adapter"
       ],
-      "supported": false,
-      "reason": "enemy encounter movement runtime is optional and not implemented by the generic behavior framework",
-      "capability_id": "zombie.pursuit"
+      "engine_ports": [
+        "gameplay_statics.apply_damage",
+        "actor.on_take_any_damage"
+      ],
+      "supported": true,
+      "reason": "",
+      "capability_id": "enemy.health.receive_damage"
+    },
+    {
+      "capability_kind": "enemy_death",
+      "action_kind": "emit_death_event",
+      "handler": "EnemyDeathEvents.emitDeath",
+      "required_runtime_modules": [
+        "enemy_runtime",
+        "enemy_death_events",
+        "enemy_registry",
+        "encounter_manager"
+      ],
+      "engine_ports": [
+        "actor.on_destroyed"
+      ],
+      "supported": true,
+      "reason": "",
+      "capability_id": "enemy.death.emit_death_event"
+    },
+    {
+      "capability_kind": "encounter",
+      "action_kind": "complete_when_all_dead",
+      "handler": "EncounterManager.completeWhenAllDead",
+      "required_runtime_modules": [
+        "enemy_runtime",
+        "encounter_manager",
+        "enemy_registry"
+      ],
+      "engine_ports": [
+        "encounter.alive_count"
+      ],
+      "supported": true,
+      "reason": "",
+      "capability_id": "encounter.complete.complete_when_all_dead"
     }
   ],
-  "unsupported_behaviors": [
-    "player.combat.attack",
-    "zombie.offense.resolve_hit",
-    "zombie.pursuit.detect_player"
-  ],
+  "unsupported_capabilities": [],
+  "unsupported_behaviors": [],
   "behavior_by_capability": {
-    "combat_damage_number_hud.display": [
-      "combat_damage_number_hud.display.refresh_value"
+    "encounter.complete.complete_when_all_dead": [
+      "enemy.behavior.chase_and_melee"
     ],
-    "health_bar_hud.display": [
-      "health_bar_hud.display.refresh_value"
+    "encounter.exit.unlock_exit": [
+      "exit.behavior.unlock_and_transition"
     ],
-    "level_exit_door.lock": [
-      "level_exit_door.lock.evaluate_unlock"
+    "enemy.attack.melee_hitbox": [
+      "enemy.behavior.chase_and_melee"
     ],
-    "player.combat": [
-      "player.combat.attack"
+    "enemy.death.emit_death_event": [
+      "enemy.behavior.chase_and_melee"
     ],
-    "zombie.offense": [
-      "zombie.offense.resolve_hit"
+    "enemy.health.receive_damage": [
+      "enemy.behavior.chase_and_melee"
     ],
-    "zombie.pursuit": [
-      "zombie.pursuit.detect_player"
+    "enemy.movement.chase_target": [
+      "enemy.behavior.chase_and_melee"
+    ],
+    "enemy.sensor.detect_player_by_distance": [
+      "enemy.behavior.chase_and_melee"
+    ],
+    "enemy.spawn.spawn_actor": [
+      "enemy.behavior.chase_and_melee"
+    ],
+    "hud.display.refresh_value": [
+      "hud.behavior.refresh_value"
+    ],
+    "level.transition.activate": [
+      "exit.behavior.unlock_and_transition"
     ]
   }
 }

@@ -1,4 +1,5 @@
 {
+  "schema_version": "autoue-eab-canonical/v2",
   "entities": [
     {
       "entity_id": "combat_damage_number_hud",
@@ -13,58 +14,81 @@
         "feedback"
       ],
       "spawnable": false,
-      "abilities": [
+      "capability_bindings": [
         {
-          "ability_id": "combat_damage_number_hud.display",
-          "entity_id": "combat_damage_number_hud",
-          "display_name": "Damage Number HUD Display",
-          "display_name_zh": "伤害数字HUD显示",
-          "summary": "负责把数值、图标或地图状态呈现到屏幕。",
-          "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
-          "capability_id": "combat_damage_number_hud.display",
+          "capability_id": "hud.display.refresh_value",
+          "params": {},
+          "tags": [
+            "hud",
+            "damage",
+            "feedback"
+          ]
+        },
+        {
+          "capability_id": "hud.feedback.flash_warning",
+          "params": {},
+          "tags": [
+            "hud",
+            "damage",
+            "feedback"
+          ]
+        }
+      ],
+      "capabilities": [
+        {
+          "capability_id": "hud.display.refresh_value",
+          "display_name": "Hud Display Refresh_Value",
+          "display_name_zh": "刷新 HUD 数值",
+          "summary": "刷新 HUD 数值",
+          "summary_zh": "刷新 HUD 数值",
           "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
           "capability_kind": "hud_binding",
-          "runtime_primitives": [
-            "hud_refresh",
-            "tag_state"
-          ],
+          "action_kind": "refresh_value",
+          "runtime_handler": "ActionDispatcher.setHudValue",
+          "params_schema": {},
+          "default_params": {},
           "engine_ports": [
             "widget.set_text",
             "widget.set_percent"
           ],
           "runtime_features": [
-            "hud"
+            "world_adapter",
+            "entity_registry",
+            "state_blackboard",
+            "action_dispatcher"
           ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "refresh_value",
           "behaviors": [
             {
-              "behavior_id": "combat_damage_number_hud.display.refresh_value",
-              "ability_id": "combat_damage_number_hud.display",
-              "entity_id": "combat_damage_number_hud",
-              "display_name": "Damage Number HUD Refresh Value",
-              "display_name_zh": "伤害数字HUD刷新数值",
-              "trigger": "tracked value changes",
-              "execution": "updates bars, icons, counters, or map tiles",
-              "result": "HUD reflects current state",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "combat_damage_number_hud",
+              "behavior_id": "hud.behavior.refresh_value",
+              "display_name": "Hud Behavior Refresh_Value",
+              "display_name_zh": "刷新 HUD 数值",
+              "summary": "刷新 HUD 数值",
+              "summary_zh": "刷新 HUD 数值",
+              "semantic_role": "behavior",
+              "behavior_kind": "hud_update",
+              "primary_entity_kind": "hud",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
               "required_capability_ids": [
-                "combat_damage_number_hud.display"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "tracked value changes"
-              },
-              "effects": [
-                "HUD reflects current state"
+                "hud.display.refresh_value"
               ],
               "runtime_features": [
-                "hud"
+                "world_adapter",
+                "entity_registry",
+                "state_blackboard",
+                "action_dispatcher"
               ],
-              "semantic_role": "behavior"
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "refresh_value",
+                  "uses": "hud.display.refresh_value"
+                }
+              ]
             }
           ]
         }
@@ -83,57 +107,78 @@
         "electric"
       ],
       "spawnable": false,
-      "abilities": [
+      "capability_bindings": [
         {
-          "ability_id": "electric_vfx.emit",
-          "entity_id": "electric_vfx",
-          "display_name": "Electric VFX Particle Emission",
-          "display_name_zh": "电击特效粒子生成",
-          "summary": "负责在玩法事件发生时生成可见粒子。",
-          "summary_zh": "负责在玩法事件发生时生成可见粒子。",
-          "capability_id": "electric_vfx.emit",
+          "capability_id": "vfx.lifecycle.cleanup_after_duration",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "electric"
+          ]
+        },
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "electric"
+          ]
+        }
+      ],
+      "capabilities": [
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "display_name": "Vfx Spawn Spawn_Particles",
+          "display_name_zh": "生成粒子特效",
+          "summary": "生成粒子特效",
+          "summary_zh": "生成粒子特效",
           "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
           "capability_kind": "vfx_binding",
-          "runtime_primitives": [
-            "spawn_vfx",
-            "attach_vfx"
-          ],
+          "action_kind": "spawn_particles",
+          "runtime_handler": "ActionDispatcher.spawnVfx",
+          "params_schema": {},
+          "default_params": {},
           "engine_ports": [
             "component.set_visibility"
           ],
           "runtime_features": [
-            "vfx"
+            "world_adapter",
+            "entity_registry",
+            "action_dispatcher"
           ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "spawn_particles",
           "behaviors": [
             {
-              "behavior_id": "electric_vfx.emit.spawn_particles",
-              "ability_id": "electric_vfx.emit",
-              "entity_id": "electric_vfx",
-              "display_name": "Electric VFX Spawn Particles",
-              "display_name_zh": "电击特效生成粒子",
-              "trigger": "gameplay event fires",
-              "execution": "spawns particles at the relevant actor or world position",
-              "result": "event has visible feedback",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "electric_vfx",
+              "behavior_id": "vfx.behavior.spawn_particles",
+              "display_name": "Vfx Behavior Spawn_Particles",
+              "display_name_zh": "生成粒子",
+              "summary": "生成粒子",
+              "summary_zh": "生成粒子",
+              "semantic_role": "behavior",
+              "behavior_kind": "vfx_spawn",
+              "primary_entity_kind": "vfx",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
               "required_capability_ids": [
-                "electric_vfx.emit"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "gameplay event fires"
-              },
-              "effects": [
-                "event has visible feedback"
+                "vfx.spawn.spawn_particles"
               ],
               "runtime_features": [
-                "vfx"
+                "world_adapter",
+                "entity_registry",
+                "action_dispatcher"
               ],
-              "semantic_role": "behavior"
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "spawn_particles",
+                  "uses": "vfx.spawn.spawn_particles"
+                }
+              ]
             }
           ]
         }
@@ -152,81 +197,18 @@
         "equipment"
       ],
       "spawnable": false,
-      "abilities": [
+      "capability_bindings": [
         {
-          "ability_id": "electric_whip.attack.apply_shock_chain",
-          "capability_id": "electric_whip.attack.apply_shock_chain",
-          "entity_id": "electric_whip",
-          "display_name": "electric_whip.attack.apply_shock_chain",
-          "display_name_zh": "施加电击连锁。",
-          "summary": "施加电击连锁。",
-          "summary_zh": "施加电击连锁。",
-          "semantic_role": "capability",
-          "capability_kind": "chain_lightning",
-          "action_kind": "apply_shock_chain",
-          "runtime_primitives": [
-            "hit_query",
-            "state_write",
-            "spawn_vfx"
-          ],
-          "engine_ports": [
-            "kismet.sphere_trace_single",
-            "component.set_visibility"
-          ],
-          "runtime_features": [
-            "combat",
-            "vfx",
-            "state_blackboard"
-          ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "behaviors": [
-            {
-              "behavior_id": "electric_whip.apply_shock_chain",
-              "ability_id": "electric_whip.attack.apply_shock_chain",
-              "entity_id": "electric_whip",
-              "primary_entity_id": "electric_whip",
-              "display_name": "electric_whip.apply_shock_chain",
-              "display_name_zh": "施加电击连锁。",
-              "trigger": "施加电击连锁。",
-              "execution": "施加电击连锁。",
-              "result": "施加电击连锁。",
-              "required_capability_ids": [
-                "electric_whip.attack.apply_shock_chain",
-                "electric_vfx.emit",
-                "combat_damage_number_hud.display"
-              ],
-              "trigger_model": {
-                "type": "damage",
-                "source_entity_id": "player",
-                "target_entity_id": "inquisitor"
-              },
-              "conditions": [],
-              "effects": [
-                {
-                  "type": "write_state",
-                  "key": "target.effects.shocked",
-                  "value": {
-                    "duration": 1.5
-                  }
-                }
-              ],
-              "verification_logs": [
-                "BehaviorTriggered electric_whip.apply_shock_chain"
-              ],
-              "semantic_role": "behavior",
-              "source_refs": [
-                "autoue-behavior-driven-runtime"
-              ],
-              "runtime_features": [
-                "combat",
-                "hud",
-                "state_blackboard",
-                "vfx"
-              ]
-            }
+          "capability_id": "weapon.effect.apply_shock_chain",
+          "params": {},
+          "tags": [
+            "weapon",
+            "ranged",
+            "equipment"
           ]
         }
-      ]
+      ],
+      "capabilities": []
     },
     {
       "entity_id": "inquisitor",
@@ -249,138 +231,84 @@
         ],
         "default_health": 3
       },
-      "abilities": [
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_INQUISITOR",
+        "default_hp": 30,
+        "move_speed": 245,
+        "sense_radius": 900,
+        "attack_range": 520
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
         {
-          "ability_id": "inquisitor.pursuit",
-          "entity_id": "inquisitor",
-          "display_name": "Inquisitor Pursuit",
-          "display_name_zh": "审判者追击",
-          "summary": "负责发现目标、接近目标和重新站位。",
-          "summary_zh": "负责发现目标、接近目标和重新站位。",
-          "capability_id": "inquisitor.pursuit",
-          "semantic_role": "capability",
-          "capability_kind": "enemy_pursuit",
-          "runtime_primitives": [
-            "awareness_query",
-            "move_actor"
-          ],
-          "engine_ports": [
-            "actor.get_distance_to",
-            "pawn.add_movement_input"
-          ],
-          "runtime_features": [
-            "enemy_encounter",
-            "movement"
-          ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "chase_target",
-          "behaviors": [
-            {
-              "behavior_id": "inquisitor.pursuit.detect_player",
-              "ability_id": "inquisitor.pursuit",
-              "entity_id": "inquisitor",
-              "display_name": "Inquisitor Detect Player",
-              "display_name_zh": "审判者发现玩家",
-              "trigger": "player enters awareness range",
-              "execution": "selects the player as target and turns toward them",
-              "result": "enemy starts pursuing",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "inquisitor",
-              "required_capability_ids": [
-                "inquisitor.pursuit"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "player enters awareness range"
-              },
-              "effects": [
-                "enemy starts pursuing"
-              ],
-              "runtime_features": [
-                "enemy_encounter",
-                "movement"
-              ],
-              "semantic_role": "behavior"
-            }
-          ]
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_INQUISITOR",
+            "default_hp": 30,
+            "move_speed": 245,
+            "spawn_tags": [
+              "caster",
+              "ranged"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 900,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.keep_distance",
+          "params": {
+            "move_speed": 245,
+            "keep_distance": 420,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.projectile_spawn",
+          "params": {
+            "attack_damage": 8,
+            "attack_range": 520,
+            "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+            "projectile_speed": 900,
+            "cooldown_seconds": 1.6,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 30
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
         }
-      ]
-    },
-    {
-      "entity_id": "player",
-      "display_name": "Player Prisoner",
-      "display_name_zh": "玩家囚徒",
-      "entity_kind": "player",
-      "summary": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
-      "summary_zh": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
-      "content_tags": [
-        "player",
-        "prisoner",
-        "combat"
       ],
-      "spawnable": false,
-      "abilities": [
-        {
-          "ability_id": "player.combat",
-          "entity_id": "player",
-          "display_name": "Player Prisoner Combat",
-          "display_name_zh": "玩家囚徒战斗输入",
-          "summary": "负责攻击、取消、受击和战斗输入解析。",
-          "summary_zh": "负责攻击、取消、受击和战斗输入解析。",
-          "capability_id": "player.combat",
-          "semantic_role": "capability",
-          "capability_kind": "combat",
-          "runtime_primitives": [
-            "input_action",
-            "hit_query",
-            "apply_damage"
-          ],
-          "engine_ports": [
-            "input.action_binding",
-            "kismet.line_trace_single",
-            "gameplay_statics.apply_damage"
-          ],
-          "runtime_features": [
-            "combat",
-            "input"
-          ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "apply_damage",
-          "behaviors": [
-            {
-              "behavior_id": "player.combat.attack",
-              "ability_id": "player.combat",
-              "entity_id": "player",
-              "display_name": "Player Prisoner Attack",
-              "display_name_zh": "玩家囚徒攻击",
-              "trigger": "attack input",
-              "execution": "executes the selected weapon strike against a target",
-              "result": "target receives combat pressure",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "player",
-              "required_capability_ids": [
-                "player.combat"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "attack input"
-              },
-              "effects": [
-                "target receives combat pressure"
-              ],
-              "runtime_features": [
-                "combat",
-                "input"
-              ],
-              "semantic_role": "behavior"
-            }
-          ]
-        }
-      ]
+      "capabilities": []
     }
   ],
   "non_goals": []

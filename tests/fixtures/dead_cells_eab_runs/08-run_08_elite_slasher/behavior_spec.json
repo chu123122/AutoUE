@@ -3,156 +3,382 @@
   "source_nodes": [
     "EntityAbilityBehaviorPlanner",
     "ThinGameplayFlowPlanner",
-    "PuerTSRuntimeMappingPlanner"
+    "PuerTSRuntimeMappingCompiler"
   ],
   "behaviors": [
     {
-      "behavior_id": "critical_hit_vfx.emit.spawn_particles",
+      "behavior_id": "vfx.behavior.spawn_particles",
+      "bound_entity_id": "critical_hit_vfx",
       "primary_entity_id": "critical_hit_vfx",
       "entity_id": "critical_hit_vfx",
-      "ability_id": "critical_hit_vfx.emit",
-      "flow_id": "flow_critical_hit_vfx_emit_spawn_particles",
+      "runtime_domain": "behavior_runtime",
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "action_dispatcher"
+      ],
+      "runtime_params": {},
+      "resolved_capabilities": [
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "capability_kind": "vfx_binding",
+          "action_kind": "spawn_particles",
+          "handler": "ActionDispatcher.spawnVfx",
+          "params": {
+            "bound_entity_id": "critical_hit_vfx",
+            "entity_id": "critical_hit_vfx"
+          },
+          "source_entity_binding": {
+            "entity_id": "critical_hit_vfx",
+            "capability_id": "vfx.spawn.spawn_particles"
+          }
+        }
+      ],
+      "flow_id": "flow_vfx_behavior_spawn_particles",
       "trigger": {
-        "type": "legacy_text",
-        "description": "gameplay event fires"
+        "kind": "on_event"
       },
       "conditions": [],
       "actions": [
         {
           "type": "spawn_vfx",
           "entity_id": "critical_hit_vfx",
-          "capability_id": "critical_hit_vfx.emit"
+          "capability_id": "vfx.spawn.spawn_particles"
         }
       ],
       "required_capability_ids": [
-        "critical_hit_vfx.emit"
+        "vfx.spawn.spawn_particles"
       ],
       "engine_port_ids": [
-        "component.set_visibility"
+        "manual.trigger"
       ],
       "verification_logs": [
-        "BehaviorTriggered critical_hit_vfx.emit.spawn_particles"
+        "BehaviorTriggered vfx.behavior.spawn_particles",
+        "ActionDispatched spawn_vfx"
       ]
     },
     {
-      "behavior_id": "elite_aura_vfx.emit.attach_to_target",
+      "behavior_id": "vfx.behavior.spawn_particles",
+      "bound_entity_id": "elite_aura_vfx",
       "primary_entity_id": "elite_aura_vfx",
       "entity_id": "elite_aura_vfx",
-      "ability_id": "elite_aura_vfx.emit",
-      "flow_id": "flow_elite_aura_vfx_emit_attach_to_target",
+      "runtime_domain": "behavior_runtime",
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "action_dispatcher"
+      ],
+      "runtime_params": {},
+      "resolved_capabilities": [
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "capability_kind": "vfx_binding",
+          "action_kind": "spawn_particles",
+          "handler": "ActionDispatcher.spawnVfx",
+          "params": {
+            "bound_entity_id": "elite_aura_vfx",
+            "entity_id": "elite_aura_vfx"
+          },
+          "source_entity_binding": {
+            "entity_id": "elite_aura_vfx",
+            "capability_id": "vfx.spawn.spawn_particles"
+          }
+        }
+      ],
+      "flow_id": "flow_vfx_behavior_spawn_particles",
       "trigger": {
-        "type": "legacy_text",
-        "description": "effect has a tracked owner"
+        "kind": "on_event"
       },
       "conditions": [],
       "actions": [
         {
           "type": "spawn_vfx",
           "entity_id": "elite_aura_vfx",
-          "capability_id": "elite_aura_vfx.emit"
+          "capability_id": "vfx.spawn.spawn_particles"
         }
       ],
       "required_capability_ids": [
-        "elite_aura_vfx.emit"
+        "vfx.spawn.spawn_particles"
       ],
       "engine_port_ids": [
-        "component.set_visibility"
+        "manual.trigger"
       ],
       "verification_logs": [
-        "BehaviorTriggered elite_aura_vfx.emit.attach_to_target"
+        "BehaviorTriggered vfx.behavior.spawn_particles",
+        "ActionDispatched spawn_vfx"
       ]
     },
     {
-      "behavior_id": "player.combat.attack",
-      "primary_entity_id": "player",
-      "entity_id": "player",
-      "ability_id": "player.combat",
-      "flow_id": "flow_player_combat_attack",
+      "behavior_id": "enemy.behavior.chase_and_melee",
+      "bound_entity_id": "slasher",
+      "primary_entity_id": "slasher",
+      "entity_id": "slasher",
+      "runtime_domain": "enemy_runtime",
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_spawn_runtime",
+        "enemy_perception",
+        "enemy_movement",
+        "enemy_combat",
+        "enemy_health",
+        "enemy_death_events",
+        "encounter_manager"
+      ],
+      "runtime_params": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_SLASHER",
+        "default_hp": 60,
+        "move_speed": 245,
+        "sense_radius": 900,
+        "attack_range": 155,
+        "spawn_tags": [
+          "elite",
+          "ground",
+          "melee"
+        ],
+        "bound_entity_id": "slasher",
+        "entity_id": "slasher"
+      },
+      "resolved_capabilities": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "capability_kind": "enemy_spawn",
+          "action_kind": "spawn_actor",
+          "handler": "EnemySpawnRuntime.spawnEnemy",
+          "params": {
+            "spawn_tags": [
+              "elite",
+              "ground",
+              "melee"
+            ],
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_SLASHER",
+            "default_hp": 60,
+            "move_speed": 245,
+            "bound_entity_id": "slasher",
+            "entity_id": "slasher"
+          },
+          "source_entity_binding": {
+            "entity_id": "slasher",
+            "capability_id": "enemy.spawn.spawn_actor"
+          }
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "capability_kind": "enemy_sensor",
+          "action_kind": "detect_player_by_distance",
+          "handler": "EnemyPerception.detectPlayer",
+          "params": {
+            "target_entity_id": "player",
+            "sense_radius": 900,
+            "bound_entity_id": "slasher",
+            "entity_id": "slasher"
+          },
+          "source_entity_binding": {
+            "entity_id": "slasher",
+            "capability_id": "enemy.sensor.detect_player_by_distance"
+          }
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "capability_kind": "enemy_movement",
+          "action_kind": "chase_target",
+          "handler": "EnemyMovement.chaseTarget",
+          "params": {
+            "target_entity_id": "player",
+            "move_speed": 245,
+            "bound_entity_id": "slasher",
+            "entity_id": "slasher"
+          },
+          "source_entity_binding": {
+            "entity_id": "slasher",
+            "capability_id": "enemy.movement.chase_target"
+          }
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "capability_kind": "enemy_attack",
+          "action_kind": "melee_hitbox",
+          "handler": "EnemyCombat.resolveMeleeHit",
+          "params": {
+            "hitbox_radius": 90,
+            "target_entity_id": "player",
+            "attack_damage": 10,
+            "attack_range": 155,
+            "cooldown_seconds": 1.2,
+            "bound_entity_id": "slasher",
+            "entity_id": "slasher"
+          },
+          "source_entity_binding": {
+            "entity_id": "slasher",
+            "capability_id": "enemy.attack.melee_hitbox"
+          }
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "capability_kind": "enemy_health",
+          "action_kind": "receive_damage",
+          "handler": "EnemyHealth.applyDamage",
+          "params": {
+            "max_hp": 60,
+            "bound_entity_id": "slasher",
+            "entity_id": "slasher"
+          },
+          "source_entity_binding": {
+            "entity_id": "slasher",
+            "capability_id": "enemy.health.receive_damage"
+          }
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "capability_kind": "enemy_death",
+          "action_kind": "emit_death_event",
+          "handler": "EnemyDeathEvents.emitDeath",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true,
+            "bound_entity_id": "slasher",
+            "entity_id": "slasher"
+          },
+          "source_entity_binding": {
+            "entity_id": "slasher",
+            "capability_id": "enemy.death.emit_death_event"
+          }
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "capability_kind": "encounter",
+          "action_kind": "complete_when_all_dead",
+          "handler": "EncounterManager.completeWhenAllDead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed",
+            "bound_entity_id": "slasher",
+            "entity_id": "slasher"
+          },
+          "source_entity_binding": {
+            "entity_id": "slasher",
+            "capability_id": "encounter.complete.complete_when_all_dead"
+          }
+        }
+      ],
+      "flow_id": "flow_enemy_behavior_chase_and_melee",
       "trigger": {
-        "type": "legacy_text",
-        "description": "attack input"
+        "kind": "on_event"
       },
       "conditions": [],
-      "actions": [],
+      "actions": [
+        {
+          "type": "enemy_spawn_actor",
+          "capability_id": "enemy.spawn.spawn_actor",
+          "entity_id": "slasher",
+          "params": {
+            "spawn_tags": [
+              "elite",
+              "ground",
+              "melee"
+            ],
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_SLASHER",
+            "default_hp": 60,
+            "move_speed": 245,
+            "bound_entity_id": "slasher",
+            "entity_id": "slasher"
+          }
+        },
+        {
+          "type": "enemy_detect_player",
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "entity_id": "slasher",
+          "params": {
+            "target_entity_id": "player",
+            "sense_radius": 900,
+            "bound_entity_id": "slasher",
+            "entity_id": "slasher"
+          }
+        },
+        {
+          "type": "enemy_chase_target",
+          "capability_id": "enemy.movement.chase_target",
+          "entity_id": "slasher",
+          "params": {
+            "target_entity_id": "player",
+            "move_speed": 245,
+            "bound_entity_id": "slasher",
+            "entity_id": "slasher"
+          },
+          "target_entity_id": "player"
+        },
+        {
+          "type": "enemy_melee_attack",
+          "capability_id": "enemy.attack.melee_hitbox",
+          "entity_id": "slasher",
+          "params": {
+            "hitbox_radius": 90,
+            "target_entity_id": "player",
+            "attack_damage": 10,
+            "attack_range": 155,
+            "cooldown_seconds": 1.2,
+            "bound_entity_id": "slasher",
+            "entity_id": "slasher"
+          },
+          "target_entity_id": "player"
+        },
+        {
+          "type": "enemy_receive_damage",
+          "capability_id": "enemy.health.receive_damage",
+          "entity_id": "slasher",
+          "params": {
+            "max_hp": 60,
+            "bound_entity_id": "slasher",
+            "entity_id": "slasher"
+          }
+        },
+        {
+          "type": "enemy_emit_death_event",
+          "capability_id": "enemy.death.emit_death_event",
+          "entity_id": "slasher",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true,
+            "bound_entity_id": "slasher",
+            "entity_id": "slasher"
+          }
+        },
+        {
+          "type": "encounter_complete_when_all_dead",
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "entity_id": "slasher",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed",
+            "bound_entity_id": "slasher",
+            "entity_id": "slasher"
+          }
+        }
+      ],
       "required_capability_ids": [
-        "player.combat"
+        "enemy.spawn.spawn_actor",
+        "enemy.sensor.detect_player_by_distance",
+        "enemy.movement.chase_target",
+        "enemy.attack.melee_hitbox",
+        "enemy.health.receive_damage",
+        "enemy.death.emit_death_event",
+        "encounter.complete.complete_when_all_dead"
       ],
       "engine_port_ids": [
-        "input.action_binding",
-        "kismet.line_trace_single",
+        "actor.spawn",
         "gameplay_statics.apply_damage"
       ],
       "verification_logs": [
-        "BehaviorTriggered player.combat.attack"
-      ]
-    },
-    {
-      "behavior_id": "slasher.offense.resolve_hit",
-      "primary_entity_id": "slasher",
-      "entity_id": "slasher",
-      "ability_id": "slasher.offense",
-      "flow_id": "flow_slasher_offense_resolve_hit",
-      "trigger": {
-        "type": "legacy_text",
-        "description": "active hit frame overlaps target"
-      },
-      "conditions": [],
-      "actions": [],
-      "required_capability_ids": [
-        "slasher.offense"
-      ],
-      "engine_port_ids": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "verification_logs": [
-        "BehaviorTriggered slasher.offense.resolve_hit"
-      ]
-    },
-    {
-      "behavior_id": "slasher.pursuit.close_gap",
-      "primary_entity_id": "slasher",
-      "entity_id": "slasher",
-      "ability_id": "slasher.pursuit",
-      "flow_id": "flow_slasher_pursuit_close_gap",
-      "trigger": {
-        "type": "legacy_text",
-        "description": "target is reachable"
-      },
-      "conditions": [],
-      "actions": [],
-      "required_capability_ids": [
-        "slasher.pursuit"
-      ],
-      "engine_port_ids": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "verification_logs": [
-        "BehaviorTriggered slasher.pursuit.close_gap"
-      ]
-    },
-    {
-      "behavior_id": "slasher.pursuit.detect_player",
-      "primary_entity_id": "slasher",
-      "entity_id": "slasher",
-      "ability_id": "slasher.pursuit",
-      "flow_id": "flow_slasher_pursuit_detect_player",
-      "trigger": {
-        "type": "legacy_text",
-        "description": "player enters awareness range"
-      },
-      "conditions": [],
-      "actions": [],
-      "required_capability_ids": [
-        "slasher.pursuit"
-      ],
-      "engine_port_ids": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "verification_logs": [
-        "BehaviorTriggered slasher.pursuit.detect_player"
+        "BehaviorTriggered enemy.behavior.chase_and_melee",
+        "ActionDispatched enemy_spawn_actor",
+        "ActionDispatched enemy_detect_player",
+        "ActionDispatched enemy_chase_target",
+        "ActionDispatched enemy_melee_attack",
+        "ActionDispatched enemy_receive_damage",
+        "ActionDispatched enemy_emit_death_event",
+        "ActionDispatched encounter_complete_when_all_dead"
       ]
     }
   ]

@@ -1,0 +1,27 @@
+{
+  "selected_entity_ids": [
+    "zombie",
+    "archer",
+    "kamikaze_bat",
+    "shield_bearer"
+  ],
+  "selected_capability_ids": [
+    "enemy.spawn.spawn_actor",
+    "enemy.sensor.detect_player_by_distance",
+    "enemy.movement.chase_target",
+    "enemy.attack.melee_hitbox",
+    "enemy.health.receive_damage",
+    "enemy.death.emit_death_event",
+    "encounter.complete.complete_when_all_dead",
+    "enemy.movement.keep_distance",
+    "enemy.attack.projectile_spawn",
+    "enemy.attack.self_destruct",
+    "enemy.defense.directional_block"
+  ],
+  "selected_behavior_ids": [
+    "enemy.behavior.chase_and_melee",
+    "enemy.behavior.keep_distance_and_projectile",
+    "enemy.behavior.chase_and_self_destruct",
+    "enemy.behavior.block_then_counter"
+  ]
+}

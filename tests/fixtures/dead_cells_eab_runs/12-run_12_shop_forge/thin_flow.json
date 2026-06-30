@@ -1,65 +1,13 @@
 {
   "flows": [
     {
-      "flow_id": "flow_forge_station_apply_item_upgrade",
-      "entity_id": "forge_station",
-      "ability_id": "forge_station.upgrade.apply_item_upgrade",
-      "source_behavior_id": "forge_station.apply_item_upgrade",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "widget.set_text",
-            "widget.set_percent"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered forge_station.apply_item_upgrade"
-      ]
-    },
-    {
-      "flow_id": "flow_shop_room_vendor_purchase_item",
-      "entity_id": "shop_room_vendor",
-      "ability_id": "shop_room_vendor.transaction.purchase_item",
-      "source_behavior_id": "shop_room_vendor.purchase_item",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "primitive.on_component_begin_overlap",
-            "widget.set_text",
-            "widget.set_percent"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered shop_room_vendor.purchase_item"
-      ]
-    },
-    {
-      "flow_id": "flow_status_icon_hud_display_refresh_value",
+      "flow_id": "flow_hud_behavior_refresh_value",
       "entity_id": "status_icon_hud",
-      "ability_id": "status_icon_hud.display",
-      "source_behavior_id": "status_icon_hud.display.refresh_value",
+      "source_behavior_id": "hud.behavior.refresh_value",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -67,13 +15,13 @@
             "actions"
           ],
           "engine_ports": [
-            "widget.set_text",
-            "widget.set_percent"
+            "manual.trigger"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered status_icon_hud.display.refresh_value"
+        "BehaviorTriggered hud.behavior.refresh_value",
+        "ActionDispatched set_hud_value"
       ]
     }
   ]

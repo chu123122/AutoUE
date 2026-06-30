@@ -1,4 +1,5 @@
 {
+  "schema_version": "autoue-eab-canonical/v2",
   "entities": [
     {
       "entity_id": "archer",
@@ -21,117 +22,832 @@
         ],
         "default_health": 2
       },
-      "abilities": [
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_ARCHER",
+        "default_hp": 24,
+        "move_speed": 235,
+        "sense_radius": 1100,
+        "attack_range": 620,
+        "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+        "keep_distance": 420
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
         {
-          "ability_id": "archer.offense",
-          "entity_id": "archer",
-          "display_name": "Archer Offense",
-          "display_name_zh": "弓箭手进攻",
-          "summary": "负责攻击预警、命中窗口和攻击结果。",
-          "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-          "capability_id": "archer.offense",
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_ARCHER",
+            "default_hp": 24,
+            "move_speed": 235,
+            "spawn_tags": [
+              "ground",
+              "ranged"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 1100,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.keep_distance",
+          "params": {
+            "move_speed": 235,
+            "keep_distance": 420,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.projectile_spawn",
+          "params": {
+            "attack_damage": 8,
+            "attack_range": 620,
+            "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+            "projectile_speed": 900,
+            "cooldown_seconds": 1.6,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 24
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        }
+      ],
+      "capabilities": [
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "display_name": "Encounter Complete Complete_When_All_Dead",
+          "display_name_zh": "全部死亡后完成遭遇",
+          "summary": "全部死亡后完成遭遇",
+          "summary_zh": "全部死亡后完成遭遇",
           "semantic_role": "capability",
-          "capability_kind": "enemy_combat",
-          "runtime_primitives": [
-            "telegraph",
-            "hit_query",
-            "apply_damage"
-          ],
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "encounter",
+          "action_kind": "complete_when_all_dead",
+          "runtime_handler": "EncounterManager.completeWhenAllDead",
+          "params_schema": {
+            "completion_event_name": {
+              "type": "string",
+              "required": true
+            },
+            "completion_state_key": {
+              "type": "string",
+              "required": true
+            }
+          },
+          "default_params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
           "engine_ports": [
-            "kismet.sphere_trace_single",
-            "gameplay_statics.apply_damage"
+            "encounter.alive_count"
           ],
           "runtime_features": [
-            "combat",
-            "enemy_encounter"
+            "enemy_runtime",
+            "encounter_manager",
+            "enemy_registry"
           ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "enemy_attack",
           "behaviors": [
             {
-              "behavior_id": "archer.offense.resolve_hit",
-              "ability_id": "archer.offense",
-              "entity_id": "archer",
-              "display_name": "Archer Resolve Hit",
-              "display_name_zh": "弓箭手命中结算",
-              "trigger": "active hit frame overlaps target",
-              "execution": "applies the enemy attack result",
-              "result": "player or object is damaged",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "archer",
+              "behavior_id": "enemy.behavior.keep_distance_and_projectile",
+              "display_name": "Enemy Behavior Keep_Distance_And_Projectile",
+              "display_name_zh": "敌人保持距离远程攻击",
+              "summary": "敌人保持距离远程攻击",
+              "summary_zh": "敌人保持距离远程攻击",
+              "semantic_role": "behavior",
+              "behavior_kind": "enemy_combat_loop",
+              "primary_entity_kind": "enemy",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
               "required_capability_ids": [
-                "archer.offense"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "active hit frame overlaps target"
-              },
-              "effects": [
-                "player or object is damaged"
+                "enemy.spawn.spawn_actor",
+                "enemy.sensor.detect_player_by_distance",
+                "enemy.movement.keep_distance",
+                "enemy.attack.projectile_spawn",
+                "enemy.health.receive_damage",
+                "enemy.death.emit_death_event",
+                "encounter.complete.complete_when_all_dead"
               ],
               "runtime_features": [
-                "combat",
-                "enemy_encounter"
+                "enemy_runtime",
+                "enemy_spawn_runtime",
+                "enemy_perception",
+                "enemy_movement",
+                "enemy_combat",
+                "enemy_projectile_runtime",
+                "enemy_health",
+                "enemy_death_events",
+                "encounter_manager"
               ],
-              "semantic_role": "behavior"
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "spawn_actor",
+                  "uses": "enemy.spawn.spawn_actor"
+                },
+                {
+                  "step": "detect_player_by_distance",
+                  "uses": "enemy.sensor.detect_player_by_distance"
+                },
+                {
+                  "step": "keep_distance",
+                  "uses": "enemy.movement.keep_distance"
+                },
+                {
+                  "step": "projectile_spawn",
+                  "uses": "enemy.attack.projectile_spawn"
+                },
+                {
+                  "step": "receive_damage",
+                  "uses": "enemy.health.receive_damage"
+                },
+                {
+                  "step": "emit_death_event",
+                  "uses": "enemy.death.emit_death_event"
+                },
+                {
+                  "step": "complete_when_all_dead",
+                  "uses": "encounter.complete.complete_when_all_dead"
+                }
+              ]
             }
           ]
         },
         {
-          "ability_id": "archer.pursuit",
-          "entity_id": "archer",
-          "display_name": "Archer Pursuit",
-          "display_name_zh": "弓箭手追击",
-          "summary": "负责发现目标、接近目标和重新站位。",
-          "summary_zh": "负责发现目标、接近目标和重新站位。",
-          "capability_id": "archer.pursuit",
+          "capability_id": "enemy.attack.projectile_spawn",
+          "display_name": "Enemy Attack Projectile_Spawn",
+          "display_name_zh": "生成投射物攻击",
+          "summary": "生成投射物攻击",
+          "summary_zh": "生成投射物攻击",
           "semantic_role": "capability",
-          "capability_kind": "enemy_pursuit",
-          "runtime_primitives": [
-            "awareness_query",
-            "move_actor"
-          ],
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "enemy_attack",
+          "action_kind": "projectile_spawn",
+          "runtime_handler": "EnemyCombat.spawnProjectile",
+          "params_schema": {
+            "attack_damage": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "attack_range": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "projectile_class_path": {
+              "type": "string",
+              "required": true
+            },
+            "projectile_speed": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "cooldown_seconds": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "target_entity_id": {
+              "type": "string",
+              "required": true
+            }
+          },
+          "default_params": {
+            "target_entity_id": "player"
+          },
           "engine_ports": [
-            "actor.get_distance_to",
-            "pawn.add_movement_input"
+            "projectile.spawn"
           ],
           "runtime_features": [
-            "enemy_encounter",
-            "movement"
+            "enemy_runtime",
+            "enemy_combat",
+            "enemy_projectile_runtime",
+            "world_adapter"
           ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "chase_target",
           "behaviors": [
             {
-              "behavior_id": "archer.pursuit.detect_player",
-              "ability_id": "archer.pursuit",
-              "entity_id": "archer",
-              "display_name": "Archer Detect Player",
-              "display_name_zh": "弓箭手发现玩家",
-              "trigger": "player enters awareness range",
-              "execution": "selects the player as target and turns toward them",
-              "result": "enemy starts pursuing",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "archer",
+              "behavior_id": "enemy.behavior.keep_distance_and_projectile",
+              "display_name": "Enemy Behavior Keep_Distance_And_Projectile",
+              "display_name_zh": "敌人保持距离远程攻击",
+              "summary": "敌人保持距离远程攻击",
+              "summary_zh": "敌人保持距离远程攻击",
+              "semantic_role": "behavior",
+              "behavior_kind": "enemy_combat_loop",
+              "primary_entity_kind": "enemy",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
               "required_capability_ids": [
-                "archer.pursuit"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "player enters awareness range"
-              },
-              "effects": [
-                "enemy starts pursuing"
+                "enemy.spawn.spawn_actor",
+                "enemy.sensor.detect_player_by_distance",
+                "enemy.movement.keep_distance",
+                "enemy.attack.projectile_spawn",
+                "enemy.health.receive_damage",
+                "enemy.death.emit_death_event",
+                "encounter.complete.complete_when_all_dead"
               ],
               "runtime_features": [
-                "enemy_encounter",
-                "movement"
+                "enemy_runtime",
+                "enemy_spawn_runtime",
+                "enemy_perception",
+                "enemy_movement",
+                "enemy_combat",
+                "enemy_projectile_runtime",
+                "enemy_health",
+                "enemy_death_events",
+                "encounter_manager"
               ],
-              "semantic_role": "behavior"
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "spawn_actor",
+                  "uses": "enemy.spawn.spawn_actor"
+                },
+                {
+                  "step": "detect_player_by_distance",
+                  "uses": "enemy.sensor.detect_player_by_distance"
+                },
+                {
+                  "step": "keep_distance",
+                  "uses": "enemy.movement.keep_distance"
+                },
+                {
+                  "step": "projectile_spawn",
+                  "uses": "enemy.attack.projectile_spawn"
+                },
+                {
+                  "step": "receive_damage",
+                  "uses": "enemy.health.receive_damage"
+                },
+                {
+                  "step": "emit_death_event",
+                  "uses": "enemy.death.emit_death_event"
+                },
+                {
+                  "step": "complete_when_all_dead",
+                  "uses": "encounter.complete.complete_when_all_dead"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "display_name": "Enemy Death Emit_Death_Event",
+          "display_name_zh": "发出死亡事件",
+          "summary": "发出死亡事件",
+          "summary_zh": "发出死亡事件",
+          "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "enemy_death",
+          "action_kind": "emit_death_event",
+          "runtime_handler": "EnemyDeathEvents.emitDeath",
+          "params_schema": {
+            "death_event_name": {
+              "type": "string",
+              "required": true
+            },
+            "decrement_alive_count": {
+              "type": "bool",
+              "required": true
+            }
+          },
+          "default_params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "engine_ports": [
+            "actor.on_destroyed"
+          ],
+          "runtime_features": [
+            "enemy_runtime",
+            "enemy_death_events",
+            "enemy_registry",
+            "encounter_manager"
+          ],
+          "behaviors": [
+            {
+              "behavior_id": "enemy.behavior.keep_distance_and_projectile",
+              "display_name": "Enemy Behavior Keep_Distance_And_Projectile",
+              "display_name_zh": "敌人保持距离远程攻击",
+              "summary": "敌人保持距离远程攻击",
+              "summary_zh": "敌人保持距离远程攻击",
+              "semantic_role": "behavior",
+              "behavior_kind": "enemy_combat_loop",
+              "primary_entity_kind": "enemy",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
+              "required_capability_ids": [
+                "enemy.spawn.spawn_actor",
+                "enemy.sensor.detect_player_by_distance",
+                "enemy.movement.keep_distance",
+                "enemy.attack.projectile_spawn",
+                "enemy.health.receive_damage",
+                "enemy.death.emit_death_event",
+                "encounter.complete.complete_when_all_dead"
+              ],
+              "runtime_features": [
+                "enemy_runtime",
+                "enemy_spawn_runtime",
+                "enemy_perception",
+                "enemy_movement",
+                "enemy_combat",
+                "enemy_projectile_runtime",
+                "enemy_health",
+                "enemy_death_events",
+                "encounter_manager"
+              ],
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "spawn_actor",
+                  "uses": "enemy.spawn.spawn_actor"
+                },
+                {
+                  "step": "detect_player_by_distance",
+                  "uses": "enemy.sensor.detect_player_by_distance"
+                },
+                {
+                  "step": "keep_distance",
+                  "uses": "enemy.movement.keep_distance"
+                },
+                {
+                  "step": "projectile_spawn",
+                  "uses": "enemy.attack.projectile_spawn"
+                },
+                {
+                  "step": "receive_damage",
+                  "uses": "enemy.health.receive_damage"
+                },
+                {
+                  "step": "emit_death_event",
+                  "uses": "enemy.death.emit_death_event"
+                },
+                {
+                  "step": "complete_when_all_dead",
+                  "uses": "encounter.complete.complete_when_all_dead"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "display_name": "Enemy Health Receive_Damage",
+          "display_name_zh": "敌人接收伤害",
+          "summary": "敌人接收伤害",
+          "summary_zh": "敌人接收伤害",
+          "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "enemy_health",
+          "action_kind": "receive_damage",
+          "runtime_handler": "EnemyHealth.applyDamage",
+          "params_schema": {
+            "max_hp": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            }
+          },
+          "default_params": {},
+          "engine_ports": [
+            "gameplay_statics.apply_damage",
+            "actor.on_take_any_damage"
+          ],
+          "runtime_features": [
+            "enemy_runtime",
+            "enemy_health",
+            "enemy_registry",
+            "world_adapter"
+          ],
+          "behaviors": [
+            {
+              "behavior_id": "enemy.behavior.keep_distance_and_projectile",
+              "display_name": "Enemy Behavior Keep_Distance_And_Projectile",
+              "display_name_zh": "敌人保持距离远程攻击",
+              "summary": "敌人保持距离远程攻击",
+              "summary_zh": "敌人保持距离远程攻击",
+              "semantic_role": "behavior",
+              "behavior_kind": "enemy_combat_loop",
+              "primary_entity_kind": "enemy",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
+              "required_capability_ids": [
+                "enemy.spawn.spawn_actor",
+                "enemy.sensor.detect_player_by_distance",
+                "enemy.movement.keep_distance",
+                "enemy.attack.projectile_spawn",
+                "enemy.health.receive_damage",
+                "enemy.death.emit_death_event",
+                "encounter.complete.complete_when_all_dead"
+              ],
+              "runtime_features": [
+                "enemy_runtime",
+                "enemy_spawn_runtime",
+                "enemy_perception",
+                "enemy_movement",
+                "enemy_combat",
+                "enemy_projectile_runtime",
+                "enemy_health",
+                "enemy_death_events",
+                "encounter_manager"
+              ],
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "spawn_actor",
+                  "uses": "enemy.spawn.spawn_actor"
+                },
+                {
+                  "step": "detect_player_by_distance",
+                  "uses": "enemy.sensor.detect_player_by_distance"
+                },
+                {
+                  "step": "keep_distance",
+                  "uses": "enemy.movement.keep_distance"
+                },
+                {
+                  "step": "projectile_spawn",
+                  "uses": "enemy.attack.projectile_spawn"
+                },
+                {
+                  "step": "receive_damage",
+                  "uses": "enemy.health.receive_damage"
+                },
+                {
+                  "step": "emit_death_event",
+                  "uses": "enemy.death.emit_death_event"
+                },
+                {
+                  "step": "complete_when_all_dead",
+                  "uses": "encounter.complete.complete_when_all_dead"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "capability_id": "enemy.movement.keep_distance",
+          "display_name": "Enemy Movement Keep_Distance",
+          "display_name_zh": "保持距离",
+          "summary": "保持距离",
+          "summary_zh": "保持距离",
+          "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "enemy_movement",
+          "action_kind": "keep_distance",
+          "runtime_handler": "EnemyMovement.keepDistance",
+          "params_schema": {
+            "move_speed": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "keep_distance": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "target_entity_id": {
+              "type": "string",
+              "required": true
+            }
+          },
+          "default_params": {
+            "target_entity_id": "player"
+          },
+          "engine_ports": [
+            "actor.get_distance_to",
+            "actor.set_actor_location"
+          ],
+          "runtime_features": [
+            "enemy_runtime",
+            "enemy_movement",
+            "enemy_registry",
+            "world_adapter"
+          ],
+          "behaviors": [
+            {
+              "behavior_id": "enemy.behavior.keep_distance_and_projectile",
+              "display_name": "Enemy Behavior Keep_Distance_And_Projectile",
+              "display_name_zh": "敌人保持距离远程攻击",
+              "summary": "敌人保持距离远程攻击",
+              "summary_zh": "敌人保持距离远程攻击",
+              "semantic_role": "behavior",
+              "behavior_kind": "enemy_combat_loop",
+              "primary_entity_kind": "enemy",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
+              "required_capability_ids": [
+                "enemy.spawn.spawn_actor",
+                "enemy.sensor.detect_player_by_distance",
+                "enemy.movement.keep_distance",
+                "enemy.attack.projectile_spawn",
+                "enemy.health.receive_damage",
+                "enemy.death.emit_death_event",
+                "encounter.complete.complete_when_all_dead"
+              ],
+              "runtime_features": [
+                "enemy_runtime",
+                "enemy_spawn_runtime",
+                "enemy_perception",
+                "enemy_movement",
+                "enemy_combat",
+                "enemy_projectile_runtime",
+                "enemy_health",
+                "enemy_death_events",
+                "encounter_manager"
+              ],
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "spawn_actor",
+                  "uses": "enemy.spawn.spawn_actor"
+                },
+                {
+                  "step": "detect_player_by_distance",
+                  "uses": "enemy.sensor.detect_player_by_distance"
+                },
+                {
+                  "step": "keep_distance",
+                  "uses": "enemy.movement.keep_distance"
+                },
+                {
+                  "step": "projectile_spawn",
+                  "uses": "enemy.attack.projectile_spawn"
+                },
+                {
+                  "step": "receive_damage",
+                  "uses": "enemy.health.receive_damage"
+                },
+                {
+                  "step": "emit_death_event",
+                  "uses": "enemy.death.emit_death_event"
+                },
+                {
+                  "step": "complete_when_all_dead",
+                  "uses": "encounter.complete.complete_when_all_dead"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "display_name": "Enemy Sensor Detect_Player_By_Distance",
+          "display_name_zh": "按距离感知玩家",
+          "summary": "按距离感知玩家",
+          "summary_zh": "按距离感知玩家",
+          "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "enemy_sensor",
+          "action_kind": "detect_player_by_distance",
+          "runtime_handler": "EnemyPerception.detectPlayer",
+          "params_schema": {
+            "sense_radius": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "target_entity_id": {
+              "type": "string",
+              "required": true
+            }
+          },
+          "default_params": {
+            "target_entity_id": "player"
+          },
+          "engine_ports": [
+            "actor.get_distance_to"
+          ],
+          "runtime_features": [
+            "enemy_runtime",
+            "enemy_perception",
+            "enemy_registry",
+            "world_adapter"
+          ],
+          "behaviors": [
+            {
+              "behavior_id": "enemy.behavior.keep_distance_and_projectile",
+              "display_name": "Enemy Behavior Keep_Distance_And_Projectile",
+              "display_name_zh": "敌人保持距离远程攻击",
+              "summary": "敌人保持距离远程攻击",
+              "summary_zh": "敌人保持距离远程攻击",
+              "semantic_role": "behavior",
+              "behavior_kind": "enemy_combat_loop",
+              "primary_entity_kind": "enemy",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
+              "required_capability_ids": [
+                "enemy.spawn.spawn_actor",
+                "enemy.sensor.detect_player_by_distance",
+                "enemy.movement.keep_distance",
+                "enemy.attack.projectile_spawn",
+                "enemy.health.receive_damage",
+                "enemy.death.emit_death_event",
+                "encounter.complete.complete_when_all_dead"
+              ],
+              "runtime_features": [
+                "enemy_runtime",
+                "enemy_spawn_runtime",
+                "enemy_perception",
+                "enemy_movement",
+                "enemy_combat",
+                "enemy_projectile_runtime",
+                "enemy_health",
+                "enemy_death_events",
+                "encounter_manager"
+              ],
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "spawn_actor",
+                  "uses": "enemy.spawn.spawn_actor"
+                },
+                {
+                  "step": "detect_player_by_distance",
+                  "uses": "enemy.sensor.detect_player_by_distance"
+                },
+                {
+                  "step": "keep_distance",
+                  "uses": "enemy.movement.keep_distance"
+                },
+                {
+                  "step": "projectile_spawn",
+                  "uses": "enemy.attack.projectile_spawn"
+                },
+                {
+                  "step": "receive_damage",
+                  "uses": "enemy.health.receive_damage"
+                },
+                {
+                  "step": "emit_death_event",
+                  "uses": "enemy.death.emit_death_event"
+                },
+                {
+                  "step": "complete_when_all_dead",
+                  "uses": "encounter.complete.complete_when_all_dead"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "display_name": "Enemy Spawn Spawn_Actor",
+          "display_name_zh": "生成敌人 Actor",
+          "summary": "生成敌人 Actor",
+          "summary_zh": "生成敌人 Actor",
+          "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "enemy_spawn",
+          "action_kind": "spawn_actor",
+          "runtime_handler": "EnemySpawnRuntime.spawnEnemy",
+          "params_schema": {
+            "actor_class_path": {
+              "type": "string",
+              "required": true
+            },
+            "enemy_tag": {
+              "type": "string",
+              "required": true
+            },
+            "default_hp": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "move_speed": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            }
+          },
+          "default_params": {
+            "spawn_tags": []
+          },
+          "engine_ports": [
+            "actor.spawn"
+          ],
+          "runtime_features": [
+            "enemy_runtime",
+            "enemy_spawn_runtime",
+            "enemy_registry",
+            "world_adapter"
+          ],
+          "behaviors": [
+            {
+              "behavior_id": "enemy.behavior.keep_distance_and_projectile",
+              "display_name": "Enemy Behavior Keep_Distance_And_Projectile",
+              "display_name_zh": "敌人保持距离远程攻击",
+              "summary": "敌人保持距离远程攻击",
+              "summary_zh": "敌人保持距离远程攻击",
+              "semantic_role": "behavior",
+              "behavior_kind": "enemy_combat_loop",
+              "primary_entity_kind": "enemy",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
+              "required_capability_ids": [
+                "enemy.spawn.spawn_actor",
+                "enemy.sensor.detect_player_by_distance",
+                "enemy.movement.keep_distance",
+                "enemy.attack.projectile_spawn",
+                "enemy.health.receive_damage",
+                "enemy.death.emit_death_event",
+                "encounter.complete.complete_when_all_dead"
+              ],
+              "runtime_features": [
+                "enemy_runtime",
+                "enemy_spawn_runtime",
+                "enemy_perception",
+                "enemy_movement",
+                "enemy_combat",
+                "enemy_projectile_runtime",
+                "enemy_health",
+                "enemy_death_events",
+                "encounter_manager"
+              ],
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "spawn_actor",
+                  "uses": "enemy.spawn.spawn_actor"
+                },
+                {
+                  "step": "detect_player_by_distance",
+                  "uses": "enemy.sensor.detect_player_by_distance"
+                },
+                {
+                  "step": "keep_distance",
+                  "uses": "enemy.movement.keep_distance"
+                },
+                {
+                  "step": "projectile_spawn",
+                  "uses": "enemy.attack.projectile_spawn"
+                },
+                {
+                  "step": "receive_damage",
+                  "uses": "enemy.health.receive_damage"
+                },
+                {
+                  "step": "emit_death_event",
+                  "uses": "enemy.death.emit_death_event"
+                },
+                {
+                  "step": "complete_when_all_dead",
+                  "uses": "encounter.complete.complete_when_all_dead"
+                }
+              ]
             }
           ]
         }
@@ -150,287 +866,81 @@
         "feedback"
       ],
       "spawnable": false,
-      "abilities": [
+      "capability_bindings": [
         {
-          "ability_id": "combat_damage_number_hud.display",
-          "entity_id": "combat_damage_number_hud",
-          "display_name": "Damage Number HUD Display",
-          "display_name_zh": "伤害数字HUD显示",
-          "summary": "负责把数值、图标或地图状态呈现到屏幕。",
-          "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
-          "capability_id": "combat_damage_number_hud.display",
-          "semantic_role": "capability",
-          "capability_kind": "hud_binding",
-          "runtime_primitives": [
-            "hud_refresh",
-            "tag_state"
-          ],
-          "engine_ports": [
-            "widget.set_text",
-            "widget.set_percent"
-          ],
-          "runtime_features": [
-            "hud"
-          ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "refresh_value",
-          "behaviors": [
-            {
-              "behavior_id": "combat_damage_number_hud.display.refresh_value",
-              "ability_id": "combat_damage_number_hud.display",
-              "entity_id": "combat_damage_number_hud",
-              "display_name": "Damage Number HUD Refresh Value",
-              "display_name_zh": "伤害数字HUD刷新数值",
-              "trigger": "tracked value changes",
-              "execution": "updates bars, icons, counters, or map tiles",
-              "result": "HUD reflects current state",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "combat_damage_number_hud",
-              "required_capability_ids": [
-                "combat_damage_number_hud.display"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "tracked value changes"
-              },
-              "effects": [
-                "HUD reflects current state"
-              ],
-              "runtime_features": [
-                "hud"
-              ],
-              "semantic_role": "behavior"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "entity_id": "minimap_hud",
-      "display_name": "Minimap HUD",
-      "display_name_zh": "小地图HUD",
-      "entity_kind": "hud",
-      "summary": "显示探索过的房间和出口。",
-      "summary_zh": "显示探索过的房间和出口。",
-      "content_tags": [
-        "hud",
-        "map",
-        "navigation"
-      ],
-      "spawnable": false,
-      "abilities": [
-        {
-          "ability_id": "minimap_hud.display",
-          "entity_id": "minimap_hud",
-          "display_name": "Minimap HUD Display",
-          "display_name_zh": "小地图HUD显示",
-          "summary": "负责把数值、图标或地图状态呈现到屏幕。",
-          "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
-          "capability_id": "minimap_hud.display",
-          "semantic_role": "capability",
-          "capability_kind": "hud_binding",
-          "runtime_primitives": [
-            "hud_refresh",
-            "tag_state"
-          ],
-          "engine_ports": [
-            "widget.set_text",
-            "widget.set_percent"
-          ],
-          "runtime_features": [
-            "hud"
-          ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "refresh_value",
-          "behaviors": [
-            {
-              "behavior_id": "minimap_hud.display.refresh_value",
-              "ability_id": "minimap_hud.display",
-              "entity_id": "minimap_hud",
-              "display_name": "Minimap HUD Refresh Value",
-              "display_name_zh": "小地图HUD刷新数值",
-              "trigger": "tracked value changes",
-              "execution": "updates bars, icons, counters, or map tiles",
-              "result": "HUD reflects current state",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "minimap_hud",
-              "required_capability_ids": [
-                "minimap_hud.display"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "tracked value changes"
-              },
-              "effects": [
-                "HUD reflects current state"
-              ],
-              "runtime_features": [
-                "hud"
-              ],
-              "semantic_role": "behavior"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "entity_id": "player",
-      "display_name": "Player Prisoner",
-      "display_name_zh": "玩家囚徒",
-      "entity_kind": "player",
-      "summary": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
-      "summary_zh": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
-      "content_tags": [
-        "player",
-        "prisoner",
-        "combat"
-      ],
-      "spawnable": false,
-      "abilities": [
-        {
-          "ability_id": "player.combat",
-          "entity_id": "player",
-          "display_name": "Player Prisoner Combat",
-          "display_name_zh": "玩家囚徒战斗输入",
-          "summary": "负责攻击、取消、受击和战斗输入解析。",
-          "summary_zh": "负责攻击、取消、受击和战斗输入解析。",
-          "capability_id": "player.combat",
-          "semantic_role": "capability",
-          "capability_kind": "combat",
-          "runtime_primitives": [
-            "input_action",
-            "hit_query",
-            "apply_damage"
-          ],
-          "engine_ports": [
-            "input.action_binding",
-            "kismet.line_trace_single",
-            "gameplay_statics.apply_damage"
-          ],
-          "runtime_features": [
-            "combat",
-            "input"
-          ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "apply_damage",
-          "behaviors": [
-            {
-              "behavior_id": "player.combat.attack",
-              "ability_id": "player.combat",
-              "entity_id": "player",
-              "display_name": "Player Prisoner Attack",
-              "display_name_zh": "玩家囚徒攻击",
-              "trigger": "attack input",
-              "execution": "executes the selected weapon strike against a target",
-              "result": "target receives combat pressure",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "player",
-              "required_capability_ids": [
-                "player.combat"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "attack input"
-              },
-              "effects": [
-                "target receives combat pressure"
-              ],
-              "runtime_features": [
-                "combat",
-                "input"
-              ],
-              "semantic_role": "behavior"
-            }
+          "capability_id": "hud.display.refresh_value",
+          "params": {},
+          "tags": [
+            "hud",
+            "damage",
+            "feedback"
           ]
         },
         {
-          "ability_id": "player.movement",
-          "entity_id": "player",
-          "display_name": "Player Prisoner Movement Control",
-          "display_name_zh": "玩家囚徒移动控制",
-          "summary": "负责奔跑、跳跃、攀爬、下落和翻滚等玩家移动决策。",
-          "summary_zh": "负责奔跑、跳跃、攀爬、下落和翻滚等玩家移动决策。",
-          "capability_id": "player.movement",
+          "capability_id": "hud.feedback.flash_warning",
+          "params": {},
+          "tags": [
+            "hud",
+            "damage",
+            "feedback"
+          ]
+        }
+      ],
+      "capabilities": [
+        {
+          "capability_id": "hud.display.refresh_value",
+          "display_name": "Hud Display Refresh_Value",
+          "display_name_zh": "刷新 HUD 数值",
+          "summary": "刷新 HUD 数值",
+          "summary_zh": "刷新 HUD 数值",
           "semantic_role": "capability",
-          "capability_kind": "movement",
-          "runtime_primitives": [
-            "input_axis",
-            "move_actor"
-          ],
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "hud_binding",
+          "action_kind": "refresh_value",
+          "runtime_handler": "ActionDispatcher.setHudValue",
+          "params_schema": {},
+          "default_params": {},
           "engine_ports": [
-            "input.action_binding",
-            "pawn.add_movement_input"
+            "widget.set_text",
+            "widget.set_percent"
           ],
           "runtime_features": [
-            "input",
-            "movement"
+            "world_adapter",
+            "entity_registry",
+            "state_blackboard",
+            "action_dispatcher"
           ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "move_actor",
           "behaviors": [
             {
-              "behavior_id": "player.movement.dodge_roll",
-              "ability_id": "player.movement",
-              "entity_id": "player",
-              "display_name": "Player Prisoner Dodge Roll",
-              "display_name_zh": "玩家囚徒翻滚闪避",
-              "trigger": "dodge input",
-              "execution": "performs an invulnerable roll with recovery",
-              "result": "player avoids a hit window",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "player",
+              "behavior_id": "hud.behavior.refresh_value",
+              "display_name": "Hud Behavior Refresh_Value",
+              "display_name_zh": "刷新 HUD 数值",
+              "summary": "刷新 HUD 数值",
+              "summary_zh": "刷新 HUD 数值",
+              "semantic_role": "behavior",
+              "behavior_kind": "hud_update",
+              "primary_entity_kind": "hud",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
               "required_capability_ids": [
-                "player.movement"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "dodge input"
-              },
-              "effects": [
-                "player avoids a hit window"
+                "hud.display.refresh_value"
               ],
               "runtime_features": [
-                "input",
-                "movement"
-              ],
-              "semantic_role": "behavior"
-            },
-            {
-              "behavior_id": "player.movement.run",
-              "ability_id": "player.movement",
-              "entity_id": "player",
-              "display_name": "Player Prisoner Run",
-              "display_name_zh": "玩家囚徒奔跑/横移",
-              "trigger": "movement input",
-              "execution": "accelerates, decelerates, and faces travel direction",
-              "result": "player changes horizontal position",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "player",
-              "required_capability_ids": [
-                "player.movement"
+                "world_adapter",
+                "entity_registry",
+                "state_blackboard",
+                "action_dispatcher"
               ],
               "trigger_model": {
-                "type": "legacy_text",
-                "description": "movement input"
+                "kind": "on_event"
               },
-              "effects": [
-                "player changes horizontal position"
-              ],
-              "runtime_features": [
-                "input",
-                "movement"
-              ],
-              "semantic_role": "behavior"
+              "flow": [
+                {
+                  "step": "refresh_value",
+                  "uses": "hud.display.refresh_value"
+                }
+              ]
             }
           ]
         }

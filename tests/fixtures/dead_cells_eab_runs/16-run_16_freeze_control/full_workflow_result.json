@@ -1,6 +1,41 @@
 {
-  "result": "supported",
-  "behavior_count": 1,
-  "generated_runtime": "TypeScript/content/generated/AutoUEBehaviorSpec.generated.ts",
-  "validate_output": "actual workflow validate-output must be run outside this fixture generator"
+  "workflow_result": "pass",
+  "validate_output_result": "pass",
+  "verification_level": "full AutoUE workflow + static validate-output; no tsc/PIE claim",
+  "source_output_root": "data/output-deterministic-step-smoke/demo_1",
+  "validated_llm_nodes": [
+    "SceneAndGameplaySplitter",
+    "EntityAbilityBehaviorPlanner",
+    "ThinGameplayFlowPlanner",
+    "EncounterSpecPlanner",
+    "UEApiMCPFeasibilitySearcher",
+    "PuerTSRuntimeMappingCompiler",
+    "TypeScriptImplementationSlotProjector",
+    "TypeScriptInteractiveTemplatePlanner",
+    "TypeScriptRuntimeTemplatePlanner",
+    "StaticEvaluationPlanBuilder"
+  ],
+  "behavior_ids": [
+    "hazard.behavior.freeze_on_overlap"
+  ],
+  "flow_ids": [
+    "flow_hazard_behavior_freeze_on_overlap"
+  ],
+  "runtime_features": [
+    "action_dispatcher",
+    "behavior_orchestrator",
+    "condition_checker",
+    "entity_registry",
+    "state_blackboard",
+    "trigger_router",
+    "world_adapter"
+  ],
+  "disabled_features": [
+    "enemy_encounter",
+    "enemy_runtime"
+  ],
+  "codegen_files_count": 18,
+  "interactive_files_count": 1,
+  "instruction_count": 1,
+  "bundle_validation_result": "pass"
 }

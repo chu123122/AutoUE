@@ -1,0 +1,23 @@
+type AnyUEObject = any;
+export type AutoUEEnemyState = 'Idle' | 'Alert' | 'Chasing' | 'KeepingDistance' | 'Telegraphing' | 'Attacking' | 'Recovering' | 'Dead';
+export interface AutoUEEnemyRecord { enemy_id: string; entity_id: string; archetype_id: string; actor: AnyUEObject; hp: number; max_hp: number; state: AutoUEEnemyState; target?: AnyUEObject; cooldowns: Record<string, number>; alive: boolean; runtime_params: Record<string, any>; }
+export interface {{interface_name}} { readonly log?: (message: string) => void; }
+const LOG_PREFIX = '[AUTOUE_GENERATED]';
+function log(ctx: {{interface_name}}, message: string): void { (ctx.log || console.warn)(`${LOG_PREFIX} ${message}`); }
+export class AutoUEEnemyRegistry {
+  private readonly enemies = new Map<string, AutoUEEnemyRecord>();
+  constructor(private readonly context: {{interface_name}} = {}) {}
+  registerEnemy(input: { enemy_id: string; entity_id: string; archetype_id?: string; actor: AnyUEObject; hp: number; runtime_params?: Record<string, any> }): AutoUEEnemyRecord {
+    if (this.enemies.has(input.enemy_id)) return this.enemies.get(input.enemy_id)!;
+    const record: AutoUEEnemyRecord = { enemy_id: input.enemy_id, entity_id: input.entity_id, archetype_id: input.archetype_id || input.entity_id, actor: input.actor, hp: input.hp, max_hp: input.hp, state: 'Idle', cooldowns: {}, alive: true, runtime_params: input.runtime_params || {} };
+    this.enemies.set(input.enemy_id, record);
+    log(this.context, `AliveEnemyRegistered count=${this.getAliveEnemies().length} enemy_id=${input.enemy_id}`);
+    return record;
+  }
+  get(enemyId: string): AutoUEEnemyRecord | undefined { return this.enemies.get(enemyId); }
+  all(): AutoUEEnemyRecord[] { return Array.from(this.enemies.values()); }
+  getAliveEnemies(): AutoUEEnemyRecord[] { return this.all().filter(e => e.alive); }
+  updateState(enemyId: string, state: AutoUEEnemyState): void { const enemy = this.enemies.get(enemyId); if (!enemy || enemy.state === state) return; enemy.state = state; log(this.context, `EnemyState enemy_id=${enemyId} state=${state}`); }
+  markDead(enemyId: string): boolean { const enemy = this.enemies.get(enemyId); if (!enemy || !enemy.alive) return false; enemy.alive = false; enemy.state = 'Dead'; log(this.context, `EnemyDied enemy_id=${enemyId} alive=${this.getAliveEnemies().length}`); return true; }
+}
+export function {{export_name}}(context?: {{interface_name}}): AutoUEEnemyRegistry { return new AutoUEEnemyRegistry(context); }

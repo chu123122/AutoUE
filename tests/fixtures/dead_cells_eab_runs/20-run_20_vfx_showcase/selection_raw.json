@@ -7,14 +7,18 @@
     "freeze_vfx",
     "corpse_dust_vfx"
   ],
-  "selected_capability_ids": [],
+  "selected_capability_ids": [
+    "enemy.spawn.spawn_actor",
+    "enemy.sensor.detect_player_by_distance",
+    "enemy.movement.chase_target",
+    "enemy.attack.melee_hitbox",
+    "enemy.health.receive_damage",
+    "enemy.death.emit_death_event",
+    "encounter.complete.complete_when_all_dead",
+    "vfx.spawn.spawn_particles"
+  ],
   "selected_behavior_ids": [
-    "player.combat.attack",
-    "zombie.offense.resolve_hit",
-    "critical_hit_vfx.emit.spawn_particles",
-    "burn_vfx.emit.spawn_particles",
-    "poison_vfx.emit.spawn_particles",
-    "freeze_vfx.emit.spawn_particles",
-    "corpse_dust_vfx.emit.spawn_particles"
+    "enemy.behavior.chase_and_melee",
+    "vfx.behavior.spawn_particles"
   ]
 }

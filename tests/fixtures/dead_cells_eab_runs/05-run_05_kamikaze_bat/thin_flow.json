@@ -1,14 +1,13 @@
 {
   "flows": [
     {
-      "flow_id": "flow_burn_vfx_emit_spawn_particles",
+      "flow_id": "flow_vfx_behavior_spawn_particles",
       "entity_id": "burn_vfx",
-      "ability_id": "burn_vfx.emit",
-      "source_behavior_id": "burn_vfx.emit.spawn_particles",
+      "source_behavior_id": "vfx.behavior.spawn_particles",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -16,23 +15,23 @@
             "actions"
           ],
           "engine_ports": [
-            "component.set_visibility"
+            "manual.trigger"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered burn_vfx.emit.spawn_particles"
+        "BehaviorTriggered vfx.behavior.spawn_particles",
+        "ActionDispatched spawn_vfx"
       ]
     },
     {
-      "flow_id": "flow_combat_damage_number_hud_display_refresh_value",
+      "flow_id": "flow_hud_behavior_refresh_value",
       "entity_id": "combat_damage_number_hud",
-      "ability_id": "combat_damage_number_hud.display",
-      "source_behavior_id": "combat_damage_number_hud.display.refresh_value",
+      "source_behavior_id": "hud.behavior.refresh_value",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -40,24 +39,23 @@
             "actions"
           ],
           "engine_ports": [
-            "widget.set_text",
-            "widget.set_percent"
+            "manual.trigger"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered combat_damage_number_hud.display.refresh_value"
+        "BehaviorTriggered hud.behavior.refresh_value",
+        "ActionDispatched set_hud_value"
       ]
     },
     {
-      "flow_id": "flow_kamikaze_bat_offense_resolve_hit",
+      "flow_id": "flow_enemy_behavior_chase_and_self_destruct",
       "entity_id": "kamikaze_bat",
-      "ability_id": "kamikaze_bat.offense",
-      "source_behavior_id": "kamikaze_bat.offense.resolve_hit",
+      "source_behavior_id": "enemy.behavior.chase_and_self_destruct",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -65,88 +63,19 @@
             "actions"
           ],
           "engine_ports": [
-            "kismet.sphere_trace_single",
-            "gameplay_statics.apply_damage"
+            "actor.spawn"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered kamikaze_bat.offense.resolve_hit"
-      ]
-    },
-    {
-      "flow_id": "flow_kamikaze_bat_pursuit_close_gap",
-      "entity_id": "kamikaze_bat",
-      "ability_id": "kamikaze_bat.pursuit",
-      "source_behavior_id": "kamikaze_bat.pursuit.close_gap",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "actor.get_distance_to",
-            "pawn.add_movement_input"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered kamikaze_bat.pursuit.close_gap"
-      ]
-    },
-    {
-      "flow_id": "flow_kamikaze_bat_pursuit_detect_player",
-      "entity_id": "kamikaze_bat",
-      "ability_id": "kamikaze_bat.pursuit",
-      "source_behavior_id": "kamikaze_bat.pursuit.detect_player",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "actor.get_distance_to",
-            "pawn.add_movement_input"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered kamikaze_bat.pursuit.detect_player"
-      ]
-    },
-    {
-      "flow_id": "flow_player_movement_dodge_roll",
-      "entity_id": "player",
-      "ability_id": "player.movement",
-      "source_behavior_id": "player.movement.dodge_roll",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "input.action_binding",
-            "pawn.add_movement_input"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered player.movement.dodge_roll"
+        "BehaviorTriggered enemy.behavior.chase_and_self_destruct",
+        "ActionDispatched enemy_spawn_actor",
+        "ActionDispatched enemy_detect_player",
+        "ActionDispatched enemy_chase_target",
+        "ActionDispatched enemy_self_destruct",
+        "ActionDispatched enemy_receive_damage",
+        "ActionDispatched enemy_emit_death_event",
+        "ActionDispatched encounter_complete_when_all_dead"
       ]
     }
   ]

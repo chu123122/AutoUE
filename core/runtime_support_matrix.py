@@ -5,6 +5,37 @@ from typing import Any, Iterable
 
 from core.content_library import load_dead_cells_library
 
+CANONICAL_ENEMY_CAPABILITY_IDS = {
+    "enemy.spawn.spawn_actor",
+    "enemy.sensor.detect_player_by_distance",
+    "enemy.movement.chase_target",
+    "enemy.movement.keep_distance",
+    "enemy.movement.patrol_between_points",
+    "enemy.movement.teleport_to_target",
+    "enemy.attack.melee_hitbox",
+    "enemy.attack.projectile_spawn",
+    "enemy.attack.self_destruct",
+    "enemy.attack.area_burst",
+    "enemy.defense.directional_block",
+    "enemy.defense.invulnerable_window",
+    "enemy.health.receive_damage",
+    "enemy.death.emit_death_event",
+    "enemy.reward.drop_on_death",
+    "encounter.complete.complete_when_all_dead",
+}
+
+ENEMY_RUNTIME_CAPABILITY_KINDS = {
+    "enemy_spawn",
+    "enemy_sensor",
+    "enemy_movement",
+    "enemy_attack",
+    "enemy_defense",
+    "enemy_health",
+    "enemy_death",
+    "enemy_reward",
+    "encounter",
+}
+
 SUPPORTED_ACTION_TYPES = {
     "write_state",
     "clear_state",
@@ -18,6 +49,17 @@ SUPPORTED_ACTION_TYPES = {
     "destroy_entity",
     "apply_damage",
     "start_timer",
+    "enemy_spawn_actor",
+    "enemy_detect_player",
+    "enemy_chase_target",
+    "enemy_keep_distance",
+    "enemy_melee_attack",
+    "enemy_projectile_attack",
+    "enemy_self_destruct",
+    "enemy_directional_block",
+    "enemy_receive_damage",
+    "enemy_emit_death_event",
+    "encounter_complete_when_all_dead",
 }
 
 FRAMEWORK_RUNTIME_MODULES = [
@@ -87,10 +129,30 @@ DEFAULT_SUPPORT_MATRIX = CapabilitySupportMatrix([
     _entry("camera_feedback", "camera_impulse", "ActionDispatcher.cameraImpulse", ["world_adapter", "action_dispatcher"], ["camera.update_view_target"]),
     _entry("hud_binding", "refresh_value", "ActionDispatcher.setHudValue", ["world_adapter", "entity_registry", "state_blackboard", "action_dispatcher"], ["widget.set_text", "widget.set_percent"]),
     _entry("hud_feedback", "flash_warning", "ActionDispatcher.setHudValue", ["world_adapter", "entity_registry", "state_blackboard", "action_dispatcher"], ["widget.set_render_opacity"]),
+    _entry("hud_binding", "set_percent", None, [], ["widget.set_percent"], supported=False, reason="dedicated HUD set_percent runtime handler is not implemented"),
+    _entry("hud_feedback", "set_opacity", None, [], ["widget.set_render_opacity"], supported=False, reason="dedicated HUD opacity runtime handler is not implemented"),
     _entry("gate_lock", "evaluate_unlock", "ActionDispatcher.unlockExit", ["state_blackboard", "action_dispatcher"], []),
     _entry("level_transition", "activate_transition", "ActionDispatcher.openExit", ["world_adapter", "entity_registry", "action_dispatcher"], ["primitive.on_component_begin_overlap", "gameplay_statics.open_level"]),
     _entry("vfx_binding", "spawn_particles", "ActionDispatcher.spawnVfx", ["world_adapter", "entity_registry", "action_dispatcher"], ["component.set_visibility"]),
     _entry("vfx_lifecycle", "tick_or_cleanup", "ActionDispatcher.setVfxVisible", ["world_adapter", "entity_registry", "action_dispatcher"], ["component.set_visibility"]),
+    _entry("vfx_lifecycle", "cleanup_after_duration", None, [], ["component.set_visibility"], supported=False, reason="VFX cleanup-after-duration runtime handler is not implemented"),
+    _entry("vfx_lifecycle", "attach_to_target", None, [], ["component.attach_to_component"], supported=False, reason="VFX attach runtime handler is not implemented"),
+    _entry("enemy_spawn", "spawn_actor", "EnemySpawnRuntime.spawnEnemy", ["enemy_runtime", "enemy_spawn_runtime", "enemy_registry", "world_adapter"], ["actor.spawn"]),
+    _entry("enemy_sensor", "detect_player_by_distance", "EnemyPerception.detectPlayer", ["enemy_runtime", "enemy_perception", "enemy_registry", "world_adapter"], ["actor.get_distance_to"]),
+    _entry("enemy_movement", "chase_target", "EnemyMovement.chaseTarget", ["enemy_runtime", "enemy_movement", "enemy_registry", "world_adapter"], ["actor.get_distance_to", "actor.set_actor_location"]),
+    _entry("enemy_movement", "keep_distance", "EnemyMovement.keepDistance", ["enemy_runtime", "enemy_movement", "enemy_registry", "world_adapter"], ["actor.get_distance_to", "actor.set_actor_location"]),
+    _entry("enemy_movement", "patrol_between_points", None, [], ["actor.set_actor_location"], supported=False, reason="enemy patrol runtime handler is not implemented"),
+    _entry("enemy_movement", "teleport_to_target", None, [], ["actor.set_actor_location"], supported=False, reason="enemy teleport runtime handler is not implemented"),
+    _entry("enemy_attack", "melee_hitbox", "EnemyCombat.resolveMeleeHit", ["enemy_runtime", "enemy_combat", "enemy_registry", "world_adapter"], ["kismet.sphere_trace_single", "gameplay_statics.apply_damage"]),
+    _entry("enemy_attack", "projectile_spawn", "EnemyCombat.spawnProjectile", ["enemy_runtime", "enemy_combat", "enemy_projectile_runtime", "world_adapter"], ["projectile.spawn"]),
+    _entry("enemy_attack", "self_destruct", "EnemyCombat.selfDestruct", ["enemy_runtime", "enemy_combat", "enemy_health", "enemy_death_events", "world_adapter"], ["gameplay_statics.apply_damage", "actor.destroy"]),
+    _entry("enemy_attack", "area_burst", None, [], ["gameplay_statics.apply_damage"], supported=False, reason="enemy area burst runtime handler is not implemented"),
+    _entry("enemy_defense", "directional_block", "EnemyCombat.resolveDirectionalBlock", ["enemy_runtime", "enemy_combat", "enemy_health"], ["actor.get_forward_vector"]),
+    _entry("enemy_defense", "invulnerable_window", None, [], [], supported=False, reason="enemy invulnerable window runtime handler is not implemented"),
+    _entry("enemy_health", "receive_damage", "EnemyHealth.applyDamage", ["enemy_runtime", "enemy_health", "enemy_registry", "world_adapter"], ["gameplay_statics.apply_damage", "actor.on_take_any_damage"]),
+    _entry("enemy_death", "emit_death_event", "EnemyDeathEvents.emitDeath", ["enemy_runtime", "enemy_death_events", "enemy_registry", "encounter_manager"], ["actor.on_destroyed"]),
+    _entry("enemy_reward", "drop_on_death", None, [], [], supported=False, reason="enemy reward drop runtime handler is not implemented"),
+    _entry("encounter", "complete_when_all_dead", "EncounterManager.completeWhenAllDead", ["enemy_runtime", "encounter_manager", "enemy_registry"], ["encounter.alive_count"]),
 
     _entry("movement", "move_actor", None, [], ["input.action_binding", "pawn.add_movement_input"], supported=False, reason="general movement runtime is not implemented by behavior framework support matrix"),
     _entry("combat", "apply_damage", None, [], ["input.action_binding", "gameplay_statics.apply_damage"], supported=False, reason="combat damage runtime is not implemented"),
@@ -134,6 +196,16 @@ def check_capability_support(capability_ids: Iterable[str], matrix: CapabilitySu
             continue
         kind = str(capability.get("capability_kind") or "")
         action = str(capability.get("action_kind") or "")
+        if kind in ENEMY_RUNTIME_CAPABILITY_KINDS and capability_id not in CANONICAL_ENEMY_CAPABILITY_IDS:
+            unsupported.append({
+                "capability_id": capability_id,
+                "capability_kind": kind,
+                "action_kind": action,
+                "supported": False,
+                "reason": "entity-specific enemy capability is legacy unsupported; runtime must consume canonical capability prototypes via resolved_capabilities",
+                "missing_matrix_entry": False,
+            })
+            continue
         entry = matrix.lookup(kind, action)
         if entry is None:
             unsupported.append({

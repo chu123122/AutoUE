@@ -1,0 +1,115 @@
+{
+  "flows": [
+    {
+      "flow_id": "flow_enemy_behavior_chase_and_melee",
+      "entity_id": "zombie",
+      "source_behavior_id": "enemy.behavior.chase_and_melee",
+      "stages": [
+        {
+          "stage": "Runtime",
+          "contract": "enemy_spawn_actor for enemy.behavior.chase_and_melee",
+          "inputs": [
+            "BehaviorSpec",
+            "runtime_params"
+          ],
+          "outputs": [
+            "enemy_spawn_actor"
+          ],
+          "engine_ports": [
+            "actor.spawn"
+          ]
+        },
+        {
+          "stage": "Runtime",
+          "contract": "enemy_detect_player for enemy.behavior.chase_and_melee",
+          "inputs": [
+            "BehaviorSpec",
+            "runtime_params"
+          ],
+          "outputs": [
+            "enemy_detect_player"
+          ],
+          "engine_ports": [
+            "actor.get_distance_to"
+          ]
+        },
+        {
+          "stage": "Runtime",
+          "contract": "enemy_chase_target for enemy.behavior.chase_and_melee",
+          "inputs": [
+            "BehaviorSpec",
+            "runtime_params"
+          ],
+          "outputs": [
+            "enemy_chase_target"
+          ],
+          "engine_ports": [
+            "actor.set_actor_location"
+          ]
+        },
+        {
+          "stage": "Runtime",
+          "contract": "enemy_melee_attack for enemy.behavior.chase_and_melee",
+          "inputs": [
+            "BehaviorSpec",
+            "runtime_params"
+          ],
+          "outputs": [
+            "enemy_melee_attack"
+          ],
+          "engine_ports": [
+            "kismet.sphere_trace_single",
+            "gameplay_statics.apply_damage"
+          ]
+        },
+        {
+          "stage": "Runtime",
+          "contract": "enemy_receive_damage for enemy.behavior.chase_and_melee",
+          "inputs": [
+            "BehaviorSpec",
+            "runtime_params"
+          ],
+          "outputs": [
+            "enemy_receive_damage"
+          ],
+          "engine_ports": [
+            "actor.on_take_any_damage"
+          ]
+        },
+        {
+          "stage": "Runtime",
+          "contract": "enemy_emit_death_event for enemy.behavior.chase_and_melee",
+          "inputs": [
+            "BehaviorSpec",
+            "runtime_params"
+          ],
+          "outputs": [
+            "enemy_emit_death_event"
+          ],
+          "engine_ports": [
+            "actor.on_destroyed"
+          ]
+        },
+        {
+          "stage": "Runtime",
+          "contract": "encounter_complete_when_all_dead for enemy.behavior.chase_and_melee",
+          "inputs": [
+            "BehaviorSpec",
+            "runtime_params"
+          ],
+          "outputs": [
+            "encounter_complete_when_all_dead"
+          ],
+          "engine_ports": [
+            "encounter.alive_count"
+          ]
+        }
+      ],
+      "verification": [
+        "EnemySpawned",
+        "EnemyDied",
+        "EncounterCompleted=1"
+      ]
+    }
+  ]
+}

@@ -1,14 +1,13 @@
 {
   "flows": [
     {
-      "flow_id": "flow_bleed_vfx_emit_spawn_particles",
+      "flow_id": "flow_vfx_behavior_spawn_particles",
       "entity_id": "bleed_vfx",
-      "ability_id": "bleed_vfx.emit",
-      "source_behavior_id": "bleed_vfx.emit.spawn_particles",
+      "source_behavior_id": "vfx.behavior.spawn_particles",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -16,50 +15,23 @@
             "actions"
           ],
           "engine_ports": [
-            "component.set_visibility"
+            "manual.trigger"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered bleed_vfx.emit.spawn_particles"
+        "BehaviorTriggered vfx.behavior.spawn_particles",
+        "ActionDispatched spawn_vfx"
       ]
     },
     {
-      "flow_id": "flow_blood_sword_apply_bleed_on_hit",
-      "entity_id": "blood_sword",
-      "ability_id": "blood_sword.attack.apply_bleed_on_hit",
-      "source_behavior_id": "blood_sword.apply_bleed_on_hit",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "gameplay_statics.apply_damage",
-            "component.set_visibility",
-            "widget.set_text",
-            "widget.set_percent"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered blood_sword.apply_bleed_on_hit"
-      ]
-    },
-    {
-      "flow_id": "flow_combat_damage_number_hud_display_refresh_value",
+      "flow_id": "flow_hud_behavior_refresh_value",
       "entity_id": "combat_damage_number_hud",
-      "ability_id": "combat_damage_number_hud.display",
-      "source_behavior_id": "combat_damage_number_hud.display.refresh_value",
+      "source_behavior_id": "hud.behavior.refresh_value",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -67,50 +39,23 @@
             "actions"
           ],
           "engine_ports": [
-            "widget.set_text",
-            "widget.set_percent"
+            "manual.trigger"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered combat_damage_number_hud.display.refresh_value"
+        "BehaviorTriggered hud.behavior.refresh_value",
+        "ActionDispatched set_hud_value"
       ]
     },
     {
-      "flow_id": "flow_player_combat_attack",
-      "entity_id": "player",
-      "ability_id": "player.combat",
-      "source_behavior_id": "player.combat.attack",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "input.action_binding",
-            "kismet.line_trace_single",
-            "gameplay_statics.apply_damage"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered player.combat.attack"
-      ]
-    },
-    {
-      "flow_id": "flow_zombie_offense_resolve_hit",
+      "flow_id": "flow_enemy_behavior_chase_and_melee",
       "entity_id": "zombie",
-      "ability_id": "zombie.offense",
-      "source_behavior_id": "zombie.offense.resolve_hit",
+      "source_behavior_id": "enemy.behavior.chase_and_melee",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -118,13 +63,20 @@
             "actions"
           ],
           "engine_ports": [
-            "kismet.sphere_trace_single",
+            "actor.spawn",
             "gameplay_statics.apply_damage"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered zombie.offense.resolve_hit"
+        "BehaviorTriggered enemy.behavior.chase_and_melee",
+        "ActionDispatched enemy_spawn_actor",
+        "ActionDispatched enemy_detect_player",
+        "ActionDispatched enemy_chase_target",
+        "ActionDispatched enemy_melee_attack",
+        "ActionDispatched enemy_receive_damage",
+        "ActionDispatched enemy_emit_death_event",
+        "ActionDispatched encounter_complete_when_all_dead"
       ]
     }
   ]

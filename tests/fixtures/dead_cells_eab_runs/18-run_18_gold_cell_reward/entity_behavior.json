@@ -1,4 +1,5 @@
 {
+  "schema_version": "autoue-eab-canonical/v2",
   "entities": [
     {
       "entity_id": "cell_pickup",
@@ -13,85 +14,142 @@
         "pickup"
       ],
       "spawnable": false,
-      "abilities": [
+      "capability_bindings": [
         {
-          "ability_id": "cell_pickup.collect",
-          "entity_id": "cell_pickup",
-          "display_name": "Cell Pickup Collection",
-          "display_name_zh": "细胞收集",
-          "summary": "负责检测玩家收集并转移奖励。",
-          "summary_zh": "负责检测玩家收集并转移奖励。",
-          "capability_id": "cell_pickup.collect",
+          "capability_id": "pickup.collect.grant_reward",
+          "params": {},
+          "tags": [
+            "cell",
+            "meta",
+            "pickup"
+          ]
+        },
+        {
+          "capability_id": "pickup.feedback.spawn_reward_visual",
+          "params": {},
+          "tags": [
+            "cell",
+            "meta",
+            "pickup"
+          ]
+        }
+      ],
+      "capabilities": [
+        {
+          "capability_id": "pickup.collect.grant_reward",
+          "display_name": "Pickup Collect Grant_Reward",
+          "display_name_zh": "拾取授予奖励",
+          "summary": "拾取授予奖励",
+          "summary_zh": "拾取授予奖励",
           "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
           "capability_kind": "pickup_collection",
-          "runtime_primitives": [
-            "overlap_zone",
-            "grant_reward"
-          ],
+          "action_kind": "grant_reward",
+          "runtime_handler": null,
+          "params_schema": {},
+          "default_params": {},
           "engine_ports": [
             "primitive.on_component_begin_overlap"
           ],
           "runtime_features": [
-            "pickup"
+            "world_adapter",
+            "entity_registry",
+            "action_dispatcher"
           ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "grant_reward",
           "behaviors": [
             {
-              "behavior_id": "cell_pickup.collect.detect_pickup",
-              "ability_id": "cell_pickup.collect",
-              "entity_id": "cell_pickup",
-              "display_name": "Cell Pickup Detect Pickup",
-              "display_name_zh": "细胞检测收集",
-              "trigger": "player overlaps pickup",
-              "execution": "checks collection eligibility and run state",
-              "result": "pickup can transfer its reward",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "cell_pickup",
+              "behavior_id": "pickup.behavior.collect_reward",
+              "display_name": "Pickup Behavior Collect_Reward",
+              "display_name_zh": "拾取奖励",
+              "summary": "拾取奖励",
+              "summary_zh": "拾取奖励",
+              "semantic_role": "behavior",
+              "behavior_kind": "pickup_collection",
+              "primary_entity_kind": "pickup",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
               "required_capability_ids": [
-                "cell_pickup.collect"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "player overlaps pickup"
-              },
-              "effects": [
-                "pickup can transfer its reward"
+                "pickup.collect.grant_reward",
+                "pickup.feedback.spawn_reward_visual"
               ],
               "runtime_features": [
-                "pickup"
+                "world_adapter",
+                "entity_registry",
+                "action_dispatcher"
               ],
-              "semantic_role": "behavior"
-            },
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "grant_reward",
+                  "uses": "pickup.collect.grant_reward"
+                },
+                {
+                  "step": "spawn_reward_visual",
+                  "uses": "pickup.feedback.spawn_reward_visual"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "capability_id": "pickup.feedback.spawn_reward_visual",
+          "display_name": "Pickup Feedback Spawn_Reward_Visual",
+          "display_name_zh": "生成奖励反馈",
+          "summary": "生成奖励反馈",
+          "summary_zh": "生成奖励反馈",
+          "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "reward_feedback",
+          "action_kind": "spawn_reward_visual",
+          "runtime_handler": null,
+          "params_schema": {},
+          "default_params": {},
+          "engine_ports": [
+            "component.set_visibility"
+          ],
+          "runtime_features": [
+            "world_adapter",
+            "entity_registry",
+            "action_dispatcher"
+          ],
+          "behaviors": [
             {
-              "behavior_id": "cell_pickup.collect.grant_reward",
-              "ability_id": "cell_pickup.collect",
-              "entity_id": "cell_pickup",
-              "display_name": "Cell Pickup Grant Reward",
-              "display_name_zh": "细胞授予奖励",
-              "trigger": "collection is accepted",
-              "execution": "adds stat, currency, cell, healing, or equipment value",
-              "result": "player receives reward",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "cell_pickup",
+              "behavior_id": "pickup.behavior.collect_reward",
+              "display_name": "Pickup Behavior Collect_Reward",
+              "display_name_zh": "拾取奖励",
+              "summary": "拾取奖励",
+              "summary_zh": "拾取奖励",
+              "semantic_role": "behavior",
+              "behavior_kind": "pickup_collection",
+              "primary_entity_kind": "pickup",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
               "required_capability_ids": [
-                "cell_pickup.collect"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "collection is accepted"
-              },
-              "effects": [
-                "player receives reward"
+                "pickup.collect.grant_reward",
+                "pickup.feedback.spawn_reward_visual"
               ],
               "runtime_features": [
-                "pickup"
+                "world_adapter",
+                "entity_registry",
+                "action_dispatcher"
               ],
-              "semantic_role": "behavior"
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "grant_reward",
+                  "uses": "pickup.collect.grant_reward"
+                },
+                {
+                  "step": "spawn_reward_visual",
+                  "uses": "pickup.feedback.spawn_reward_visual"
+                }
+              ]
             }
           ]
         }
@@ -110,57 +168,78 @@
         "death"
       ],
       "spawnable": false,
-      "abilities": [
+      "capability_bindings": [
         {
-          "ability_id": "corpse_dust_vfx.emit",
-          "entity_id": "corpse_dust_vfx",
-          "display_name": "Corpse Dust VFX Particle Emission",
-          "display_name_zh": "尸体尘散特效粒子生成",
-          "summary": "负责在玩法事件发生时生成可见粒子。",
-          "summary_zh": "负责在玩法事件发生时生成可见粒子。",
-          "capability_id": "corpse_dust_vfx.emit",
+          "capability_id": "vfx.lifecycle.cleanup_after_duration",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "death"
+          ]
+        },
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "death"
+          ]
+        }
+      ],
+      "capabilities": [
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "display_name": "Vfx Spawn Spawn_Particles",
+          "display_name_zh": "生成粒子特效",
+          "summary": "生成粒子特效",
+          "summary_zh": "生成粒子特效",
           "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
           "capability_kind": "vfx_binding",
-          "runtime_primitives": [
-            "spawn_vfx",
-            "attach_vfx"
-          ],
+          "action_kind": "spawn_particles",
+          "runtime_handler": "ActionDispatcher.spawnVfx",
+          "params_schema": {},
+          "default_params": {},
           "engine_ports": [
             "component.set_visibility"
           ],
           "runtime_features": [
-            "vfx"
+            "world_adapter",
+            "entity_registry",
+            "action_dispatcher"
           ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "spawn_particles",
           "behaviors": [
             {
-              "behavior_id": "corpse_dust_vfx.emit.spawn_particles",
-              "ability_id": "corpse_dust_vfx.emit",
-              "entity_id": "corpse_dust_vfx",
-              "display_name": "Corpse Dust VFX Spawn Particles",
-              "display_name_zh": "尸体尘散特效生成粒子",
-              "trigger": "gameplay event fires",
-              "execution": "spawns particles at the relevant actor or world position",
-              "result": "event has visible feedback",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "corpse_dust_vfx",
+              "behavior_id": "vfx.behavior.spawn_particles",
+              "display_name": "Vfx Behavior Spawn_Particles",
+              "display_name_zh": "生成粒子",
+              "summary": "生成粒子",
+              "summary_zh": "生成粒子",
+              "semantic_role": "behavior",
+              "behavior_kind": "vfx_spawn",
+              "primary_entity_kind": "vfx",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
               "required_capability_ids": [
-                "corpse_dust_vfx.emit"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "gameplay event fires"
-              },
-              "effects": [
-                "event has visible feedback"
+                "vfx.spawn.spawn_particles"
               ],
               "runtime_features": [
-                "vfx"
+                "world_adapter",
+                "entity_registry",
+                "action_dispatcher"
               ],
-              "semantic_role": "behavior"
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "spawn_particles",
+                  "uses": "vfx.spawn.spawn_particles"
+                }
+              ]
             }
           ]
         }
@@ -179,85 +258,142 @@
         "pickup"
       ],
       "spawnable": false,
-      "abilities": [
+      "capability_bindings": [
         {
-          "ability_id": "gold_pickup.collect",
-          "entity_id": "gold_pickup",
-          "display_name": "Gold Pickup Collection",
-          "display_name_zh": "金币收集",
-          "summary": "负责检测玩家收集并转移奖励。",
-          "summary_zh": "负责检测玩家收集并转移奖励。",
-          "capability_id": "gold_pickup.collect",
+          "capability_id": "pickup.collect.grant_reward",
+          "params": {},
+          "tags": [
+            "gold",
+            "currency",
+            "pickup"
+          ]
+        },
+        {
+          "capability_id": "pickup.feedback.spawn_reward_visual",
+          "params": {},
+          "tags": [
+            "gold",
+            "currency",
+            "pickup"
+          ]
+        }
+      ],
+      "capabilities": [
+        {
+          "capability_id": "pickup.collect.grant_reward",
+          "display_name": "Pickup Collect Grant_Reward",
+          "display_name_zh": "拾取授予奖励",
+          "summary": "拾取授予奖励",
+          "summary_zh": "拾取授予奖励",
           "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
           "capability_kind": "pickup_collection",
-          "runtime_primitives": [
-            "overlap_zone",
-            "grant_reward"
-          ],
+          "action_kind": "grant_reward",
+          "runtime_handler": null,
+          "params_schema": {},
+          "default_params": {},
           "engine_ports": [
             "primitive.on_component_begin_overlap"
           ],
           "runtime_features": [
-            "pickup"
+            "world_adapter",
+            "entity_registry",
+            "action_dispatcher"
           ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "grant_reward",
           "behaviors": [
             {
-              "behavior_id": "gold_pickup.collect.detect_pickup",
-              "ability_id": "gold_pickup.collect",
-              "entity_id": "gold_pickup",
-              "display_name": "Gold Pickup Detect Pickup",
-              "display_name_zh": "金币检测收集",
-              "trigger": "player overlaps pickup",
-              "execution": "checks collection eligibility and run state",
-              "result": "pickup can transfer its reward",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "gold_pickup",
+              "behavior_id": "pickup.behavior.collect_reward",
+              "display_name": "Pickup Behavior Collect_Reward",
+              "display_name_zh": "拾取奖励",
+              "summary": "拾取奖励",
+              "summary_zh": "拾取奖励",
+              "semantic_role": "behavior",
+              "behavior_kind": "pickup_collection",
+              "primary_entity_kind": "pickup",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
               "required_capability_ids": [
-                "gold_pickup.collect"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "player overlaps pickup"
-              },
-              "effects": [
-                "pickup can transfer its reward"
+                "pickup.collect.grant_reward",
+                "pickup.feedback.spawn_reward_visual"
               ],
               "runtime_features": [
-                "pickup"
+                "world_adapter",
+                "entity_registry",
+                "action_dispatcher"
               ],
-              "semantic_role": "behavior"
-            },
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "grant_reward",
+                  "uses": "pickup.collect.grant_reward"
+                },
+                {
+                  "step": "spawn_reward_visual",
+                  "uses": "pickup.feedback.spawn_reward_visual"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "capability_id": "pickup.feedback.spawn_reward_visual",
+          "display_name": "Pickup Feedback Spawn_Reward_Visual",
+          "display_name_zh": "生成奖励反馈",
+          "summary": "生成奖励反馈",
+          "summary_zh": "生成奖励反馈",
+          "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "reward_feedback",
+          "action_kind": "spawn_reward_visual",
+          "runtime_handler": null,
+          "params_schema": {},
+          "default_params": {},
+          "engine_ports": [
+            "component.set_visibility"
+          ],
+          "runtime_features": [
+            "world_adapter",
+            "entity_registry",
+            "action_dispatcher"
+          ],
+          "behaviors": [
             {
-              "behavior_id": "gold_pickup.collect.grant_reward",
-              "ability_id": "gold_pickup.collect",
-              "entity_id": "gold_pickup",
-              "display_name": "Gold Pickup Grant Reward",
-              "display_name_zh": "金币授予奖励",
-              "trigger": "collection is accepted",
-              "execution": "adds stat, currency, cell, healing, or equipment value",
-              "result": "player receives reward",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "gold_pickup",
+              "behavior_id": "pickup.behavior.collect_reward",
+              "display_name": "Pickup Behavior Collect_Reward",
+              "display_name_zh": "拾取奖励",
+              "summary": "拾取奖励",
+              "summary_zh": "拾取奖励",
+              "semantic_role": "behavior",
+              "behavior_kind": "pickup_collection",
+              "primary_entity_kind": "pickup",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
               "required_capability_ids": [
-                "gold_pickup.collect"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "collection is accepted"
-              },
-              "effects": [
-                "player receives reward"
+                "pickup.collect.grant_reward",
+                "pickup.feedback.spawn_reward_visual"
               ],
               "runtime_features": [
-                "pickup"
+                "world_adapter",
+                "entity_registry",
+                "action_dispatcher"
               ],
-              "semantic_role": "behavior"
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "grant_reward",
+                  "uses": "pickup.collect.grant_reward"
+                },
+                {
+                  "step": "spawn_reward_visual",
+                  "uses": "pickup.feedback.spawn_reward_visual"
+                }
+              ]
             }
           ]
         }
@@ -276,58 +412,81 @@
         "buff"
       ],
       "spawnable": false,
-      "abilities": [
+      "capability_bindings": [
         {
-          "ability_id": "status_icon_hud.display",
-          "entity_id": "status_icon_hud",
-          "display_name": "Status Icon HUD Display",
-          "display_name_zh": "状态图标HUD显示",
-          "summary": "负责把数值、图标或地图状态呈现到屏幕。",
-          "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
-          "capability_id": "status_icon_hud.display",
+          "capability_id": "hud.display.refresh_value",
+          "params": {},
+          "tags": [
+            "hud",
+            "status",
+            "buff"
+          ]
+        },
+        {
+          "capability_id": "hud.feedback.flash_warning",
+          "params": {},
+          "tags": [
+            "hud",
+            "status",
+            "buff"
+          ]
+        }
+      ],
+      "capabilities": [
+        {
+          "capability_id": "hud.display.refresh_value",
+          "display_name": "Hud Display Refresh_Value",
+          "display_name_zh": "刷新 HUD 数值",
+          "summary": "刷新 HUD 数值",
+          "summary_zh": "刷新 HUD 数值",
           "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
           "capability_kind": "hud_binding",
-          "runtime_primitives": [
-            "hud_refresh",
-            "tag_state"
-          ],
+          "action_kind": "refresh_value",
+          "runtime_handler": "ActionDispatcher.setHudValue",
+          "params_schema": {},
+          "default_params": {},
           "engine_ports": [
             "widget.set_text",
             "widget.set_percent"
           ],
           "runtime_features": [
-            "hud"
+            "world_adapter",
+            "entity_registry",
+            "state_blackboard",
+            "action_dispatcher"
           ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "refresh_value",
           "behaviors": [
             {
-              "behavior_id": "status_icon_hud.display.refresh_value",
-              "ability_id": "status_icon_hud.display",
-              "entity_id": "status_icon_hud",
-              "display_name": "Status Icon HUD Refresh Value",
-              "display_name_zh": "状态图标HUD刷新数值",
-              "trigger": "tracked value changes",
-              "execution": "updates bars, icons, counters, or map tiles",
-              "result": "HUD reflects current state",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "status_icon_hud",
+              "behavior_id": "hud.behavior.refresh_value",
+              "display_name": "Hud Behavior Refresh_Value",
+              "display_name_zh": "刷新 HUD 数值",
+              "summary": "刷新 HUD 数值",
+              "summary_zh": "刷新 HUD 数值",
+              "semantic_role": "behavior",
+              "behavior_kind": "hud_update",
+              "primary_entity_kind": "hud",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
               "required_capability_ids": [
-                "status_icon_hud.display"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "tracked value changes"
-              },
-              "effects": [
-                "HUD reflects current state"
+                "hud.display.refresh_value"
               ],
               "runtime_features": [
-                "hud"
+                "world_adapter",
+                "entity_registry",
+                "state_blackboard",
+                "action_dispatcher"
               ],
-              "semantic_role": "behavior"
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "refresh_value",
+                  "uses": "hud.display.refresh_value"
+                }
+              ]
             }
           ]
         }

@@ -1,4 +1,5 @@
 {
+  "schema_version": "autoue-eab-canonical/v2",
   "entities": [
     {
       "entity_id": "health_bar_hud",
@@ -13,58 +14,81 @@
         "player"
       ],
       "spawnable": false,
-      "abilities": [
+      "capability_bindings": [
         {
-          "ability_id": "health_bar_hud.display",
-          "entity_id": "health_bar_hud",
-          "display_name": "Health Bar HUD Display",
-          "display_name_zh": "生命条HUD显示",
-          "summary": "负责把数值、图标或地图状态呈现到屏幕。",
-          "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
-          "capability_id": "health_bar_hud.display",
+          "capability_id": "hud.display.refresh_value",
+          "params": {},
+          "tags": [
+            "hud",
+            "health",
+            "player"
+          ]
+        },
+        {
+          "capability_id": "hud.feedback.flash_warning",
+          "params": {},
+          "tags": [
+            "hud",
+            "health",
+            "player"
+          ]
+        }
+      ],
+      "capabilities": [
+        {
+          "capability_id": "hud.display.refresh_value",
+          "display_name": "Hud Display Refresh_Value",
+          "display_name_zh": "刷新 HUD 数值",
+          "summary": "刷新 HUD 数值",
+          "summary_zh": "刷新 HUD 数值",
           "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
           "capability_kind": "hud_binding",
-          "runtime_primitives": [
-            "hud_refresh",
-            "tag_state"
-          ],
+          "action_kind": "refresh_value",
+          "runtime_handler": "ActionDispatcher.setHudValue",
+          "params_schema": {},
+          "default_params": {},
           "engine_ports": [
             "widget.set_text",
             "widget.set_percent"
           ],
           "runtime_features": [
-            "hud"
+            "world_adapter",
+            "entity_registry",
+            "state_blackboard",
+            "action_dispatcher"
           ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "refresh_value",
           "behaviors": [
             {
-              "behavior_id": "health_bar_hud.display.refresh_value",
-              "ability_id": "health_bar_hud.display",
-              "entity_id": "health_bar_hud",
-              "display_name": "Health Bar HUD Refresh Value",
-              "display_name_zh": "生命条HUD刷新数值",
-              "trigger": "tracked value changes",
-              "execution": "updates bars, icons, counters, or map tiles",
-              "result": "HUD reflects current state",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "health_bar_hud",
+              "behavior_id": "hud.behavior.refresh_value",
+              "display_name": "Hud Behavior Refresh_Value",
+              "display_name_zh": "刷新 HUD 数值",
+              "summary": "刷新 HUD 数值",
+              "summary_zh": "刷新 HUD 数值",
+              "semantic_role": "behavior",
+              "behavior_kind": "hud_update",
+              "primary_entity_kind": "hud",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
               "required_capability_ids": [
-                "health_bar_hud.display"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "tracked value changes"
-              },
-              "effects": [
-                "HUD reflects current state"
+                "hud.display.refresh_value"
               ],
               "runtime_features": [
-                "hud"
+                "world_adapter",
+                "entity_registry",
+                "state_blackboard",
+                "action_dispatcher"
               ],
-              "semantic_role": "behavior"
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "refresh_value",
+                  "uses": "hud.display.refresh_value"
+                }
+              ]
             }
           ]
         }
@@ -83,82 +107,36 @@
         "hazard"
       ],
       "spawnable": false,
-      "abilities": [
+      "capability_bindings": [
         {
-          "ability_id": "poison_pool.hazard.apply_poison_dot",
-          "capability_id": "poison_pool.hazard.apply_poison_dot",
-          "entity_id": "poison_pool",
-          "display_name": "poison_pool.hazard.apply_poison_dot",
-          "display_name_zh": "写入 player.effects.poison_dot。",
-          "summary": "写入 player.effects.poison_dot。",
-          "summary_zh": "写入 player.effects.poison_dot。",
-          "semantic_role": "capability",
-          "capability_kind": "apply_effect",
-          "action_kind": "apply_poison_dot",
-          "runtime_primitives": [
-            "state_write",
-            "timer",
-            "periodic_damage"
-          ],
-          "engine_ports": [
-            "primitive.on_component_begin_overlap"
-          ],
-          "runtime_features": [
-            "state_blackboard",
-            "timer",
-            "combat"
-          ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "behaviors": [
-            {
-              "behavior_id": "poison_pool.poison_player_on_overlap",
-              "ability_id": "poison_pool.hazard.apply_poison_dot",
-              "entity_id": "poison_pool",
-              "primary_entity_id": "poison_pool",
-              "display_name": "poison_pool.poison_player_on_overlap",
-              "display_name_zh": "重叠后使玩家中毒。",
-              "trigger": "重叠后使玩家中毒。",
-              "execution": "重叠后使玩家中毒。",
-              "result": "重叠后使玩家中毒。",
-              "required_capability_ids": [
-                "poison_pool.hazard.apply_poison_dot",
-                "poison_vfx.emit",
-                "health_bar_hud.display"
-              ],
-              "trigger_model": {
-                "type": "overlap_enter",
-                "source_entity_id": "player",
-                "target_entity_id": "poison_pool"
-              },
-              "conditions": [],
-              "effects": [
-                {
-                  "type": "write_state",
-                  "key": "player.effects.poison_dot",
-                  "value": {
-                    "duration": 3,
-                    "damage_per_second": 5
-                  }
-                }
-              ],
-              "verification_logs": [
-                "BehaviorTriggered poison_pool.poison_player_on_overlap"
-              ],
-              "semantic_role": "behavior",
-              "source_refs": [
-                "autoue-behavior-driven-runtime"
-              ],
-              "runtime_features": [
-                "combat",
-                "hud",
-                "state_blackboard",
-                "timer",
-                "vfx"
-              ]
-            }
+          "capability_id": "hazard.arming.arm_hazard",
+          "params": {},
+          "tags": [
+            "trap",
+            "poison",
+            "hazard"
+          ]
+        },
+        {
+          "capability_id": "hazard.damage.apply_hazard_damage",
+          "params": {},
+          "tags": [
+            "trap",
+            "poison",
+            "hazard"
+          ]
+        },
+        {
+          "capability_id": "hazard.effect.apply_poison_dot",
+          "params": {},
+          "tags": [
+            "trap",
+            "poison",
+            "hazard"
           ]
         }
-      ]
+      ],
+      "capabilities": []
     },
     {
       "entity_id": "poison_vfx",
@@ -173,57 +151,78 @@
         "poison"
       ],
       "spawnable": false,
-      "abilities": [
+      "capability_bindings": [
         {
-          "ability_id": "poison_vfx.emit",
-          "entity_id": "poison_vfx",
-          "display_name": "Poison VFX Particle Emission",
-          "display_name_zh": "中毒特效粒子生成",
-          "summary": "负责在玩法事件发生时生成可见粒子。",
-          "summary_zh": "负责在玩法事件发生时生成可见粒子。",
-          "capability_id": "poison_vfx.emit",
+          "capability_id": "vfx.lifecycle.cleanup_after_duration",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "poison"
+          ]
+        },
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "poison"
+          ]
+        }
+      ],
+      "capabilities": [
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "display_name": "Vfx Spawn Spawn_Particles",
+          "display_name_zh": "生成粒子特效",
+          "summary": "生成粒子特效",
+          "summary_zh": "生成粒子特效",
           "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
           "capability_kind": "vfx_binding",
-          "runtime_primitives": [
-            "spawn_vfx",
-            "attach_vfx"
-          ],
+          "action_kind": "spawn_particles",
+          "runtime_handler": "ActionDispatcher.spawnVfx",
+          "params_schema": {},
+          "default_params": {},
           "engine_ports": [
             "component.set_visibility"
           ],
           "runtime_features": [
-            "vfx"
+            "world_adapter",
+            "entity_registry",
+            "action_dispatcher"
           ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "spawn_particles",
           "behaviors": [
             {
-              "behavior_id": "poison_vfx.emit.spawn_particles",
-              "ability_id": "poison_vfx.emit",
-              "entity_id": "poison_vfx",
-              "display_name": "Poison VFX Spawn Particles",
-              "display_name_zh": "中毒特效生成粒子",
-              "trigger": "gameplay event fires",
-              "execution": "spawns particles at the relevant actor or world position",
-              "result": "event has visible feedback",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "poison_vfx",
+              "behavior_id": "vfx.behavior.spawn_particles",
+              "display_name": "Vfx Behavior Spawn_Particles",
+              "display_name_zh": "生成粒子",
+              "summary": "生成粒子",
+              "summary_zh": "生成粒子",
+              "semantic_role": "behavior",
+              "behavior_kind": "vfx_spawn",
+              "primary_entity_kind": "vfx",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
               "required_capability_ids": [
-                "poison_vfx.emit"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "gameplay event fires"
-              },
-              "effects": [
-                "event has visible feedback"
+                "vfx.spawn.spawn_particles"
               ],
               "runtime_features": [
-                "vfx"
+                "world_adapter",
+                "entity_registry",
+                "action_dispatcher"
               ],
-              "semantic_role": "behavior"
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "spawn_particles",
+                  "uses": "vfx.spawn.spawn_particles"
+                }
+              ]
             }
           ]
         }

@@ -5,8 +5,13 @@
     "freeze_vfx",
     "side_camera"
   ],
-  "selected_capability_ids": [],
+  "selected_capability_ids": [
+    "hazard.sensor.detect_overlap",
+    "hazard.effect.apply_freeze",
+    "vfx.visibility.set_visible_while_state",
+    "camera.feedback.camera_impulse"
+  ],
   "selected_behavior_ids": [
-    "freeze_trap.freeze_player_on_overlap"
+    "hazard.behavior.freeze_on_overlap"
   ]
 }

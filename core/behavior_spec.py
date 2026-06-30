@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from core.content_library import load_dead_cells_library
-from core.runtime_support_matrix import SUPPORTED_ACTION_TYPES, check_capability_support
+from core.runtime_support_matrix import DEFAULT_SUPPORT_MATRIX, SUPPORTED_ACTION_TYPES, check_capability_support
 
 BEHAVIOR_SPEC_PATH = "flow/06-behavior-spec.json"
 SUPPORT_CHECK_PATH = "flow/06-runtime-support-check.json"
@@ -17,19 +17,28 @@ def _safe_id(value: str) -> str:
 
 
 def collect_selected_behaviors(entity_behavior: Mapping[str, Any]) -> list[dict[str, Any]]:
+    lib = load_dead_cells_library()
     selected: list[dict[str, Any]] = []
+    seen: set[tuple[str, str]] = set()
     for entity in entity_behavior.get("entities", []) if isinstance(entity_behavior, Mapping) else []:
         if not isinstance(entity, Mapping):
             continue
-        for ability in entity.get("abilities", []) or []:
-            if not isinstance(ability, Mapping):
+        entity_id = str(entity.get("entity_id") or "")
+        for capability in entity.get("capabilities", []) or []:
+            if not isinstance(capability, Mapping):
                 continue
-            for behavior in ability.get("behaviors", []) or []:
-                if isinstance(behavior, Mapping):
-                    row = dict(behavior)
-                    row.setdefault("entity_id", entity.get("entity_id", ""))
-                    row.setdefault("ability_id", ability.get("ability_id", ""))
-                    selected.append(row)
+            for behavior in capability.get("behaviors", []) or []:
+                if not isinstance(behavior, Mapping):
+                    continue
+                behavior_id = str(behavior.get("behavior_id") or "")
+                key = (entity_id, behavior_id)
+                if not behavior_id or key in seen:
+                    continue
+                seen.add(key)
+                row = dict(lib["behaviors"].get(behavior_id, behavior))
+                row["bound_entity_id"] = entity_id
+                row["entity_id"] = entity_id
+                selected.append(row)
     return selected
 
 
@@ -43,45 +52,105 @@ def selected_capability_ids(entity_behavior: Mapping[str, Any]) -> list[str]:
 
 
 def _flow_by_behavior(thin_flow: Mapping[str, Any] | None) -> dict[str, dict[str, Any]]:
-    result: dict[str, dict[str, Any]] = {}
-    for flow in (thin_flow or {}).get("flows", []) if isinstance(thin_flow, Mapping) else []:
-        if isinstance(flow, Mapping) and flow.get("source_behavior_id"):
-            result[str(flow["source_behavior_id"])] = dict(flow)
-    return result
+    return {str(flow["source_behavior_id"]): dict(flow) for flow in (thin_flow or {}).get("flows", []) if isinstance(flow, Mapping) and flow.get("source_behavior_id")}
 
 
 def _ports_for_flow(flow: Mapping[str, Any] | None) -> list[str]:
     ports: list[str] = []
     for stage in (flow or {}).get("stages", []) if isinstance(flow, Mapping) else []:
-        if not isinstance(stage, Mapping):
-            continue
-        for port in stage.get("engine_ports", []) or []:
-            if isinstance(port, str) and port and port not in ports:
-                ports.append(port)
+        if isinstance(stage, Mapping):
+            for port in stage.get("engine_ports", []) or []:
+                if isinstance(port, str) and port and port not in ports:
+                    ports.append(port)
     return ports
 
 
-def _action_from_capability(capability_id: str, capability: Mapping[str, Any]) -> list[dict[str, Any]]:
+def _action_from_capability(capability_id: str, capability: Mapping[str, Any], params: Mapping[str, Any] | None = None) -> list[dict[str, Any]]:
     kind = str(capability.get("capability_kind") or "")
     action = str(capability.get("action_kind") or "")
-    entity_id = str(capability.get("entity_id") or "")
-    if kind == "apply_effect" and action == "apply_freeze":
-        return [{"type": "write_state", "key": "player.effects.frozen", "value": {"active": True, "duration": 1.25}, "capability_id": capability_id}]
-    if kind == "movement_gate" and action == "block_by_state":
-        return [{"type": "movement_gate", "target_entity_id": "player", "blocked_by": "player.effects.frozen", "capability_id": capability_id}]
-    if kind == "vfx_binding" and action == "set_visible_while_state":
-        return [{"type": "set_vfx_visible", "entity_id": entity_id, "visible_while": "player.effects.frozen", "capability_id": capability_id}]
-    if kind == "camera_feedback" and action == "camera_impulse":
-        return [{"type": "camera_impulse", "duration": 0.35, "capability_id": capability_id}]
-    if kind == "hud_binding" and action == "refresh_value":
-        return [{"type": "set_hud_value", "entity_id": entity_id, "source": "state_blackboard", "capability_id": capability_id}]
-    if kind == "gate_lock" and action == "evaluate_unlock":
-        return [{"type": "unlock_exit", "entity_id": entity_id, "state_key": f"exit.{entity_id}.unlocked", "capability_id": capability_id}]
-    if kind == "level_transition" and action == "activate_transition":
-        return [{"type": "open_exit", "entity_id": entity_id, "capability_id": capability_id}]
-    if kind == "vfx_binding" and action == "spawn_particles":
-        return [{"type": "spawn_vfx", "entity_id": entity_id, "capability_id": capability_id}]
+    resolved_params = dict(params or {})
+    entity_id = str(resolved_params.get("entity_id") or resolved_params.get("bound_entity_id") or "")
+    base = {"capability_id": capability_id, "entity_id": entity_id, "params": resolved_params}
+    table = {
+        ("apply_effect", "apply_freeze"): [{"type": "write_state", "key": "player.effects.frozen", "value": {"active": True, "duration": 1.25}, "capability_id": capability_id}],
+        ("movement_gate", "block_by_state"): [{"type": "movement_gate", "target_entity_id": "player", "blocked_by": "player.effects.frozen", "capability_id": capability_id}],
+        ("vfx_binding", "set_visible_while_state"): [{"type": "set_vfx_visible", "entity_id": entity_id, "visible_while": "player.effects.frozen", "capability_id": capability_id}],
+        ("camera_feedback", "camera_impulse"): [{"type": "camera_impulse", "duration": 0.35, "capability_id": capability_id}],
+        ("hud_binding", "refresh_value"): [{"type": "set_hud_value", "entity_id": entity_id, "source": "state_blackboard", "capability_id": capability_id}],
+        ("gate_lock", "evaluate_unlock"): [{"type": "unlock_exit", "entity_id": entity_id, "state_key": f"exit.{entity_id}.unlocked", "capability_id": capability_id}],
+        ("level_transition", "activate_transition"): [{"type": "open_exit", "entity_id": entity_id, "capability_id": capability_id}],
+        ("vfx_binding", "spawn_particles"): [{"type": "spawn_vfx", "entity_id": entity_id, "capability_id": capability_id}],
+    }
+    if (kind, action) in table:
+        return table[(kind, action)]
+    enemy_actions = {
+        ("enemy_spawn", "spawn_actor"): "enemy_spawn_actor",
+        ("enemy_sensor", "detect_player_by_distance"): "enemy_detect_player",
+        ("enemy_movement", "chase_target"): "enemy_chase_target",
+        ("enemy_movement", "keep_distance"): "enemy_keep_distance",
+        ("enemy_attack", "melee_hitbox"): "enemy_melee_attack",
+        ("enemy_attack", "projectile_spawn"): "enemy_projectile_attack",
+        ("enemy_attack", "self_destruct"): "enemy_self_destruct",
+        ("enemy_defense", "directional_block"): "enemy_directional_block",
+        ("enemy_health", "receive_damage"): "enemy_receive_damage",
+        ("enemy_death", "emit_death_event"): "enemy_emit_death_event",
+        ("encounter", "complete_when_all_dead"): "encounter_complete_when_all_dead",
+    }
+    if (kind, action) in enemy_actions:
+        row = {"type": enemy_actions[(kind, action)], **base}
+        if action in {"chase_target", "keep_distance", "melee_hitbox", "projectile_spawn", "self_destruct"}:
+            row["target_entity_id"] = resolved_params.get("target_entity_id", "player")
+        if action == "directional_block":
+            row["source_entity_id"] = resolved_params.get("source_entity_id", "player")
+        return [row]
     return []
+
+
+def _entity_binding(entity: Mapping[str, Any] | None, capability_id: str) -> Mapping[str, Any] | None:
+    for binding in (entity or {}).get("capability_bindings", []) if isinstance(entity, Mapping) else []:
+        if isinstance(binding, Mapping) and binding.get("capability_id") == capability_id:
+            return binding
+    return None
+
+
+def _validate_params(label: str, schema: Mapping[str, Any], params: Mapping[str, Any]) -> None:
+    for key, rule in schema.items():
+        if not isinstance(rule, Mapping):
+            continue
+        if rule.get("required") and key not in params:
+            raise ValueError(f"BehaviorSpecCompiler: {label} missing required param {key}")
+
+
+def resolve_behavior_capabilities(canonical: Mapping[str, Any]) -> list[dict[str, Any]]:
+    lib = load_dead_cells_library()
+    bound_entity_id = str(canonical.get("bound_entity_id") or canonical.get("entity_id") or canonical.get("primary_entity_id") or "")
+    bound_entity = lib["entities"].get(bound_entity_id)
+    overrides = canonical.get("capability_overrides", {}) if isinstance(canonical.get("capability_overrides", {}), Mapping) else {}
+    resolved: list[dict[str, Any]] = []
+    for capability_id in canonical.get("required_capability_ids", []) or []:
+        capability = lib["capabilities"].get(capability_id)
+        if not isinstance(capability, Mapping):
+            raise ValueError(f"BehaviorSpecCompiler: unknown capability {capability_id}")
+        binding = _entity_binding(bound_entity, capability_id)
+        params = dict(capability.get("default_params") or {})
+        if binding and isinstance(binding.get("params"), Mapping):
+            params.update(dict(binding["params"]))
+        override = overrides.get(capability_id)
+        if isinstance(override, Mapping):
+            params.update(dict(override))
+        params.setdefault("bound_entity_id", bound_entity_id)
+        params.setdefault("entity_id", bound_entity_id)
+        _validate_params(f"{bound_entity_id}:{capability_id}", capability.get("params_schema", {}), params)
+        entry = DEFAULT_SUPPORT_MATRIX.lookup(str(capability.get("capability_kind") or ""), str(capability.get("action_kind") or ""))
+        resolved.append({
+            "capability_id": capability_id,
+            "capability_kind": capability.get("capability_kind"),
+            "action_kind": capability.get("action_kind"),
+            "handler": entry.handler if entry else capability.get("runtime_handler"),
+            "params": params,
+            "source_entity_binding": {"entity_id": bound_entity_id if binding else None, "capability_id": capability_id},
+        })
+    return resolved
 
 
 def _actions_for_behavior(behavior: Mapping[str, Any]) -> list[dict[str, Any]]:
@@ -89,26 +158,46 @@ def _actions_for_behavior(behavior: Mapping[str, Any]) -> list[dict[str, Any]]:
     if isinstance(explicit, list) and explicit and all(isinstance(item, Mapping) and item.get("type") in SUPPORTED_ACTION_TYPES for item in explicit):
         return [dict(item) for item in explicit]
     lib = load_dead_cells_library()
+    resolved_by_id = {str(item.get("capability_id")): item for item in behavior.get("resolved_capabilities", []) or [] if isinstance(item, Mapping) and item.get("capability_id")}
     actions: list[dict[str, Any]] = []
     for capability_id in behavior.get("required_capability_ids", []) or []:
-        capability = lib["capabilities"].get(capability_id)
-        if isinstance(capability, Mapping):
-            actions.extend(_action_from_capability(capability_id, capability))
+        cap = lib["capabilities"].get(capability_id)
+        if isinstance(cap, Mapping):
+            params = resolved_by_id.get(capability_id, {}).get("params", {})
+            actions.extend(_action_from_capability(capability_id, cap, params if isinstance(params, Mapping) else {}))
     return actions
 
 
 def _conditions_for_behavior(behavior: Mapping[str, Any], actions: list[dict[str, Any]]) -> list[dict[str, Any]]:
     raw = behavior.get("conditions")
-    if isinstance(raw, list):
-        conditions = [dict(item) for item in raw if isinstance(item, Mapping)]
-    else:
-        conditions = []
+    conditions = [dict(item) for item in raw if isinstance(item, Mapping)] if isinstance(raw, list) else []
     for action in actions:
         if action.get("type") == "write_state" and action.get("key") == "player.effects.frozen":
             probe = {"type": "state_not_active", "key": "player.effects.frozen"}
             if probe not in conditions:
                 conditions.append(probe)
     return conditions
+
+
+def _runtime_domain_for_behavior(canonical: Mapping[str, Any], actions: list[dict[str, Any]]) -> str:
+    features = canonical.get("runtime_features", [])
+    if isinstance(features, list) and "enemy_runtime" in features:
+        return "enemy_runtime"
+    if any(str(a.get("type", "")).startswith("enemy_") or a.get("type") == "encounter_complete_when_all_dead" for a in actions):
+        return "enemy_runtime"
+    return "behavior_runtime"
+
+
+def _runtime_params_for_behavior(canonical: Mapping[str, Any]) -> dict[str, Any]:
+    lib = load_dead_cells_library()
+    entity = lib["entities"].get(str(canonical.get("bound_entity_id") or canonical.get("entity_id") or ""))
+    params = dict(entity.get("runtime") or {}) if isinstance(entity, Mapping) else {}
+    if isinstance(canonical.get("runtime_params"), Mapping):
+        params.update(dict(canonical["runtime_params"]))
+    for resolved in canonical.get("resolved_capabilities", []) or []:
+        if isinstance(resolved, Mapping) and resolved.get("capability_id") == "enemy.spawn.spawn_actor" and isinstance(resolved.get("params"), Mapping):
+            params.update(dict(resolved["params"]))
+    return params
 
 
 def compile_behavior_spec(entity_behavior: Mapping[str, Any], thin_flow: Mapping[str, Any] | None = None, runtime_mapping: Mapping[str, Any] | None = None) -> dict[str, Any]:
@@ -121,31 +210,30 @@ def compile_behavior_spec(entity_behavior: Mapping[str, Any], thin_flow: Mapping
             raise ValueError(f"BehaviorSpecCompiler: unknown behavior_id: {behavior_id}")
         canonical = dict(lib["behaviors"][behavior_id])
         canonical.update({k: v for k, v in behavior.items() if k not in {"effects"}})
+        canonical.setdefault("bound_entity_id", canonical.get("entity_id") or canonical.get("primary_entity_id"))
         required = list(canonical.get("required_capability_ids") or [])
-        missing = [capability_id for capability_id in required if capability_id not in lib["capabilities"]]
+        missing = [cid for cid in required if cid not in lib["capabilities"]]
         if missing:
             raise ValueError(f"BehaviorSpecCompiler: behavior {behavior_id} references unknown capabilities: {missing}")
+        canonical["resolved_capabilities"] = resolve_behavior_capabilities(canonical)
         actions = _actions_for_behavior(canonical)
-        unknown_actions = sorted({str(action.get("type")) for action in actions if action.get("type") not in SUPPORTED_ACTION_TYPES})
-        if unknown_actions:
-            raise ValueError(f"BehaviorSpecCompiler: behavior {behavior_id} uses unknown action types: {unknown_actions}")
+        unknown = sorted({str(a.get("type")) for a in actions if a.get("type") not in SUPPORTED_ACTION_TYPES})
+        if unknown:
+            raise ValueError(f"BehaviorSpecCompiler: behavior {behavior_id} uses unknown action types: {unknown}")
         flow = flows.get(behavior_id, {})
         trigger = canonical.get("trigger_model") if isinstance(canonical.get("trigger_model"), Mapping) else {"type": "manual", "description": canonical.get("trigger", "")}
-        logs = canonical.get("verification_logs")
-        if not isinstance(logs, list) or not logs:
-            logs = [f"BehaviorTriggered {behavior_id}"]
-            for action in actions:
-                if action.get("type") == "write_state":
-                    logs.append(f"StateWritten {action.get('key')}")
-                elif action.get("type") == "set_vfx_visible":
-                    logs.append(f"VfxVisible {action.get('entity_id')}")
-                elif action.get("type") == "camera_impulse":
-                    logs.append("CameraImpulse")
+        logs = canonical.get("verification_logs") if isinstance(canonical.get("verification_logs"), list) else None
+        if not logs:
+            logs = [f"BehaviorTriggered {behavior_id}"] + [f"ActionDispatched {a.get('type')}" for a in actions]
         behaviors.append({
             "behavior_id": behavior_id,
+            "bound_entity_id": canonical.get("bound_entity_id"),
             "primary_entity_id": canonical.get("primary_entity_id") or canonical.get("entity_id"),
             "entity_id": canonical.get("entity_id"),
-            "ability_id": canonical.get("ability_id"),
+            "runtime_domain": _runtime_domain_for_behavior(canonical, actions),
+            "runtime_features": list(canonical.get("runtime_features") or []),
+            "runtime_params": _runtime_params_for_behavior(canonical),
+            "resolved_capabilities": list(canonical.get("resolved_capabilities") or []),
             "flow_id": flow.get("flow_id") or f"flow_{_safe_id(behavior_id)}",
             "trigger": dict(trigger),
             "conditions": _conditions_for_behavior(canonical, actions),
@@ -154,29 +242,23 @@ def compile_behavior_spec(entity_behavior: Mapping[str, Any], thin_flow: Mapping
             "engine_port_ids": _ports_for_flow(flow),
             "verification_logs": [str(item) for item in logs],
         })
-    return {
-        "schema_version": "autoue-behavior-spec/v1",
-        "source_nodes": ["EntityAbilityBehaviorPlanner", "ThinGameplayFlowPlanner", "PuerTSRuntimeMappingPlanner"],
-        "behaviors": behaviors,
-    }
+    return {"schema_version": "autoue-behavior-spec/v1", "source_nodes": ["EntityAbilityBehaviorPlanner", "ThinGameplayFlowPlanner", "PuerTSRuntimeMappingCompiler"], "behaviors": behaviors}
 
 
 def check_behavior_spec_support(behavior_spec: Mapping[str, Any]) -> dict[str, Any]:
     capability_ids: list[str] = []
     behavior_by_capability: dict[str, list[str]] = {}
     for behavior in behavior_spec.get("behaviors", []) if isinstance(behavior_spec, Mapping) else []:
-        if not isinstance(behavior, Mapping):
-            continue
-        behavior_id = str(behavior.get("behavior_id") or "")
-        for capability_id in behavior.get("required_capability_ids", []) or []:
-            if isinstance(capability_id, str) and capability_id:
-                if capability_id not in capability_ids:
-                    capability_ids.append(capability_id)
-                behavior_by_capability.setdefault(capability_id, []).append(behavior_id)
+        if isinstance(behavior, Mapping):
+            behavior_id = str(behavior.get("behavior_id") or "")
+            for capability_id in behavior.get("required_capability_ids", []) or []:
+                if isinstance(capability_id, str) and capability_id:
+                    if capability_id not in capability_ids:
+                        capability_ids.append(capability_id)
+                    behavior_by_capability.setdefault(capability_id, []).append(behavior_id)
     check = check_capability_support(capability_ids)
-    unsupported_behaviors = sorted({bid for item in check["unsupported_capabilities"] for bid in behavior_by_capability.get(item.get("capability_id", ""), [])})
-    check["unsupported_behaviors"] = unsupported_behaviors
-    check["behavior_by_capability"] = {key: sorted(set(value)) for key, value in sorted(behavior_by_capability.items())}
+    check["unsupported_behaviors"] = sorted({bid for item in check["unsupported_capabilities"] for bid in behavior_by_capability.get(item.get("capability_id", ""), [])})
+    check["behavior_by_capability"] = {k: sorted(set(v)) for k, v in sorted(behavior_by_capability.items())}
     return check
 
 

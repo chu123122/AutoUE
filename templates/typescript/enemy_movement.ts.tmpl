@@ -1,0 +1,15 @@
+export interface {{interface_name}} { readonly worldAdapter: any; readonly registry: any; readonly log?: (message: string) => void; }
+export class AutoUEEnemyMovement {
+  constructor(private readonly context: {{interface_name}}) {}
+  private moveToward(enemy: any, target: any, dt: number, sign: number, params: Record<string, any> = {}): void {
+    const from = this.context.worldAdapter.getActorLocation(enemy.actor);
+    const to = this.context.worldAdapter.getActorLocation(target);
+    const speed = Number(params.move_speed || enemy.runtime_params?.move_speed || 240) * dt * sign;
+    const dx = (to.X || 0) - (from.X || 0); const dy = (to.Y || 0) - (from.Y || 0); const dz = (to.Z || 0) - (from.Z || 0);
+    const len = Math.max(1, Math.sqrt(dx * dx + dy * dy + dz * dz));
+    this.context.worldAdapter.setActorLocation(enemy.actor, { X: (from.X || 0) + dx / len * speed, Y: (from.Y || 0) + dy / len * speed, Z: from.Z || 0 });
+  }
+  chaseTarget(enemy: any, target: any, dt: number, params: Record<string, any> = {}): void { if (!enemy.alive || enemy.state === 'Attacking' || enemy.state === 'Dead') return; this.context.registry.updateState(enemy.enemy_id, 'Chasing'); this.moveToward(enemy, target, dt, 1, params); }
+  keepDistance(enemy: any, target: any, dt: number, params: Record<string, any> = {}): void { if (!enemy.alive || enemy.state === 'Dead') return; const distance = this.context.worldAdapter.getDistanceBetweenActors(enemy.actor, target); const desired = Number(params.keep_distance || enemy.runtime_params?.keep_distance || 420); this.context.registry.updateState(enemy.enemy_id, 'KeepingDistance'); if (distance < desired * 0.8) this.moveToward(enemy, target, dt, -1, params); else if (distance > desired * 1.2) this.moveToward(enemy, target, dt, 1, params); }
+}
+export function {{export_name}}(context: {{interface_name}}): AutoUEEnemyMovement { return new AutoUEEnemyMovement(context); }

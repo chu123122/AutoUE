@@ -3,59 +3,41 @@
   "source_nodes": [
     "EntityAbilityBehaviorPlanner",
     "ThinGameplayFlowPlanner",
-    "PuerTSRuntimeMappingPlanner"
+    "PuerTSRuntimeMappingCompiler"
   ],
   "behaviors": [
     {
-      "behavior_id": "biome_teleporter.activate_transition",
-      "primary_entity_id": "biome_teleporter",
-      "entity_id": "biome_teleporter",
-      "ability_id": "biome_teleporter.teleport.activate_transition",
-      "flow_id": "flow_biome_teleporter_activate_transition",
-      "trigger": {
-        "type": "input_action",
-        "source_entity_id": "player",
-        "target_entity_id": "biome_teleporter"
-      },
-      "conditions": [],
-      "actions": [
-        {
-          "type": "spawn_vfx",
-          "entity_id": "teleport_vfx",
-          "capability_id": "teleport_vfx.emit"
-        },
-        {
-          "type": "set_hud_value",
-          "entity_id": "minimap_hud",
-          "source": "state_blackboard",
-          "capability_id": "minimap_hud.display"
-        }
-      ],
-      "required_capability_ids": [
-        "biome_teleporter.teleport.activate_transition",
-        "teleport_vfx.emit",
-        "minimap_hud.display"
-      ],
-      "engine_port_ids": [
-        "primitive.on_component_begin_overlap",
-        "gameplay_statics.open_level",
-        "component.set_visibility",
-        "widget.set_text",
-        "widget.set_percent"
-      ],
-      "verification_logs": [
-        "BehaviorTriggered biome_teleporter.activate_transition"
-      ]
-    },
-    {
-      "behavior_id": "minimap_hud.display.refresh_value",
+      "behavior_id": "hud.behavior.refresh_value",
+      "bound_entity_id": "minimap_hud",
       "primary_entity_id": "minimap_hud",
       "entity_id": "minimap_hud",
-      "ability_id": "minimap_hud.display",
-      "flow_id": "flow_minimap_hud_display_refresh_value",
+      "runtime_domain": "behavior_runtime",
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "state_blackboard",
+        "action_dispatcher"
+      ],
+      "runtime_params": {},
+      "resolved_capabilities": [
+        {
+          "capability_id": "hud.display.refresh_value",
+          "capability_kind": "hud_binding",
+          "action_kind": "refresh_value",
+          "handler": "ActionDispatcher.setHudValue",
+          "params": {
+            "bound_entity_id": "minimap_hud",
+            "entity_id": "minimap_hud"
+          },
+          "source_entity_binding": {
+            "entity_id": "minimap_hud",
+            "capability_id": "hud.display.refresh_value"
+          }
+        }
+      ],
+      "flow_id": "flow_hud_behavior_refresh_value",
       "trigger": {
-        "type": "legacy_text",
-        "description": "tracked value changes"
+        "kind": "on_event"
       },
       "conditions": [],
       "actions": [
@@ -63,46 +45,69 @@
           "type": "set_hud_value",
           "entity_id": "minimap_hud",
           "source": "state_blackboard",
-          "capability_id": "minimap_hud.display"
+          "capability_id": "hud.display.refresh_value"
         }
       ],
       "required_capability_ids": [
-        "minimap_hud.display"
+        "hud.display.refresh_value"
       ],
       "engine_port_ids": [
-        "widget.set_text",
-        "widget.set_percent"
+        "manual.trigger"
       ],
       "verification_logs": [
-        "BehaviorTriggered minimap_hud.display.refresh_value"
+        "BehaviorTriggered hud.behavior.refresh_value",
+        "ActionDispatched set_hud_value"
       ]
     },
     {
-      "behavior_id": "teleport_vfx.emit.spawn_particles",
+      "behavior_id": "vfx.behavior.spawn_particles",
+      "bound_entity_id": "teleport_vfx",
       "primary_entity_id": "teleport_vfx",
       "entity_id": "teleport_vfx",
-      "ability_id": "teleport_vfx.emit",
-      "flow_id": "flow_teleport_vfx_emit_spawn_particles",
+      "runtime_domain": "behavior_runtime",
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "action_dispatcher"
+      ],
+      "runtime_params": {},
+      "resolved_capabilities": [
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "capability_kind": "vfx_binding",
+          "action_kind": "spawn_particles",
+          "handler": "ActionDispatcher.spawnVfx",
+          "params": {
+            "bound_entity_id": "teleport_vfx",
+            "entity_id": "teleport_vfx"
+          },
+          "source_entity_binding": {
+            "entity_id": "teleport_vfx",
+            "capability_id": "vfx.spawn.spawn_particles"
+          }
+        }
+      ],
+      "flow_id": "flow_vfx_behavior_spawn_particles",
       "trigger": {
-        "type": "legacy_text",
-        "description": "gameplay event fires"
+        "kind": "on_event"
       },
       "conditions": [],
       "actions": [
         {
           "type": "spawn_vfx",
           "entity_id": "teleport_vfx",
-          "capability_id": "teleport_vfx.emit"
+          "capability_id": "vfx.spawn.spawn_particles"
         }
       ],
       "required_capability_ids": [
-        "teleport_vfx.emit"
+        "vfx.spawn.spawn_particles"
       ],
       "engine_port_ids": [
-        "component.set_visibility"
+        "manual.trigger"
       ],
       "verification_logs": [
-        "BehaviorTriggered teleport_vfx.emit.spawn_particles"
+        "BehaviorTriggered vfx.behavior.spawn_particles",
+        "ActionDispatched spawn_vfx"
       ]
     }
   ]

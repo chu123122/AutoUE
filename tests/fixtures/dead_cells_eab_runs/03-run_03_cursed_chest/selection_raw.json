@@ -4,11 +4,15 @@
     "curse_counter_hud",
     "curse_skull_vfx"
   ],
-  "selected_capability_ids": [],
+  "selected_capability_ids": [
+    "pickup.collect.grant_reward",
+    "pickup.feedback.spawn_reward_visual",
+    "hud.display.refresh_value",
+    "vfx.spawn.spawn_particles"
+  ],
   "selected_behavior_ids": [
-    "cursed_chest.open_reward_and_add_curse",
-    "curse_counter_hud.display.refresh_value",
-    "curse_counter_hud.alert.flash_warning",
-    "curse_skull_vfx.emit.spawn_particles"
+    "pickup.behavior.collect_reward",
+    "hud.behavior.refresh_value",
+    "vfx.behavior.spawn_particles"
   ]
 }

@@ -3,49 +3,41 @@
   "source_nodes": [
     "EntityAbilityBehaviorPlanner",
     "ThinGameplayFlowPlanner",
-    "PuerTSRuntimeMappingPlanner"
+    "PuerTSRuntimeMappingCompiler"
   ],
   "behaviors": [
     {
-      "behavior_id": "crumbling_floor.collapse_when_touched",
-      "primary_entity_id": "crumbling_floor",
-      "entity_id": "crumbling_floor",
-      "ability_id": "crumbling_floor.platform.collapse_when_touched",
-      "flow_id": "flow_crumbling_floor_collapse_when_touched",
-      "trigger": {
-        "type": "overlap_enter",
-        "source_entity_id": "player",
-        "target_entity_id": "crumbling_floor"
-      },
-      "conditions": [],
-      "actions": [
+      "behavior_id": "hud.behavior.refresh_value",
+      "bound_entity_id": "health_bar_hud",
+      "primary_entity_id": "health_bar_hud",
+      "entity_id": "health_bar_hud",
+      "runtime_domain": "behavior_runtime",
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "state_blackboard",
+        "action_dispatcher"
+      ],
+      "runtime_params": {},
+      "resolved_capabilities": [
         {
-          "type": "write_state",
-          "key": "platform.crumbling_floor.collapsed",
-          "value": {
-            "active": true
+          "capability_id": "hud.display.refresh_value",
+          "capability_kind": "hud_binding",
+          "action_kind": "refresh_value",
+          "handler": "ActionDispatcher.setHudValue",
+          "params": {
+            "bound_entity_id": "health_bar_hud",
+            "entity_id": "health_bar_hud"
+          },
+          "source_entity_binding": {
+            "entity_id": "health_bar_hud",
+            "capability_id": "hud.display.refresh_value"
           }
         }
       ],
-      "required_capability_ids": [
-        "crumbling_floor.platform.collapse_when_touched"
-      ],
-      "engine_port_ids": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "verification_logs": [
-        "BehaviorTriggered crumbling_floor.collapse_when_touched"
-      ]
-    },
-    {
-      "behavior_id": "health_bar_hud.display.refresh_value",
-      "primary_entity_id": "health_bar_hud",
-      "entity_id": "health_bar_hud",
-      "ability_id": "health_bar_hud.display",
-      "flow_id": "flow_health_bar_hud_display_refresh_value",
+      "flow_id": "flow_hud_behavior_refresh_value",
       "trigger": {
-        "type": "legacy_text",
-        "description": "tracked value changes"
+        "kind": "on_event"
       },
       "conditions": [],
       "actions": [
@@ -53,109 +45,18 @@
           "type": "set_hud_value",
           "entity_id": "health_bar_hud",
           "source": "state_blackboard",
-          "capability_id": "health_bar_hud.display"
+          "capability_id": "hud.display.refresh_value"
         }
       ],
       "required_capability_ids": [
-        "health_bar_hud.display"
+        "hud.display.refresh_value"
       ],
       "engine_port_ids": [
-        "widget.set_text",
-        "widget.set_percent"
+        "manual.trigger"
       ],
       "verification_logs": [
-        "BehaviorTriggered health_bar_hud.display.refresh_value"
-      ]
-    },
-    {
-      "behavior_id": "player.movement.dodge_roll",
-      "primary_entity_id": "player",
-      "entity_id": "player",
-      "ability_id": "player.movement",
-      "flow_id": "flow_player_movement_dodge_roll",
-      "trigger": {
-        "type": "legacy_text",
-        "description": "dodge input"
-      },
-      "conditions": [],
-      "actions": [],
-      "required_capability_ids": [
-        "player.movement"
-      ],
-      "engine_port_ids": [
-        "input.action_binding",
-        "pawn.add_movement_input"
-      ],
-      "verification_logs": [
-        "BehaviorTriggered player.movement.dodge_roll"
-      ]
-    },
-    {
-      "behavior_id": "player.movement.run",
-      "primary_entity_id": "player",
-      "entity_id": "player",
-      "ability_id": "player.movement",
-      "flow_id": "flow_player_movement_run",
-      "trigger": {
-        "type": "legacy_text",
-        "description": "movement input"
-      },
-      "conditions": [],
-      "actions": [],
-      "required_capability_ids": [
-        "player.movement"
-      ],
-      "engine_port_ids": [
-        "input.action_binding",
-        "pawn.add_movement_input"
-      ],
-      "verification_logs": [
-        "BehaviorTriggered player.movement.run"
-      ]
-    },
-    {
-      "behavior_id": "saw_blade_trap.arming.enter_active",
-      "primary_entity_id": "saw_blade_trap",
-      "entity_id": "saw_blade_trap",
-      "ability_id": "saw_blade_trap.arming",
-      "flow_id": "flow_saw_blade_trap_arming_enter_active",
-      "trigger": {
-        "type": "legacy_text",
-        "description": "arming delay finishes"
-      },
-      "conditions": [],
-      "actions": [],
-      "required_capability_ids": [
-        "saw_blade_trap.arming"
-      ],
-      "engine_port_ids": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "verification_logs": [
-        "BehaviorTriggered saw_blade_trap.arming.enter_active"
-      ]
-    },
-    {
-      "behavior_id": "saw_blade_trap.damage.apply_contact",
-      "primary_entity_id": "saw_blade_trap",
-      "entity_id": "saw_blade_trap",
-      "ability_id": "saw_blade_trap.damage",
-      "flow_id": "flow_saw_blade_trap_damage_apply_contact",
-      "trigger": {
-        "type": "legacy_text",
-        "description": "actor overlaps active hazard"
-      },
-      "conditions": [],
-      "actions": [],
-      "required_capability_ids": [
-        "saw_blade_trap.damage"
-      ],
-      "engine_port_ids": [
-        "primitive.on_component_begin_overlap",
-        "gameplay_statics.apply_damage"
-      ],
-      "verification_logs": [
-        "BehaviorTriggered saw_blade_trap.damage.apply_contact"
+        "BehaviorTriggered hud.behavior.refresh_value",
+        "ActionDispatched set_hud_value"
       ]
     }
   ]

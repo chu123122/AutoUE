@@ -1,0 +1,22 @@
+type AnyUEObject = any;
+export interface {{interface_name}} { readonly worldAdapter: any; readonly registry: any; readonly spec?: any; readonly log?: (message: string) => void; }
+const LOG_PREFIX = '[AUTOUE_GENERATED]';
+function log(ctx: {{interface_name}}, message: string): void { (ctx.log || console.warn)(`${LOG_PREFIX} ${message}`); }
+export class AutoUEEnemySpawnRuntime {
+  private nextId = 1;
+  constructor(private readonly context: {{interface_name}}) {}
+  spawnEnemy(behavior: any, transform?: Record<string, any>): AnyUEObject {
+    const spawnCapability = (behavior.resolved_capabilities || []).find((item: any) => item.handler === 'EnemySpawnRuntime.spawnEnemy') || {};
+    const params = spawnCapability.params || behavior.runtime_params || {};
+    if (!params.actor_class_path) throw new Error(`enemy_spawn requires actor_class_path behavior=${behavior.behavior_id}`);
+    const entityId = behavior.bound_entity_id || behavior.entity_id;
+    const enemyId = `${entityId}_${this.nextId++}`;
+    const actor = this.context.worldAdapter.spawnActor(params.actor_class_path, transform || params.spawn_transform || {});
+    this.context.worldAdapter.setActorTag(actor, 'AUTOUE_GENERATED_ENEMY');
+    this.context.worldAdapter.setActorTag(actor, params.enemy_tag || entityId);
+    this.context.registry.registerEnemy({ enemy_id: enemyId, entity_id: entityId, archetype_id: entityId, actor, hp: Number(params.default_hp || params.max_hp || 1), runtime_params: params });
+    log(this.context, `EnemySpawned enemy_id=${enemyId} actor=${actor ? 'valid' : 'missing'} entity=${entityId}`);
+    return actor;
+  }
+}
+export function {{export_name}}(context: {{interface_name}}): AutoUEEnemySpawnRuntime { return new AutoUEEnemySpawnRuntime(context); }

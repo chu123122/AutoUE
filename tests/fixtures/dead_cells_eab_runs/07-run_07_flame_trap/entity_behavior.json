@@ -1,4 +1,5 @@
 {
+  "schema_version": "autoue-eab-canonical/v2",
   "entities": [
     {
       "entity_id": "burn_vfx",
@@ -13,57 +14,78 @@
         "burn"
       ],
       "spawnable": false,
-      "abilities": [
+      "capability_bindings": [
         {
-          "ability_id": "burn_vfx.emit",
-          "entity_id": "burn_vfx",
-          "display_name": "Burn VFX Particle Emission",
-          "display_name_zh": "燃烧特效粒子生成",
-          "summary": "负责在玩法事件发生时生成可见粒子。",
-          "summary_zh": "负责在玩法事件发生时生成可见粒子。",
-          "capability_id": "burn_vfx.emit",
+          "capability_id": "vfx.lifecycle.cleanup_after_duration",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "burn"
+          ]
+        },
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "burn"
+          ]
+        }
+      ],
+      "capabilities": [
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "display_name": "Vfx Spawn Spawn_Particles",
+          "display_name_zh": "生成粒子特效",
+          "summary": "生成粒子特效",
+          "summary_zh": "生成粒子特效",
           "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
           "capability_kind": "vfx_binding",
-          "runtime_primitives": [
-            "spawn_vfx",
-            "attach_vfx"
-          ],
+          "action_kind": "spawn_particles",
+          "runtime_handler": "ActionDispatcher.spawnVfx",
+          "params_schema": {},
+          "default_params": {},
           "engine_ports": [
             "component.set_visibility"
           ],
           "runtime_features": [
-            "vfx"
+            "world_adapter",
+            "entity_registry",
+            "action_dispatcher"
           ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "spawn_particles",
           "behaviors": [
             {
-              "behavior_id": "burn_vfx.emit.spawn_particles",
-              "ability_id": "burn_vfx.emit",
-              "entity_id": "burn_vfx",
-              "display_name": "Burn VFX Spawn Particles",
-              "display_name_zh": "燃烧特效生成粒子",
-              "trigger": "gameplay event fires",
-              "execution": "spawns particles at the relevant actor or world position",
-              "result": "event has visible feedback",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "burn_vfx",
+              "behavior_id": "vfx.behavior.spawn_particles",
+              "display_name": "Vfx Behavior Spawn_Particles",
+              "display_name_zh": "生成粒子",
+              "summary": "生成粒子",
+              "summary_zh": "生成粒子",
+              "semantic_role": "behavior",
+              "behavior_kind": "vfx_spawn",
+              "primary_entity_kind": "vfx",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
               "required_capability_ids": [
-                "burn_vfx.emit"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "gameplay event fires"
-              },
-              "effects": [
-                "event has visible feedback"
+                "vfx.spawn.spawn_particles"
               ],
               "runtime_features": [
-                "vfx"
+                "world_adapter",
+                "entity_registry",
+                "action_dispatcher"
               ],
-              "semantic_role": "behavior"
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "spawn_particles",
+                  "uses": "vfx.spawn.spawn_particles"
+                }
+              ]
             }
           ]
         }
@@ -82,230 +104,36 @@
         "hazard"
       ],
       "spawnable": false,
-      "abilities": [
+      "capability_bindings": [
         {
-          "ability_id": "flame_jet_trap.arming",
-          "entity_id": "flame_jet_trap",
-          "display_name": "Flame Jet Trap Arming",
-          "display_name_zh": "喷火陷阱预备/激活",
-          "summary": "负责陷阱预警、激活和冷却阶段。",
-          "summary_zh": "负责陷阱预警、激活和冷却阶段。",
-          "capability_id": "flame_jet_trap.arming",
-          "semantic_role": "capability",
-          "capability_kind": "hazard_arming",
-          "runtime_primitives": [
-            "timer",
-            "warning_indicator",
-            "overlap_zone"
-          ],
-          "engine_ports": [
-            "primitive.on_component_begin_overlap"
-          ],
-          "runtime_features": [
-            "trap"
-          ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "arm_hazard",
-          "behaviors": [
-            {
-              "behavior_id": "flame_jet_trap.arming.enter_active",
-              "ability_id": "flame_jet_trap.arming",
-              "entity_id": "flame_jet_trap",
-              "display_name": "Flame Jet Trap Enter Active",
-              "display_name_zh": "喷火陷阱进入激活",
-              "trigger": "arming delay finishes",
-              "execution": "switches the hazard to an active damage window",
-              "result": "hazard becomes threatening",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "flame_jet_trap",
-              "required_capability_ids": [
-                "flame_jet_trap.arming"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "arming delay finishes"
-              },
-              "effects": [
-                "hazard becomes threatening"
-              ],
-              "runtime_features": [
-                "trap"
-              ],
-              "semantic_role": "behavior"
-            },
-            {
-              "behavior_id": "flame_jet_trap.arming.show_warning",
-              "ability_id": "flame_jet_trap.arming",
-              "entity_id": "flame_jet_trap",
-              "display_name": "Flame Jet Trap Show Warning",
-              "display_name_zh": "喷火陷阱显示预警",
-              "trigger": "actor approaches hazard zone",
-              "execution": "reveals warning pose, light, or animation",
-              "result": "player can anticipate danger",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "flame_jet_trap",
-              "required_capability_ids": [
-                "flame_jet_trap.arming"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "actor approaches hazard zone"
-              },
-              "effects": [
-                "player can anticipate danger"
-              ],
-              "runtime_features": [
-                "trap"
-              ],
-              "semantic_role": "behavior"
-            }
+          "capability_id": "hazard.arming.arm_hazard",
+          "params": {},
+          "tags": [
+            "trap",
+            "fire",
+            "hazard"
           ]
         },
         {
-          "ability_id": "flame_jet_trap.hazard.apply_burn",
-          "capability_id": "flame_jet_trap.hazard.apply_burn",
-          "entity_id": "flame_jet_trap",
-          "display_name": "flame_jet_trap.hazard.apply_burn",
-          "display_name_zh": "写入 player.effects.burn。",
-          "summary": "写入 player.effects.burn。",
-          "summary_zh": "写入 player.effects.burn。",
-          "semantic_role": "capability",
-          "capability_kind": "apply_effect",
-          "action_kind": "apply_burn",
-          "runtime_primitives": [
-            "state_write",
-            "timer"
-          ],
-          "engine_ports": [
-            "primitive.on_component_begin_overlap"
-          ],
-          "runtime_features": [
-            "state_blackboard",
-            "timer"
-          ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "behaviors": [
-            {
-              "behavior_id": "flame_jet_trap.apply_burn_on_hit",
-              "ability_id": "flame_jet_trap.hazard.apply_burn",
-              "entity_id": "flame_jet_trap",
-              "primary_entity_id": "flame_jet_trap",
-              "display_name": "flame_jet_trap.apply_burn_on_hit",
-              "display_name_zh": "命中后施加燃烧。",
-              "trigger": "命中后施加燃烧。",
-              "execution": "命中后施加燃烧。",
-              "result": "命中后施加燃烧。",
-              "required_capability_ids": [
-                "flame_jet_trap.hazard.apply_burn",
-                "burn_vfx.emit"
-              ],
-              "trigger_model": {
-                "type": "overlap_enter",
-                "source_entity_id": "player",
-                "target_entity_id": "flame_jet_trap"
-              },
-              "conditions": [],
-              "effects": [
-                {
-                  "type": "write_state",
-                  "key": "player.effects.burn",
-                  "value": {
-                    "duration": 2
-                  }
-                }
-              ],
-              "verification_logs": [
-                "BehaviorTriggered flame_jet_trap.apply_burn_on_hit"
-              ],
-              "semantic_role": "behavior",
-              "source_refs": [
-                "autoue-behavior-driven-runtime"
-              ],
-              "runtime_features": [
-                "state_blackboard",
-                "timer",
-                "vfx"
-              ]
-            }
+          "capability_id": "hazard.damage.apply_hazard_damage",
+          "params": {},
+          "tags": [
+            "trap",
+            "fire",
+            "hazard"
           ]
-        }
-      ]
-    },
-    {
-      "entity_id": "player",
-      "display_name": "Player Prisoner",
-      "display_name_zh": "玩家囚徒",
-      "entity_kind": "player",
-      "summary": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
-      "summary_zh": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
-      "content_tags": [
-        "player",
-        "prisoner",
-        "combat"
-      ],
-      "spawnable": false,
-      "abilities": [
+        },
         {
-          "ability_id": "player.movement",
-          "entity_id": "player",
-          "display_name": "Player Prisoner Movement Control",
-          "display_name_zh": "玩家囚徒移动控制",
-          "summary": "负责奔跑、跳跃、攀爬、下落和翻滚等玩家移动决策。",
-          "summary_zh": "负责奔跑、跳跃、攀爬、下落和翻滚等玩家移动决策。",
-          "capability_id": "player.movement",
-          "semantic_role": "capability",
-          "capability_kind": "movement",
-          "runtime_primitives": [
-            "input_axis",
-            "move_actor"
-          ],
-          "engine_ports": [
-            "input.action_binding",
-            "pawn.add_movement_input"
-          ],
-          "runtime_features": [
-            "input",
-            "movement"
-          ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "move_actor",
-          "behaviors": [
-            {
-              "behavior_id": "player.movement.run",
-              "ability_id": "player.movement",
-              "entity_id": "player",
-              "display_name": "Player Prisoner Run",
-              "display_name_zh": "玩家囚徒奔跑/横移",
-              "trigger": "movement input",
-              "execution": "accelerates, decelerates, and faces travel direction",
-              "result": "player changes horizontal position",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "player",
-              "required_capability_ids": [
-                "player.movement"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "movement input"
-              },
-              "effects": [
-                "player changes horizontal position"
-              ],
-              "runtime_features": [
-                "input",
-                "movement"
-              ],
-              "semantic_role": "behavior"
-            }
+          "capability_id": "hazard.effect.apply_burn",
+          "params": {},
+          "tags": [
+            "trap",
+            "fire",
+            "hazard"
           ]
         }
-      ]
+      ],
+      "capabilities": []
     }
   ],
   "non_goals": []

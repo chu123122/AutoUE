@@ -1,174 +1,50 @@
-# 死亡细胞能力库（Capability Library，不含音效）
+# 死亡细胞能力库（不含音效）
 
-Capability 禁止泛化 state/interaction；每项含 capability_kind/action_kind。
+能力表示运行时可以调用的具体玩法能力；禁止把泛化状态或泛化交互伪装成能力。每项都标明能力类型、动作类型和中文用途。
 
-- `ammo_counter_hud.alert` hud_feedback/flash_warning
-- `ammo_counter_hud.display` hud_binding/refresh_value
-- `arbiter.offense` enemy_combat/enemy_attack
-- `arbiter.pursuit` enemy_pursuit/chase_target
-- `archer.offense` enemy_combat/enemy_attack
-- `archer.pursuit` enemy_pursuit/chase_target
-- `automaton.offense` enemy_combat/enemy_attack
-- `automaton.pursuit` enemy_pursuit/chase_target
-- `biome_teleporter.teleport.activate_transition` teleport_transition/activate_transition
-- `bleed_vfx.emit` vfx_binding/spawn_particles
-- `bleed_vfx.lifecycle` vfx_lifecycle/tick_or_cleanup
-- `blood_sword.attack.apply_bleed_on_hit` weapon_effect/apply_bleed_on_hit
-- `blueprint_pickup.collect` pickup_collection/grant_reward
-- `blueprint_pickup.feedback` reward_feedback/spawn_reward_visual
-- `boss_health_bar_hud.alert` hud_feedback/flash_warning
-- `boss_health_bar_hud.display` hud_binding/refresh_value
-- `boss_stem_cell_door.lock` gate_lock/evaluate_unlock
-- `boss_stem_cell_door.transition` level_transition/activate_transition
-- `burn_vfx.emit` vfx_binding/spawn_particles
-- `burn_vfx.lifecycle` vfx_lifecycle/tick_or_cleanup
-- `buzzcutter.offense` enemy_combat/enemy_attack
-- `buzzcutter.pursuit` enemy_pursuit/chase_target
-- `catcher.offense` enemy_combat/enemy_attack
-- `catcher.pursuit` enemy_pursuit/chase_target
-- `cell_pickup.collect` pickup_collection/grant_reward
-- `cell_pickup.feedback` reward_feedback/spawn_reward_visual
-- `combat_damage_number_hud.alert` hud_feedback/apply_damage
-- `combat_damage_number_hud.display` hud_binding/apply_damage
-- `concierge_boss.offense` enemy_combat/enemy_attack
-- `concierge_boss.pursuit` enemy_pursuit/chase_target
-- `conjunctivius_boss.offense` enemy_combat/enemy_attack
-- `conjunctivius_boss.pursuit` enemy_pursuit/chase_target
-- `cooldown_meter_hud.alert` hud_feedback/flash_warning
-- `cooldown_meter_hud.display` hud_binding/refresh_value
-- `corpse_dust_vfx.emit` vfx_binding/spawn_particles
-- `corpse_dust_vfx.lifecycle` vfx_lifecycle/tick_or_cleanup
-- `critical_hit_vfx.emit` vfx_binding/spawn_particles
-- `critical_hit_vfx.lifecycle` vfx_lifecycle/tick_or_cleanup
-- `crumbling_floor.platform.collapse_when_touched` platform_state/collapse_when_touched
-- `crusher_trap.arming` hazard_arming/arm_hazard
-- `crusher_trap.damage` hazard_resolution/apply_hazard_damage
-- `curse_counter_hud.alert` hud_feedback/flash_warning
-- `curse_counter_hud.display` hud_binding/refresh_value
-- `curse_skull_vfx.emit` vfx_binding/spawn_particles
-- `curse_skull_vfx.lifecycle` vfx_lifecycle/tick_or_cleanup
-- `cursed_chest.chest.open_reward` chest_reward/open_reward
-- `cursed_chest.curse.add_curse_counter` curse_counter/add_curse_counter
-- `demon.offense` enemy_combat/enemy_attack
-- `demon.pursuit` enemy_pursuit/chase_target
-- `electric_vfx.emit` vfx_binding/spawn_particles
-- `electric_vfx.lifecycle` vfx_lifecycle/tick_or_cleanup
-- `electric_whip.attack.apply_shock_chain` chain_lightning/apply_shock_chain
-- `elite_aura_vfx.emit` vfx_binding/spawn_particles
-- `elite_aura_vfx.lifecycle` vfx_lifecycle/tick_or_cleanup
-- `failed_experiment.offense` enemy_combat/enemy_attack
-- `failed_experiment.pursuit` enemy_pursuit/chase_target
-- `falling_spike_trap.arming` hazard_arming/arm_hazard
-- `falling_spike_trap.damage` hazard_resolution/apply_hazard_damage
-- `flame_jet_trap.arming` hazard_arming/arm_hazard
-- `flame_jet_trap.damage` hazard_resolution/apply_hazard_damage
-- `flame_jet_trap.hazard.apply_burn` apply_effect/apply_burn
-- `food_pickup.collect` pickup_collection/grant_reward
-- `food_pickup.feedback` reward_feedback/spawn_reward_visual
-- `forge_station.upgrade.apply_item_upgrade` upgrade/apply_item_upgrade
-- `freeze_trap.effect.apply_freeze_to_player` apply_effect/apply_freeze
-- `freeze_trap.sensor.detect_player_overlap` sensor_overlap/detect_overlap
-- `freeze_trap.sensor.overlap_radius` sensor/state_write
-- `freeze_vfx.binding.visible_while_frozen` vfx_binding/state_write
-- `freeze_vfx.emit` vfx_binding/spawn_particles
-- `freeze_vfx.emit.show_freeze` vfx_binding/set_visible_while_state
-- `freeze_vfx.lifecycle` vfx_lifecycle/tick_or_cleanup
-- `giant_boss.offense` enemy_combat/enemy_attack
-- `giant_boss.pursuit` enemy_pursuit/chase_target
-- `goblin_melee.offense` enemy_combat/enemy_attack
-- `goblin_melee.pursuit` enemy_pursuit/chase_target
-- `gold_pickup.collect` pickup_collection/grant_reward
-- `gold_pickup.feedback` reward_feedback/spawn_reward_visual
-- `golem.offense` enemy_combat/enemy_attack
-- `golem.pursuit` enemy_pursuit/chase_target
-- `grenadier.offense` enemy_combat/enemy_attack
-- `grenadier.pursuit` enemy_pursuit/chase_target
-- `hand_of_the_king_boss.offense` enemy_combat/enemy_attack
-- `hand_of_the_king_boss.pursuit` enemy_pursuit/chase_target
-- `health_bar_hud.alert` hud_feedback/flash_warning
-- `health_bar_hud.display` hud_binding/refresh_value
-- `health_fountain.collect` pickup_collection/grant_reward
-- `health_fountain.feedback` reward_feedback/spawn_reward_visual
-- `inquisitor.offense` enemy_combat/enemy_attack
-- `inquisitor.pursuit` enemy_pursuit/chase_target
-- `kamikaze_bat.offense` enemy_combat/enemy_attack
-- `kamikaze_bat.pursuit` enemy_pursuit/chase_target
-- `knife_thrower.offense` enemy_combat/enemy_attack
-- `knife_thrower.pursuit` enemy_pursuit/chase_target
-- `lancer.offense` enemy_combat/enemy_attack
-- `lancer.pursuit` enemy_pursuit/chase_target
-- `level_exit_door.lock` gate_lock/evaluate_unlock
-- `level_exit_door.transition` level_transition/activate_transition
-- `librarian.offense` enemy_combat/enemy_attack
-- `librarian.pursuit` enemy_pursuit/chase_target
-- `malaise_meter_hud.alert` hud_feedback/flash_warning
-- `malaise_meter_hud.display` hud_binding/refresh_value
-- `minimap_hud.alert` hud_feedback/flash_warning
-- `minimap_hud.display` hud_binding/refresh_value
-- `oven_knight.offense` enemy_combat/enemy_attack
-- `oven_knight.pursuit` enemy_pursuit/chase_target
-- `parry_spark_vfx.emit` vfx_binding/spawn_particles
-- `parry_spark_vfx.lifecycle` vfx_lifecycle/tick_or_cleanup
-- `pirate_captain.offense` enemy_combat/enemy_attack
-- `pirate_captain.pursuit` enemy_pursuit/chase_target
-- `player.combat` combat/apply_damage
-- `player.movement` movement/move_actor
-- `player.movement.block_while_effect_active` movement_gate/block_by_state
-- `player_flask.collect` pickup_collection/grant_reward
-- `player_flask.feedback` reward_feedback/spawn_reward_visual
-- `poison_pool.arming` hazard_arming/arm_hazard
-- `poison_pool.damage` hazard_resolution/apply_hazard_damage
-- `poison_pool.hazard.apply_poison_dot` apply_effect/apply_poison_dot
-- `poison_vfx.emit` vfx_binding/spawn_particles
-- `poison_vfx.lifecycle` vfx_lifecycle/tick_or_cleanup
-- `pressure_plate.activate` generic_capability/state_write
-- `pressure_plate.sense` generic_capability/state_write
-- `protector.offense` enemy_combat/enemy_attack
-- `protector.pursuit` enemy_pursuit/chase_target
-- `queen_boss.offense` enemy_combat/enemy_attack
-- `queen_boss.pursuit` enemy_pursuit/chase_target
-- `rampager.offense` enemy_combat/enemy_attack
-- `rampager.pursuit` enemy_pursuit/chase_target
-- `rancid_rat.offense` enemy_combat/enemy_attack
-- `rancid_rat.pursuit` enemy_pursuit/chase_target
-- `royal_guard.offense` enemy_combat/enemy_attack
-- `royal_guard.pursuit` enemy_pursuit/chase_target
-- `runner.offense` enemy_combat/enemy_attack
-- `runner.pursuit` enemy_pursuit/chase_target
-- `saw_blade_trap.arming` hazard_arming/arm_hazard
-- `saw_blade_trap.damage` hazard_resolution/apply_hazard_damage
-- `scarecrow_boss.offense` enemy_combat/enemy_attack
-- `scarecrow_boss.pursuit` enemy_pursuit/chase_target
-- `scorpion.offense` enemy_combat/enemy_attack
-- `scorpion.pursuit` enemy_pursuit/chase_target
-- `scroll_power_pickup.collect` pickup_collection/grant_reward
-- `scroll_power_pickup.feedback` reward_feedback/spawn_reward_visual
-- `scroll_survival_pickup.collect` pickup_collection/grant_reward
-- `scroll_survival_pickup.feedback` reward_feedback/spawn_reward_visual
-- `scroll_tactics_pickup.collect` pickup_collection/grant_reward
-- `scroll_tactics_pickup.feedback` reward_feedback/spawn_reward_visual
-- `secret_wall_rune.activate` generic_capability/state_write
-- `secret_wall_rune.sense` generic_capability/state_write
-- `servants_boss.offense` enemy_combat/enemy_attack
-- `servants_boss.pursuit` enemy_pursuit/chase_target
-- `shield_bearer.offense` enemy_combat/enemy_attack
-- `shield_bearer.pursuit` enemy_pursuit/chase_target
-- `shield_bubble_vfx.emit` vfx_binding/spawn_particles
-- `shield_bubble_vfx.lifecycle` vfx_lifecycle/tick_or_cleanup
-- `shop_room_vendor.transaction.purchase_item` transaction/purchase_item
-- `side_camera.camera.apply_impulse` camera_feedback/camera_impulse
-- `side_camera.feedback.impulse` camera_feedback/spawn_reward_visual
-- `slasher.offense` enemy_combat/enemy_attack
-- `slasher.pursuit` enemy_pursuit/chase_target
-- `spike_trap.arming` hazard_arming/arm_hazard
-- `spike_trap.damage` hazard_resolution/apply_hazard_damage
-- `status_icon_hud.alert` hud_feedback/flash_warning
-- `status_icon_hud.display` hud_binding/refresh_value
-- `teleport_vfx.emit` vfx_binding/spawn_particles
-- `teleport_vfx.lifecycle` vfx_lifecycle/tick_or_cleanup
-- `time_keeper_boss.offense` enemy_combat/enemy_attack
-- `time_keeper_boss.pursuit` enemy_pursuit/chase_target
-- `timed_door.lock` gate_lock/evaluate_unlock
-- `timed_door.transition` level_transition/activate_transition
-- `zombie.offense` enemy_combat/enemy_attack
-- `zombie.pursuit` enemy_pursuit/chase_target
+- `camera.feedback.camera_impulse`：镜头冲击反馈。能力类型：镜头反馈；动作类型：镜头冲击。
+- `chest.open_reward`：打开宝箱奖励。能力类型：宝箱奖励；动作类型：打开奖励。
+- `curse.add_counter`：增加诅咒计数。能力类型：诅咒计数；动作类型：增加诅咒计数。
+- `economy.transaction.purchase_item`：购买物品。能力类型：交易；动作类型：购买物品。
+- `encounter.complete.complete_when_all_dead`：全部死亡后完成遭遇。能力类型：遭遇战；动作类型：全部死亡后完成。
+- `encounter.exit.unlock_exit`：解锁出口。能力类型：门锁判定；动作类型：判定解锁。
+- `enemy.attack.area_burst`：范围爆发攻击。能力类型：敌人攻击；动作类型：area_burst。
+- `enemy.attack.melee_hitbox`：近战碰撞盒攻击。能力类型：敌人攻击；动作类型：melee_hitbox。
+- `enemy.attack.projectile_spawn`：生成投射物攻击。能力类型：敌人攻击；动作类型：生成投射物。
+- `enemy.attack.self_destruct`：自爆攻击。能力类型：敌人攻击；动作类型：自爆。
+- `enemy.death.emit_death_event`：发出死亡事件。能力类型：敌人死亡；动作类型：emit_death_event。
+- `enemy.defense.directional_block`：方向格挡。能力类型：敌人格挡；动作类型：方向格挡。
+- `enemy.defense.invulnerable_window`：无敌窗口。能力类型：敌人格挡；动作类型：invulnerable_window。
+- `enemy.health.receive_damage`：敌人接收伤害。能力类型：敌人生命值；动作类型：接收伤害。
+- `enemy.movement.chase_target`：追击目标。能力类型：敌人移动；动作类型：追击目标。
+- `enemy.movement.keep_distance`：保持距离。能力类型：敌人移动；动作类型：keep_distance。
+- `enemy.movement.patrol_between_points`：巡逻路径移动。能力类型：敌人移动；动作类型：patrol_between_points。
+- `enemy.movement.teleport_to_target`：瞬移到目标。能力类型：敌人移动；动作类型：teleport_to_target。
+- `enemy.reward.drop_on_death`：死亡掉落奖励。能力类型：enemy_reward；动作类型：drop_on_death。
+- `enemy.sensor.detect_player_by_distance`：按距离感知玩家。能力类型：敌人感知；动作类型：按距离检测玩家。
+- `enemy.spawn.spawn_actor`：生成敌人 Actor。能力类型：敌人生成；动作类型：生成角色。
+- `hazard.arming.arm_hazard`：预备危险机关。能力类型：危险机关预备；动作类型：预备危险机关。
+- `hazard.damage.apply_hazard_damage`：结算机关伤害。能力类型：危险机关结算；动作类型：结算机关伤害。
+- `hazard.effect.apply_burn`：施加燃烧。能力类型：施加效果；动作类型：施加燃烧。
+- `hazard.effect.apply_freeze`：施加冰冻。能力类型：施加效果；动作类型：施加冰冻。
+- `hazard.effect.apply_poison_dot`：施加毒素持续伤害。能力类型：施加效果；动作类型：施加毒素持续伤害。
+- `hazard.sensor.detect_overlap`：机关检测重叠。能力类型：感应器重叠；动作类型：检测重叠。
+- `hud.display.refresh_value`：刷新 界面 数值。能力类型：界面绑定；动作类型：刷新数值。
+- `hud.display.set_percent`：设置 界面 百分比。能力类型：界面绑定；动作类型：set_percent。
+- `hud.feedback.flash_warning`：界面 警示闪烁。能力类型：界面反馈；动作类型：闪烁警示。
+- `hud.feedback.set_opacity`：设置 界面 透明度。能力类型：界面反馈；动作类型：set_opacity。
+- `level.transition.activate`：关卡切换。能力类型：关卡切换；动作类型：激活切换。
+- `pickup.collect.grant_reward`：拾取授予奖励。能力类型：拾取收集；动作类型：授予奖励。
+- `pickup.feedback.spawn_reward_visual`：生成奖励反馈。能力类型：奖励反馈；动作类型：生成奖励视觉反馈。
+- `platform.state.collapse_when_touched`：平台触碰后塌陷。能力类型：平台状态；动作类型：接触后塌陷。
+- `player.attack.apply_damage`：玩家攻击造成伤害。能力类型：战斗；动作类型：施加伤害。
+- `player.movement.block_by_state`：按状态阻挡移动。能力类型：移动门槛；动作类型：按状态阻挡。
+- `player.movement.move_actor`：玩家移动。能力类型：移动；动作类型：移动角色。
+- `teleport.transition.activate`：传送切换。能力类型：传送切换；动作类型：激活切换。
+- `upgrade.apply_item_upgrade`：应用物品升级。能力类型：升级；动作类型：应用物品升级。
+- `vfx.lifecycle.attach_to_target`：特效附着目标。能力类型：特效生命周期；动作类型：attach_to_target。
+- `vfx.lifecycle.cleanup_after_duration`：按持续时间清理特效。能力类型：特效生命周期；动作类型：cleanup_after_duration。
+- `vfx.spawn.spawn_particles`：生成粒子特效。能力类型：特效绑定；动作类型：生成粒子。
+- `vfx.visibility.set_visible_while_state`：按状态显示特效。能力类型：特效绑定；动作类型：按状态显示。
+- `weapon.effect.apply_bleed_on_hit`：命中施加流血。能力类型：武器效果；动作类型：命中施加流血。
+- `weapon.effect.apply_shock_chain`：武器电击连锁。能力类型：连锁闪电；动作类型：施加电击连锁。

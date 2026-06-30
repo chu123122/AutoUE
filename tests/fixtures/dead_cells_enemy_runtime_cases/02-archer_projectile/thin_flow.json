@@ -1,0 +1,114 @@
+{
+  "flows": [
+    {
+      "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
+      "entity_id": "archer",
+      "source_behavior_id": "enemy.behavior.keep_distance_and_projectile",
+      "stages": [
+        {
+          "stage": "Runtime",
+          "contract": "enemy_spawn_actor for enemy.behavior.keep_distance_and_projectile",
+          "inputs": [
+            "BehaviorSpec",
+            "runtime_params"
+          ],
+          "outputs": [
+            "enemy_spawn_actor"
+          ],
+          "engine_ports": [
+            "actor.spawn"
+          ]
+        },
+        {
+          "stage": "Runtime",
+          "contract": "enemy_detect_player for enemy.behavior.keep_distance_and_projectile",
+          "inputs": [
+            "BehaviorSpec",
+            "runtime_params"
+          ],
+          "outputs": [
+            "enemy_detect_player"
+          ],
+          "engine_ports": [
+            "actor.get_distance_to"
+          ]
+        },
+        {
+          "stage": "Runtime",
+          "contract": "enemy_keep_distance for enemy.behavior.keep_distance_and_projectile",
+          "inputs": [
+            "BehaviorSpec",
+            "runtime_params"
+          ],
+          "outputs": [
+            "enemy_keep_distance"
+          ],
+          "engine_ports": [
+            "actor.set_actor_location"
+          ]
+        },
+        {
+          "stage": "Runtime",
+          "contract": "enemy_projectile_attack for enemy.behavior.keep_distance_and_projectile",
+          "inputs": [
+            "BehaviorSpec",
+            "runtime_params"
+          ],
+          "outputs": [
+            "enemy_projectile_attack"
+          ],
+          "engine_ports": [
+            "projectile.spawn"
+          ]
+        },
+        {
+          "stage": "Runtime",
+          "contract": "enemy_receive_damage for enemy.behavior.keep_distance_and_projectile",
+          "inputs": [
+            "BehaviorSpec",
+            "runtime_params"
+          ],
+          "outputs": [
+            "enemy_receive_damage"
+          ],
+          "engine_ports": [
+            "actor.on_take_any_damage"
+          ]
+        },
+        {
+          "stage": "Runtime",
+          "contract": "enemy_emit_death_event for enemy.behavior.keep_distance_and_projectile",
+          "inputs": [
+            "BehaviorSpec",
+            "runtime_params"
+          ],
+          "outputs": [
+            "enemy_emit_death_event"
+          ],
+          "engine_ports": [
+            "actor.on_destroyed"
+          ]
+        },
+        {
+          "stage": "Runtime",
+          "contract": "encounter_complete_when_all_dead for enemy.behavior.keep_distance_and_projectile",
+          "inputs": [
+            "BehaviorSpec",
+            "runtime_params"
+          ],
+          "outputs": [
+            "encounter_complete_when_all_dead"
+          ],
+          "engine_ports": [
+            "encounter.alive_count"
+          ]
+        }
+      ],
+      "verification": [
+        "EnemySpawned",
+        "EnemyDied",
+        "EncounterCompleted=1"
+      ]
+    }
+  ]
+}

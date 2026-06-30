@@ -3,48 +3,41 @@
   "source_nodes": [
     "EntityAbilityBehaviorPlanner",
     "ThinGameplayFlowPlanner",
-    "PuerTSRuntimeMappingPlanner"
+    "PuerTSRuntimeMappingCompiler"
   ],
   "behaviors": [
     {
-      "behavior_id": "combat_damage_number_hud.display.refresh_value",
-      "primary_entity_id": "combat_damage_number_hud",
-      "entity_id": "combat_damage_number_hud",
-      "ability_id": "combat_damage_number_hud.display",
-      "flow_id": "flow_combat_damage_number_hud_display_refresh_value",
-      "trigger": {
-        "type": "legacy_text",
-        "description": "tracked value changes"
-      },
-      "conditions": [],
-      "actions": [
-        {
-          "type": "set_hud_value",
-          "entity_id": "combat_damage_number_hud",
-          "source": "state_blackboard",
-          "capability_id": "combat_damage_number_hud.display"
-        }
-      ],
-      "required_capability_ids": [
-        "combat_damage_number_hud.display"
-      ],
-      "engine_port_ids": [
-        "widget.set_text",
-        "widget.set_percent"
-      ],
-      "verification_logs": [
-        "BehaviorTriggered combat_damage_number_hud.display.refresh_value"
-      ]
-    },
-    {
-      "behavior_id": "health_bar_hud.display.refresh_value",
+      "behavior_id": "hud.behavior.refresh_value",
+      "bound_entity_id": "health_bar_hud",
       "primary_entity_id": "health_bar_hud",
       "entity_id": "health_bar_hud",
-      "ability_id": "health_bar_hud.display",
-      "flow_id": "flow_health_bar_hud_display_refresh_value",
+      "runtime_domain": "behavior_runtime",
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "state_blackboard",
+        "action_dispatcher"
+      ],
+      "runtime_params": {},
+      "resolved_capabilities": [
+        {
+          "capability_id": "hud.display.refresh_value",
+          "capability_kind": "hud_binding",
+          "action_kind": "refresh_value",
+          "handler": "ActionDispatcher.setHudValue",
+          "params": {
+            "bound_entity_id": "health_bar_hud",
+            "entity_id": "health_bar_hud"
+          },
+          "source_entity_binding": {
+            "entity_id": "health_bar_hud",
+            "capability_id": "hud.display.refresh_value"
+          }
+        }
+      ],
+      "flow_id": "flow_hud_behavior_refresh_value",
       "trigger": {
-        "type": "legacy_text",
-        "description": "tracked value changes"
+        "kind": "on_event"
       },
       "conditions": [],
       "actions": [
@@ -52,29 +45,66 @@
           "type": "set_hud_value",
           "entity_id": "health_bar_hud",
           "source": "state_blackboard",
-          "capability_id": "health_bar_hud.display"
+          "capability_id": "hud.display.refresh_value"
         }
       ],
       "required_capability_ids": [
-        "health_bar_hud.display"
+        "hud.display.refresh_value"
       ],
       "engine_port_ids": [
-        "widget.set_text",
-        "widget.set_percent"
+        "manual.trigger"
       ],
       "verification_logs": [
-        "BehaviorTriggered health_bar_hud.display.refresh_value"
+        "BehaviorTriggered hud.behavior.refresh_value",
+        "ActionDispatched set_hud_value"
       ]
     },
     {
-      "behavior_id": "level_exit_door.lock.evaluate_unlock",
+      "behavior_id": "exit.behavior.unlock_and_transition",
+      "bound_entity_id": "level_exit_door",
       "primary_entity_id": "level_exit_door",
       "entity_id": "level_exit_door",
-      "ability_id": "level_exit_door.lock",
-      "flow_id": "flow_level_exit_door_lock_evaluate_unlock",
+      "runtime_domain": "behavior_runtime",
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "state_blackboard",
+        "action_dispatcher"
+      ],
+      "runtime_params": {},
+      "resolved_capabilities": [
+        {
+          "capability_id": "encounter.exit.unlock_exit",
+          "capability_kind": "gate_lock",
+          "action_kind": "evaluate_unlock",
+          "handler": "ActionDispatcher.unlockExit",
+          "params": {
+            "bound_entity_id": "level_exit_door",
+            "entity_id": "level_exit_door"
+          },
+          "source_entity_binding": {
+            "entity_id": "level_exit_door",
+            "capability_id": "encounter.exit.unlock_exit"
+          }
+        },
+        {
+          "capability_id": "level.transition.activate",
+          "capability_kind": "level_transition",
+          "action_kind": "activate_transition",
+          "handler": "ActionDispatcher.openExit",
+          "params": {
+            "bound_entity_id": "level_exit_door",
+            "entity_id": "level_exit_door"
+          },
+          "source_entity_binding": {
+            "entity_id": "level_exit_door",
+            "capability_id": "level.transition.activate"
+          }
+        }
+      ],
+      "flow_id": "flow_exit_behavior_unlock_and_transition",
       "trigger": {
-        "type": "legacy_text",
-        "description": "completion condition changes"
+        "kind": "on_event"
       },
       "conditions": [],
       "actions": [
@@ -82,87 +112,295 @@
           "type": "unlock_exit",
           "entity_id": "level_exit_door",
           "state_key": "exit.level_exit_door.unlocked",
-          "capability_id": "level_exit_door.lock"
+          "capability_id": "encounter.exit.unlock_exit"
+        },
+        {
+          "type": "open_exit",
+          "entity_id": "level_exit_door",
+          "capability_id": "level.transition.activate"
         }
       ],
       "required_capability_ids": [
-        "level_exit_door.lock"
+        "encounter.exit.unlock_exit",
+        "level.transition.activate"
       ],
       "engine_port_ids": [
         "manual.trigger"
       ],
       "verification_logs": [
-        "BehaviorTriggered level_exit_door.lock.evaluate_unlock"
+        "BehaviorTriggered exit.behavior.unlock_and_transition",
+        "ActionDispatched unlock_exit",
+        "ActionDispatched open_exit"
       ]
     },
     {
-      "behavior_id": "player.combat.attack",
-      "primary_entity_id": "player",
-      "entity_id": "player",
-      "ability_id": "player.combat",
-      "flow_id": "flow_player_combat_attack",
+      "behavior_id": "enemy.behavior.chase_and_melee",
+      "bound_entity_id": "zombie",
+      "primary_entity_id": "zombie",
+      "entity_id": "zombie",
+      "runtime_domain": "enemy_runtime",
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_spawn_runtime",
+        "enemy_perception",
+        "enemy_movement",
+        "enemy_combat",
+        "enemy_health",
+        "enemy_death_events",
+        "encounter_manager"
+      ],
+      "runtime_params": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_ZOMBIE",
+        "default_hp": 30,
+        "move_speed": 260,
+        "sense_radius": 900,
+        "attack_range": 160,
+        "spawn_tags": [
+          "ground",
+          "melee"
+        ],
+        "bound_entity_id": "zombie",
+        "entity_id": "zombie"
+      },
+      "resolved_capabilities": [
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "capability_kind": "enemy_spawn",
+          "action_kind": "spawn_actor",
+          "handler": "EnemySpawnRuntime.spawnEnemy",
+          "params": {
+            "spawn_tags": [
+              "ground",
+              "melee"
+            ],
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_ZOMBIE",
+            "default_hp": 30,
+            "move_speed": 260,
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          },
+          "source_entity_binding": {
+            "entity_id": "zombie",
+            "capability_id": "enemy.spawn.spawn_actor"
+          }
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "capability_kind": "enemy_sensor",
+          "action_kind": "detect_player_by_distance",
+          "handler": "EnemyPerception.detectPlayer",
+          "params": {
+            "target_entity_id": "player",
+            "sense_radius": 900,
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          },
+          "source_entity_binding": {
+            "entity_id": "zombie",
+            "capability_id": "enemy.sensor.detect_player_by_distance"
+          }
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "capability_kind": "enemy_movement",
+          "action_kind": "chase_target",
+          "handler": "EnemyMovement.chaseTarget",
+          "params": {
+            "target_entity_id": "player",
+            "move_speed": 260,
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          },
+          "source_entity_binding": {
+            "entity_id": "zombie",
+            "capability_id": "enemy.movement.chase_target"
+          }
+        },
+        {
+          "capability_id": "enemy.attack.melee_hitbox",
+          "capability_kind": "enemy_attack",
+          "action_kind": "melee_hitbox",
+          "handler": "EnemyCombat.resolveMeleeHit",
+          "params": {
+            "hitbox_radius": 90,
+            "target_entity_id": "player",
+            "attack_damage": 10,
+            "attack_range": 160,
+            "cooldown_seconds": 1.2,
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          },
+          "source_entity_binding": {
+            "entity_id": "zombie",
+            "capability_id": "enemy.attack.melee_hitbox"
+          }
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "capability_kind": "enemy_health",
+          "action_kind": "receive_damage",
+          "handler": "EnemyHealth.applyDamage",
+          "params": {
+            "max_hp": 30,
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          },
+          "source_entity_binding": {
+            "entity_id": "zombie",
+            "capability_id": "enemy.health.receive_damage"
+          }
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "capability_kind": "enemy_death",
+          "action_kind": "emit_death_event",
+          "handler": "EnemyDeathEvents.emitDeath",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true,
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          },
+          "source_entity_binding": {
+            "entity_id": "zombie",
+            "capability_id": "enemy.death.emit_death_event"
+          }
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "capability_kind": "encounter",
+          "action_kind": "complete_when_all_dead",
+          "handler": "EncounterManager.completeWhenAllDead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed",
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          },
+          "source_entity_binding": {
+            "entity_id": "zombie",
+            "capability_id": "encounter.complete.complete_when_all_dead"
+          }
+        }
+      ],
+      "flow_id": "flow_enemy_behavior_chase_and_melee",
       "trigger": {
-        "type": "legacy_text",
-        "description": "attack input"
+        "kind": "on_event"
       },
       "conditions": [],
-      "actions": [],
+      "actions": [
+        {
+          "type": "enemy_spawn_actor",
+          "capability_id": "enemy.spawn.spawn_actor",
+          "entity_id": "zombie",
+          "params": {
+            "spawn_tags": [
+              "ground",
+              "melee"
+            ],
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_ZOMBIE",
+            "default_hp": 30,
+            "move_speed": 260,
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          }
+        },
+        {
+          "type": "enemy_detect_player",
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "entity_id": "zombie",
+          "params": {
+            "target_entity_id": "player",
+            "sense_radius": 900,
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          }
+        },
+        {
+          "type": "enemy_chase_target",
+          "capability_id": "enemy.movement.chase_target",
+          "entity_id": "zombie",
+          "params": {
+            "target_entity_id": "player",
+            "move_speed": 260,
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          },
+          "target_entity_id": "player"
+        },
+        {
+          "type": "enemy_melee_attack",
+          "capability_id": "enemy.attack.melee_hitbox",
+          "entity_id": "zombie",
+          "params": {
+            "hitbox_radius": 90,
+            "target_entity_id": "player",
+            "attack_damage": 10,
+            "attack_range": 160,
+            "cooldown_seconds": 1.2,
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          },
+          "target_entity_id": "player"
+        },
+        {
+          "type": "enemy_receive_damage",
+          "capability_id": "enemy.health.receive_damage",
+          "entity_id": "zombie",
+          "params": {
+            "max_hp": 30,
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          }
+        },
+        {
+          "type": "enemy_emit_death_event",
+          "capability_id": "enemy.death.emit_death_event",
+          "entity_id": "zombie",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true,
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          }
+        },
+        {
+          "type": "encounter_complete_when_all_dead",
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "entity_id": "zombie",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed",
+            "bound_entity_id": "zombie",
+            "entity_id": "zombie"
+          }
+        }
+      ],
       "required_capability_ids": [
-        "player.combat"
+        "enemy.spawn.spawn_actor",
+        "enemy.sensor.detect_player_by_distance",
+        "enemy.movement.chase_target",
+        "enemy.attack.melee_hitbox",
+        "enemy.health.receive_damage",
+        "enemy.death.emit_death_event",
+        "encounter.complete.complete_when_all_dead"
       ],
       "engine_port_ids": [
-        "input.action_binding",
-        "kismet.line_trace_single",
+        "actor.spawn",
         "gameplay_statics.apply_damage"
       ],
       "verification_logs": [
-        "BehaviorTriggered player.combat.attack"
-      ]
-    },
-    {
-      "behavior_id": "zombie.offense.resolve_hit",
-      "primary_entity_id": "zombie",
-      "entity_id": "zombie",
-      "ability_id": "zombie.offense",
-      "flow_id": "flow_zombie_offense_resolve_hit",
-      "trigger": {
-        "type": "legacy_text",
-        "description": "active hit frame overlaps target"
-      },
-      "conditions": [],
-      "actions": [],
-      "required_capability_ids": [
-        "zombie.offense"
-      ],
-      "engine_port_ids": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "verification_logs": [
-        "BehaviorTriggered zombie.offense.resolve_hit"
-      ]
-    },
-    {
-      "behavior_id": "zombie.pursuit.detect_player",
-      "primary_entity_id": "zombie",
-      "entity_id": "zombie",
-      "ability_id": "zombie.pursuit",
-      "flow_id": "flow_zombie_pursuit_detect_player",
-      "trigger": {
-        "type": "legacy_text",
-        "description": "player enters awareness range"
-      },
-      "conditions": [],
-      "actions": [],
-      "required_capability_ids": [
-        "zombie.pursuit"
-      ],
-      "engine_port_ids": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "verification_logs": [
-        "BehaviorTriggered zombie.pursuit.detect_player"
+        "BehaviorTriggered enemy.behavior.chase_and_melee",
+        "ActionDispatched enemy_spawn_actor",
+        "ActionDispatched enemy_detect_player",
+        "ActionDispatched enemy_chase_target",
+        "ActionDispatched enemy_melee_attack",
+        "ActionDispatched enemy_receive_damage",
+        "ActionDispatched enemy_emit_death_event",
+        "ActionDispatched encounter_complete_when_all_dead"
       ]
     }
   ]

@@ -1,0 +1,22 @@
+export interface {{interface_name}} { readonly spawnRuntime?: any; readonly perception?: any; readonly movement?: any; readonly combat?: any; readonly health?: any; readonly deathEvents?: any; readonly encounterManager?: any; readonly log?: (message: string) => void; }
+export class AutoUEEnemyAbilityDispatcher {
+  constructor(private readonly context: {{interface_name}}) {}
+  dispatch(resolvedCapability: any, enemy: any, target: any, now: number, dt: number): void {
+    const handler = String(resolvedCapability.handler || '');
+    const params = resolvedCapability.params || {};
+    switch (handler) {
+      case 'EnemyPerception.detectPlayer': this.context.perception?.detectPlayer(enemy, params); return;
+      case 'EnemyMovement.chaseTarget': this.context.movement?.chaseTarget(enemy, target, dt, params); return;
+      case 'EnemyMovement.keepDistance': this.context.movement?.keepDistance(enemy, target, dt, params); return;
+      case 'EnemyCombat.resolveMeleeHit': this.context.combat?.resolveMeleeHit(enemy, target, now, params); return;
+      case 'EnemyCombat.spawnProjectile': this.context.combat?.spawnProjectile(enemy, target, now, params); return;
+      case 'EnemyCombat.selfDestruct': this.context.combat?.selfDestruct(enemy, target, now, params); return;
+      case 'EnemyCombat.resolveDirectionalBlock': this.context.combat?.resolveDirectionalBlock(enemy, params); return;
+      case 'EnemyHealth.applyDamage': this.context.health?.bindDamage(enemy, params); return;
+      case 'EnemyDeathEvents.emitDeath': this.context.deathEvents?.bind(enemy, params); return;
+      case 'EncounterManager.completeWhenAllDead': this.context.encounterManager?.completeWhenAllDead(params); return;
+      default: throw new Error(`Unsupported enemy runtime handler: ${handler}`);
+    }
+  }
+}
+export function {{export_name}}(context: {{interface_name}}): AutoUEEnemyAbilityDispatcher { return new AutoUEEnemyAbilityDispatcher(context); }

@@ -3,18 +3,41 @@
   "source_nodes": [
     "EntityAbilityBehaviorPlanner",
     "ThinGameplayFlowPlanner",
-    "PuerTSRuntimeMappingPlanner"
+    "PuerTSRuntimeMappingCompiler"
   ],
   "behaviors": [
     {
-      "behavior_id": "health_bar_hud.display.refresh_value",
+      "behavior_id": "hud.behavior.refresh_value",
+      "bound_entity_id": "health_bar_hud",
       "primary_entity_id": "health_bar_hud",
       "entity_id": "health_bar_hud",
-      "ability_id": "health_bar_hud.display",
-      "flow_id": "flow_health_bar_hud_display_refresh_value",
+      "runtime_domain": "behavior_runtime",
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "state_blackboard",
+        "action_dispatcher"
+      ],
+      "runtime_params": {},
+      "resolved_capabilities": [
+        {
+          "capability_id": "hud.display.refresh_value",
+          "capability_kind": "hud_binding",
+          "action_kind": "refresh_value",
+          "handler": "ActionDispatcher.setHudValue",
+          "params": {
+            "bound_entity_id": "health_bar_hud",
+            "entity_id": "health_bar_hud"
+          },
+          "source_entity_binding": {
+            "entity_id": "health_bar_hud",
+            "capability_id": "hud.display.refresh_value"
+          }
+        }
+      ],
+      "flow_id": "flow_hud_behavior_refresh_value",
       "trigger": {
-        "type": "legacy_text",
-        "description": "tracked value changes"
+        "kind": "on_event"
       },
       "conditions": [],
       "actions": [
@@ -22,83 +45,69 @@
           "type": "set_hud_value",
           "entity_id": "health_bar_hud",
           "source": "state_blackboard",
-          "capability_id": "health_bar_hud.display"
+          "capability_id": "hud.display.refresh_value"
         }
       ],
       "required_capability_ids": [
-        "health_bar_hud.display"
+        "hud.display.refresh_value"
       ],
       "engine_port_ids": [
-        "widget.set_text",
-        "widget.set_percent"
+        "manual.trigger"
       ],
       "verification_logs": [
-        "BehaviorTriggered health_bar_hud.display.refresh_value"
+        "BehaviorTriggered hud.behavior.refresh_value",
+        "ActionDispatched set_hud_value"
       ]
     },
     {
-      "behavior_id": "poison_pool.poison_player_on_overlap",
-      "primary_entity_id": "poison_pool",
-      "entity_id": "poison_pool",
-      "ability_id": "poison_pool.hazard.apply_poison_dot",
-      "flow_id": "flow_poison_pool_poison_player_on_overlap",
-      "trigger": {
-        "type": "overlap_enter",
-        "source_entity_id": "player",
-        "target_entity_id": "poison_pool"
-      },
-      "conditions": [],
-      "actions": [
+      "behavior_id": "vfx.behavior.spawn_particles",
+      "bound_entity_id": "poison_vfx",
+      "primary_entity_id": "poison_vfx",
+      "entity_id": "poison_vfx",
+      "runtime_domain": "behavior_runtime",
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "action_dispatcher"
+      ],
+      "runtime_params": {},
+      "resolved_capabilities": [
         {
-          "type": "write_state",
-          "key": "player.effects.poison_dot",
-          "value": {
-            "duration": 3,
-            "damage_per_second": 5
+          "capability_id": "vfx.spawn.spawn_particles",
+          "capability_kind": "vfx_binding",
+          "action_kind": "spawn_particles",
+          "handler": "ActionDispatcher.spawnVfx",
+          "params": {
+            "bound_entity_id": "poison_vfx",
+            "entity_id": "poison_vfx"
+          },
+          "source_entity_binding": {
+            "entity_id": "poison_vfx",
+            "capability_id": "vfx.spawn.spawn_particles"
           }
         }
       ],
-      "required_capability_ids": [
-        "poison_pool.hazard.apply_poison_dot",
-        "poison_vfx.emit",
-        "health_bar_hud.display"
-      ],
-      "engine_port_ids": [
-        "primitive.on_component_begin_overlap",
-        "component.set_visibility",
-        "widget.set_text",
-        "widget.set_percent"
-      ],
-      "verification_logs": [
-        "BehaviorTriggered poison_pool.poison_player_on_overlap"
-      ]
-    },
-    {
-      "behavior_id": "poison_vfx.emit.spawn_particles",
-      "primary_entity_id": "poison_vfx",
-      "entity_id": "poison_vfx",
-      "ability_id": "poison_vfx.emit",
-      "flow_id": "flow_poison_vfx_emit_spawn_particles",
+      "flow_id": "flow_vfx_behavior_spawn_particles",
       "trigger": {
-        "type": "legacy_text",
-        "description": "gameplay event fires"
+        "kind": "on_event"
       },
       "conditions": [],
       "actions": [
         {
           "type": "spawn_vfx",
           "entity_id": "poison_vfx",
-          "capability_id": "poison_vfx.emit"
+          "capability_id": "vfx.spawn.spawn_particles"
         }
       ],
       "required_capability_ids": [
-        "poison_vfx.emit"
+        "vfx.spawn.spawn_particles"
       ],
       "engine_port_ids": [
-        "component.set_visibility"
+        "manual.trigger"
       ],
       "verification_logs": [
-        "BehaviorTriggered poison_vfx.emit.spawn_particles"
+        "BehaviorTriggered vfx.behavior.spawn_particles",
+        "ActionDispatched spawn_vfx"
       ]
     }
   ]

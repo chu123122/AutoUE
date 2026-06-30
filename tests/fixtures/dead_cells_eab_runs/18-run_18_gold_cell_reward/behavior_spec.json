@@ -3,134 +3,210 @@
   "source_nodes": [
     "EntityAbilityBehaviorPlanner",
     "ThinGameplayFlowPlanner",
-    "PuerTSRuntimeMappingPlanner"
+    "PuerTSRuntimeMappingCompiler"
   ],
   "behaviors": [
     {
-      "behavior_id": "cell_pickup.collect.detect_pickup",
+      "behavior_id": "pickup.behavior.collect_reward",
+      "bound_entity_id": "cell_pickup",
       "primary_entity_id": "cell_pickup",
       "entity_id": "cell_pickup",
-      "ability_id": "cell_pickup.collect",
-      "flow_id": "flow_cell_pickup_collect_detect_pickup",
+      "runtime_domain": "behavior_runtime",
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "action_dispatcher"
+      ],
+      "runtime_params": {},
+      "resolved_capabilities": [
+        {
+          "capability_id": "pickup.collect.grant_reward",
+          "capability_kind": "pickup_collection",
+          "action_kind": "grant_reward",
+          "handler": null,
+          "params": {
+            "bound_entity_id": "cell_pickup",
+            "entity_id": "cell_pickup"
+          },
+          "source_entity_binding": {
+            "entity_id": "cell_pickup",
+            "capability_id": "pickup.collect.grant_reward"
+          }
+        },
+        {
+          "capability_id": "pickup.feedback.spawn_reward_visual",
+          "capability_kind": "reward_feedback",
+          "action_kind": "spawn_reward_visual",
+          "handler": null,
+          "params": {
+            "bound_entity_id": "cell_pickup",
+            "entity_id": "cell_pickup"
+          },
+          "source_entity_binding": {
+            "entity_id": "cell_pickup",
+            "capability_id": "pickup.feedback.spawn_reward_visual"
+          }
+        }
+      ],
+      "flow_id": "flow_pickup_behavior_collect_reward",
       "trigger": {
-        "type": "legacy_text",
-        "description": "player overlaps pickup"
+        "kind": "on_event"
       },
       "conditions": [],
       "actions": [],
       "required_capability_ids": [
-        "cell_pickup.collect"
+        "pickup.collect.grant_reward",
+        "pickup.feedback.spawn_reward_visual"
       ],
       "engine_port_ids": [
-        "primitive.on_component_begin_overlap"
+        "manual.trigger"
       ],
       "verification_logs": [
-        "BehaviorTriggered cell_pickup.collect.detect_pickup"
+        "BehaviorTriggered pickup.behavior.collect_reward"
       ]
     },
     {
-      "behavior_id": "cell_pickup.collect.grant_reward",
-      "primary_entity_id": "cell_pickup",
-      "entity_id": "cell_pickup",
-      "ability_id": "cell_pickup.collect",
-      "flow_id": "flow_cell_pickup_collect_grant_reward",
-      "trigger": {
-        "type": "legacy_text",
-        "description": "collection is accepted"
-      },
-      "conditions": [],
-      "actions": [],
-      "required_capability_ids": [
-        "cell_pickup.collect"
-      ],
-      "engine_port_ids": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "verification_logs": [
-        "BehaviorTriggered cell_pickup.collect.grant_reward"
-      ]
-    },
-    {
-      "behavior_id": "corpse_dust_vfx.emit.spawn_particles",
+      "behavior_id": "vfx.behavior.spawn_particles",
+      "bound_entity_id": "corpse_dust_vfx",
       "primary_entity_id": "corpse_dust_vfx",
       "entity_id": "corpse_dust_vfx",
-      "ability_id": "corpse_dust_vfx.emit",
-      "flow_id": "flow_corpse_dust_vfx_emit_spawn_particles",
+      "runtime_domain": "behavior_runtime",
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "action_dispatcher"
+      ],
+      "runtime_params": {},
+      "resolved_capabilities": [
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "capability_kind": "vfx_binding",
+          "action_kind": "spawn_particles",
+          "handler": "ActionDispatcher.spawnVfx",
+          "params": {
+            "bound_entity_id": "corpse_dust_vfx",
+            "entity_id": "corpse_dust_vfx"
+          },
+          "source_entity_binding": {
+            "entity_id": "corpse_dust_vfx",
+            "capability_id": "vfx.spawn.spawn_particles"
+          }
+        }
+      ],
+      "flow_id": "flow_vfx_behavior_spawn_particles",
       "trigger": {
-        "type": "legacy_text",
-        "description": "gameplay event fires"
+        "kind": "on_event"
       },
       "conditions": [],
       "actions": [
         {
           "type": "spawn_vfx",
           "entity_id": "corpse_dust_vfx",
-          "capability_id": "corpse_dust_vfx.emit"
+          "capability_id": "vfx.spawn.spawn_particles"
         }
       ],
       "required_capability_ids": [
-        "corpse_dust_vfx.emit"
+        "vfx.spawn.spawn_particles"
       ],
       "engine_port_ids": [
-        "component.set_visibility"
+        "manual.trigger"
       ],
       "verification_logs": [
-        "BehaviorTriggered corpse_dust_vfx.emit.spawn_particles"
+        "BehaviorTriggered vfx.behavior.spawn_particles",
+        "ActionDispatched spawn_vfx"
       ]
     },
     {
-      "behavior_id": "gold_pickup.collect.detect_pickup",
+      "behavior_id": "pickup.behavior.collect_reward",
+      "bound_entity_id": "gold_pickup",
       "primary_entity_id": "gold_pickup",
       "entity_id": "gold_pickup",
-      "ability_id": "gold_pickup.collect",
-      "flow_id": "flow_gold_pickup_collect_detect_pickup",
+      "runtime_domain": "behavior_runtime",
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "action_dispatcher"
+      ],
+      "runtime_params": {},
+      "resolved_capabilities": [
+        {
+          "capability_id": "pickup.collect.grant_reward",
+          "capability_kind": "pickup_collection",
+          "action_kind": "grant_reward",
+          "handler": null,
+          "params": {
+            "bound_entity_id": "gold_pickup",
+            "entity_id": "gold_pickup"
+          },
+          "source_entity_binding": {
+            "entity_id": "gold_pickup",
+            "capability_id": "pickup.collect.grant_reward"
+          }
+        },
+        {
+          "capability_id": "pickup.feedback.spawn_reward_visual",
+          "capability_kind": "reward_feedback",
+          "action_kind": "spawn_reward_visual",
+          "handler": null,
+          "params": {
+            "bound_entity_id": "gold_pickup",
+            "entity_id": "gold_pickup"
+          },
+          "source_entity_binding": {
+            "entity_id": "gold_pickup",
+            "capability_id": "pickup.feedback.spawn_reward_visual"
+          }
+        }
+      ],
+      "flow_id": "flow_pickup_behavior_collect_reward",
       "trigger": {
-        "type": "legacy_text",
-        "description": "player overlaps pickup"
+        "kind": "on_event"
       },
       "conditions": [],
       "actions": [],
       "required_capability_ids": [
-        "gold_pickup.collect"
+        "pickup.collect.grant_reward",
+        "pickup.feedback.spawn_reward_visual"
       ],
       "engine_port_ids": [
-        "primitive.on_component_begin_overlap"
+        "manual.trigger"
       ],
       "verification_logs": [
-        "BehaviorTriggered gold_pickup.collect.detect_pickup"
+        "BehaviorTriggered pickup.behavior.collect_reward"
       ]
     },
     {
-      "behavior_id": "gold_pickup.collect.grant_reward",
-      "primary_entity_id": "gold_pickup",
-      "entity_id": "gold_pickup",
-      "ability_id": "gold_pickup.collect",
-      "flow_id": "flow_gold_pickup_collect_grant_reward",
-      "trigger": {
-        "type": "legacy_text",
-        "description": "collection is accepted"
-      },
-      "conditions": [],
-      "actions": [],
-      "required_capability_ids": [
-        "gold_pickup.collect"
-      ],
-      "engine_port_ids": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "verification_logs": [
-        "BehaviorTriggered gold_pickup.collect.grant_reward"
-      ]
-    },
-    {
-      "behavior_id": "status_icon_hud.display.refresh_value",
+      "behavior_id": "hud.behavior.refresh_value",
+      "bound_entity_id": "status_icon_hud",
       "primary_entity_id": "status_icon_hud",
       "entity_id": "status_icon_hud",
-      "ability_id": "status_icon_hud.display",
-      "flow_id": "flow_status_icon_hud_display_refresh_value",
+      "runtime_domain": "behavior_runtime",
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "state_blackboard",
+        "action_dispatcher"
+      ],
+      "runtime_params": {},
+      "resolved_capabilities": [
+        {
+          "capability_id": "hud.display.refresh_value",
+          "capability_kind": "hud_binding",
+          "action_kind": "refresh_value",
+          "handler": "ActionDispatcher.setHudValue",
+          "params": {
+            "bound_entity_id": "status_icon_hud",
+            "entity_id": "status_icon_hud"
+          },
+          "source_entity_binding": {
+            "entity_id": "status_icon_hud",
+            "capability_id": "hud.display.refresh_value"
+          }
+        }
+      ],
+      "flow_id": "flow_hud_behavior_refresh_value",
       "trigger": {
-        "type": "legacy_text",
-        "description": "tracked value changes"
+        "kind": "on_event"
       },
       "conditions": [],
       "actions": [
@@ -138,18 +214,18 @@
           "type": "set_hud_value",
           "entity_id": "status_icon_hud",
           "source": "state_blackboard",
-          "capability_id": "status_icon_hud.display"
+          "capability_id": "hud.display.refresh_value"
         }
       ],
       "required_capability_ids": [
-        "status_icon_hud.display"
+        "hud.display.refresh_value"
       ],
       "engine_port_ids": [
-        "widget.set_text",
-        "widget.set_percent"
+        "manual.trigger"
       ],
       "verification_logs": [
-        "BehaviorTriggered status_icon_hud.display.refresh_value"
+        "BehaviorTriggered hud.behavior.refresh_value",
+        "ActionDispatched set_hud_value"
       ]
     }
   ]

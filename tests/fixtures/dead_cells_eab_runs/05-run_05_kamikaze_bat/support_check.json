@@ -1,17 +1,34 @@
 {
   "schema_version": "autoue-runtime-support-check/v1",
-  "status": "unsupported",
+  "status": "supported",
   "required_runtime_modules": [
     "action_dispatcher",
     "behavior_orchestrator",
     "condition_checker",
+    "encounter_manager",
+    "enemy_combat",
+    "enemy_death_events",
+    "enemy_health",
+    "enemy_movement",
+    "enemy_perception",
+    "enemy_registry",
+    "enemy_runtime",
+    "enemy_spawn_runtime",
     "entity_registry",
     "state_blackboard",
     "trigger_router",
     "world_adapter"
   ],
   "engine_ports": [
+    "actor.destroy",
+    "actor.get_distance_to",
+    "actor.on_destroyed",
+    "actor.on_take_any_damage",
+    "actor.set_actor_location",
+    "actor.spawn",
     "component.set_visibility",
+    "encounter.alive_count",
+    "gameplay_statics.apply_damage",
     "widget.set_percent",
     "widget.set_text"
   ],
@@ -30,7 +47,7 @@
       ],
       "supported": true,
       "reason": "",
-      "capability_id": "burn_vfx.emit"
+      "capability_id": "vfx.spawn.spawn_particles"
     },
     {
       "capability_kind": "hud_binding",
@@ -48,72 +65,160 @@
       ],
       "supported": true,
       "reason": "",
-      "capability_id": "combat_damage_number_hud.display"
-    }
-  ],
-  "unsupported_capabilities": [
-    {
-      "capability_kind": "enemy_combat",
-      "action_kind": "enemy_attack",
-      "handler": null,
-      "required_runtime_modules": [],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "supported": false,
-      "reason": "enemy encounter/combat runtime is optional and not implemented by the generic behavior framework",
-      "capability_id": "kamikaze_bat.offense"
+      "capability_id": "hud.display.refresh_value"
     },
     {
-      "capability_kind": "enemy_pursuit",
+      "capability_kind": "enemy_spawn",
+      "action_kind": "spawn_actor",
+      "handler": "EnemySpawnRuntime.spawnEnemy",
+      "required_runtime_modules": [
+        "enemy_runtime",
+        "enemy_spawn_runtime",
+        "enemy_registry",
+        "world_adapter"
+      ],
+      "engine_ports": [
+        "actor.spawn"
+      ],
+      "supported": true,
+      "reason": "",
+      "capability_id": "enemy.spawn.spawn_actor"
+    },
+    {
+      "capability_kind": "enemy_sensor",
+      "action_kind": "detect_player_by_distance",
+      "handler": "EnemyPerception.detectPlayer",
+      "required_runtime_modules": [
+        "enemy_runtime",
+        "enemy_perception",
+        "enemy_registry",
+        "world_adapter"
+      ],
+      "engine_ports": [
+        "actor.get_distance_to"
+      ],
+      "supported": true,
+      "reason": "",
+      "capability_id": "enemy.sensor.detect_player_by_distance"
+    },
+    {
+      "capability_kind": "enemy_movement",
       "action_kind": "chase_target",
-      "handler": null,
-      "required_runtime_modules": [],
+      "handler": "EnemyMovement.chaseTarget",
+      "required_runtime_modules": [
+        "enemy_runtime",
+        "enemy_movement",
+        "enemy_registry",
+        "world_adapter"
+      ],
       "engine_ports": [
         "actor.get_distance_to",
-        "pawn.add_movement_input"
+        "actor.set_actor_location"
       ],
-      "supported": false,
-      "reason": "enemy encounter movement runtime is optional and not implemented by the generic behavior framework",
-      "capability_id": "kamikaze_bat.pursuit"
+      "supported": true,
+      "reason": "",
+      "capability_id": "enemy.movement.chase_target"
     },
     {
-      "capability_kind": "movement",
-      "action_kind": "move_actor",
-      "handler": null,
-      "required_runtime_modules": [],
-      "engine_ports": [
-        "input.action_binding",
-        "pawn.add_movement_input"
+      "capability_kind": "enemy_attack",
+      "action_kind": "self_destruct",
+      "handler": "EnemyCombat.selfDestruct",
+      "required_runtime_modules": [
+        "enemy_runtime",
+        "enemy_combat",
+        "enemy_health",
+        "enemy_death_events",
+        "world_adapter"
       ],
-      "supported": false,
-      "reason": "general movement runtime is not implemented by behavior framework support matrix",
-      "capability_id": "player.movement"
+      "engine_ports": [
+        "gameplay_statics.apply_damage",
+        "actor.destroy"
+      ],
+      "supported": true,
+      "reason": "",
+      "capability_id": "enemy.attack.self_destruct"
+    },
+    {
+      "capability_kind": "enemy_health",
+      "action_kind": "receive_damage",
+      "handler": "EnemyHealth.applyDamage",
+      "required_runtime_modules": [
+        "enemy_runtime",
+        "enemy_health",
+        "enemy_registry",
+        "world_adapter"
+      ],
+      "engine_ports": [
+        "gameplay_statics.apply_damage",
+        "actor.on_take_any_damage"
+      ],
+      "supported": true,
+      "reason": "",
+      "capability_id": "enemy.health.receive_damage"
+    },
+    {
+      "capability_kind": "enemy_death",
+      "action_kind": "emit_death_event",
+      "handler": "EnemyDeathEvents.emitDeath",
+      "required_runtime_modules": [
+        "enemy_runtime",
+        "enemy_death_events",
+        "enemy_registry",
+        "encounter_manager"
+      ],
+      "engine_ports": [
+        "actor.on_destroyed"
+      ],
+      "supported": true,
+      "reason": "",
+      "capability_id": "enemy.death.emit_death_event"
+    },
+    {
+      "capability_kind": "encounter",
+      "action_kind": "complete_when_all_dead",
+      "handler": "EncounterManager.completeWhenAllDead",
+      "required_runtime_modules": [
+        "enemy_runtime",
+        "encounter_manager",
+        "enemy_registry"
+      ],
+      "engine_ports": [
+        "encounter.alive_count"
+      ],
+      "supported": true,
+      "reason": "",
+      "capability_id": "encounter.complete.complete_when_all_dead"
     }
   ],
-  "unsupported_behaviors": [
-    "kamikaze_bat.offense.resolve_hit",
-    "kamikaze_bat.pursuit.close_gap",
-    "kamikaze_bat.pursuit.detect_player",
-    "player.movement.dodge_roll"
-  ],
+  "unsupported_capabilities": [],
+  "unsupported_behaviors": [],
   "behavior_by_capability": {
-    "burn_vfx.emit": [
-      "burn_vfx.emit.spawn_particles"
+    "encounter.complete.complete_when_all_dead": [
+      "enemy.behavior.chase_and_self_destruct"
     ],
-    "combat_damage_number_hud.display": [
-      "combat_damage_number_hud.display.refresh_value"
+    "enemy.attack.self_destruct": [
+      "enemy.behavior.chase_and_self_destruct"
     ],
-    "kamikaze_bat.offense": [
-      "kamikaze_bat.offense.resolve_hit"
+    "enemy.death.emit_death_event": [
+      "enemy.behavior.chase_and_self_destruct"
     ],
-    "kamikaze_bat.pursuit": [
-      "kamikaze_bat.pursuit.close_gap",
-      "kamikaze_bat.pursuit.detect_player"
+    "enemy.health.receive_damage": [
+      "enemy.behavior.chase_and_self_destruct"
     ],
-    "player.movement": [
-      "player.movement.dodge_roll"
+    "enemy.movement.chase_target": [
+      "enemy.behavior.chase_and_self_destruct"
+    ],
+    "enemy.sensor.detect_player_by_distance": [
+      "enemy.behavior.chase_and_self_destruct"
+    ],
+    "enemy.spawn.spawn_actor": [
+      "enemy.behavior.chase_and_self_destruct"
+    ],
+    "hud.display.refresh_value": [
+      "hud.behavior.refresh_value"
+    ],
+    "vfx.spawn.spawn_particles": [
+      "vfx.behavior.spawn_particles"
     ]
   }
 }

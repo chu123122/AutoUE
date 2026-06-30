@@ -1,14 +1,13 @@
 {
   "flows": [
     {
-      "flow_id": "flow_archer_offense_resolve_hit",
+      "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
       "entity_id": "archer",
-      "ability_id": "archer.offense",
-      "source_behavior_id": "archer.offense.resolve_hit",
+      "source_behavior_id": "enemy.behavior.keep_distance_and_projectile",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -16,49 +15,29 @@
             "actions"
           ],
           "engine_ports": [
-            "kismet.sphere_trace_single",
-            "gameplay_statics.apply_damage"
+            "actor.spawn"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered archer.offense.resolve_hit"
+        "BehaviorTriggered enemy.behavior.keep_distance_and_projectile",
+        "ActionDispatched enemy_spawn_actor",
+        "ActionDispatched enemy_detect_player",
+        "ActionDispatched enemy_keep_distance",
+        "ActionDispatched enemy_projectile_attack",
+        "ActionDispatched enemy_receive_damage",
+        "ActionDispatched enemy_emit_death_event",
+        "ActionDispatched encounter_complete_when_all_dead"
       ]
     },
     {
-      "flow_id": "flow_archer_pursuit_detect_player",
-      "entity_id": "archer",
-      "ability_id": "archer.pursuit",
-      "source_behavior_id": "archer.pursuit.detect_player",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "actor.get_distance_to",
-            "pawn.add_movement_input"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered archer.pursuit.detect_player"
-      ]
-    },
-    {
-      "flow_id": "flow_combat_damage_number_hud_display_refresh_value",
+      "flow_id": "flow_hud_behavior_refresh_value",
       "entity_id": "combat_damage_number_hud",
-      "ability_id": "combat_damage_number_hud.display",
-      "source_behavior_id": "combat_damage_number_hud.display.refresh_value",
+      "source_behavior_id": "hud.behavior.refresh_value",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -66,114 +45,13 @@
             "actions"
           ],
           "engine_ports": [
-            "widget.set_text",
-            "widget.set_percent"
+            "manual.trigger"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered combat_damage_number_hud.display.refresh_value"
-      ]
-    },
-    {
-      "flow_id": "flow_minimap_hud_display_refresh_value",
-      "entity_id": "minimap_hud",
-      "ability_id": "minimap_hud.display",
-      "source_behavior_id": "minimap_hud.display.refresh_value",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "widget.set_text",
-            "widget.set_percent"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered minimap_hud.display.refresh_value"
-      ]
-    },
-    {
-      "flow_id": "flow_player_combat_attack",
-      "entity_id": "player",
-      "ability_id": "player.combat",
-      "source_behavior_id": "player.combat.attack",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "input.action_binding",
-            "kismet.line_trace_single",
-            "gameplay_statics.apply_damage"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered player.combat.attack"
-      ]
-    },
-    {
-      "flow_id": "flow_player_movement_dodge_roll",
-      "entity_id": "player",
-      "ability_id": "player.movement",
-      "source_behavior_id": "player.movement.dodge_roll",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "input.action_binding",
-            "pawn.add_movement_input"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered player.movement.dodge_roll"
-      ]
-    },
-    {
-      "flow_id": "flow_player_movement_run",
-      "entity_id": "player",
-      "ability_id": "player.movement",
-      "source_behavior_id": "player.movement.run",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "input.action_binding",
-            "pawn.add_movement_input"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered player.movement.run"
+        "BehaviorTriggered hud.behavior.refresh_value",
+        "ActionDispatched set_hud_value"
       ]
     }
   ]

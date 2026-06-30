@@ -1,6 +1,6 @@
 {
   "schema_version": "autoue-runtime-support-check/v1",
-  "status": "unsupported",
+  "status": "supported",
   "required_runtime_modules": [
     "action_dispatcher",
     "behavior_orchestrator",
@@ -11,9 +11,7 @@
     "world_adapter"
   ],
   "engine_ports": [
-    "component.set_visibility",
     "widget.set_percent",
-    "widget.set_render_opacity",
     "widget.set_text"
   ],
   "supported_capabilities": [
@@ -33,163 +31,14 @@
       ],
       "supported": true,
       "reason": "",
-      "capability_id": "cooldown_meter_hud.display"
-    },
-    {
-      "capability_kind": "hud_feedback",
-      "action_kind": "flash_warning",
-      "handler": "ActionDispatcher.setHudValue",
-      "required_runtime_modules": [
-        "world_adapter",
-        "entity_registry",
-        "state_blackboard",
-        "action_dispatcher"
-      ],
-      "engine_ports": [
-        "widget.set_render_opacity"
-      ],
-      "supported": true,
-      "reason": "",
-      "capability_id": "curse_counter_hud.alert"
-    },
-    {
-      "capability_kind": "hud_binding",
-      "action_kind": "refresh_value",
-      "handler": "ActionDispatcher.setHudValue",
-      "required_runtime_modules": [
-        "world_adapter",
-        "entity_registry",
-        "state_blackboard",
-        "action_dispatcher"
-      ],
-      "engine_ports": [
-        "widget.set_text",
-        "widget.set_percent"
-      ],
-      "supported": true,
-      "reason": "",
-      "capability_id": "curse_counter_hud.display"
-    },
-    {
-      "capability_kind": "hud_binding",
-      "action_kind": "refresh_value",
-      "handler": "ActionDispatcher.setHudValue",
-      "required_runtime_modules": [
-        "world_adapter",
-        "entity_registry",
-        "state_blackboard",
-        "action_dispatcher"
-      ],
-      "engine_ports": [
-        "widget.set_text",
-        "widget.set_percent"
-      ],
-      "supported": true,
-      "reason": "",
-      "capability_id": "health_bar_hud.display"
-    },
-    {
-      "capability_kind": "vfx_binding",
-      "action_kind": "spawn_particles",
-      "handler": "ActionDispatcher.spawnVfx",
-      "required_runtime_modules": [
-        "world_adapter",
-        "entity_registry",
-        "action_dispatcher"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "supported": true,
-      "reason": "",
-      "capability_id": "poison_vfx.emit"
-    },
-    {
-      "capability_kind": "hud_binding",
-      "action_kind": "refresh_value",
-      "handler": "ActionDispatcher.setHudValue",
-      "required_runtime_modules": [
-        "world_adapter",
-        "entity_registry",
-        "state_blackboard",
-        "action_dispatcher"
-      ],
-      "engine_ports": [
-        "widget.set_text",
-        "widget.set_percent"
-      ],
-      "supported": true,
-      "reason": "",
-      "capability_id": "status_icon_hud.display"
+      "capability_id": "hud.display.refresh_value"
     }
   ],
-  "unsupported_capabilities": [
-    {
-      "capability_kind": "chest_reward",
-      "action_kind": "open_reward",
-      "handler": null,
-      "required_runtime_modules": [],
-      "engine_ports": [],
-      "supported": false,
-      "reason": "reward/inventory runtime is not implemented",
-      "capability_id": "cursed_chest.chest.open_reward"
-    },
-    {
-      "capability_kind": "curse_counter",
-      "action_kind": "add_curse_counter",
-      "handler": null,
-      "required_runtime_modules": [],
-      "engine_ports": [],
-      "supported": false,
-      "reason": "curse counter HUD/runtime is not implemented",
-      "capability_id": "cursed_chest.curse.add_curse_counter"
-    },
-    {
-      "capability_kind": "apply_effect",
-      "action_kind": "apply_poison_dot",
-      "handler": null,
-      "required_runtime_modules": [],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "supported": false,
-      "reason": "poison periodic damage handler is not implemented",
-      "capability_id": "poison_pool.hazard.apply_poison_dot"
-    }
-  ],
-  "unsupported_behaviors": [
-    "cursed_chest.open_reward_and_add_curse",
-    "poison_pool.poison_player_on_overlap"
-  ],
+  "unsupported_capabilities": [],
+  "unsupported_behaviors": [],
   "behavior_by_capability": {
-    "cooldown_meter_hud.display": [
-      "cooldown_meter_hud.display.refresh_value"
-    ],
-    "curse_counter_hud.alert": [
-      "curse_counter_hud.alert.flash_warning"
-    ],
-    "curse_counter_hud.display": [
-      "curse_counter_hud.display.refresh_value",
-      "cursed_chest.open_reward_and_add_curse"
-    ],
-    "cursed_chest.chest.open_reward": [
-      "cursed_chest.open_reward_and_add_curse"
-    ],
-    "cursed_chest.curse.add_curse_counter": [
-      "cursed_chest.open_reward_and_add_curse"
-    ],
-    "health_bar_hud.display": [
-      "health_bar_hud.display.refresh_value",
-      "poison_pool.poison_player_on_overlap"
-    ],
-    "poison_pool.hazard.apply_poison_dot": [
-      "poison_pool.poison_player_on_overlap"
-    ],
-    "poison_vfx.emit": [
-      "poison_pool.poison_player_on_overlap"
-    ],
-    "status_icon_hud.display": [
-      "status_icon_hud.display.refresh_value"
+    "hud.display.refresh_value": [
+      "hud.behavior.refresh_value"
     ]
   }
 }

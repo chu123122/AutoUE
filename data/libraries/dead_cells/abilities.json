@@ -1,4152 +1,1188 @@
 {
-  "schema_version": "autoue-capability-library/v3",
-  "theme": "dead_cells_content_library",
-  "count": 170,
+  "schema_version": "autoue-dead-cells-capability-prototypes/v1",
+  "theme": "dead_cells",
+  "library_role": "capability_prototype_library",
+  "count": 46,
   "abilities": [
     {
-      "ability_id": "ammo_counter_hud.alert",
-      "entity_id": "ammo_counter_hud",
-      "display_name": "Ammo Counter HUD Alert Feedback",
-      "display_name_zh": "弹药计数HUD警示反馈",
-      "summary": "负责闪烁、强调、警示和状态变化反馈。",
-      "summary_zh": "负责闪烁、强调、警示和状态变化反馈。",
-      "capability_id": "ammo_counter_hud.alert",
-      "semantic_role": "capability",
-      "capability_kind": "hud_feedback",
-      "runtime_primitives": [
-        "hud_flash",
-        "tag_state"
-      ],
-      "engine_ports": [
-        "widget.set_render_opacity"
-      ],
-      "runtime_features": [
-        "hud"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "flash_warning"
-    },
-    {
-      "ability_id": "ammo_counter_hud.display",
-      "entity_id": "ammo_counter_hud",
-      "display_name": "Ammo Counter HUD Display",
-      "display_name_zh": "弹药计数HUD显示",
-      "summary": "负责把数值、图标或地图状态呈现到屏幕。",
-      "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
-      "capability_id": "ammo_counter_hud.display",
-      "semantic_role": "capability",
-      "capability_kind": "hud_binding",
-      "runtime_primitives": [
-        "hud_refresh",
-        "tag_state"
-      ],
-      "engine_ports": [
-        "widget.set_text",
-        "widget.set_percent"
-      ],
-      "runtime_features": [
-        "hud"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "refresh_value"
-    },
-    {
-      "ability_id": "arbiter.offense",
-      "entity_id": "arbiter",
-      "display_name": "Arbiter Offense",
-      "display_name_zh": "裁决者进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "arbiter.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "arbiter.pursuit",
-      "entity_id": "arbiter",
-      "display_name": "Arbiter Pursuit",
-      "display_name_zh": "裁决者追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "arbiter.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "archer.offense",
-      "entity_id": "archer",
-      "display_name": "Archer Offense",
-      "display_name_zh": "弓箭手进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "archer.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "archer.pursuit",
-      "entity_id": "archer",
-      "display_name": "Archer Pursuit",
-      "display_name_zh": "弓箭手追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "archer.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "automaton.offense",
-      "entity_id": "automaton",
-      "display_name": "Automaton Offense",
-      "display_name_zh": "自动机进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "automaton.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "automaton.pursuit",
-      "entity_id": "automaton",
-      "display_name": "Automaton Pursuit",
-      "display_name_zh": "自动机追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "automaton.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "biome_teleporter.teleport.activate_transition",
-      "capability_id": "biome_teleporter.teleport.activate_transition",
-      "entity_id": "biome_teleporter",
-      "display_name": "biome_teleporter.teleport.activate_transition",
-      "display_name_zh": "激活生物群落传送。",
-      "summary": "激活生物群落传送。",
-      "summary_zh": "激活生物群落传送。",
-      "semantic_role": "capability",
-      "capability_kind": "teleport_transition",
-      "action_kind": "activate_transition",
-      "runtime_primitives": [
-        "overlap_zone",
-        "open_level",
-        "spawn_vfx"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap",
-        "gameplay_statics.open_level"
-      ],
-      "runtime_features": [
-        "teleport",
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library."
-    },
-    {
-      "ability_id": "bleed_vfx.emit",
-      "entity_id": "bleed_vfx",
-      "display_name": "Bleed VFX Particle Emission",
-      "display_name_zh": "流血特效粒子生成",
-      "summary": "负责在玩法事件发生时生成可见粒子。",
-      "summary_zh": "负责在玩法事件发生时生成可见粒子。",
-      "capability_id": "bleed_vfx.emit",
-      "semantic_role": "capability",
-      "capability_kind": "vfx_binding",
-      "runtime_primitives": [
-        "spawn_vfx",
-        "attach_vfx"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "spawn_particles"
-    },
-    {
-      "ability_id": "bleed_vfx.lifecycle",
-      "entity_id": "bleed_vfx",
-      "display_name": "Bleed VFX Effect Lifecycle",
-      "display_name_zh": "流血特效特效生命周期",
-      "summary": "负责持续、淡出、跟随和清理。",
-      "summary_zh": "负责持续、淡出、跟随和清理。",
-      "capability_id": "bleed_vfx.lifecycle",
-      "semantic_role": "capability",
-      "capability_kind": "vfx_lifecycle",
-      "runtime_primitives": [
-        "timer",
-        "set_visibility",
-        "cleanup_component"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "tick_or_cleanup"
-    },
-    {
-      "ability_id": "blood_sword.attack.apply_bleed_on_hit",
-      "capability_id": "blood_sword.attack.apply_bleed_on_hit",
-      "entity_id": "blood_sword",
-      "display_name": "blood_sword.attack.apply_bleed_on_hit",
-      "display_name_zh": "命中时写入 target.effects.bleed_dot。",
-      "summary": "命中时写入 target.effects.bleed_dot。",
-      "summary_zh": "命中时写入 target.effects.bleed_dot。",
-      "semantic_role": "capability",
-      "capability_kind": "weapon_effect",
-      "action_kind": "apply_bleed_on_hit",
-      "runtime_primitives": [
-        "hit_query",
-        "state_write",
-        "timer"
-      ],
-      "engine_ports": [
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "state_blackboard"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library."
-    },
-    {
-      "ability_id": "blueprint_pickup.collect",
-      "entity_id": "blueprint_pickup",
-      "display_name": "Blueprint Pickup Collection",
-      "display_name_zh": "图纸收集",
-      "summary": "负责检测玩家收集并转移奖励。",
-      "summary_zh": "负责检测玩家收集并转移奖励。",
-      "capability_id": "blueprint_pickup.collect",
-      "semantic_role": "capability",
-      "capability_kind": "pickup_collection",
-      "runtime_primitives": [
-        "overlap_zone",
-        "grant_reward"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "runtime_features": [
-        "pickup"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "grant_reward"
-    },
-    {
-      "ability_id": "blueprint_pickup.feedback",
-      "entity_id": "blueprint_pickup",
-      "display_name": "Blueprint Pickup Pickup Feedback",
-      "display_name_zh": "图纸奖励反馈",
-      "summary": "负责收集后的可见反馈和消失。",
-      "summary_zh": "负责收集后的可见反馈和消失。",
-      "capability_id": "blueprint_pickup.feedback",
-      "semantic_role": "capability",
-      "capability_kind": "reward_feedback",
-      "runtime_primitives": [
-        "spawn_vfx",
-        "set_visibility"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "pickup",
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "spawn_reward_visual"
-    },
-    {
-      "ability_id": "boss_health_bar_hud.alert",
-      "entity_id": "boss_health_bar_hud",
-      "display_name": "Boss Health Bar HUD Alert Feedback",
-      "display_name_zh": "Boss血条HUD警示反馈",
-      "summary": "负责闪烁、强调、警示和状态变化反馈。",
-      "summary_zh": "负责闪烁、强调、警示和状态变化反馈。",
-      "capability_id": "boss_health_bar_hud.alert",
-      "semantic_role": "capability",
-      "capability_kind": "hud_feedback",
-      "runtime_primitives": [
-        "hud_flash",
-        "tag_state"
-      ],
-      "engine_ports": [
-        "widget.set_render_opacity"
-      ],
-      "runtime_features": [
-        "hud"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "flash_warning"
-    },
-    {
-      "ability_id": "boss_health_bar_hud.display",
-      "entity_id": "boss_health_bar_hud",
-      "display_name": "Boss Health Bar HUD Display",
-      "display_name_zh": "Boss血条HUD显示",
-      "summary": "负责把数值、图标或地图状态呈现到屏幕。",
-      "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
-      "capability_id": "boss_health_bar_hud.display",
-      "semantic_role": "capability",
-      "capability_kind": "hud_binding",
-      "runtime_primitives": [
-        "hud_refresh",
-        "tag_state"
-      ],
-      "engine_ports": [
-        "widget.set_text",
-        "widget.set_percent"
-      ],
-      "runtime_features": [
-        "hud"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "refresh_value"
-    },
-    {
-      "ability_id": "boss_stem_cell_door.lock",
-      "entity_id": "boss_stem_cell_door",
-      "display_name": "Boss Stem Cell Door Lock State",
-      "display_name_zh": "Boss细胞门锁定状态",
-      "summary": "负责出口是否可用和锁定提示。",
-      "summary_zh": "负责出口是否可用和锁定提示。",
-      "capability_id": "boss_stem_cell_door.lock",
-      "semantic_role": "capability",
-      "capability_kind": "gate_lock",
-      "runtime_primitives": [
-        "condition_check",
-        "tag_state"
-      ],
-      "engine_ports": [],
-      "runtime_features": [
-        "exit"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "evaluate_unlock"
-    },
-    {
-      "ability_id": "boss_stem_cell_door.transition",
-      "entity_id": "boss_stem_cell_door",
-      "display_name": "Boss Stem Cell Door Transition",
-      "display_name_zh": "Boss细胞门区域切换",
-      "summary": "负责玩家进入出口和切换下一关。",
-      "summary_zh": "负责玩家进入出口和切换下一关。",
-      "capability_id": "boss_stem_cell_door.transition",
-      "semantic_role": "capability",
-      "capability_kind": "level_transition",
-      "runtime_primitives": [
-        "overlap_zone",
-        "open_level"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap",
-        "gameplay_statics.open_level"
-      ],
-      "runtime_features": [
-        "exit"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "activate_transition"
-    },
-    {
-      "ability_id": "burn_vfx.emit",
-      "entity_id": "burn_vfx",
-      "display_name": "Burn VFX Particle Emission",
-      "display_name_zh": "燃烧特效粒子生成",
-      "summary": "负责在玩法事件发生时生成可见粒子。",
-      "summary_zh": "负责在玩法事件发生时生成可见粒子。",
-      "capability_id": "burn_vfx.emit",
-      "semantic_role": "capability",
-      "capability_kind": "vfx_binding",
-      "runtime_primitives": [
-        "spawn_vfx",
-        "attach_vfx"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "spawn_particles"
-    },
-    {
-      "ability_id": "burn_vfx.lifecycle",
-      "entity_id": "burn_vfx",
-      "display_name": "Burn VFX Effect Lifecycle",
-      "display_name_zh": "燃烧特效特效生命周期",
-      "summary": "负责持续、淡出、跟随和清理。",
-      "summary_zh": "负责持续、淡出、跟随和清理。",
-      "capability_id": "burn_vfx.lifecycle",
-      "semantic_role": "capability",
-      "capability_kind": "vfx_lifecycle",
-      "runtime_primitives": [
-        "timer",
-        "set_visibility",
-        "cleanup_component"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "tick_or_cleanup"
-    },
-    {
-      "ability_id": "buzzcutter.offense",
-      "entity_id": "buzzcutter",
-      "display_name": "Buzzcutter Offense",
-      "display_name_zh": "飞虫进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "buzzcutter.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "buzzcutter.pursuit",
-      "entity_id": "buzzcutter",
-      "display_name": "Buzzcutter Pursuit",
-      "display_name_zh": "飞虫追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "buzzcutter.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "catcher.offense",
-      "entity_id": "catcher",
-      "display_name": "Catcher Offense",
-      "display_name_zh": "捕手进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "catcher.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "catcher.pursuit",
-      "entity_id": "catcher",
-      "display_name": "Catcher Pursuit",
-      "display_name_zh": "捕手追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "catcher.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "cell_pickup.collect",
-      "entity_id": "cell_pickup",
-      "display_name": "Cell Pickup Collection",
-      "display_name_zh": "细胞收集",
-      "summary": "负责检测玩家收集并转移奖励。",
-      "summary_zh": "负责检测玩家收集并转移奖励。",
-      "capability_id": "cell_pickup.collect",
-      "semantic_role": "capability",
-      "capability_kind": "pickup_collection",
-      "runtime_primitives": [
-        "overlap_zone",
-        "grant_reward"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "runtime_features": [
-        "pickup"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "grant_reward"
-    },
-    {
-      "ability_id": "cell_pickup.feedback",
-      "entity_id": "cell_pickup",
-      "display_name": "Cell Pickup Pickup Feedback",
-      "display_name_zh": "细胞奖励反馈",
-      "summary": "负责收集后的可见反馈和消失。",
-      "summary_zh": "负责收集后的可见反馈和消失。",
-      "capability_id": "cell_pickup.feedback",
-      "semantic_role": "capability",
-      "capability_kind": "reward_feedback",
-      "runtime_primitives": [
-        "spawn_vfx",
-        "set_visibility"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "pickup",
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "spawn_reward_visual"
-    },
-    {
-      "ability_id": "combat_damage_number_hud.alert",
-      "entity_id": "combat_damage_number_hud",
-      "display_name": "Damage Number HUD Alert Feedback",
-      "display_name_zh": "伤害数字HUD警示反馈",
-      "summary": "负责闪烁、强调、警示和状态变化反馈。",
-      "summary_zh": "负责闪烁、强调、警示和状态变化反馈。",
-      "capability_id": "combat_damage_number_hud.alert",
-      "semantic_role": "capability",
-      "capability_kind": "hud_feedback",
-      "runtime_primitives": [
-        "hud_flash",
-        "tag_state"
-      ],
-      "engine_ports": [
-        "widget.set_render_opacity"
-      ],
-      "runtime_features": [
-        "hud"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "flash_warning"
-    },
-    {
-      "ability_id": "combat_damage_number_hud.display",
-      "entity_id": "combat_damage_number_hud",
-      "display_name": "Damage Number HUD Display",
-      "display_name_zh": "伤害数字HUD显示",
-      "summary": "负责把数值、图标或地图状态呈现到屏幕。",
-      "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
-      "capability_id": "combat_damage_number_hud.display",
-      "semantic_role": "capability",
-      "capability_kind": "hud_binding",
-      "runtime_primitives": [
-        "hud_refresh",
-        "tag_state"
-      ],
-      "engine_ports": [
-        "widget.set_text",
-        "widget.set_percent"
-      ],
-      "runtime_features": [
-        "hud"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "refresh_value"
-    },
-    {
-      "ability_id": "concierge_boss.offense",
-      "entity_id": "concierge_boss",
-      "display_name": "Concierge Boss Offense",
-      "display_name_zh": "看守者进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "concierge_boss.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "concierge_boss.pursuit",
-      "entity_id": "concierge_boss",
-      "display_name": "Concierge Boss Pursuit",
-      "display_name_zh": "看守者追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "concierge_boss.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "conjunctivius_boss.offense",
-      "entity_id": "conjunctivius_boss",
-      "display_name": "Conjunctivius Boss Offense",
-      "display_name_zh": "肿胀眼魔进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "conjunctivius_boss.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "conjunctivius_boss.pursuit",
-      "entity_id": "conjunctivius_boss",
-      "display_name": "Conjunctivius Boss Pursuit",
-      "display_name_zh": "肿胀眼魔追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "conjunctivius_boss.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "cooldown_meter_hud.alert",
-      "entity_id": "cooldown_meter_hud",
-      "display_name": "Cooldown Meter HUD Alert Feedback",
-      "display_name_zh": "冷却计时HUD警示反馈",
-      "summary": "负责闪烁、强调、警示和状态变化反馈。",
-      "summary_zh": "负责闪烁、强调、警示和状态变化反馈。",
-      "capability_id": "cooldown_meter_hud.alert",
-      "semantic_role": "capability",
-      "capability_kind": "hud_feedback",
-      "runtime_primitives": [
-        "hud_flash",
-        "tag_state"
-      ],
-      "engine_ports": [
-        "widget.set_render_opacity"
-      ],
-      "runtime_features": [
-        "hud"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "flash_warning"
-    },
-    {
-      "ability_id": "cooldown_meter_hud.display",
-      "entity_id": "cooldown_meter_hud",
-      "display_name": "Cooldown Meter HUD Display",
-      "display_name_zh": "冷却计时HUD显示",
-      "summary": "负责把数值、图标或地图状态呈现到屏幕。",
-      "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
-      "capability_id": "cooldown_meter_hud.display",
-      "semantic_role": "capability",
-      "capability_kind": "hud_binding",
-      "runtime_primitives": [
-        "hud_refresh",
-        "tag_state"
-      ],
-      "engine_ports": [
-        "widget.set_text",
-        "widget.set_percent"
-      ],
-      "runtime_features": [
-        "hud"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "refresh_value"
-    },
-    {
-      "ability_id": "corpse_dust_vfx.emit",
-      "entity_id": "corpse_dust_vfx",
-      "display_name": "Corpse Dust VFX Particle Emission",
-      "display_name_zh": "尸体尘散特效粒子生成",
-      "summary": "负责在玩法事件发生时生成可见粒子。",
-      "summary_zh": "负责在玩法事件发生时生成可见粒子。",
-      "capability_id": "corpse_dust_vfx.emit",
-      "semantic_role": "capability",
-      "capability_kind": "vfx_binding",
-      "runtime_primitives": [
-        "spawn_vfx",
-        "attach_vfx"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "spawn_particles"
-    },
-    {
-      "ability_id": "corpse_dust_vfx.lifecycle",
-      "entity_id": "corpse_dust_vfx",
-      "display_name": "Corpse Dust VFX Effect Lifecycle",
-      "display_name_zh": "尸体尘散特效特效生命周期",
-      "summary": "负责持续、淡出、跟随和清理。",
-      "summary_zh": "负责持续、淡出、跟随和清理。",
-      "capability_id": "corpse_dust_vfx.lifecycle",
-      "semantic_role": "capability",
-      "capability_kind": "vfx_lifecycle",
-      "runtime_primitives": [
-        "timer",
-        "set_visibility",
-        "cleanup_component"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "tick_or_cleanup"
-    },
-    {
-      "ability_id": "critical_hit_vfx.emit",
-      "entity_id": "critical_hit_vfx",
-      "display_name": "Critical Hit VFX Particle Emission",
-      "display_name_zh": "暴击特效粒子生成",
-      "summary": "负责在玩法事件发生时生成可见粒子。",
-      "summary_zh": "负责在玩法事件发生时生成可见粒子。",
-      "capability_id": "critical_hit_vfx.emit",
-      "semantic_role": "capability",
-      "capability_kind": "vfx_binding",
-      "runtime_primitives": [
-        "spawn_vfx",
-        "attach_vfx"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "spawn_particles"
-    },
-    {
-      "ability_id": "critical_hit_vfx.lifecycle",
-      "entity_id": "critical_hit_vfx",
-      "display_name": "Critical Hit VFX Effect Lifecycle",
-      "display_name_zh": "暴击特效特效生命周期",
-      "summary": "负责持续、淡出、跟随和清理。",
-      "summary_zh": "负责持续、淡出、跟随和清理。",
-      "capability_id": "critical_hit_vfx.lifecycle",
-      "semantic_role": "capability",
-      "capability_kind": "vfx_lifecycle",
-      "runtime_primitives": [
-        "timer",
-        "set_visibility",
-        "cleanup_component"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "tick_or_cleanup"
-    },
-    {
-      "ability_id": "crumbling_floor.platform.collapse_when_touched",
-      "capability_id": "crumbling_floor.platform.collapse_when_touched",
-      "entity_id": "crumbling_floor",
-      "display_name": "crumbling_floor.platform.collapse_when_touched",
-      "display_name_zh": "接触后地板塌陷。",
-      "summary": "接触后地板塌陷。",
-      "summary_zh": "接触后地板塌陷。",
-      "semantic_role": "capability",
-      "capability_kind": "platform_state",
-      "action_kind": "collapse_when_touched",
-      "runtime_primitives": [
-        "overlap_zone",
-        "state_write"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "runtime_features": [
-        "platform",
-        "state_blackboard"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library."
-    },
-    {
-      "ability_id": "crusher_trap.arming",
-      "entity_id": "crusher_trap",
-      "display_name": "Crusher Trap Arming",
-      "display_name_zh": "压碎机关预备/激活",
-      "summary": "负责陷阱预警、激活和冷却阶段。",
-      "summary_zh": "负责陷阱预警、激活和冷却阶段。",
-      "capability_id": "crusher_trap.arming",
-      "semantic_role": "capability",
-      "capability_kind": "hazard_arming",
-      "runtime_primitives": [
-        "timer",
-        "warning_indicator",
-        "overlap_zone"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "runtime_features": [
-        "trap"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "arm_hazard"
-    },
-    {
-      "ability_id": "crusher_trap.damage",
-      "entity_id": "crusher_trap",
-      "display_name": "Crusher Trap Hazard Damage",
-      "display_name_zh": "压碎机关危险结算",
-      "summary": "负责对进入危险窗口的角色施加结果。",
-      "summary_zh": "负责对进入危险窗口的角色施加结果。",
-      "capability_id": "crusher_trap.damage",
-      "semantic_role": "capability",
-      "capability_kind": "hazard_resolution",
-      "runtime_primitives": [
-        "overlap_zone",
-        "apply_damage",
-        "reset_hazard"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "state_blackboard",
-        "trap"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "apply_hazard_damage"
-    },
-    {
-      "ability_id": "curse_counter_hud.alert",
-      "entity_id": "curse_counter_hud",
-      "display_name": "Curse Counter HUD Alert Feedback",
-      "display_name_zh": "诅咒计数HUD警示反馈",
-      "summary": "负责闪烁、强调、警示和状态变化反馈。",
-      "summary_zh": "负责闪烁、强调、警示和状态变化反馈。",
-      "capability_id": "curse_counter_hud.alert",
-      "semantic_role": "capability",
-      "capability_kind": "hud_feedback",
-      "runtime_primitives": [
-        "hud_flash",
-        "tag_state"
-      ],
-      "engine_ports": [
-        "widget.set_render_opacity"
-      ],
-      "runtime_features": [
-        "hud"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "flash_warning"
-    },
-    {
-      "ability_id": "curse_counter_hud.display",
-      "entity_id": "curse_counter_hud",
-      "display_name": "Curse Counter HUD Display",
-      "display_name_zh": "诅咒计数HUD显示",
-      "summary": "负责把数值、图标或地图状态呈现到屏幕。",
-      "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
-      "capability_id": "curse_counter_hud.display",
-      "semantic_role": "capability",
-      "capability_kind": "hud_binding",
-      "runtime_primitives": [
-        "hud_refresh",
-        "tag_state"
-      ],
-      "engine_ports": [
-        "widget.set_text",
-        "widget.set_percent"
-      ],
-      "runtime_features": [
-        "hud"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "refresh_value"
-    },
-    {
-      "ability_id": "curse_skull_vfx.emit",
-      "entity_id": "curse_skull_vfx",
-      "display_name": "Curse Skull VFX Particle Emission",
-      "display_name_zh": "诅咒骷髅特效粒子生成",
-      "summary": "负责在玩法事件发生时生成可见粒子。",
-      "summary_zh": "负责在玩法事件发生时生成可见粒子。",
-      "capability_id": "curse_skull_vfx.emit",
-      "semantic_role": "capability",
-      "capability_kind": "vfx_binding",
-      "runtime_primitives": [
-        "spawn_vfx",
-        "attach_vfx"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "spawn_particles"
-    },
-    {
-      "ability_id": "curse_skull_vfx.lifecycle",
-      "entity_id": "curse_skull_vfx",
-      "display_name": "Curse Skull VFX Effect Lifecycle",
-      "display_name_zh": "诅咒骷髅特效特效生命周期",
-      "summary": "负责持续、淡出、跟随和清理。",
-      "summary_zh": "负责持续、淡出、跟随和清理。",
-      "capability_id": "curse_skull_vfx.lifecycle",
-      "semantic_role": "capability",
-      "capability_kind": "vfx_lifecycle",
-      "runtime_primitives": [
-        "timer",
-        "set_visibility",
-        "cleanup_component"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "tick_or_cleanup"
-    },
-    {
-      "ability_id": "cursed_chest.chest.open_reward",
-      "capability_id": "cursed_chest.chest.open_reward",
-      "entity_id": "cursed_chest",
-      "display_name": "cursed_chest.chest.open_reward",
-      "display_name_zh": "打开诅咒宝箱并发放奖励。",
-      "summary": "打开诅咒宝箱并发放奖励。",
-      "summary_zh": "打开诅咒宝箱并发放奖励。",
-      "semantic_role": "capability",
-      "capability_kind": "chest_reward",
-      "action_kind": "open_reward",
-      "runtime_primitives": [
-        "grant_reward",
-        "state_write"
-      ],
-      "engine_ports": [],
-      "runtime_features": [
-        "reward",
-        "state_blackboard"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library."
-    },
-    {
-      "ability_id": "cursed_chest.curse.add_curse_counter",
-      "capability_id": "cursed_chest.curse.add_curse_counter",
-      "entity_id": "cursed_chest",
-      "display_name": "cursed_chest.curse.add_curse_counter",
-      "display_name_zh": "增加 run.curse_count。",
-      "summary": "增加 run.curse_count。",
-      "summary_zh": "增加 run.curse_count。",
-      "semantic_role": "capability",
-      "capability_kind": "curse_counter",
-      "action_kind": "add_curse_counter",
-      "runtime_primitives": [
-        "state_write",
-        "hud_refresh"
-      ],
-      "engine_ports": [],
-      "runtime_features": [
-        "state_blackboard",
-        "hud"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library."
-    },
-    {
-      "ability_id": "demon.offense",
-      "entity_id": "demon",
-      "display_name": "Demon Offense",
-      "display_name_zh": "恶魔进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "demon.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "demon.pursuit",
-      "entity_id": "demon",
-      "display_name": "Demon Pursuit",
-      "display_name_zh": "恶魔追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "demon.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "electric_vfx.emit",
-      "entity_id": "electric_vfx",
-      "display_name": "Electric VFX Particle Emission",
-      "display_name_zh": "电击特效粒子生成",
-      "summary": "负责在玩法事件发生时生成可见粒子。",
-      "summary_zh": "负责在玩法事件发生时生成可见粒子。",
-      "capability_id": "electric_vfx.emit",
-      "semantic_role": "capability",
-      "capability_kind": "vfx_binding",
-      "runtime_primitives": [
-        "spawn_vfx",
-        "attach_vfx"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "spawn_particles"
-    },
-    {
-      "ability_id": "electric_vfx.lifecycle",
-      "entity_id": "electric_vfx",
-      "display_name": "Electric VFX Effect Lifecycle",
-      "display_name_zh": "电击特效特效生命周期",
-      "summary": "负责持续、淡出、跟随和清理。",
-      "summary_zh": "负责持续、淡出、跟随和清理。",
-      "capability_id": "electric_vfx.lifecycle",
-      "semantic_role": "capability",
-      "capability_kind": "vfx_lifecycle",
-      "runtime_primitives": [
-        "timer",
-        "set_visibility",
-        "cleanup_component"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "tick_or_cleanup"
-    },
-    {
-      "ability_id": "electric_whip.attack.apply_shock_chain",
-      "capability_id": "electric_whip.attack.apply_shock_chain",
-      "entity_id": "electric_whip",
-      "display_name": "electric_whip.attack.apply_shock_chain",
-      "display_name_zh": "施加电击连锁。",
-      "summary": "施加电击连锁。",
-      "summary_zh": "施加电击连锁。",
-      "semantic_role": "capability",
-      "capability_kind": "chain_lightning",
-      "action_kind": "apply_shock_chain",
-      "runtime_primitives": [
-        "hit_query",
-        "state_write",
-        "spawn_vfx"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "combat",
-        "vfx",
-        "state_blackboard"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library."
-    },
-    {
-      "ability_id": "elite_aura_vfx.emit",
-      "entity_id": "elite_aura_vfx",
-      "display_name": "Elite Aura VFX Particle Emission",
-      "display_name_zh": "精英光环特效粒子生成",
-      "summary": "负责在玩法事件发生时生成可见粒子。",
-      "summary_zh": "负责在玩法事件发生时生成可见粒子。",
-      "capability_id": "elite_aura_vfx.emit",
-      "semantic_role": "capability",
-      "capability_kind": "vfx_binding",
-      "runtime_primitives": [
-        "spawn_vfx",
-        "attach_vfx"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "spawn_particles"
-    },
-    {
-      "ability_id": "elite_aura_vfx.lifecycle",
-      "entity_id": "elite_aura_vfx",
-      "display_name": "Elite Aura VFX Effect Lifecycle",
-      "display_name_zh": "精英光环特效特效生命周期",
-      "summary": "负责持续、淡出、跟随和清理。",
-      "summary_zh": "负责持续、淡出、跟随和清理。",
-      "capability_id": "elite_aura_vfx.lifecycle",
-      "semantic_role": "capability",
-      "capability_kind": "vfx_lifecycle",
-      "runtime_primitives": [
-        "timer",
-        "set_visibility",
-        "cleanup_component"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "tick_or_cleanup"
-    },
-    {
-      "ability_id": "failed_experiment.offense",
-      "entity_id": "failed_experiment",
-      "display_name": "Failed Experiment Offense",
-      "display_name_zh": "失败实验体进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "failed_experiment.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "failed_experiment.pursuit",
-      "entity_id": "failed_experiment",
-      "display_name": "Failed Experiment Pursuit",
-      "display_name_zh": "失败实验体追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "failed_experiment.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "falling_spike_trap.arming",
-      "entity_id": "falling_spike_trap",
-      "display_name": "Falling Spike Trap Arming",
-      "display_name_zh": "坠落尖刺预备/激活",
-      "summary": "负责陷阱预警、激活和冷却阶段。",
-      "summary_zh": "负责陷阱预警、激活和冷却阶段。",
-      "capability_id": "falling_spike_trap.arming",
-      "semantic_role": "capability",
-      "capability_kind": "hazard_arming",
-      "runtime_primitives": [
-        "timer",
-        "warning_indicator",
-        "overlap_zone"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "runtime_features": [
-        "trap"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "arm_hazard"
-    },
-    {
-      "ability_id": "falling_spike_trap.damage",
-      "entity_id": "falling_spike_trap",
-      "display_name": "Falling Spike Trap Hazard Damage",
-      "display_name_zh": "坠落尖刺危险结算",
-      "summary": "负责对进入危险窗口的角色施加结果。",
-      "summary_zh": "负责对进入危险窗口的角色施加结果。",
-      "capability_id": "falling_spike_trap.damage",
-      "semantic_role": "capability",
-      "capability_kind": "hazard_resolution",
-      "runtime_primitives": [
-        "overlap_zone",
-        "apply_damage",
-        "reset_hazard"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "state_blackboard",
-        "trap"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "apply_hazard_damage"
-    },
-    {
-      "ability_id": "flame_jet_trap.arming",
-      "entity_id": "flame_jet_trap",
-      "display_name": "Flame Jet Trap Arming",
-      "display_name_zh": "喷火陷阱预备/激活",
-      "summary": "负责陷阱预警、激活和冷却阶段。",
-      "summary_zh": "负责陷阱预警、激活和冷却阶段。",
-      "capability_id": "flame_jet_trap.arming",
-      "semantic_role": "capability",
-      "capability_kind": "hazard_arming",
-      "runtime_primitives": [
-        "timer",
-        "warning_indicator",
-        "overlap_zone"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "runtime_features": [
-        "trap"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "arm_hazard"
-    },
-    {
-      "ability_id": "flame_jet_trap.damage",
-      "entity_id": "flame_jet_trap",
-      "display_name": "Flame Jet Trap Hazard Damage",
-      "display_name_zh": "喷火陷阱危险结算",
-      "summary": "负责对进入危险窗口的角色施加结果。",
-      "summary_zh": "负责对进入危险窗口的角色施加结果。",
-      "capability_id": "flame_jet_trap.damage",
-      "semantic_role": "capability",
-      "capability_kind": "hazard_resolution",
-      "runtime_primitives": [
-        "overlap_zone",
-        "apply_damage",
-        "reset_hazard"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "state_blackboard",
-        "trap"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "apply_hazard_damage"
-    },
-    {
-      "ability_id": "flame_jet_trap.hazard.apply_burn",
-      "capability_id": "flame_jet_trap.hazard.apply_burn",
-      "entity_id": "flame_jet_trap",
-      "display_name": "flame_jet_trap.hazard.apply_burn",
-      "display_name_zh": "写入 player.effects.burn。",
-      "summary": "写入 player.effects.burn。",
-      "summary_zh": "写入 player.effects.burn。",
-      "semantic_role": "capability",
-      "capability_kind": "apply_effect",
-      "action_kind": "apply_burn",
-      "runtime_primitives": [
-        "state_write",
-        "timer"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "runtime_features": [
-        "state_blackboard",
-        "timer"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library."
-    },
-    {
-      "ability_id": "food_pickup.collect",
-      "entity_id": "food_pickup",
-      "display_name": "Food Pickup Collection",
-      "display_name_zh": "食物收集",
-      "summary": "负责检测玩家收集并转移奖励。",
-      "summary_zh": "负责检测玩家收集并转移奖励。",
-      "capability_id": "food_pickup.collect",
-      "semantic_role": "capability",
-      "capability_kind": "pickup_collection",
-      "runtime_primitives": [
-        "overlap_zone",
-        "grant_reward"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "runtime_features": [
-        "pickup"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "grant_reward"
-    },
-    {
-      "ability_id": "food_pickup.feedback",
-      "entity_id": "food_pickup",
-      "display_name": "Food Pickup Pickup Feedback",
-      "display_name_zh": "食物奖励反馈",
-      "summary": "负责收集后的可见反馈和消失。",
-      "summary_zh": "负责收集后的可见反馈和消失。",
-      "capability_id": "food_pickup.feedback",
-      "semantic_role": "capability",
-      "capability_kind": "reward_feedback",
-      "runtime_primitives": [
-        "spawn_vfx",
-        "set_visibility"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "pickup",
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "spawn_reward_visual"
-    },
-    {
-      "ability_id": "forge_station.upgrade.apply_item_upgrade",
-      "capability_id": "forge_station.upgrade.apply_item_upgrade",
-      "entity_id": "forge_station",
-      "display_name": "forge_station.upgrade.apply_item_upgrade",
-      "display_name_zh": "应用装备升级。",
-      "summary": "应用装备升级。",
-      "summary_zh": "应用装备升级。",
-      "semantic_role": "capability",
-      "capability_kind": "upgrade",
-      "action_kind": "apply_item_upgrade",
-      "runtime_primitives": [
-        "modify_equipment",
-        "spend_currency"
-      ],
-      "engine_ports": [],
-      "runtime_features": [
-        "upgrade",
-        "inventory",
-        "currency"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library."
-    },
-    {
-      "ability_id": "freeze_trap.effect.apply_freeze_to_player",
-      "capability_id": "freeze_trap.effect.apply_freeze_to_player",
-      "entity_id": "freeze_trap",
-      "display_name": "freeze_trap.effect.apply_freeze_to_player",
-      "display_name_zh": "写入 player.effects.frozen。",
-      "summary": "写入 player.effects.frozen。",
-      "summary_zh": "写入 player.effects.frozen。",
-      "semantic_role": "capability",
-      "capability_kind": "apply_effect",
-      "action_kind": "apply_freeze",
-      "runtime_primitives": [
-        "state_write",
-        "timer"
-      ],
-      "engine_ports": [],
-      "runtime_features": [
-        "state_blackboard",
-        "action_dispatcher"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library."
-    },
-    {
-      "ability_id": "freeze_trap.sensor.detect_player_overlap",
-      "capability_id": "freeze_trap.sensor.detect_player_overlap",
-      "entity_id": "freeze_trap",
-      "display_name": "freeze_trap.sensor.detect_player_overlap",
-      "display_name_zh": "检测玩家进入冰冻陷阱。",
-      "summary": "检测玩家进入冰冻陷阱。",
-      "summary_zh": "检测玩家进入冰冻陷阱。",
-      "semantic_role": "capability",
-      "capability_kind": "sensor_overlap",
-      "action_kind": "detect_overlap",
-      "runtime_primitives": [
-        "overlap_zone"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "runtime_features": [
-        "trigger_router",
-        "world_adapter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library."
-    },
-    {
-      "ability_id": "freeze_trap.sensor.overlap_radius",
-      "entity_id": "freeze_trap",
-      "display_name": "Freeze Trap Overlap Radius Sensor",
-      "display_name_zh": "冰冻陷阱半径检测",
-      "summary": "Detect player entering and leaving the trap activation radius.",
-      "summary_zh": "检测玩家进入和离开陷阱触发半径。",
-      "capability_kind": "sensor",
-      "runtime_primitives": [
-        "overlap_zone",
-        "distance_check"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "runtime_features": [
-        "trap"
-      ],
-      "capability_id": "freeze_trap.sensor.overlap_radius",
-      "semantic_role": "capability",
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "state_write"
-    },
-    {
-      "ability_id": "freeze_vfx.binding.visible_while_frozen",
-      "entity_id": "freeze_vfx",
-      "display_name": "Freeze VFX Visible While Frozen",
-      "display_name_zh": "冰冻特效随冰冻状态显示",
-      "summary": "Attaches VFX to the player and toggles visibility from frozen status.",
-      "summary_zh": "将特效附着到玩家，并根据冰冻状态切换可见性。",
-      "capability_kind": "vfx_binding",
-      "runtime_primitives": [
-        "attach_vfx",
-        "set_visibility"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "state_blackboard",
-        "vfx"
-      ],
-      "capability_id": "freeze_vfx.binding.visible_while_frozen",
-      "semantic_role": "capability",
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "state_write"
-    },
-    {
-      "ability_id": "freeze_vfx.emit",
-      "entity_id": "freeze_vfx",
-      "display_name": "Freeze VFX Particle Emission",
-      "display_name_zh": "冰冻特效粒子生成",
-      "summary": "负责在玩法事件发生时生成可见粒子。",
-      "summary_zh": "负责在玩法事件发生时生成可见粒子。",
-      "capability_id": "freeze_vfx.emit",
-      "semantic_role": "capability",
-      "capability_kind": "vfx_binding",
-      "runtime_primitives": [
-        "spawn_vfx",
-        "attach_vfx"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "spawn_particles"
-    },
-    {
-      "ability_id": "freeze_vfx.emit.show_freeze",
-      "capability_id": "freeze_vfx.emit.show_freeze",
-      "entity_id": "freeze_vfx",
-      "display_name": "freeze_vfx.emit.show_freeze",
-      "display_name_zh": "player.effects.frozen 生效时显示冰冻特效。",
-      "summary": "player.effects.frozen 生效时显示冰冻特效。",
-      "summary_zh": "player.effects.frozen 生效时显示冰冻特效。",
-      "semantic_role": "capability",
-      "capability_kind": "vfx_binding",
-      "action_kind": "set_visible_while_state",
-      "runtime_primitives": [
-        "attach_vfx",
-        "set_visibility",
-        "state_read"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "vfx",
-        "state_blackboard"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library."
-    },
-    {
-      "ability_id": "freeze_vfx.lifecycle",
-      "entity_id": "freeze_vfx",
-      "display_name": "Freeze VFX Effect Lifecycle",
-      "display_name_zh": "冰冻特效特效生命周期",
-      "summary": "负责持续、淡出、跟随和清理。",
-      "summary_zh": "负责持续、淡出、跟随和清理。",
-      "capability_id": "freeze_vfx.lifecycle",
-      "semantic_role": "capability",
-      "capability_kind": "vfx_lifecycle",
-      "runtime_primitives": [
-        "timer",
-        "set_visibility",
-        "cleanup_component"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "tick_or_cleanup"
-    },
-    {
-      "ability_id": "giant_boss.offense",
-      "entity_id": "giant_boss",
-      "display_name": "Giant Boss Offense",
-      "display_name_zh": "巨人进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "giant_boss.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "giant_boss.pursuit",
-      "entity_id": "giant_boss",
-      "display_name": "Giant Boss Pursuit",
-      "display_name_zh": "巨人追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "giant_boss.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "goblin_melee.offense",
-      "entity_id": "goblin_melee",
-      "display_name": "Goblin Melee Offense",
-      "display_name_zh": "近战哥布林进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "goblin_melee.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "goblin_melee.pursuit",
-      "entity_id": "goblin_melee",
-      "display_name": "Goblin Melee Pursuit",
-      "display_name_zh": "近战哥布林追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "goblin_melee.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "gold_pickup.collect",
-      "entity_id": "gold_pickup",
-      "display_name": "Gold Pickup Collection",
-      "display_name_zh": "金币收集",
-      "summary": "负责检测玩家收集并转移奖励。",
-      "summary_zh": "负责检测玩家收集并转移奖励。",
-      "capability_id": "gold_pickup.collect",
-      "semantic_role": "capability",
-      "capability_kind": "pickup_collection",
-      "runtime_primitives": [
-        "overlap_zone",
-        "grant_reward"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "runtime_features": [
-        "pickup"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "grant_reward"
-    },
-    {
-      "ability_id": "gold_pickup.feedback",
-      "entity_id": "gold_pickup",
-      "display_name": "Gold Pickup Pickup Feedback",
-      "display_name_zh": "金币奖励反馈",
-      "summary": "负责收集后的可见反馈和消失。",
-      "summary_zh": "负责收集后的可见反馈和消失。",
-      "capability_id": "gold_pickup.feedback",
-      "semantic_role": "capability",
-      "capability_kind": "reward_feedback",
-      "runtime_primitives": [
-        "spawn_vfx",
-        "set_visibility"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "pickup",
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "spawn_reward_visual"
-    },
-    {
-      "ability_id": "golem.offense",
-      "entity_id": "golem",
-      "display_name": "Golem Offense",
-      "display_name_zh": "魔像进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "golem.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "golem.pursuit",
-      "entity_id": "golem",
-      "display_name": "Golem Pursuit",
-      "display_name_zh": "魔像追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "golem.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "grenadier.offense",
-      "entity_id": "grenadier",
-      "display_name": "Grenadier Offense",
-      "display_name_zh": "掷弹兵进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "grenadier.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "grenadier.pursuit",
-      "entity_id": "grenadier",
-      "display_name": "Grenadier Pursuit",
-      "display_name_zh": "掷弹兵追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "grenadier.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "hand_of_the_king_boss.offense",
-      "entity_id": "hand_of_the_king_boss",
-      "display_name": "Hand of the King Boss Offense",
-      "display_name_zh": "国王之手进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "hand_of_the_king_boss.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "hand_of_the_king_boss.pursuit",
-      "entity_id": "hand_of_the_king_boss",
-      "display_name": "Hand of the King Boss Pursuit",
-      "display_name_zh": "国王之手追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "hand_of_the_king_boss.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "health_bar_hud.alert",
-      "entity_id": "health_bar_hud",
-      "display_name": "Health Bar HUD Alert Feedback",
-      "display_name_zh": "生命条HUD警示反馈",
-      "summary": "负责闪烁、强调、警示和状态变化反馈。",
-      "summary_zh": "负责闪烁、强调、警示和状态变化反馈。",
-      "capability_id": "health_bar_hud.alert",
-      "semantic_role": "capability",
-      "capability_kind": "hud_feedback",
-      "runtime_primitives": [
-        "hud_flash",
-        "tag_state"
-      ],
-      "engine_ports": [
-        "widget.set_render_opacity"
-      ],
-      "runtime_features": [
-        "hud"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "flash_warning"
-    },
-    {
-      "ability_id": "health_bar_hud.display",
-      "entity_id": "health_bar_hud",
-      "display_name": "Health Bar HUD Display",
-      "display_name_zh": "生命条HUD显示",
-      "summary": "负责把数值、图标或地图状态呈现到屏幕。",
-      "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
-      "capability_id": "health_bar_hud.display",
-      "semantic_role": "capability",
-      "capability_kind": "hud_binding",
-      "runtime_primitives": [
-        "hud_refresh",
-        "tag_state"
-      ],
-      "engine_ports": [
-        "widget.set_text",
-        "widget.set_percent"
-      ],
-      "runtime_features": [
-        "hud"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "refresh_value"
-    },
-    {
-      "ability_id": "health_fountain.collect",
-      "entity_id": "health_fountain",
-      "display_name": "Health Fountain Collection",
-      "display_name_zh": "生命泉收集",
-      "summary": "负责检测玩家收集并转移奖励。",
-      "summary_zh": "负责检测玩家收集并转移奖励。",
-      "capability_id": "health_fountain.collect",
-      "semantic_role": "capability",
-      "capability_kind": "pickup_collection",
-      "runtime_primitives": [
-        "overlap_zone",
-        "grant_reward"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "runtime_features": [
-        "pickup"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "grant_reward"
-    },
-    {
-      "ability_id": "health_fountain.feedback",
-      "entity_id": "health_fountain",
-      "display_name": "Health Fountain Pickup Feedback",
-      "display_name_zh": "生命泉奖励反馈",
-      "summary": "负责收集后的可见反馈和消失。",
-      "summary_zh": "负责收集后的可见反馈和消失。",
-      "capability_id": "health_fountain.feedback",
-      "semantic_role": "capability",
-      "capability_kind": "reward_feedback",
-      "runtime_primitives": [
-        "spawn_vfx",
-        "set_visibility"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "pickup",
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "spawn_reward_visual"
-    },
-    {
-      "ability_id": "inquisitor.offense",
-      "entity_id": "inquisitor",
-      "display_name": "Inquisitor Offense",
-      "display_name_zh": "审判者进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "inquisitor.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "inquisitor.pursuit",
-      "entity_id": "inquisitor",
-      "display_name": "Inquisitor Pursuit",
-      "display_name_zh": "审判者追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "inquisitor.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "kamikaze_bat.offense",
-      "entity_id": "kamikaze_bat",
-      "display_name": "Kamikaze Bat Offense",
-      "display_name_zh": "自爆蝙蝠进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "kamikaze_bat.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "kamikaze_bat.pursuit",
-      "entity_id": "kamikaze_bat",
-      "display_name": "Kamikaze Bat Pursuit",
-      "display_name_zh": "自爆蝙蝠追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "kamikaze_bat.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "knife_thrower.offense",
-      "entity_id": "knife_thrower",
-      "display_name": "Knife Thrower Offense",
-      "display_name_zh": "飞刀手进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "knife_thrower.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "knife_thrower.pursuit",
-      "entity_id": "knife_thrower",
-      "display_name": "Knife Thrower Pursuit",
-      "display_name_zh": "飞刀手追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "knife_thrower.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "lancer.offense",
-      "entity_id": "lancer",
-      "display_name": "Lancer Offense",
-      "display_name_zh": "枪兵进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "lancer.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "lancer.pursuit",
-      "entity_id": "lancer",
-      "display_name": "Lancer Pursuit",
-      "display_name_zh": "枪兵追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "lancer.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "level_exit_door.lock",
-      "entity_id": "level_exit_door",
-      "display_name": "Level Exit Door Lock State",
-      "display_name_zh": "关卡出口门锁定状态",
-      "summary": "负责出口是否可用和锁定提示。",
-      "summary_zh": "负责出口是否可用和锁定提示。",
-      "capability_id": "level_exit_door.lock",
-      "semantic_role": "capability",
-      "capability_kind": "gate_lock",
-      "runtime_primitives": [
-        "condition_check",
-        "tag_state"
-      ],
-      "engine_ports": [],
-      "runtime_features": [
-        "exit"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "evaluate_unlock"
-    },
-    {
-      "ability_id": "level_exit_door.transition",
-      "entity_id": "level_exit_door",
-      "display_name": "Level Exit Door Transition",
-      "display_name_zh": "关卡出口门区域切换",
-      "summary": "负责玩家进入出口和切换下一关。",
-      "summary_zh": "负责玩家进入出口和切换下一关。",
-      "capability_id": "level_exit_door.transition",
-      "semantic_role": "capability",
-      "capability_kind": "level_transition",
-      "runtime_primitives": [
-        "overlap_zone",
-        "open_level"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap",
-        "gameplay_statics.open_level"
-      ],
-      "runtime_features": [
-        "exit"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "activate_transition"
-    },
-    {
-      "ability_id": "librarian.offense",
-      "entity_id": "librarian",
-      "display_name": "Librarian Offense",
-      "display_name_zh": "图书馆员进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "librarian.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "librarian.pursuit",
-      "entity_id": "librarian",
-      "display_name": "Librarian Pursuit",
-      "display_name_zh": "图书馆员追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "librarian.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "malaise_meter_hud.alert",
-      "entity_id": "malaise_meter_hud",
-      "display_name": "Malaise Meter HUD Alert Feedback",
-      "display_name_zh": "疫病条HUD警示反馈",
-      "summary": "负责闪烁、强调、警示和状态变化反馈。",
-      "summary_zh": "负责闪烁、强调、警示和状态变化反馈。",
-      "capability_id": "malaise_meter_hud.alert",
-      "semantic_role": "capability",
-      "capability_kind": "hud_feedback",
-      "runtime_primitives": [
-        "hud_flash",
-        "tag_state"
-      ],
-      "engine_ports": [
-        "widget.set_render_opacity"
-      ],
-      "runtime_features": [
-        "hud"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "flash_warning"
-    },
-    {
-      "ability_id": "malaise_meter_hud.display",
-      "entity_id": "malaise_meter_hud",
-      "display_name": "Malaise Meter HUD Display",
-      "display_name_zh": "疫病条HUD显示",
-      "summary": "负责把数值、图标或地图状态呈现到屏幕。",
-      "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
-      "capability_id": "malaise_meter_hud.display",
-      "semantic_role": "capability",
-      "capability_kind": "hud_binding",
-      "runtime_primitives": [
-        "hud_refresh",
-        "tag_state"
-      ],
-      "engine_ports": [
-        "widget.set_text",
-        "widget.set_percent"
-      ],
-      "runtime_features": [
-        "hud"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "refresh_value"
-    },
-    {
-      "ability_id": "minimap_hud.alert",
-      "entity_id": "minimap_hud",
-      "display_name": "Minimap HUD Alert Feedback",
-      "display_name_zh": "小地图HUD警示反馈",
-      "summary": "负责闪烁、强调、警示和状态变化反馈。",
-      "summary_zh": "负责闪烁、强调、警示和状态变化反馈。",
-      "capability_id": "minimap_hud.alert",
-      "semantic_role": "capability",
-      "capability_kind": "hud_feedback",
-      "runtime_primitives": [
-        "hud_flash",
-        "tag_state"
-      ],
-      "engine_ports": [
-        "widget.set_render_opacity"
-      ],
-      "runtime_features": [
-        "hud"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "flash_warning"
-    },
-    {
-      "ability_id": "minimap_hud.display",
-      "entity_id": "minimap_hud",
-      "display_name": "Minimap HUD Display",
-      "display_name_zh": "小地图HUD显示",
-      "summary": "负责把数值、图标或地图状态呈现到屏幕。",
-      "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
-      "capability_id": "minimap_hud.display",
-      "semantic_role": "capability",
-      "capability_kind": "hud_binding",
-      "runtime_primitives": [
-        "hud_refresh",
-        "tag_state"
-      ],
-      "engine_ports": [
-        "widget.set_text",
-        "widget.set_percent"
-      ],
-      "runtime_features": [
-        "hud"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "refresh_value"
-    },
-    {
-      "ability_id": "oven_knight.offense",
-      "entity_id": "oven_knight",
-      "display_name": "Oven Knight Offense",
-      "display_name_zh": "炉火骑士进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "oven_knight.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "oven_knight.pursuit",
-      "entity_id": "oven_knight",
-      "display_name": "Oven Knight Pursuit",
-      "display_name_zh": "炉火骑士追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "oven_knight.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "parry_spark_vfx.emit",
-      "entity_id": "parry_spark_vfx",
-      "display_name": "Parry Spark VFX Particle Emission",
-      "display_name_zh": "招架火花特效粒子生成",
-      "summary": "负责在玩法事件发生时生成可见粒子。",
-      "summary_zh": "负责在玩法事件发生时生成可见粒子。",
-      "capability_id": "parry_spark_vfx.emit",
-      "semantic_role": "capability",
-      "capability_kind": "vfx_binding",
-      "runtime_primitives": [
-        "spawn_vfx",
-        "attach_vfx"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "spawn_particles"
-    },
-    {
-      "ability_id": "parry_spark_vfx.lifecycle",
-      "entity_id": "parry_spark_vfx",
-      "display_name": "Parry Spark VFX Effect Lifecycle",
-      "display_name_zh": "招架火花特效特效生命周期",
-      "summary": "负责持续、淡出、跟随和清理。",
-      "summary_zh": "负责持续、淡出、跟随和清理。",
-      "capability_id": "parry_spark_vfx.lifecycle",
-      "semantic_role": "capability",
-      "capability_kind": "vfx_lifecycle",
-      "runtime_primitives": [
-        "timer",
-        "set_visibility",
-        "cleanup_component"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "tick_or_cleanup"
-    },
-    {
-      "ability_id": "pirate_captain.offense",
-      "entity_id": "pirate_captain",
-      "display_name": "Pirate Captain Offense",
-      "display_name_zh": "海盗船长进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "pirate_captain.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "pirate_captain.pursuit",
-      "entity_id": "pirate_captain",
-      "display_name": "Pirate Captain Pursuit",
-      "display_name_zh": "海盗船长追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "pirate_captain.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "player.combat",
-      "entity_id": "player",
-      "display_name": "Player Prisoner Combat",
-      "display_name_zh": "玩家囚徒战斗输入",
-      "summary": "负责攻击、取消、受击和战斗输入解析。",
-      "summary_zh": "负责攻击、取消、受击和战斗输入解析。",
-      "capability_id": "player.combat",
-      "semantic_role": "capability",
-      "capability_kind": "combat",
-      "runtime_primitives": [
-        "input_action",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "input.action_binding",
-        "kismet.line_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "input"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "apply_damage"
-    },
-    {
-      "ability_id": "player.movement",
-      "entity_id": "player",
-      "display_name": "Player Prisoner Movement Control",
-      "display_name_zh": "玩家囚徒移动控制",
-      "summary": "负责奔跑、跳跃、攀爬、下落和翻滚等玩家移动决策。",
-      "summary_zh": "负责奔跑、跳跃、攀爬、下落和翻滚等玩家移动决策。",
-      "capability_id": "player.movement",
-      "semantic_role": "capability",
-      "capability_kind": "movement",
-      "runtime_primitives": [
-        "input_axis",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "input.action_binding",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "input",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "move_actor"
-    },
-    {
-      "ability_id": "player.movement.block_while_effect_active",
-      "capability_id": "player.movement.block_while_effect_active",
-      "entity_id": "player",
-      "display_name": "player.movement.block_while_effect_active",
-      "display_name_zh": "状态生效时阻止玩家移动。",
-      "summary": "状态生效时阻止玩家移动。",
-      "summary_zh": "状态生效时阻止玩家移动。",
-      "semantic_role": "capability",
-      "capability_kind": "movement_gate",
-      "action_kind": "block_by_state",
-      "runtime_primitives": [
-        "state_read",
-        "movement_gate"
-      ],
-      "engine_ports": [],
-      "runtime_features": [
-        "movement",
-        "state_blackboard",
-        "action_dispatcher"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library."
-    },
-    {
-      "ability_id": "player_flask.collect",
-      "entity_id": "player_flask",
-      "display_name": "Health Flask Collection",
-      "display_name_zh": "血瓶收集",
-      "summary": "负责检测玩家收集并转移奖励。",
-      "summary_zh": "负责检测玩家收集并转移奖励。",
-      "capability_id": "player_flask.collect",
-      "semantic_role": "capability",
-      "capability_kind": "pickup_collection",
-      "runtime_primitives": [
-        "overlap_zone",
-        "grant_reward"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "runtime_features": [
-        "pickup"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "grant_reward"
-    },
-    {
-      "ability_id": "player_flask.feedback",
-      "entity_id": "player_flask",
-      "display_name": "Health Flask Pickup Feedback",
-      "display_name_zh": "血瓶奖励反馈",
-      "summary": "负责收集后的可见反馈和消失。",
-      "summary_zh": "负责收集后的可见反馈和消失。",
-      "capability_id": "player_flask.feedback",
-      "semantic_role": "capability",
-      "capability_kind": "reward_feedback",
-      "runtime_primitives": [
-        "spawn_vfx",
-        "set_visibility"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "pickup",
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "spawn_reward_visual"
-    },
-    {
-      "ability_id": "poison_pool.arming",
-      "entity_id": "poison_pool",
-      "display_name": "Poison Pool Arming",
-      "display_name_zh": "毒池预备/激活",
-      "summary": "负责陷阱预警、激活和冷却阶段。",
-      "summary_zh": "负责陷阱预警、激活和冷却阶段。",
-      "capability_id": "poison_pool.arming",
-      "semantic_role": "capability",
-      "capability_kind": "hazard_arming",
-      "runtime_primitives": [
-        "timer",
-        "warning_indicator",
-        "overlap_zone"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "runtime_features": [
-        "trap"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "arm_hazard"
-    },
-    {
-      "ability_id": "poison_pool.damage",
-      "entity_id": "poison_pool",
-      "display_name": "Poison Pool Hazard Damage",
-      "display_name_zh": "毒池危险结算",
-      "summary": "负责对进入危险窗口的角色施加结果。",
-      "summary_zh": "负责对进入危险窗口的角色施加结果。",
-      "capability_id": "poison_pool.damage",
-      "semantic_role": "capability",
-      "capability_kind": "hazard_resolution",
-      "runtime_primitives": [
-        "overlap_zone",
-        "apply_damage",
-        "reset_hazard"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "state_blackboard",
-        "trap"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "apply_hazard_damage"
-    },
-    {
-      "ability_id": "poison_pool.hazard.apply_poison_dot",
-      "capability_id": "poison_pool.hazard.apply_poison_dot",
-      "entity_id": "poison_pool",
-      "display_name": "poison_pool.hazard.apply_poison_dot",
-      "display_name_zh": "写入 player.effects.poison_dot。",
-      "summary": "写入 player.effects.poison_dot。",
-      "summary_zh": "写入 player.effects.poison_dot。",
-      "semantic_role": "capability",
-      "capability_kind": "apply_effect",
-      "action_kind": "apply_poison_dot",
-      "runtime_primitives": [
-        "state_write",
-        "timer",
-        "periodic_damage"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "runtime_features": [
-        "state_blackboard",
-        "timer",
-        "combat"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library."
-    },
-    {
-      "ability_id": "poison_vfx.emit",
-      "entity_id": "poison_vfx",
-      "display_name": "Poison VFX Particle Emission",
-      "display_name_zh": "中毒特效粒子生成",
-      "summary": "负责在玩法事件发生时生成可见粒子。",
-      "summary_zh": "负责在玩法事件发生时生成可见粒子。",
-      "capability_id": "poison_vfx.emit",
-      "semantic_role": "capability",
-      "capability_kind": "vfx_binding",
-      "runtime_primitives": [
-        "spawn_vfx",
-        "attach_vfx"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "spawn_particles"
-    },
-    {
-      "ability_id": "poison_vfx.lifecycle",
-      "entity_id": "poison_vfx",
-      "display_name": "Poison VFX Effect Lifecycle",
-      "display_name_zh": "中毒特效特效生命周期",
-      "summary": "负责持续、淡出、跟随和清理。",
-      "summary_zh": "负责持续、淡出、跟随和清理。",
-      "capability_id": "poison_vfx.lifecycle",
-      "semantic_role": "capability",
-      "capability_kind": "vfx_lifecycle",
-      "runtime_primitives": [
-        "timer",
-        "set_visibility",
-        "cleanup_component"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "tick_or_cleanup"
-    },
-    {
-      "ability_id": "pressure_plate.activate",
-      "entity_id": "pressure_plate",
-      "display_name": "Pressure Plate Activation",
-      "display_name_zh": "压力板激活",
-      "summary": "负责向连接对象发送激活/重置信号。",
-      "summary_zh": "负责向连接对象发送激活/重置信号。",
-      "capability_id": "pressure_plate.activate",
-      "semantic_role": "capability",
-      "capability_kind": "generic_capability",
-      "runtime_primitives": [
-        "state_change"
-      ],
-      "engine_ports": [],
-      "runtime_features": [
-        "generic_capability"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "state_write"
-    },
-    {
-      "ability_id": "pressure_plate.sense",
-      "entity_id": "pressure_plate",
-      "display_name": "Pressure Plate Sensing",
-      "display_name_zh": "压力板感知",
-      "summary": "负责重叠、压力或条件检测。",
-      "summary_zh": "负责重叠、压力或条件检测。",
-      "capability_id": "pressure_plate.sense",
-      "semantic_role": "capability",
-      "capability_kind": "generic_capability",
-      "runtime_primitives": [
-        "state_change"
-      ],
-      "engine_ports": [],
-      "runtime_features": [
-        "generic_capability"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "state_write"
-    },
-    {
-      "ability_id": "protector.offense",
-      "entity_id": "protector",
-      "display_name": "Protector Offense",
-      "display_name_zh": "保护者进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "protector.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "protector.pursuit",
-      "entity_id": "protector",
-      "display_name": "Protector Pursuit",
-      "display_name_zh": "保护者追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "protector.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "queen_boss.offense",
-      "entity_id": "queen_boss",
-      "display_name": "Queen Boss Offense",
-      "display_name_zh": "王后进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "queen_boss.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "queen_boss.pursuit",
-      "entity_id": "queen_boss",
-      "display_name": "Queen Boss Pursuit",
-      "display_name_zh": "王后追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "queen_boss.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "rampager.offense",
-      "entity_id": "rampager",
-      "display_name": "Rampager Offense",
-      "display_name_zh": "暴怒者进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "rampager.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "rampager.pursuit",
-      "entity_id": "rampager",
-      "display_name": "Rampager Pursuit",
-      "display_name_zh": "暴怒者追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "rampager.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "rancid_rat.offense",
-      "entity_id": "rancid_rat",
-      "display_name": "Rancid Rat Offense",
-      "display_name_zh": "腐臭鼠进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "rancid_rat.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "rancid_rat.pursuit",
-      "entity_id": "rancid_rat",
-      "display_name": "Rancid Rat Pursuit",
-      "display_name_zh": "腐臭鼠追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "rancid_rat.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "royal_guard.offense",
-      "entity_id": "royal_guard",
-      "display_name": "Royal Guard Offense",
-      "display_name_zh": "王室卫兵进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "royal_guard.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "royal_guard.pursuit",
-      "entity_id": "royal_guard",
-      "display_name": "Royal Guard Pursuit",
-      "display_name_zh": "王室卫兵追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "royal_guard.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "runner.offense",
-      "entity_id": "runner",
-      "display_name": "Runner Offense",
-      "display_name_zh": "奔行者进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "runner.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "runner.pursuit",
-      "entity_id": "runner",
-      "display_name": "Runner Pursuit",
-      "display_name_zh": "奔行者追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "runner.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "saw_blade_trap.arming",
-      "entity_id": "saw_blade_trap",
-      "display_name": "Saw Blade Trap Arming",
-      "display_name_zh": "锯刃陷阱预备/激活",
-      "summary": "负责陷阱预警、激活和冷却阶段。",
-      "summary_zh": "负责陷阱预警、激活和冷却阶段。",
-      "capability_id": "saw_blade_trap.arming",
-      "semantic_role": "capability",
-      "capability_kind": "hazard_arming",
-      "runtime_primitives": [
-        "timer",
-        "warning_indicator",
-        "overlap_zone"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "runtime_features": [
-        "trap"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "arm_hazard"
-    },
-    {
-      "ability_id": "saw_blade_trap.damage",
-      "entity_id": "saw_blade_trap",
-      "display_name": "Saw Blade Trap Hazard Damage",
-      "display_name_zh": "锯刃陷阱危险结算",
-      "summary": "负责对进入危险窗口的角色施加结果。",
-      "summary_zh": "负责对进入危险窗口的角色施加结果。",
-      "capability_id": "saw_blade_trap.damage",
-      "semantic_role": "capability",
-      "capability_kind": "hazard_resolution",
-      "runtime_primitives": [
-        "overlap_zone",
-        "apply_damage",
-        "reset_hazard"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "state_blackboard",
-        "trap"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "apply_hazard_damage"
-    },
-    {
-      "ability_id": "scarecrow_boss.offense",
-      "entity_id": "scarecrow_boss",
-      "display_name": "Scarecrow Boss Offense",
-      "display_name_zh": "稻草人进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "scarecrow_boss.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "scarecrow_boss.pursuit",
-      "entity_id": "scarecrow_boss",
-      "display_name": "Scarecrow Boss Pursuit",
-      "display_name_zh": "稻草人追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "scarecrow_boss.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "scorpion.offense",
-      "entity_id": "scorpion",
-      "display_name": "Scorpion Offense",
-      "display_name_zh": "蝎子进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "scorpion.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "scorpion.pursuit",
-      "entity_id": "scorpion",
-      "display_name": "Scorpion Pursuit",
-      "display_name_zh": "蝎子追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "scorpion.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "scroll_power_pickup.collect",
-      "entity_id": "scroll_power_pickup",
-      "display_name": "Power Scroll Pickup Collection",
-      "display_name_zh": "力量卷轴收集",
-      "summary": "负责检测玩家收集并转移奖励。",
-      "summary_zh": "负责检测玩家收集并转移奖励。",
-      "capability_id": "scroll_power_pickup.collect",
-      "semantic_role": "capability",
-      "capability_kind": "pickup_collection",
-      "runtime_primitives": [
-        "overlap_zone",
-        "grant_reward"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "runtime_features": [
-        "pickup"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "grant_reward"
-    },
-    {
-      "ability_id": "scroll_power_pickup.feedback",
-      "entity_id": "scroll_power_pickup",
-      "display_name": "Power Scroll Pickup Pickup Feedback",
-      "display_name_zh": "力量卷轴奖励反馈",
-      "summary": "负责收集后的可见反馈和消失。",
-      "summary_zh": "负责收集后的可见反馈和消失。",
-      "capability_id": "scroll_power_pickup.feedback",
-      "semantic_role": "capability",
-      "capability_kind": "reward_feedback",
-      "runtime_primitives": [
-        "spawn_vfx",
-        "set_visibility"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "pickup",
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "spawn_reward_visual"
-    },
-    {
-      "ability_id": "scroll_survival_pickup.collect",
-      "entity_id": "scroll_survival_pickup",
-      "display_name": "Survival Scroll Pickup Collection",
-      "display_name_zh": "生存卷轴收集",
-      "summary": "负责检测玩家收集并转移奖励。",
-      "summary_zh": "负责检测玩家收集并转移奖励。",
-      "capability_id": "scroll_survival_pickup.collect",
-      "semantic_role": "capability",
-      "capability_kind": "pickup_collection",
-      "runtime_primitives": [
-        "overlap_zone",
-        "grant_reward"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "runtime_features": [
-        "pickup"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "grant_reward"
-    },
-    {
-      "ability_id": "scroll_survival_pickup.feedback",
-      "entity_id": "scroll_survival_pickup",
-      "display_name": "Survival Scroll Pickup Pickup Feedback",
-      "display_name_zh": "生存卷轴奖励反馈",
-      "summary": "负责收集后的可见反馈和消失。",
-      "summary_zh": "负责收集后的可见反馈和消失。",
-      "capability_id": "scroll_survival_pickup.feedback",
-      "semantic_role": "capability",
-      "capability_kind": "reward_feedback",
-      "runtime_primitives": [
-        "spawn_vfx",
-        "set_visibility"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "pickup",
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "spawn_reward_visual"
-    },
-    {
-      "ability_id": "scroll_tactics_pickup.collect",
-      "entity_id": "scroll_tactics_pickup",
-      "display_name": "Tactics Scroll Pickup Collection",
-      "display_name_zh": "战术卷轴收集",
-      "summary": "负责检测玩家收集并转移奖励。",
-      "summary_zh": "负责检测玩家收集并转移奖励。",
-      "capability_id": "scroll_tactics_pickup.collect",
-      "semantic_role": "capability",
-      "capability_kind": "pickup_collection",
-      "runtime_primitives": [
-        "overlap_zone",
-        "grant_reward"
-      ],
-      "engine_ports": [
-        "primitive.on_component_begin_overlap"
-      ],
-      "runtime_features": [
-        "pickup"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "grant_reward"
-    },
-    {
-      "ability_id": "scroll_tactics_pickup.feedback",
-      "entity_id": "scroll_tactics_pickup",
-      "display_name": "Tactics Scroll Pickup Pickup Feedback",
-      "display_name_zh": "战术卷轴奖励反馈",
-      "summary": "负责收集后的可见反馈和消失。",
-      "summary_zh": "负责收集后的可见反馈和消失。",
-      "capability_id": "scroll_tactics_pickup.feedback",
-      "semantic_role": "capability",
-      "capability_kind": "reward_feedback",
-      "runtime_primitives": [
-        "spawn_vfx",
-        "set_visibility"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "pickup",
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "spawn_reward_visual"
-    },
-    {
-      "ability_id": "secret_wall_rune.activate",
-      "entity_id": "secret_wall_rune",
-      "display_name": "Secret Wall Rune Activation",
-      "display_name_zh": "隐藏墙符文激活",
-      "summary": "负责向连接对象发送激活/重置信号。",
-      "summary_zh": "负责向连接对象发送激活/重置信号。",
-      "capability_id": "secret_wall_rune.activate",
-      "semantic_role": "capability",
-      "capability_kind": "generic_capability",
-      "runtime_primitives": [
-        "state_change"
-      ],
-      "engine_ports": [],
-      "runtime_features": [
-        "generic_capability"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "state_write"
-    },
-    {
-      "ability_id": "secret_wall_rune.sense",
-      "entity_id": "secret_wall_rune",
-      "display_name": "Secret Wall Rune Sensing",
-      "display_name_zh": "隐藏墙符文感知",
-      "summary": "负责重叠、压力或条件检测。",
-      "summary_zh": "负责重叠、压力或条件检测。",
-      "capability_id": "secret_wall_rune.sense",
-      "semantic_role": "capability",
-      "capability_kind": "generic_capability",
-      "runtime_primitives": [
-        "state_change"
-      ],
-      "engine_ports": [],
-      "runtime_features": [
-        "generic_capability"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "state_write"
-    },
-    {
-      "ability_id": "servants_boss.offense",
-      "entity_id": "servants_boss",
-      "display_name": "Servants Boss Offense",
-      "display_name_zh": "仆从三姐妹进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "servants_boss.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "servants_boss.pursuit",
-      "entity_id": "servants_boss",
-      "display_name": "Servants Boss Pursuit",
-      "display_name_zh": "仆从三姐妹追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "servants_boss.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "shield_bearer.offense",
-      "entity_id": "shield_bearer",
-      "display_name": "Shield Bearer Offense",
-      "display_name_zh": "持盾兵进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "shield_bearer.offense",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
-      "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
-      ],
-      "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
-    },
-    {
-      "ability_id": "shield_bearer.pursuit",
-      "entity_id": "shield_bearer",
-      "display_name": "Shield Bearer Pursuit",
-      "display_name_zh": "持盾兵追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "shield_bearer.pursuit",
-      "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "shield_bubble_vfx.emit",
-      "entity_id": "shield_bubble_vfx",
-      "display_name": "Shield Bubble VFX Particle Emission",
-      "display_name_zh": "护盾泡泡特效粒子生成",
-      "summary": "负责在玩法事件发生时生成可见粒子。",
-      "summary_zh": "负责在玩法事件发生时生成可见粒子。",
-      "capability_id": "shield_bubble_vfx.emit",
-      "semantic_role": "capability",
-      "capability_kind": "vfx_binding",
-      "runtime_primitives": [
-        "spawn_vfx",
-        "attach_vfx"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "spawn_particles"
-    },
-    {
-      "ability_id": "shield_bubble_vfx.lifecycle",
-      "entity_id": "shield_bubble_vfx",
-      "display_name": "Shield Bubble VFX Effect Lifecycle",
-      "display_name_zh": "护盾泡泡特效特效生命周期",
-      "summary": "负责持续、淡出、跟随和清理。",
-      "summary_zh": "负责持续、淡出、跟随和清理。",
-      "capability_id": "shield_bubble_vfx.lifecycle",
-      "semantic_role": "capability",
-      "capability_kind": "vfx_lifecycle",
-      "runtime_primitives": [
-        "timer",
-        "set_visibility",
-        "cleanup_component"
-      ],
-      "engine_ports": [
-        "component.set_visibility"
-      ],
-      "runtime_features": [
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "tick_or_cleanup"
-    },
-    {
-      "ability_id": "shop_room_vendor.transaction.purchase_item",
-      "capability_id": "shop_room_vendor.transaction.purchase_item",
-      "entity_id": "shop_room_vendor",
-      "display_name": "shop_room_vendor.transaction.purchase_item",
-      "display_name_zh": "购买商店物品。",
-      "summary": "购买商店物品。",
-      "summary_zh": "购买商店物品。",
-      "semantic_role": "capability",
-      "capability_kind": "transaction",
-      "action_kind": "purchase_item",
-      "runtime_primitives": [
-        "check_currency",
-        "spend_currency",
-        "add_item"
-      ],
-      "engine_ports": [],
-      "runtime_features": [
-        "transaction",
-        "inventory",
-        "currency"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library."
-    },
-    {
-      "ability_id": "side_camera.camera.apply_impulse",
-      "capability_id": "side_camera.camera.apply_impulse",
-      "entity_id": "side_camera",
-      "display_name": "side_camera.camera.apply_impulse",
-      "display_name_zh": "施加短促相机反馈。",
-      "summary": "施加短促相机反馈。",
-      "summary_zh": "施加短促相机反馈。",
-      "semantic_role": "capability",
+      "capability_id": "camera.feedback.camera_impulse",
+      "display_name": "Camera Feedback Camera_Impulse",
+      "display_name_zh": "镜头冲击反馈",
+      "summary": "镜头冲击反馈",
+      "summary_zh": "镜头冲击反馈",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
       "capability_kind": "camera_feedback",
       "action_kind": "camera_impulse",
-      "runtime_primitives": [
-        "camera_impulse"
-      ],
+      "runtime_handler": "ActionDispatcher.cameraImpulse",
+      "params_schema": {},
+      "default_params": {},
       "engine_ports": [
         "camera.update_view_target"
       ],
       "runtime_features": [
-        "camera",
+        "world_adapter",
         "action_dispatcher"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library."
+      ]
     },
     {
-      "ability_id": "side_camera.feedback.impulse",
-      "entity_id": "side_camera",
-      "display_name": "Side Camera Feedback Impulse",
-      "display_name_zh": "侧视角相机反馈震动",
-      "summary": "Applies a short camera impulse when important gameplay events fire.",
-      "summary_zh": "重要玩法事件触发时施加短促相机反馈。",
-      "capability_kind": "camera_feedback",
-      "runtime_primitives": [
-        "camera_impulse"
-      ],
+      "capability_id": "chest.open_reward",
+      "display_name": "Chest Open_Reward",
+      "display_name_zh": "打开宝箱奖励",
+      "summary": "打开宝箱奖励",
+      "summary_zh": "打开宝箱奖励",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "chest_reward",
+      "action_kind": "open_reward",
+      "runtime_handler": null,
+      "params_schema": {},
+      "default_params": {},
+      "engine_ports": [],
+      "runtime_features": [
+        "action_dispatcher"
+      ]
+    },
+    {
+      "capability_id": "curse.add_counter",
+      "display_name": "Curse Add_Counter",
+      "display_name_zh": "增加诅咒计数",
+      "summary": "增加诅咒计数",
+      "summary_zh": "增加诅咒计数",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "curse_counter",
+      "action_kind": "add_curse_counter",
+      "runtime_handler": null,
+      "params_schema": {},
+      "default_params": {},
+      "engine_ports": [],
+      "runtime_features": [
+        "state_blackboard",
+        "action_dispatcher"
+      ]
+    },
+    {
+      "capability_id": "economy.transaction.purchase_item",
+      "display_name": "Economy Transaction Purchase_Item",
+      "display_name_zh": "购买物品",
+      "summary": "购买物品",
+      "summary_zh": "购买物品",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "transaction",
+      "action_kind": "purchase_item",
+      "runtime_handler": null,
+      "params_schema": {},
+      "default_params": {},
+      "engine_ports": [],
+      "runtime_features": [
+        "action_dispatcher"
+      ]
+    },
+    {
+      "capability_id": "encounter.complete.complete_when_all_dead",
+      "display_name": "Encounter Complete Complete_When_All_Dead",
+      "display_name_zh": "全部死亡后完成遭遇",
+      "summary": "全部死亡后完成遭遇",
+      "summary_zh": "全部死亡后完成遭遇",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "encounter",
+      "action_kind": "complete_when_all_dead",
+      "runtime_handler": "EncounterManager.completeWhenAllDead",
+      "params_schema": {
+        "completion_event_name": {
+          "type": "string",
+          "required": true
+        },
+        "completion_state_key": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "default_params": {
+        "completion_event_name": "EncounterCompleted",
+        "completion_state_key": "encounter.room.completed"
+      },
       "engine_ports": [
-        "camera.update_view_target"
+        "encounter.alive_count"
       ],
       "runtime_features": [
-        "camera"
-      ],
-      "capability_id": "side_camera.feedback.impulse",
-      "semantic_role": "capability",
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "spawn_reward_visual"
+        "enemy_runtime",
+        "encounter_manager",
+        "enemy_registry"
+      ]
     },
     {
-      "ability_id": "slasher.offense",
-      "entity_id": "slasher",
-      "display_name": "Slasher Offense",
-      "display_name_zh": "斩杀者进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "slasher.offense",
+      "capability_id": "encounter.exit.unlock_exit",
+      "display_name": "Encounter Exit Unlock_Exit",
+      "display_name_zh": "解锁出口",
+      "summary": "解锁出口",
+      "summary_zh": "解锁出口",
       "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "gate_lock",
+      "action_kind": "evaluate_unlock",
+      "runtime_handler": "ActionDispatcher.unlockExit",
+      "params_schema": {},
+      "default_params": {},
+      "engine_ports": [],
+      "runtime_features": [
+        "state_blackboard",
+        "action_dispatcher"
+      ]
+    },
+    {
+      "capability_id": "enemy.attack.area_burst",
+      "display_name": "Enemy Attack Area_Burst",
+      "display_name_zh": "范围爆发攻击",
+      "summary": "范围爆发攻击",
+      "summary_zh": "范围爆发攻击",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "enemy_attack",
+      "action_kind": "area_burst",
+      "runtime_handler": null,
+      "params_schema": {},
+      "default_params": {},
+      "engine_ports": [],
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_combat"
+      ]
+    },
+    {
+      "capability_id": "enemy.attack.melee_hitbox",
+      "display_name": "Enemy Attack Melee_Hitbox",
+      "display_name_zh": "近战碰撞盒攻击",
+      "summary": "近战碰撞盒攻击",
+      "summary_zh": "近战碰撞盒攻击",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "enemy_attack",
+      "action_kind": "melee_hitbox",
+      "runtime_handler": "EnemyCombat.resolveMeleeHit",
+      "params_schema": {
+        "attack_damage": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "attack_range": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "cooldown_seconds": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "target_entity_id": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "default_params": {
+        "hitbox_radius": 90,
+        "target_entity_id": "player"
+      },
       "engine_ports": [
         "kismet.sphere_trace_single",
         "gameplay_statics.apply_damage"
       ],
       "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
+        "enemy_runtime",
+        "enemy_combat",
+        "enemy_registry",
+        "world_adapter"
+      ]
     },
     {
-      "ability_id": "slasher.pursuit",
-      "entity_id": "slasher",
-      "display_name": "Slasher Pursuit",
-      "display_name_zh": "斩杀者追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "slasher.pursuit",
+      "capability_id": "enemy.attack.projectile_spawn",
+      "display_name": "Enemy Attack Projectile_Spawn",
+      "display_name_zh": "生成投射物攻击",
+      "summary": "生成投射物攻击",
+      "summary_zh": "生成投射物攻击",
       "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "enemy_attack",
+      "action_kind": "projectile_spawn",
+      "runtime_handler": "EnemyCombat.spawnProjectile",
+      "params_schema": {
+        "attack_damage": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "attack_range": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "projectile_class_path": {
+          "type": "string",
+          "required": true
+        },
+        "projectile_speed": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "cooldown_seconds": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "target_entity_id": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "default_params": {
+        "target_entity_id": "player"
+      },
       "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
+        "projectile.spawn"
       ],
       "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
+        "enemy_runtime",
+        "enemy_combat",
+        "enemy_projectile_runtime",
+        "world_adapter"
+      ]
     },
     {
-      "ability_id": "spike_trap.arming",
-      "entity_id": "spike_trap",
-      "display_name": "Spike Trap Arming",
-      "display_name_zh": "尖刺陷阱预备/激活",
-      "summary": "负责陷阱预警、激活和冷却阶段。",
-      "summary_zh": "负责陷阱预警、激活和冷却阶段。",
-      "capability_id": "spike_trap.arming",
+      "capability_id": "enemy.attack.self_destruct",
+      "display_name": "Enemy Attack Self_Destruct",
+      "display_name_zh": "自爆攻击",
+      "summary": "自爆攻击",
+      "summary_zh": "自爆攻击",
       "semantic_role": "capability",
-      "capability_kind": "hazard_arming",
-      "runtime_primitives": [
-        "timer",
-        "warning_indicator",
-        "overlap_zone"
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "enemy_attack",
+      "action_kind": "self_destruct",
+      "runtime_handler": "EnemyCombat.selfDestruct",
+      "params_schema": {
+        "attack_damage": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "attack_range": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "explosion_radius": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "cooldown_seconds": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "target_entity_id": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "default_params": {
+        "kill_self": true,
+        "target_entity_id": "player"
+      },
+      "engine_ports": [
+        "gameplay_statics.apply_damage",
+        "actor.destroy"
       ],
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_combat",
+        "enemy_health",
+        "enemy_death_events",
+        "world_adapter"
+      ]
+    },
+    {
+      "capability_id": "enemy.death.emit_death_event",
+      "display_name": "Enemy Death Emit_Death_Event",
+      "display_name_zh": "发出死亡事件",
+      "summary": "发出死亡事件",
+      "summary_zh": "发出死亡事件",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "enemy_death",
+      "action_kind": "emit_death_event",
+      "runtime_handler": "EnemyDeathEvents.emitDeath",
+      "params_schema": {
+        "death_event_name": {
+          "type": "string",
+          "required": true
+        },
+        "decrement_alive_count": {
+          "type": "bool",
+          "required": true
+        }
+      },
+      "default_params": {
+        "death_event_name": "EnemyDied",
+        "decrement_alive_count": true
+      },
+      "engine_ports": [
+        "actor.on_destroyed"
+      ],
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_death_events",
+        "enemy_registry",
+        "encounter_manager"
+      ]
+    },
+    {
+      "capability_id": "enemy.defense.directional_block",
+      "display_name": "Enemy Defense Directional_Block",
+      "display_name_zh": "方向格挡",
+      "summary": "方向格挡",
+      "summary_zh": "方向格挡",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "enemy_defense",
+      "action_kind": "directional_block",
+      "runtime_handler": "EnemyCombat.resolveDirectionalBlock",
+      "params_schema": {
+        "block_angle_degrees": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "damage_reduction": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "source_entity_id": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "default_params": {
+        "source_entity_id": "player"
+      },
+      "engine_ports": [
+        "actor.get_forward_vector"
+      ],
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_combat",
+        "enemy_health"
+      ]
+    },
+    {
+      "capability_id": "enemy.defense.invulnerable_window",
+      "display_name": "Enemy Defense Invulnerable_Window",
+      "display_name_zh": "无敌窗口",
+      "summary": "无敌窗口",
+      "summary_zh": "无敌窗口",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "enemy_defense",
+      "action_kind": "invulnerable_window",
+      "runtime_handler": null,
+      "params_schema": {},
+      "default_params": {},
+      "engine_ports": [],
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_health"
+      ]
+    },
+    {
+      "capability_id": "enemy.health.receive_damage",
+      "display_name": "Enemy Health Receive_Damage",
+      "display_name_zh": "敌人接收伤害",
+      "summary": "敌人接收伤害",
+      "summary_zh": "敌人接收伤害",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "enemy_health",
+      "action_kind": "receive_damage",
+      "runtime_handler": "EnemyHealth.applyDamage",
+      "params_schema": {
+        "max_hp": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        }
+      },
+      "default_params": {},
+      "engine_ports": [
+        "gameplay_statics.apply_damage",
+        "actor.on_take_any_damage"
+      ],
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_health",
+        "enemy_registry",
+        "world_adapter"
+      ]
+    },
+    {
+      "capability_id": "enemy.movement.chase_target",
+      "display_name": "Enemy Movement Chase_Target",
+      "display_name_zh": "追击目标",
+      "summary": "追击目标",
+      "summary_zh": "追击目标",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "enemy_movement",
+      "action_kind": "chase_target",
+      "runtime_handler": "EnemyMovement.chaseTarget",
+      "params_schema": {
+        "move_speed": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "target_entity_id": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "default_params": {
+        "target_entity_id": "player"
+      },
+      "engine_ports": [
+        "actor.get_distance_to",
+        "actor.set_actor_location"
+      ],
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_movement",
+        "enemy_registry",
+        "world_adapter"
+      ]
+    },
+    {
+      "capability_id": "enemy.movement.keep_distance",
+      "display_name": "Enemy Movement Keep_Distance",
+      "display_name_zh": "保持距离",
+      "summary": "保持距离",
+      "summary_zh": "保持距离",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "enemy_movement",
+      "action_kind": "keep_distance",
+      "runtime_handler": "EnemyMovement.keepDistance",
+      "params_schema": {
+        "move_speed": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "keep_distance": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "target_entity_id": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "default_params": {
+        "target_entity_id": "player"
+      },
+      "engine_ports": [
+        "actor.get_distance_to",
+        "actor.set_actor_location"
+      ],
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_movement",
+        "enemy_registry",
+        "world_adapter"
+      ]
+    },
+    {
+      "capability_id": "enemy.movement.patrol_between_points",
+      "display_name": "Enemy Movement Patrol_Between_Points",
+      "display_name_zh": "巡逻路径移动",
+      "summary": "巡逻路径移动",
+      "summary_zh": "巡逻路径移动",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "enemy_movement",
+      "action_kind": "patrol_between_points",
+      "runtime_handler": null,
+      "params_schema": {},
+      "default_params": {},
+      "engine_ports": [],
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_movement"
+      ]
+    },
+    {
+      "capability_id": "enemy.movement.teleport_to_target",
+      "display_name": "Enemy Movement Teleport_To_Target",
+      "display_name_zh": "瞬移到目标",
+      "summary": "瞬移到目标",
+      "summary_zh": "瞬移到目标",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "enemy_movement",
+      "action_kind": "teleport_to_target",
+      "runtime_handler": null,
+      "params_schema": {},
+      "default_params": {},
+      "engine_ports": [],
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_movement"
+      ]
+    },
+    {
+      "capability_id": "enemy.reward.drop_on_death",
+      "display_name": "Enemy Reward Drop_On_Death",
+      "display_name_zh": "死亡掉落奖励",
+      "summary": "死亡掉落奖励",
+      "summary_zh": "死亡掉落奖励",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "enemy_reward",
+      "action_kind": "drop_on_death",
+      "runtime_handler": null,
+      "params_schema": {},
+      "default_params": {},
+      "engine_ports": [],
+      "runtime_features": [
+        "enemy_runtime"
+      ]
+    },
+    {
+      "capability_id": "enemy.sensor.detect_player_by_distance",
+      "display_name": "Enemy Sensor Detect_Player_By_Distance",
+      "display_name_zh": "按距离感知玩家",
+      "summary": "按距离感知玩家",
+      "summary_zh": "按距离感知玩家",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "enemy_sensor",
+      "action_kind": "detect_player_by_distance",
+      "runtime_handler": "EnemyPerception.detectPlayer",
+      "params_schema": {
+        "sense_radius": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "target_entity_id": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "default_params": {
+        "target_entity_id": "player"
+      },
+      "engine_ports": [
+        "actor.get_distance_to"
+      ],
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_perception",
+        "enemy_registry",
+        "world_adapter"
+      ]
+    },
+    {
+      "capability_id": "enemy.spawn.spawn_actor",
+      "display_name": "Enemy Spawn Spawn_Actor",
+      "display_name_zh": "生成敌人 Actor",
+      "summary": "生成敌人 Actor",
+      "summary_zh": "生成敌人 Actor",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "enemy_spawn",
+      "action_kind": "spawn_actor",
+      "runtime_handler": "EnemySpawnRuntime.spawnEnemy",
+      "params_schema": {
+        "actor_class_path": {
+          "type": "string",
+          "required": true
+        },
+        "enemy_tag": {
+          "type": "string",
+          "required": true
+        },
+        "default_hp": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "move_speed": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        }
+      },
+      "default_params": {
+        "spawn_tags": []
+      },
+      "engine_ports": [
+        "actor.spawn"
+      ],
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_spawn_runtime",
+        "enemy_registry",
+        "world_adapter"
+      ]
+    },
+    {
+      "capability_id": "hazard.arming.arm_hazard",
+      "display_name": "Hazard Arming Arm_Hazard",
+      "display_name_zh": "预备危险机关",
+      "summary": "预备危险机关",
+      "summary_zh": "预备危险机关",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "hazard_arming",
+      "action_kind": "arm_hazard",
+      "runtime_handler": null,
+      "params_schema": {},
+      "default_params": {},
       "engine_ports": [
         "primitive.on_component_begin_overlap"
       ],
       "runtime_features": [
-        "trap"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "arm_hazard"
+        "world_adapter",
+        "entity_registry",
+        "trigger_router"
+      ]
     },
     {
-      "ability_id": "spike_trap.damage",
-      "entity_id": "spike_trap",
-      "display_name": "Spike Trap Hazard Damage",
-      "display_name_zh": "尖刺陷阱危险结算",
-      "summary": "负责对进入危险窗口的角色施加结果。",
-      "summary_zh": "负责对进入危险窗口的角色施加结果。",
-      "capability_id": "spike_trap.damage",
+      "capability_id": "hazard.damage.apply_hazard_damage",
+      "display_name": "Hazard Damage Apply_Hazard_Damage",
+      "display_name_zh": "结算机关伤害",
+      "summary": "结算机关伤害",
+      "summary_zh": "结算机关伤害",
       "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
       "capability_kind": "hazard_resolution",
-      "runtime_primitives": [
-        "overlap_zone",
-        "apply_damage",
-        "reset_hazard"
-      ],
+      "action_kind": "apply_hazard_damage",
+      "runtime_handler": null,
+      "params_schema": {},
+      "default_params": {},
       "engine_ports": [
         "primitive.on_component_begin_overlap",
         "gameplay_statics.apply_damage"
       ],
       "runtime_features": [
-        "state_blackboard",
-        "trap"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "apply_hazard_damage"
+        "world_adapter",
+        "entity_registry",
+        "action_dispatcher"
+      ]
     },
     {
-      "ability_id": "status_icon_hud.alert",
-      "entity_id": "status_icon_hud",
-      "display_name": "Status Icon HUD Alert Feedback",
-      "display_name_zh": "状态图标HUD警示反馈",
-      "summary": "负责闪烁、强调、警示和状态变化反馈。",
-      "summary_zh": "负责闪烁、强调、警示和状态变化反馈。",
-      "capability_id": "status_icon_hud.alert",
+      "capability_id": "hazard.effect.apply_burn",
+      "display_name": "Hazard Effect Apply_Burn",
+      "display_name_zh": "施加燃烧",
+      "summary": "施加燃烧",
+      "summary_zh": "施加燃烧",
       "semantic_role": "capability",
-      "capability_kind": "hud_feedback",
-      "runtime_primitives": [
-        "hud_flash",
-        "tag_state"
-      ],
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "apply_effect",
+      "action_kind": "apply_burn",
+      "runtime_handler": null,
+      "params_schema": {},
+      "default_params": {},
       "engine_ports": [
-        "widget.set_render_opacity"
+        "primitive.on_component_begin_overlap"
       ],
       "runtime_features": [
-        "hud"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "flash_warning"
+        "state_blackboard",
+        "action_dispatcher"
+      ]
     },
     {
-      "ability_id": "status_icon_hud.display",
-      "entity_id": "status_icon_hud",
-      "display_name": "Status Icon HUD Display",
-      "display_name_zh": "状态图标HUD显示",
-      "summary": "负责把数值、图标或地图状态呈现到屏幕。",
-      "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
-      "capability_id": "status_icon_hud.display",
+      "capability_id": "hazard.effect.apply_freeze",
+      "display_name": "Hazard Effect Apply_Freeze",
+      "display_name_zh": "施加冰冻",
+      "summary": "施加冰冻",
+      "summary_zh": "施加冰冻",
       "semantic_role": "capability",
-      "capability_kind": "hud_binding",
-      "runtime_primitives": [
-        "hud_refresh",
-        "tag_state"
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "apply_effect",
+      "action_kind": "apply_freeze",
+      "runtime_handler": "ActionDispatcher.writeState",
+      "params_schema": {},
+      "default_params": {},
+      "engine_ports": [],
+      "runtime_features": [
+        "state_blackboard",
+        "action_dispatcher"
+      ]
+    },
+    {
+      "capability_id": "hazard.effect.apply_poison_dot",
+      "display_name": "Hazard Effect Apply_Poison_Dot",
+      "display_name_zh": "施加毒素持续伤害",
+      "summary": "施加毒素持续伤害",
+      "summary_zh": "施加毒素持续伤害",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "apply_effect",
+      "action_kind": "apply_poison_dot",
+      "runtime_handler": null,
+      "params_schema": {},
+      "default_params": {},
+      "engine_ports": [
+        "primitive.on_component_begin_overlap"
       ],
+      "runtime_features": [
+        "state_blackboard",
+        "action_dispatcher"
+      ]
+    },
+    {
+      "capability_id": "hazard.sensor.detect_overlap",
+      "display_name": "Hazard Sensor Detect_Overlap",
+      "display_name_zh": "机关检测重叠",
+      "summary": "机关检测重叠",
+      "summary_zh": "机关检测重叠",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "sensor_overlap",
+      "action_kind": "detect_overlap",
+      "runtime_handler": "TriggerRouter.bindOverlapEnter",
+      "params_schema": {},
+      "default_params": {},
+      "engine_ports": [
+        "primitive.on_component_begin_overlap"
+      ],
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "trigger_router"
+      ]
+    },
+    {
+      "capability_id": "hud.display.refresh_value",
+      "display_name": "Hud Display Refresh_Value",
+      "display_name_zh": "刷新 HUD 数值",
+      "summary": "刷新 HUD 数值",
+      "summary_zh": "刷新 HUD 数值",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "hud_binding",
+      "action_kind": "refresh_value",
+      "runtime_handler": "ActionDispatcher.setHudValue",
+      "params_schema": {},
+      "default_params": {},
       "engine_ports": [
         "widget.set_text",
         "widget.set_percent"
       ],
       "runtime_features": [
-        "hud"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "refresh_value"
+        "world_adapter",
+        "entity_registry",
+        "state_blackboard",
+        "action_dispatcher"
+      ]
     },
     {
-      "ability_id": "teleport_vfx.emit",
-      "entity_id": "teleport_vfx",
-      "display_name": "Teleport VFX Particle Emission",
-      "display_name_zh": "传送特效粒子生成",
-      "summary": "负责在玩法事件发生时生成可见粒子。",
-      "summary_zh": "负责在玩法事件发生时生成可见粒子。",
-      "capability_id": "teleport_vfx.emit",
+      "capability_id": "hud.display.set_percent",
+      "display_name": "Hud Display Set_Percent",
+      "display_name_zh": "设置 HUD 百分比",
+      "summary": "设置 HUD 百分比",
+      "summary_zh": "设置 HUD 百分比",
       "semantic_role": "capability",
-      "capability_kind": "vfx_binding",
-      "runtime_primitives": [
-        "spawn_vfx",
-        "attach_vfx"
-      ],
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "hud_binding",
+      "action_kind": "set_percent",
+      "runtime_handler": null,
+      "params_schema": {},
+      "default_params": {},
       "engine_ports": [
-        "component.set_visibility"
+        "widget.set_percent"
       ],
       "runtime_features": [
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "spawn_particles"
+        "world_adapter",
+        "entity_registry",
+        "state_blackboard",
+        "action_dispatcher"
+      ]
     },
     {
-      "ability_id": "teleport_vfx.lifecycle",
-      "entity_id": "teleport_vfx",
-      "display_name": "Teleport VFX Effect Lifecycle",
-      "display_name_zh": "传送特效特效生命周期",
-      "summary": "负责持续、淡出、跟随和清理。",
-      "summary_zh": "负责持续、淡出、跟随和清理。",
-      "capability_id": "teleport_vfx.lifecycle",
+      "capability_id": "hud.feedback.flash_warning",
+      "display_name": "Hud Feedback Flash_Warning",
+      "display_name_zh": "HUD 警示闪烁",
+      "summary": "HUD 警示闪烁",
+      "summary_zh": "HUD 警示闪烁",
       "semantic_role": "capability",
-      "capability_kind": "vfx_lifecycle",
-      "runtime_primitives": [
-        "timer",
-        "set_visibility",
-        "cleanup_component"
-      ],
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "hud_feedback",
+      "action_kind": "flash_warning",
+      "runtime_handler": "ActionDispatcher.setHudValue",
+      "params_schema": {},
+      "default_params": {},
       "engine_ports": [
-        "component.set_visibility"
+        "widget.set_render_opacity"
       ],
       "runtime_features": [
-        "vfx"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "tick_or_cleanup"
+        "world_adapter",
+        "entity_registry",
+        "state_blackboard",
+        "action_dispatcher"
+      ]
     },
     {
-      "ability_id": "time_keeper_boss.offense",
-      "entity_id": "time_keeper_boss",
-      "display_name": "Time Keeper Boss Offense",
-      "display_name_zh": "时光守护者进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "time_keeper_boss.offense",
+      "capability_id": "hud.feedback.set_opacity",
+      "display_name": "Hud Feedback Set_Opacity",
+      "display_name_zh": "设置 HUD 透明度",
+      "summary": "设置 HUD 透明度",
+      "summary_zh": "设置 HUD 透明度",
       "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "hud_feedback",
+      "action_kind": "set_opacity",
+      "runtime_handler": null,
+      "params_schema": {},
+      "default_params": {},
       "engine_ports": [
-        "kismet.sphere_trace_single",
-        "gameplay_statics.apply_damage"
+        "widget.set_render_opacity"
       ],
       "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
+        "world_adapter",
+        "entity_registry",
+        "state_blackboard",
+        "action_dispatcher"
+      ]
     },
     {
-      "ability_id": "time_keeper_boss.pursuit",
-      "entity_id": "time_keeper_boss",
-      "display_name": "Time Keeper Boss Pursuit",
-      "display_name_zh": "时光守护者追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "time_keeper_boss.pursuit",
+      "capability_id": "level.transition.activate",
+      "display_name": "Level Transition Activate",
+      "display_name_zh": "关卡切换",
+      "summary": "关卡切换",
+      "summary_zh": "关卡切换",
       "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
-      "engine_ports": [
-        "actor.get_distance_to",
-        "pawn.add_movement_input"
-      ],
-      "runtime_features": [
-        "enemy_encounter",
-        "movement"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
-    },
-    {
-      "ability_id": "timed_door.lock",
-      "entity_id": "timed_door",
-      "display_name": "Timed Door Lock State",
-      "display_name_zh": "限时门锁定状态",
-      "summary": "负责出口是否可用和锁定提示。",
-      "summary_zh": "负责出口是否可用和锁定提示。",
-      "capability_id": "timed_door.lock",
-      "semantic_role": "capability",
-      "capability_kind": "gate_lock",
-      "runtime_primitives": [
-        "condition_check",
-        "tag_state"
-      ],
-      "engine_ports": [],
-      "runtime_features": [
-        "exit"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "evaluate_unlock"
-    },
-    {
-      "ability_id": "timed_door.transition",
-      "entity_id": "timed_door",
-      "display_name": "Timed Door Transition",
-      "display_name_zh": "限时门区域切换",
-      "summary": "负责玩家进入出口和切换下一关。",
-      "summary_zh": "负责玩家进入出口和切换下一关。",
-      "capability_id": "timed_door.transition",
-      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
       "capability_kind": "level_transition",
-      "runtime_primitives": [
-        "overlap_zone",
-        "open_level"
-      ],
+      "action_kind": "activate_transition",
+      "runtime_handler": "ActionDispatcher.openExit",
+      "params_schema": {},
+      "default_params": {},
       "engine_ports": [
         "primitive.on_component_begin_overlap",
         "gameplay_statics.open_level"
       ],
       "runtime_features": [
-        "exit"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "activate_transition"
+        "world_adapter",
+        "entity_registry",
+        "action_dispatcher"
+      ]
     },
     {
-      "ability_id": "zombie.offense",
-      "entity_id": "zombie",
-      "display_name": "Zombie Offense",
-      "display_name_zh": "僵尸进攻",
-      "summary": "负责攻击预警、命中窗口和攻击结果。",
-      "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-      "capability_id": "zombie.offense",
+      "capability_id": "pickup.collect.grant_reward",
+      "display_name": "Pickup Collect Grant_Reward",
+      "display_name_zh": "拾取授予奖励",
+      "summary": "拾取授予奖励",
+      "summary_zh": "拾取授予奖励",
       "semantic_role": "capability",
-      "capability_kind": "enemy_combat",
-      "runtime_primitives": [
-        "telegraph",
-        "hit_query",
-        "apply_damage"
-      ],
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "pickup_collection",
+      "action_kind": "grant_reward",
+      "runtime_handler": null,
+      "params_schema": {},
+      "default_params": {},
       "engine_ports": [
-        "kismet.sphere_trace_single",
+        "primitive.on_component_begin_overlap"
+      ],
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "action_dispatcher"
+      ]
+    },
+    {
+      "capability_id": "pickup.feedback.spawn_reward_visual",
+      "display_name": "Pickup Feedback Spawn_Reward_Visual",
+      "display_name_zh": "生成奖励反馈",
+      "summary": "生成奖励反馈",
+      "summary_zh": "生成奖励反馈",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "reward_feedback",
+      "action_kind": "spawn_reward_visual",
+      "runtime_handler": null,
+      "params_schema": {},
+      "default_params": {},
+      "engine_ports": [
+        "component.set_visibility"
+      ],
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "action_dispatcher"
+      ]
+    },
+    {
+      "capability_id": "platform.state.collapse_when_touched",
+      "display_name": "Platform State Collapse_When_Touched",
+      "display_name_zh": "平台触碰后塌陷",
+      "summary": "平台触碰后塌陷",
+      "summary_zh": "平台触碰后塌陷",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "platform_state",
+      "action_kind": "collapse_when_touched",
+      "runtime_handler": null,
+      "params_schema": {},
+      "default_params": {},
+      "engine_ports": [
+        "primitive.on_component_begin_overlap"
+      ],
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "action_dispatcher"
+      ]
+    },
+    {
+      "capability_id": "player.attack.apply_damage",
+      "display_name": "Player Attack Apply_Damage",
+      "display_name_zh": "玩家攻击造成伤害",
+      "summary": "玩家攻击造成伤害",
+      "summary_zh": "玩家攻击造成伤害",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "combat",
+      "action_kind": "apply_damage",
+      "runtime_handler": null,
+      "params_schema": {},
+      "default_params": {},
+      "engine_ports": [
+        "input.action_binding",
         "gameplay_statics.apply_damage"
       ],
       "runtime_features": [
-        "combat",
-        "enemy_encounter"
-      ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "enemy_attack"
+        "action_dispatcher"
+      ]
     },
     {
-      "ability_id": "zombie.pursuit",
-      "entity_id": "zombie",
-      "display_name": "Zombie Pursuit",
-      "display_name_zh": "僵尸追击",
-      "summary": "负责发现目标、接近目标和重新站位。",
-      "summary_zh": "负责发现目标、接近目标和重新站位。",
-      "capability_id": "zombie.pursuit",
+      "capability_id": "player.movement.block_by_state",
+      "display_name": "Player Movement Block_By_State",
+      "display_name_zh": "按状态阻挡移动",
+      "summary": "按状态阻挡移动",
+      "summary_zh": "按状态阻挡移动",
       "semantic_role": "capability",
-      "capability_kind": "enemy_pursuit",
-      "runtime_primitives": [
-        "awareness_query",
-        "move_actor"
-      ],
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "movement_gate",
+      "action_kind": "block_by_state",
+      "runtime_handler": "ActionDispatcher.movementGate",
+      "params_schema": {},
+      "default_params": {},
+      "engine_ports": [],
+      "runtime_features": [
+        "state_blackboard",
+        "action_dispatcher",
+        "movement_runtime"
+      ]
+    },
+    {
+      "capability_id": "player.movement.move_actor",
+      "display_name": "Player Movement Move_Actor",
+      "display_name_zh": "玩家移动",
+      "summary": "玩家移动",
+      "summary_zh": "玩家移动",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "movement",
+      "action_kind": "move_actor",
+      "runtime_handler": null,
+      "params_schema": {},
+      "default_params": {},
       "engine_ports": [
-        "actor.get_distance_to",
+        "input.action_binding",
         "pawn.add_movement_input"
       ],
       "runtime_features": [
-        "enemy_encounter",
-        "movement"
+        "movement_runtime"
+      ]
+    },
+    {
+      "capability_id": "teleport.transition.activate",
+      "display_name": "Teleport Transition Activate",
+      "display_name_zh": "传送切换",
+      "summary": "传送切换",
+      "summary_zh": "传送切换",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "teleport_transition",
+      "action_kind": "activate_transition",
+      "runtime_handler": null,
+      "params_schema": {},
+      "default_params": {},
+      "engine_ports": [
+        "primitive.on_component_begin_overlap",
+        "gameplay_statics.open_level"
       ],
-      "definition": "Runtime capability; trigger/result live in Behavior Library.",
-      "action_kind": "chase_target"
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "action_dispatcher"
+      ]
+    },
+    {
+      "capability_id": "upgrade.apply_item_upgrade",
+      "display_name": "Upgrade Apply_Item_Upgrade",
+      "display_name_zh": "应用物品升级",
+      "summary": "应用物品升级",
+      "summary_zh": "应用物品升级",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "upgrade",
+      "action_kind": "apply_item_upgrade",
+      "runtime_handler": null,
+      "params_schema": {},
+      "default_params": {},
+      "engine_ports": [],
+      "runtime_features": [
+        "action_dispatcher"
+      ]
+    },
+    {
+      "capability_id": "vfx.lifecycle.attach_to_target",
+      "display_name": "Vfx Lifecycle Attach_To_Target",
+      "display_name_zh": "特效附着目标",
+      "summary": "特效附着目标",
+      "summary_zh": "特效附着目标",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "vfx_lifecycle",
+      "action_kind": "attach_to_target",
+      "runtime_handler": null,
+      "params_schema": {},
+      "default_params": {},
+      "engine_ports": [
+        "component.attach_to_component"
+      ],
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "action_dispatcher"
+      ]
+    },
+    {
+      "capability_id": "vfx.lifecycle.cleanup_after_duration",
+      "display_name": "Vfx Lifecycle Cleanup_After_Duration",
+      "display_name_zh": "按持续时间清理特效",
+      "summary": "按持续时间清理特效",
+      "summary_zh": "按持续时间清理特效",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "vfx_lifecycle",
+      "action_kind": "cleanup_after_duration",
+      "runtime_handler": null,
+      "params_schema": {},
+      "default_params": {},
+      "engine_ports": [
+        "component.set_visibility"
+      ],
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "action_dispatcher"
+      ]
+    },
+    {
+      "capability_id": "vfx.spawn.spawn_particles",
+      "display_name": "Vfx Spawn Spawn_Particles",
+      "display_name_zh": "生成粒子特效",
+      "summary": "生成粒子特效",
+      "summary_zh": "生成粒子特效",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "vfx_binding",
+      "action_kind": "spawn_particles",
+      "runtime_handler": "ActionDispatcher.spawnVfx",
+      "params_schema": {},
+      "default_params": {},
+      "engine_ports": [
+        "component.set_visibility"
+      ],
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "action_dispatcher"
+      ]
+    },
+    {
+      "capability_id": "vfx.visibility.set_visible_while_state",
+      "display_name": "Vfx Visibility Set_Visible_While_State",
+      "display_name_zh": "按状态显示特效",
+      "summary": "按状态显示特效",
+      "summary_zh": "按状态显示特效",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "vfx_binding",
+      "action_kind": "set_visible_while_state",
+      "runtime_handler": "ActionDispatcher.setVfxVisible",
+      "params_schema": {},
+      "default_params": {},
+      "engine_ports": [
+        "component.set_visibility"
+      ],
+      "runtime_features": [
+        "world_adapter",
+        "entity_registry",
+        "state_blackboard",
+        "action_dispatcher"
+      ]
+    },
+    {
+      "capability_id": "weapon.effect.apply_bleed_on_hit",
+      "display_name": "Weapon Effect Apply_Bleed_On_Hit",
+      "display_name_zh": "命中施加流血",
+      "summary": "命中施加流血",
+      "summary_zh": "命中施加流血",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "weapon_effect",
+      "action_kind": "apply_bleed_on_hit",
+      "runtime_handler": null,
+      "params_schema": {},
+      "default_params": {},
+      "engine_ports": [
+        "gameplay_statics.apply_damage"
+      ],
+      "runtime_features": [
+        "action_dispatcher"
+      ]
+    },
+    {
+      "capability_id": "weapon.effect.apply_shock_chain",
+      "display_name": "Weapon Effect Apply_Shock_Chain",
+      "display_name_zh": "武器电击连锁",
+      "summary": "武器电击连锁",
+      "summary_zh": "武器电击连锁",
+      "semantic_role": "capability",
+      "capability_scope": "canonical_prototype",
+      "capability_kind": "chain_lightning",
+      "action_kind": "apply_shock_chain",
+      "runtime_handler": null,
+      "params_schema": {},
+      "default_params": {},
+      "engine_ports": [
+        "kismet.sphere_trace_single",
+        "component.set_visibility"
+      ],
+      "runtime_features": [
+        "action_dispatcher"
+      ]
     }
-  ],
-  "library_role": "capability",
-  "compatibility": {
-    "legacy_collection_key": "abilities",
-    "legacy_id_key": "ability_id",
-    "canonical_id_key": "capability_id"
-  }
+  ]
 }

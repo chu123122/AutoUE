@@ -1,0 +1,11 @@
+export interface {{interface_name}} { readonly registry: any; readonly log?: (message: string) => void; }
+const LOG_PREFIX = '[AUTOUE_GENERATED]';
+function log(ctx: {{interface_name}}, message: string): void { (ctx.log || console.warn)(`${LOG_PREFIX} ${message}`); }
+export class AutoUEEncounterManager {
+  private completed = false;
+  constructor(private readonly context: {{interface_name}}) {}
+  initialize(): void { log(this.context, `EncounterInitialized AliveEnemies=${this.context.registry.getAliveEnemies().length}`); }
+  onEnemyDied(_enemy: any, _reason = 'runtime'): void { this.completeWhenAllDead(); }
+  completeWhenAllDead(_params: Record<string, any> = {}): boolean { const alive = this.context.registry.getAliveEnemies().length; if (alive === 0 && !this.completed) { this.completed = true; log(this.context, 'EncounterCompleted=1 AliveEnemies=0'); return true; } log(this.context, `EncounterCompleted=0 AliveEnemies=${alive}`); return false; }
+}
+export function {{export_name}}(context: {{interface_name}}): AutoUEEncounterManager { return new AutoUEEncounterManager(context); }

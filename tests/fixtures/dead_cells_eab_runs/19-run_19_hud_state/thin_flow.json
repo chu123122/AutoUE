@@ -1,14 +1,13 @@
 {
   "flows": [
     {
-      "flow_id": "flow_cooldown_meter_hud_display_refresh_value",
+      "flow_id": "flow_hud_behavior_refresh_value",
       "entity_id": "cooldown_meter_hud",
-      "ability_id": "cooldown_meter_hud.display",
-      "source_behavior_id": "cooldown_meter_hud.display.refresh_value",
+      "source_behavior_id": "hud.behavior.refresh_value",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -16,24 +15,23 @@
             "actions"
           ],
           "engine_ports": [
-            "widget.set_text",
-            "widget.set_percent"
+            "manual.trigger"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered cooldown_meter_hud.display.refresh_value"
+        "BehaviorTriggered hud.behavior.refresh_value",
+        "ActionDispatched set_hud_value"
       ]
     },
     {
-      "flow_id": "flow_curse_counter_hud_alert_flash_warning",
+      "flow_id": "flow_hud_behavior_refresh_value",
       "entity_id": "curse_counter_hud",
-      "ability_id": "curse_counter_hud.alert",
-      "source_behavior_id": "curse_counter_hud.alert.flash_warning",
+      "source_behavior_id": "hud.behavior.refresh_value",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -41,73 +39,23 @@
             "actions"
           ],
           "engine_ports": [
-            "widget.set_render_opacity"
+            "manual.trigger"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered curse_counter_hud.alert.flash_warning"
+        "BehaviorTriggered hud.behavior.refresh_value",
+        "ActionDispatched set_hud_value"
       ]
     },
     {
-      "flow_id": "flow_curse_counter_hud_display_refresh_value",
-      "entity_id": "curse_counter_hud",
-      "ability_id": "curse_counter_hud.display",
-      "source_behavior_id": "curse_counter_hud.display.refresh_value",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "widget.set_text",
-            "widget.set_percent"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered curse_counter_hud.display.refresh_value"
-      ]
-    },
-    {
-      "flow_id": "flow_cursed_chest_open_reward_and_add_curse",
-      "entity_id": "cursed_chest",
-      "ability_id": "cursed_chest.chest.open_reward",
-      "source_behavior_id": "cursed_chest.open_reward_and_add_curse",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "widget.set_text",
-            "widget.set_percent"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered cursed_chest.open_reward_and_add_curse"
-      ]
-    },
-    {
-      "flow_id": "flow_health_bar_hud_display_refresh_value",
+      "flow_id": "flow_hud_behavior_refresh_value",
       "entity_id": "health_bar_hud",
-      "ability_id": "health_bar_hud.display",
-      "source_behavior_id": "health_bar_hud.display.refresh_value",
+      "source_behavior_id": "hud.behavior.refresh_value",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -115,51 +63,23 @@
             "actions"
           ],
           "engine_ports": [
-            "widget.set_text",
-            "widget.set_percent"
+            "manual.trigger"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered health_bar_hud.display.refresh_value"
+        "BehaviorTriggered hud.behavior.refresh_value",
+        "ActionDispatched set_hud_value"
       ]
     },
     {
-      "flow_id": "flow_poison_pool_poison_player_on_overlap",
-      "entity_id": "poison_pool",
-      "ability_id": "poison_pool.hazard.apply_poison_dot",
-      "source_behavior_id": "poison_pool.poison_player_on_overlap",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "primitive.on_component_begin_overlap",
-            "component.set_visibility",
-            "widget.set_text",
-            "widget.set_percent"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered poison_pool.poison_player_on_overlap"
-      ]
-    },
-    {
-      "flow_id": "flow_status_icon_hud_display_refresh_value",
+      "flow_id": "flow_hud_behavior_refresh_value",
       "entity_id": "status_icon_hud",
-      "ability_id": "status_icon_hud.display",
-      "source_behavior_id": "status_icon_hud.display.refresh_value",
+      "source_behavior_id": "hud.behavior.refresh_value",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -167,13 +87,13 @@
             "actions"
           ],
           "engine_ports": [
-            "widget.set_text",
-            "widget.set_percent"
+            "manual.trigger"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered status_icon_hud.display.refresh_value"
+        "BehaviorTriggered hud.behavior.refresh_value",
+        "ActionDispatched set_hud_value"
       ]
     }
   ]

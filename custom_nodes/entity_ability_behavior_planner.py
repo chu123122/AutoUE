@@ -14,7 +14,7 @@ from core.content_library import (
 from core.workflow_validation import parse_node_json, validate_node_output
 
 ENTITY_ABILITY_BEHAVIOR_PLANNER_PROMPT = """SCHEMA: EntityAbilityBehaviorPlanner
-Select Dead Cells library IDs only. The second library is semantic Capability; selected_capability_ids is canonical and selected_ability_ids is legacy-only. Python validates selected IDs and expands them into the canonical entities -> capabilities(legacy abilities field) -> behaviors tree. Do not invent entity, capability, or behavior text. Return JSON only.
+Select Dead Cells library IDs only. The second library is semantic Capability; selected_capability_ids is canonical and selected_ability_ids is forbidden. Python validates selected IDs and expands them into the canonical entities -> capabilities -> behaviors tree. Do not invent entity, capability, or behavior text. Return JSON only.
 """
 
 
@@ -35,7 +35,7 @@ def build_planner_context(node: BaseLLMNode, state: GraphState, full_input: str)
         + full_input
         + "\n\nTask: choose only the relevant Dead Cells library IDs for this request. "
         "The LLM output is an ID selection, not the final entity tree. "
-        "Python will expand selected IDs into entities[] -> abilities[](legacy field containing Capabilities) -> behaviors[] for downstream nodes.\n\n"
+        "Python will expand selected IDs into entities[] -> capabilities[] -> behaviors[] for downstream nodes.\n\n"
         "Output JSON shape exactly:\n"
         "{\n"
         "  \"selected_entity_ids\": [\"optional entity ids that must appear even without selected behaviors\"],\n"
@@ -90,7 +90,7 @@ def write_02_structure(state: GraphState, output: str) -> None:
     structure = {
         "schema_version": "autoue-02-structure/v1",
         "analysis_order": "library candidate retrieval -> ID selection -> Python canonical expansion",
-        "machine_tree": "entities -> capabilities(legacy abilities field) -> behaviors",
+        "machine_tree": "entities -> capabilities -> behaviors",
         "entities": data.get("entities", []),
         "non_goals": data.get("non_goals", []),
     }
@@ -102,10 +102,10 @@ def write_02_structure(state: GraphState, output: str) -> None:
         lines.append(f"## Entity: `{entity.get('entity_id','')}` · {entity.get('display_name_zh') or entity.get('display_name','')}")
         lines.append(entity.get("summary_zh") or entity.get("summary", ""))
         lines.append("")
-        for ability in entity.get("abilities", []):
-            lines.append(f"### Capability: `{ability.get('ability_id','')}` · {ability.get('display_name_zh') or ability.get('display_name','')}")
-            lines.append(ability.get("summary_zh") or ability.get("summary", ""))
-            for behavior in ability.get("behaviors", []):
+        for capability in entity.get("capabilities", []):
+            lines.append(f"### Capability: `{capability.get('capability_id','')}` · {capability.get('display_name_zh') or capability.get('display_name','')}")
+            lines.append(capability.get("summary_zh") or capability.get("summary", ""))
+            for behavior in capability.get("behaviors", []):
                 lines.append(f"- Behavior `{behavior.get('behavior_id','')}` · {behavior.get('display_name_zh') or behavior.get('display_name','')}: {behavior.get('trigger','')} → {behavior.get('execution','')} → {behavior.get('result','')}")
             lines.append("")
     (flow_dir / "02-结构化拆解-行为能力实体.md").write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")

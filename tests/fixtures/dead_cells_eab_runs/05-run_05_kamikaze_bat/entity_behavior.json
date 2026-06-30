@@ -1,4 +1,5 @@
 {
+  "schema_version": "autoue-eab-canonical/v2",
   "entities": [
     {
       "entity_id": "burn_vfx",
@@ -13,57 +14,78 @@
         "burn"
       ],
       "spawnable": false,
-      "abilities": [
+      "capability_bindings": [
         {
-          "ability_id": "burn_vfx.emit",
-          "entity_id": "burn_vfx",
-          "display_name": "Burn VFX Particle Emission",
-          "display_name_zh": "燃烧特效粒子生成",
-          "summary": "负责在玩法事件发生时生成可见粒子。",
-          "summary_zh": "负责在玩法事件发生时生成可见粒子。",
-          "capability_id": "burn_vfx.emit",
+          "capability_id": "vfx.lifecycle.cleanup_after_duration",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "burn"
+          ]
+        },
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "burn"
+          ]
+        }
+      ],
+      "capabilities": [
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "display_name": "Vfx Spawn Spawn_Particles",
+          "display_name_zh": "生成粒子特效",
+          "summary": "生成粒子特效",
+          "summary_zh": "生成粒子特效",
           "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
           "capability_kind": "vfx_binding",
-          "runtime_primitives": [
-            "spawn_vfx",
-            "attach_vfx"
-          ],
+          "action_kind": "spawn_particles",
+          "runtime_handler": "ActionDispatcher.spawnVfx",
+          "params_schema": {},
+          "default_params": {},
           "engine_ports": [
             "component.set_visibility"
           ],
           "runtime_features": [
-            "vfx"
+            "world_adapter",
+            "entity_registry",
+            "action_dispatcher"
           ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "spawn_particles",
           "behaviors": [
             {
-              "behavior_id": "burn_vfx.emit.spawn_particles",
-              "ability_id": "burn_vfx.emit",
-              "entity_id": "burn_vfx",
-              "display_name": "Burn VFX Spawn Particles",
-              "display_name_zh": "燃烧特效生成粒子",
-              "trigger": "gameplay event fires",
-              "execution": "spawns particles at the relevant actor or world position",
-              "result": "event has visible feedback",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "burn_vfx",
+              "behavior_id": "vfx.behavior.spawn_particles",
+              "display_name": "Vfx Behavior Spawn_Particles",
+              "display_name_zh": "生成粒子",
+              "summary": "生成粒子",
+              "summary_zh": "生成粒子",
+              "semantic_role": "behavior",
+              "behavior_kind": "vfx_spawn",
+              "primary_entity_kind": "vfx",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
               "required_capability_ids": [
-                "burn_vfx.emit"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "gameplay event fires"
-              },
-              "effects": [
-                "event has visible feedback"
+                "vfx.spawn.spawn_particles"
               ],
               "runtime_features": [
-                "vfx"
+                "world_adapter",
+                "entity_registry",
+                "action_dispatcher"
               ],
-              "semantic_role": "behavior"
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "spawn_particles",
+                  "uses": "vfx.spawn.spawn_particles"
+                }
+              ]
             }
           ]
         }
@@ -82,58 +104,81 @@
         "feedback"
       ],
       "spawnable": false,
-      "abilities": [
+      "capability_bindings": [
         {
-          "ability_id": "combat_damage_number_hud.display",
-          "entity_id": "combat_damage_number_hud",
-          "display_name": "Damage Number HUD Display",
-          "display_name_zh": "伤害数字HUD显示",
-          "summary": "负责把数值、图标或地图状态呈现到屏幕。",
-          "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
-          "capability_id": "combat_damage_number_hud.display",
+          "capability_id": "hud.display.refresh_value",
+          "params": {},
+          "tags": [
+            "hud",
+            "damage",
+            "feedback"
+          ]
+        },
+        {
+          "capability_id": "hud.feedback.flash_warning",
+          "params": {},
+          "tags": [
+            "hud",
+            "damage",
+            "feedback"
+          ]
+        }
+      ],
+      "capabilities": [
+        {
+          "capability_id": "hud.display.refresh_value",
+          "display_name": "Hud Display Refresh_Value",
+          "display_name_zh": "刷新 HUD 数值",
+          "summary": "刷新 HUD 数值",
+          "summary_zh": "刷新 HUD 数值",
           "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
           "capability_kind": "hud_binding",
-          "runtime_primitives": [
-            "hud_refresh",
-            "tag_state"
-          ],
+          "action_kind": "refresh_value",
+          "runtime_handler": "ActionDispatcher.setHudValue",
+          "params_schema": {},
+          "default_params": {},
           "engine_ports": [
             "widget.set_text",
             "widget.set_percent"
           ],
           "runtime_features": [
-            "hud"
+            "world_adapter",
+            "entity_registry",
+            "state_blackboard",
+            "action_dispatcher"
           ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "refresh_value",
           "behaviors": [
             {
-              "behavior_id": "combat_damage_number_hud.display.refresh_value",
-              "ability_id": "combat_damage_number_hud.display",
-              "entity_id": "combat_damage_number_hud",
-              "display_name": "Damage Number HUD Refresh Value",
-              "display_name_zh": "伤害数字HUD刷新数值",
-              "trigger": "tracked value changes",
-              "execution": "updates bars, icons, counters, or map tiles",
-              "result": "HUD reflects current state",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "combat_damage_number_hud",
+              "behavior_id": "hud.behavior.refresh_value",
+              "display_name": "Hud Behavior Refresh_Value",
+              "display_name_zh": "刷新 HUD 数值",
+              "summary": "刷新 HUD 数值",
+              "summary_zh": "刷新 HUD 数值",
+              "semantic_role": "behavior",
+              "behavior_kind": "hud_update",
+              "primary_entity_kind": "hud",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
               "required_capability_ids": [
-                "combat_damage_number_hud.display"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "tracked value changes"
-              },
-              "effects": [
-                "HUD reflects current state"
+                "hud.display.refresh_value"
               ],
               "runtime_features": [
-                "hud"
+                "world_adapter",
+                "entity_registry",
+                "state_blackboard",
+                "action_dispatcher"
               ],
-              "semantic_role": "behavior"
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "refresh_value",
+                  "uses": "hud.display.refresh_value"
+                }
+              ]
             }
           ]
         }
@@ -160,218 +205,816 @@
         ],
         "default_health": 1
       },
-      "abilities": [
+      "runtime": {
+        "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+        "enemy_tag": "AUTOUE_ENEMY_KAMIKAZE_BAT",
+        "default_hp": 16,
+        "move_speed": 380,
+        "sense_radius": 950,
+        "attack_range": 120
+      },
+      "runtime_profile": "enemy_runtime",
+      "capability_bindings": [
         {
-          "ability_id": "kamikaze_bat.offense",
-          "entity_id": "kamikaze_bat",
-          "display_name": "Kamikaze Bat Offense",
-          "display_name_zh": "自爆蝙蝠进攻",
-          "summary": "负责攻击预警、命中窗口和攻击结果。",
-          "summary_zh": "负责攻击预警、命中窗口和攻击结果。",
-          "capability_id": "kamikaze_bat.offense",
+          "capability_id": "enemy.spawn.spawn_actor",
+          "params": {
+            "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+            "enemy_tag": "AUTOUE_ENEMY_KAMIKAZE_BAT",
+            "default_hp": 16,
+            "move_speed": 380,
+            "spawn_tags": [
+              "explosive",
+              "flying"
+            ]
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "params": {
+            "sense_radius": 950,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "params": {
+            "move_speed": 380,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "params": {
+            "max_hp": 16
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.death.emit_death_event",
+          "params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
+          "tags": []
+        },
+        {
+          "capability_id": "enemy.attack.self_destruct",
+          "params": {
+            "attack_damage": 18,
+            "attack_range": 120,
+            "explosion_radius": 180,
+            "cooldown_seconds": 0.5,
+            "kill_self": true,
+            "target_entity_id": "player"
+          },
+          "tags": []
+        }
+      ],
+      "capabilities": [
+        {
+          "capability_id": "encounter.complete.complete_when_all_dead",
+          "display_name": "Encounter Complete Complete_When_All_Dead",
+          "display_name_zh": "全部死亡后完成遭遇",
+          "summary": "全部死亡后完成遭遇",
+          "summary_zh": "全部死亡后完成遭遇",
           "semantic_role": "capability",
-          "capability_kind": "enemy_combat",
-          "runtime_primitives": [
-            "telegraph",
-            "hit_query",
-            "apply_damage"
-          ],
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "encounter",
+          "action_kind": "complete_when_all_dead",
+          "runtime_handler": "EncounterManager.completeWhenAllDead",
+          "params_schema": {
+            "completion_event_name": {
+              "type": "string",
+              "required": true
+            },
+            "completion_state_key": {
+              "type": "string",
+              "required": true
+            }
+          },
+          "default_params": {
+            "completion_event_name": "EncounterCompleted",
+            "completion_state_key": "encounter.room.completed"
+          },
           "engine_ports": [
-            "kismet.sphere_trace_single",
-            "gameplay_statics.apply_damage"
+            "encounter.alive_count"
           ],
           "runtime_features": [
-            "combat",
-            "enemy_encounter"
+            "enemy_runtime",
+            "encounter_manager",
+            "enemy_registry"
           ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "enemy_attack",
           "behaviors": [
             {
-              "behavior_id": "kamikaze_bat.offense.resolve_hit",
-              "ability_id": "kamikaze_bat.offense",
-              "entity_id": "kamikaze_bat",
-              "display_name": "Kamikaze Bat Resolve Hit",
-              "display_name_zh": "自爆蝙蝠命中结算",
-              "trigger": "active hit frame overlaps target",
-              "execution": "applies the enemy attack result",
-              "result": "player or object is damaged",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "kamikaze_bat",
+              "behavior_id": "enemy.behavior.chase_and_self_destruct",
+              "display_name": "Enemy Behavior Chase_And_Self_Destruct",
+              "display_name_zh": "敌人追击自爆",
+              "summary": "敌人追击自爆",
+              "summary_zh": "敌人追击自爆",
+              "semantic_role": "behavior",
+              "behavior_kind": "enemy_combat_loop",
+              "primary_entity_kind": "enemy",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
               "required_capability_ids": [
-                "kamikaze_bat.offense"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "active hit frame overlaps target"
-              },
-              "effects": [
-                "player or object is damaged"
+                "enemy.spawn.spawn_actor",
+                "enemy.sensor.detect_player_by_distance",
+                "enemy.movement.chase_target",
+                "enemy.attack.self_destruct",
+                "enemy.health.receive_damage",
+                "enemy.death.emit_death_event",
+                "encounter.complete.complete_when_all_dead"
               ],
               "runtime_features": [
-                "combat",
-                "enemy_encounter"
+                "enemy_runtime",
+                "enemy_spawn_runtime",
+                "enemy_perception",
+                "enemy_movement",
+                "enemy_combat",
+                "enemy_health",
+                "enemy_death_events",
+                "encounter_manager"
               ],
-              "semantic_role": "behavior"
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "spawn_actor",
+                  "uses": "enemy.spawn.spawn_actor"
+                },
+                {
+                  "step": "detect_player_by_distance",
+                  "uses": "enemy.sensor.detect_player_by_distance"
+                },
+                {
+                  "step": "chase_target",
+                  "uses": "enemy.movement.chase_target"
+                },
+                {
+                  "step": "self_destruct",
+                  "uses": "enemy.attack.self_destruct"
+                },
+                {
+                  "step": "receive_damage",
+                  "uses": "enemy.health.receive_damage"
+                },
+                {
+                  "step": "emit_death_event",
+                  "uses": "enemy.death.emit_death_event"
+                },
+                {
+                  "step": "complete_when_all_dead",
+                  "uses": "encounter.complete.complete_when_all_dead"
+                }
+              ]
             }
           ]
         },
         {
-          "ability_id": "kamikaze_bat.pursuit",
-          "entity_id": "kamikaze_bat",
-          "display_name": "Kamikaze Bat Pursuit",
-          "display_name_zh": "自爆蝙蝠追击",
-          "summary": "负责发现目标、接近目标和重新站位。",
-          "summary_zh": "负责发现目标、接近目标和重新站位。",
-          "capability_id": "kamikaze_bat.pursuit",
+          "capability_id": "enemy.attack.self_destruct",
+          "display_name": "Enemy Attack Self_Destruct",
+          "display_name_zh": "自爆攻击",
+          "summary": "自爆攻击",
+          "summary_zh": "自爆攻击",
           "semantic_role": "capability",
-          "capability_kind": "enemy_pursuit",
-          "runtime_primitives": [
-            "awareness_query",
-            "move_actor"
-          ],
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "enemy_attack",
+          "action_kind": "self_destruct",
+          "runtime_handler": "EnemyCombat.selfDestruct",
+          "params_schema": {
+            "attack_damage": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "attack_range": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "explosion_radius": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "cooldown_seconds": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "target_entity_id": {
+              "type": "string",
+              "required": true
+            }
+          },
+          "default_params": {
+            "kill_self": true,
+            "target_entity_id": "player"
+          },
           "engine_ports": [
-            "actor.get_distance_to",
-            "pawn.add_movement_input"
+            "gameplay_statics.apply_damage",
+            "actor.destroy"
           ],
           "runtime_features": [
-            "enemy_encounter",
-            "movement"
+            "enemy_runtime",
+            "enemy_combat",
+            "enemy_health",
+            "enemy_death_events",
+            "world_adapter"
           ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "chase_target",
           "behaviors": [
             {
-              "behavior_id": "kamikaze_bat.pursuit.close_gap",
-              "ability_id": "kamikaze_bat.pursuit",
-              "entity_id": "kamikaze_bat",
-              "display_name": "Kamikaze Bat Close Gap",
-              "display_name_zh": "自爆蝙蝠接近目标",
-              "trigger": "target is reachable",
-              "execution": "moves, jumps, flies, or teleports toward attack range",
-              "result": "enemy threatens the player",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "kamikaze_bat",
+              "behavior_id": "enemy.behavior.chase_and_self_destruct",
+              "display_name": "Enemy Behavior Chase_And_Self_Destruct",
+              "display_name_zh": "敌人追击自爆",
+              "summary": "敌人追击自爆",
+              "summary_zh": "敌人追击自爆",
+              "semantic_role": "behavior",
+              "behavior_kind": "enemy_combat_loop",
+              "primary_entity_kind": "enemy",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
               "required_capability_ids": [
-                "kamikaze_bat.pursuit"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "target is reachable"
-              },
-              "effects": [
-                "enemy threatens the player"
+                "enemy.spawn.spawn_actor",
+                "enemy.sensor.detect_player_by_distance",
+                "enemy.movement.chase_target",
+                "enemy.attack.self_destruct",
+                "enemy.health.receive_damage",
+                "enemy.death.emit_death_event",
+                "encounter.complete.complete_when_all_dead"
               ],
               "runtime_features": [
-                "enemy_encounter",
-                "movement"
-              ],
-              "semantic_role": "behavior"
-            },
-            {
-              "behavior_id": "kamikaze_bat.pursuit.detect_player",
-              "ability_id": "kamikaze_bat.pursuit",
-              "entity_id": "kamikaze_bat",
-              "display_name": "Kamikaze Bat Detect Player",
-              "display_name_zh": "自爆蝙蝠发现玩家",
-              "trigger": "player enters awareness range",
-              "execution": "selects the player as target and turns toward them",
-              "result": "enemy starts pursuing",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "kamikaze_bat",
-              "required_capability_ids": [
-                "kamikaze_bat.pursuit"
+                "enemy_runtime",
+                "enemy_spawn_runtime",
+                "enemy_perception",
+                "enemy_movement",
+                "enemy_combat",
+                "enemy_health",
+                "enemy_death_events",
+                "encounter_manager"
               ],
               "trigger_model": {
-                "type": "legacy_text",
-                "description": "player enters awareness range"
+                "kind": "on_event"
               },
-              "effects": [
-                "enemy starts pursuing"
-              ],
-              "runtime_features": [
-                "enemy_encounter",
-                "movement"
-              ],
-              "semantic_role": "behavior"
+              "flow": [
+                {
+                  "step": "spawn_actor",
+                  "uses": "enemy.spawn.spawn_actor"
+                },
+                {
+                  "step": "detect_player_by_distance",
+                  "uses": "enemy.sensor.detect_player_by_distance"
+                },
+                {
+                  "step": "chase_target",
+                  "uses": "enemy.movement.chase_target"
+                },
+                {
+                  "step": "self_destruct",
+                  "uses": "enemy.attack.self_destruct"
+                },
+                {
+                  "step": "receive_damage",
+                  "uses": "enemy.health.receive_damage"
+                },
+                {
+                  "step": "emit_death_event",
+                  "uses": "enemy.death.emit_death_event"
+                },
+                {
+                  "step": "complete_when_all_dead",
+                  "uses": "encounter.complete.complete_when_all_dead"
+                }
+              ]
             }
           ]
-        }
-      ]
-    },
-    {
-      "entity_id": "player",
-      "display_name": "Player Prisoner",
-      "display_name_zh": "玩家囚徒",
-      "entity_kind": "player",
-      "summary": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
-      "summary_zh": "玩家操控的囚徒，拥有移动、武器、翻滚和战斗状态。",
-      "content_tags": [
-        "player",
-        "prisoner",
-        "combat"
-      ],
-      "spawnable": false,
-      "abilities": [
+        },
         {
-          "ability_id": "player.movement",
-          "entity_id": "player",
-          "display_name": "Player Prisoner Movement Control",
-          "display_name_zh": "玩家囚徒移动控制",
-          "summary": "负责奔跑、跳跃、攀爬、下落和翻滚等玩家移动决策。",
-          "summary_zh": "负责奔跑、跳跃、攀爬、下落和翻滚等玩家移动决策。",
-          "capability_id": "player.movement",
+          "capability_id": "enemy.death.emit_death_event",
+          "display_name": "Enemy Death Emit_Death_Event",
+          "display_name_zh": "发出死亡事件",
+          "summary": "发出死亡事件",
+          "summary_zh": "发出死亡事件",
           "semantic_role": "capability",
-          "capability_kind": "movement",
-          "runtime_primitives": [
-            "input_axis",
-            "move_actor"
-          ],
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "enemy_death",
+          "action_kind": "emit_death_event",
+          "runtime_handler": "EnemyDeathEvents.emitDeath",
+          "params_schema": {
+            "death_event_name": {
+              "type": "string",
+              "required": true
+            },
+            "decrement_alive_count": {
+              "type": "bool",
+              "required": true
+            }
+          },
+          "default_params": {
+            "death_event_name": "EnemyDied",
+            "decrement_alive_count": true
+          },
           "engine_ports": [
-            "input.action_binding",
-            "pawn.add_movement_input"
+            "actor.on_destroyed"
           ],
           "runtime_features": [
-            "input",
-            "movement"
+            "enemy_runtime",
+            "enemy_death_events",
+            "enemy_registry",
+            "encounter_manager"
           ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "move_actor",
           "behaviors": [
             {
-              "behavior_id": "player.movement.dodge_roll",
-              "ability_id": "player.movement",
-              "entity_id": "player",
-              "display_name": "Player Prisoner Dodge Roll",
-              "display_name_zh": "玩家囚徒翻滚闪避",
-              "trigger": "dodge input",
-              "execution": "performs an invulnerable roll with recovery",
-              "result": "player avoids a hit window",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "player",
+              "behavior_id": "enemy.behavior.chase_and_self_destruct",
+              "display_name": "Enemy Behavior Chase_And_Self_Destruct",
+              "display_name_zh": "敌人追击自爆",
+              "summary": "敌人追击自爆",
+              "summary_zh": "敌人追击自爆",
+              "semantic_role": "behavior",
+              "behavior_kind": "enemy_combat_loop",
+              "primary_entity_kind": "enemy",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
               "required_capability_ids": [
-                "player.movement"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "dodge input"
-              },
-              "effects": [
-                "player avoids a hit window"
+                "enemy.spawn.spawn_actor",
+                "enemy.sensor.detect_player_by_distance",
+                "enemy.movement.chase_target",
+                "enemy.attack.self_destruct",
+                "enemy.health.receive_damage",
+                "enemy.death.emit_death_event",
+                "encounter.complete.complete_when_all_dead"
               ],
               "runtime_features": [
-                "input",
-                "movement"
+                "enemy_runtime",
+                "enemy_spawn_runtime",
+                "enemy_perception",
+                "enemy_movement",
+                "enemy_combat",
+                "enemy_health",
+                "enemy_death_events",
+                "encounter_manager"
               ],
-              "semantic_role": "behavior"
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "spawn_actor",
+                  "uses": "enemy.spawn.spawn_actor"
+                },
+                {
+                  "step": "detect_player_by_distance",
+                  "uses": "enemy.sensor.detect_player_by_distance"
+                },
+                {
+                  "step": "chase_target",
+                  "uses": "enemy.movement.chase_target"
+                },
+                {
+                  "step": "self_destruct",
+                  "uses": "enemy.attack.self_destruct"
+                },
+                {
+                  "step": "receive_damage",
+                  "uses": "enemy.health.receive_damage"
+                },
+                {
+                  "step": "emit_death_event",
+                  "uses": "enemy.death.emit_death_event"
+                },
+                {
+                  "step": "complete_when_all_dead",
+                  "uses": "encounter.complete.complete_when_all_dead"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "capability_id": "enemy.health.receive_damage",
+          "display_name": "Enemy Health Receive_Damage",
+          "display_name_zh": "敌人接收伤害",
+          "summary": "敌人接收伤害",
+          "summary_zh": "敌人接收伤害",
+          "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "enemy_health",
+          "action_kind": "receive_damage",
+          "runtime_handler": "EnemyHealth.applyDamage",
+          "params_schema": {
+            "max_hp": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            }
+          },
+          "default_params": {},
+          "engine_ports": [
+            "gameplay_statics.apply_damage",
+            "actor.on_take_any_damage"
+          ],
+          "runtime_features": [
+            "enemy_runtime",
+            "enemy_health",
+            "enemy_registry",
+            "world_adapter"
+          ],
+          "behaviors": [
+            {
+              "behavior_id": "enemy.behavior.chase_and_self_destruct",
+              "display_name": "Enemy Behavior Chase_And_Self_Destruct",
+              "display_name_zh": "敌人追击自爆",
+              "summary": "敌人追击自爆",
+              "summary_zh": "敌人追击自爆",
+              "semantic_role": "behavior",
+              "behavior_kind": "enemy_combat_loop",
+              "primary_entity_kind": "enemy",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
+              "required_capability_ids": [
+                "enemy.spawn.spawn_actor",
+                "enemy.sensor.detect_player_by_distance",
+                "enemy.movement.chase_target",
+                "enemy.attack.self_destruct",
+                "enemy.health.receive_damage",
+                "enemy.death.emit_death_event",
+                "encounter.complete.complete_when_all_dead"
+              ],
+              "runtime_features": [
+                "enemy_runtime",
+                "enemy_spawn_runtime",
+                "enemy_perception",
+                "enemy_movement",
+                "enemy_combat",
+                "enemy_health",
+                "enemy_death_events",
+                "encounter_manager"
+              ],
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "spawn_actor",
+                  "uses": "enemy.spawn.spawn_actor"
+                },
+                {
+                  "step": "detect_player_by_distance",
+                  "uses": "enemy.sensor.detect_player_by_distance"
+                },
+                {
+                  "step": "chase_target",
+                  "uses": "enemy.movement.chase_target"
+                },
+                {
+                  "step": "self_destruct",
+                  "uses": "enemy.attack.self_destruct"
+                },
+                {
+                  "step": "receive_damage",
+                  "uses": "enemy.health.receive_damage"
+                },
+                {
+                  "step": "emit_death_event",
+                  "uses": "enemy.death.emit_death_event"
+                },
+                {
+                  "step": "complete_when_all_dead",
+                  "uses": "encounter.complete.complete_when_all_dead"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "capability_id": "enemy.movement.chase_target",
+          "display_name": "Enemy Movement Chase_Target",
+          "display_name_zh": "追击目标",
+          "summary": "追击目标",
+          "summary_zh": "追击目标",
+          "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "enemy_movement",
+          "action_kind": "chase_target",
+          "runtime_handler": "EnemyMovement.chaseTarget",
+          "params_schema": {
+            "move_speed": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "target_entity_id": {
+              "type": "string",
+              "required": true
+            }
+          },
+          "default_params": {
+            "target_entity_id": "player"
+          },
+          "engine_ports": [
+            "actor.get_distance_to",
+            "actor.set_actor_location"
+          ],
+          "runtime_features": [
+            "enemy_runtime",
+            "enemy_movement",
+            "enemy_registry",
+            "world_adapter"
+          ],
+          "behaviors": [
+            {
+              "behavior_id": "enemy.behavior.chase_and_self_destruct",
+              "display_name": "Enemy Behavior Chase_And_Self_Destruct",
+              "display_name_zh": "敌人追击自爆",
+              "summary": "敌人追击自爆",
+              "summary_zh": "敌人追击自爆",
+              "semantic_role": "behavior",
+              "behavior_kind": "enemy_combat_loop",
+              "primary_entity_kind": "enemy",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
+              "required_capability_ids": [
+                "enemy.spawn.spawn_actor",
+                "enemy.sensor.detect_player_by_distance",
+                "enemy.movement.chase_target",
+                "enemy.attack.self_destruct",
+                "enemy.health.receive_damage",
+                "enemy.death.emit_death_event",
+                "encounter.complete.complete_when_all_dead"
+              ],
+              "runtime_features": [
+                "enemy_runtime",
+                "enemy_spawn_runtime",
+                "enemy_perception",
+                "enemy_movement",
+                "enemy_combat",
+                "enemy_health",
+                "enemy_death_events",
+                "encounter_manager"
+              ],
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "spawn_actor",
+                  "uses": "enemy.spawn.spawn_actor"
+                },
+                {
+                  "step": "detect_player_by_distance",
+                  "uses": "enemy.sensor.detect_player_by_distance"
+                },
+                {
+                  "step": "chase_target",
+                  "uses": "enemy.movement.chase_target"
+                },
+                {
+                  "step": "self_destruct",
+                  "uses": "enemy.attack.self_destruct"
+                },
+                {
+                  "step": "receive_damage",
+                  "uses": "enemy.health.receive_damage"
+                },
+                {
+                  "step": "emit_death_event",
+                  "uses": "enemy.death.emit_death_event"
+                },
+                {
+                  "step": "complete_when_all_dead",
+                  "uses": "encounter.complete.complete_when_all_dead"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "capability_id": "enemy.sensor.detect_player_by_distance",
+          "display_name": "Enemy Sensor Detect_Player_By_Distance",
+          "display_name_zh": "按距离感知玩家",
+          "summary": "按距离感知玩家",
+          "summary_zh": "按距离感知玩家",
+          "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "enemy_sensor",
+          "action_kind": "detect_player_by_distance",
+          "runtime_handler": "EnemyPerception.detectPlayer",
+          "params_schema": {
+            "sense_radius": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "target_entity_id": {
+              "type": "string",
+              "required": true
+            }
+          },
+          "default_params": {
+            "target_entity_id": "player"
+          },
+          "engine_ports": [
+            "actor.get_distance_to"
+          ],
+          "runtime_features": [
+            "enemy_runtime",
+            "enemy_perception",
+            "enemy_registry",
+            "world_adapter"
+          ],
+          "behaviors": [
+            {
+              "behavior_id": "enemy.behavior.chase_and_self_destruct",
+              "display_name": "Enemy Behavior Chase_And_Self_Destruct",
+              "display_name_zh": "敌人追击自爆",
+              "summary": "敌人追击自爆",
+              "summary_zh": "敌人追击自爆",
+              "semantic_role": "behavior",
+              "behavior_kind": "enemy_combat_loop",
+              "primary_entity_kind": "enemy",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
+              "required_capability_ids": [
+                "enemy.spawn.spawn_actor",
+                "enemy.sensor.detect_player_by_distance",
+                "enemy.movement.chase_target",
+                "enemy.attack.self_destruct",
+                "enemy.health.receive_damage",
+                "enemy.death.emit_death_event",
+                "encounter.complete.complete_when_all_dead"
+              ],
+              "runtime_features": [
+                "enemy_runtime",
+                "enemy_spawn_runtime",
+                "enemy_perception",
+                "enemy_movement",
+                "enemy_combat",
+                "enemy_health",
+                "enemy_death_events",
+                "encounter_manager"
+              ],
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "spawn_actor",
+                  "uses": "enemy.spawn.spawn_actor"
+                },
+                {
+                  "step": "detect_player_by_distance",
+                  "uses": "enemy.sensor.detect_player_by_distance"
+                },
+                {
+                  "step": "chase_target",
+                  "uses": "enemy.movement.chase_target"
+                },
+                {
+                  "step": "self_destruct",
+                  "uses": "enemy.attack.self_destruct"
+                },
+                {
+                  "step": "receive_damage",
+                  "uses": "enemy.health.receive_damage"
+                },
+                {
+                  "step": "emit_death_event",
+                  "uses": "enemy.death.emit_death_event"
+                },
+                {
+                  "step": "complete_when_all_dead",
+                  "uses": "encounter.complete.complete_when_all_dead"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "capability_id": "enemy.spawn.spawn_actor",
+          "display_name": "Enemy Spawn Spawn_Actor",
+          "display_name_zh": "生成敌人 Actor",
+          "summary": "生成敌人 Actor",
+          "summary_zh": "生成敌人 Actor",
+          "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "enemy_spawn",
+          "action_kind": "spawn_actor",
+          "runtime_handler": "EnemySpawnRuntime.spawnEnemy",
+          "params_schema": {
+            "actor_class_path": {
+              "type": "string",
+              "required": true
+            },
+            "enemy_tag": {
+              "type": "string",
+              "required": true
+            },
+            "default_hp": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "move_speed": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            }
+          },
+          "default_params": {
+            "spawn_tags": []
+          },
+          "engine_ports": [
+            "actor.spawn"
+          ],
+          "runtime_features": [
+            "enemy_runtime",
+            "enemy_spawn_runtime",
+            "enemy_registry",
+            "world_adapter"
+          ],
+          "behaviors": [
+            {
+              "behavior_id": "enemy.behavior.chase_and_self_destruct",
+              "display_name": "Enemy Behavior Chase_And_Self_Destruct",
+              "display_name_zh": "敌人追击自爆",
+              "summary": "敌人追击自爆",
+              "summary_zh": "敌人追击自爆",
+              "semantic_role": "behavior",
+              "behavior_kind": "enemy_combat_loop",
+              "primary_entity_kind": "enemy",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
+              "required_capability_ids": [
+                "enemy.spawn.spawn_actor",
+                "enemy.sensor.detect_player_by_distance",
+                "enemy.movement.chase_target",
+                "enemy.attack.self_destruct",
+                "enemy.health.receive_damage",
+                "enemy.death.emit_death_event",
+                "encounter.complete.complete_when_all_dead"
+              ],
+              "runtime_features": [
+                "enemy_runtime",
+                "enemy_spawn_runtime",
+                "enemy_perception",
+                "enemy_movement",
+                "enemy_combat",
+                "enemy_health",
+                "enemy_death_events",
+                "encounter_manager"
+              ],
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "spawn_actor",
+                  "uses": "enemy.spawn.spawn_actor"
+                },
+                {
+                  "step": "detect_player_by_distance",
+                  "uses": "enemy.sensor.detect_player_by_distance"
+                },
+                {
+                  "step": "chase_target",
+                  "uses": "enemy.movement.chase_target"
+                },
+                {
+                  "step": "self_destruct",
+                  "uses": "enemy.attack.self_destruct"
+                },
+                {
+                  "step": "receive_damage",
+                  "uses": "enemy.health.receive_damage"
+                },
+                {
+                  "step": "emit_death_event",
+                  "uses": "enemy.death.emit_death_event"
+                },
+                {
+                  "step": "complete_when_all_dead",
+                  "uses": "encounter.complete.complete_when_all_dead"
+                }
+              ]
             }
           ]
         }

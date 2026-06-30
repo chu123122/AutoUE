@@ -1,38 +1,13 @@
 {
   "flows": [
     {
-      "flow_id": "flow_crumbling_floor_collapse_when_touched",
-      "entity_id": "crumbling_floor",
-      "ability_id": "crumbling_floor.platform.collapse_when_touched",
-      "source_behavior_id": "crumbling_floor.collapse_when_touched",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "primitive.on_component_begin_overlap"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered crumbling_floor.collapse_when_touched"
-      ]
-    },
-    {
-      "flow_id": "flow_health_bar_hud_display_refresh_value",
+      "flow_id": "flow_hud_behavior_refresh_value",
       "entity_id": "health_bar_hud",
-      "ability_id": "health_bar_hud.display",
-      "source_behavior_id": "health_bar_hud.display.refresh_value",
+      "source_behavior_id": "hud.behavior.refresh_value",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -40,112 +15,13 @@
             "actions"
           ],
           "engine_ports": [
-            "widget.set_text",
-            "widget.set_percent"
+            "manual.trigger"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered health_bar_hud.display.refresh_value"
-      ]
-    },
-    {
-      "flow_id": "flow_player_movement_dodge_roll",
-      "entity_id": "player",
-      "ability_id": "player.movement",
-      "source_behavior_id": "player.movement.dodge_roll",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "input.action_binding",
-            "pawn.add_movement_input"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered player.movement.dodge_roll"
-      ]
-    },
-    {
-      "flow_id": "flow_player_movement_run",
-      "entity_id": "player",
-      "ability_id": "player.movement",
-      "source_behavior_id": "player.movement.run",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "input.action_binding",
-            "pawn.add_movement_input"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered player.movement.run"
-      ]
-    },
-    {
-      "flow_id": "flow_saw_blade_trap_arming_enter_active",
-      "entity_id": "saw_blade_trap",
-      "ability_id": "saw_blade_trap.arming",
-      "source_behavior_id": "saw_blade_trap.arming.enter_active",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "primitive.on_component_begin_overlap"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered saw_blade_trap.arming.enter_active"
-      ]
-    },
-    {
-      "flow_id": "flow_saw_blade_trap_damage_apply_contact",
-      "entity_id": "saw_blade_trap",
-      "ability_id": "saw_blade_trap.damage",
-      "source_behavior_id": "saw_blade_trap.damage.apply_contact",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "primitive.on_component_begin_overlap",
-            "gameplay_statics.apply_damage"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered saw_blade_trap.damage.apply_contact"
+        "BehaviorTriggered hud.behavior.refresh_value",
+        "ActionDispatched set_hud_value"
       ]
     }
   ]

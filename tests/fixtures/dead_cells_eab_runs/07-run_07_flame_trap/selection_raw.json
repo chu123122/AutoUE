@@ -3,12 +3,14 @@
     "flame_jet_trap",
     "burn_vfx"
   ],
-  "selected_capability_ids": [],
+  "selected_capability_ids": [
+    "hazard.sensor.detect_overlap",
+    "hazard.arming.arm_hazard",
+    "hazard.damage.apply_hazard_damage",
+    "vfx.spawn.spawn_particles"
+  ],
   "selected_behavior_ids": [
-    "flame_jet_trap.arming.show_warning",
-    "flame_jet_trap.arming.enter_active",
-    "flame_jet_trap.apply_burn_on_hit",
-    "burn_vfx.emit.spawn_particles",
-    "player.movement.run"
+    "hazard.behavior.arm_and_damage",
+    "vfx.behavior.spawn_particles"
   ]
 }

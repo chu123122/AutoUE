@@ -1,14 +1,13 @@
 {
   "flows": [
     {
-      "flow_id": "flow_cell_pickup_collect_grant_reward",
+      "flow_id": "flow_pickup_behavior_collect_reward",
       "entity_id": "cell_pickup",
-      "ability_id": "cell_pickup.collect",
-      "source_behavior_id": "cell_pickup.collect.grant_reward",
+      "source_behavior_id": "pickup.behavior.collect_reward",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -16,23 +15,22 @@
             "actions"
           ],
           "engine_ports": [
-            "primitive.on_component_begin_overlap"
+            "manual.trigger"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered cell_pickup.collect.grant_reward"
+        "BehaviorTriggered pickup.behavior.collect_reward"
       ]
     },
     {
-      "flow_id": "flow_scroll_power_pickup_collect_detect_pickup",
+      "flow_id": "flow_pickup_behavior_collect_reward",
       "entity_id": "scroll_power_pickup",
-      "ability_id": "scroll_power_pickup.collect",
-      "source_behavior_id": "scroll_power_pickup.collect.detect_pickup",
+      "source_behavior_id": "pickup.behavior.collect_reward",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -40,71 +38,22 @@
             "actions"
           ],
           "engine_ports": [
-            "primitive.on_component_begin_overlap"
+            "manual.trigger"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered scroll_power_pickup.collect.detect_pickup"
+        "BehaviorTriggered pickup.behavior.collect_reward"
       ]
     },
     {
-      "flow_id": "flow_scroll_power_pickup_collect_grant_reward",
-      "entity_id": "scroll_power_pickup",
-      "ability_id": "scroll_power_pickup.collect",
-      "source_behavior_id": "scroll_power_pickup.collect.grant_reward",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "primitive.on_component_begin_overlap"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered scroll_power_pickup.collect.grant_reward"
-      ]
-    },
-    {
-      "flow_id": "flow_scroll_power_pickup_feedback_spawn_reward_visual",
-      "entity_id": "scroll_power_pickup",
-      "ability_id": "scroll_power_pickup.feedback",
-      "source_behavior_id": "scroll_power_pickup.feedback.spawn_reward_visual",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "component.set_visibility"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered scroll_power_pickup.feedback.spawn_reward_visual"
-      ]
-    },
-    {
-      "flow_id": "flow_status_icon_hud_display_refresh_value",
+      "flow_id": "flow_hud_behavior_refresh_value",
       "entity_id": "status_icon_hud",
-      "ability_id": "status_icon_hud.display",
-      "source_behavior_id": "status_icon_hud.display.refresh_value",
+      "source_behavior_id": "hud.behavior.refresh_value",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -112,13 +61,13 @@
             "actions"
           ],
           "engine_ports": [
-            "widget.set_text",
-            "widget.set_percent"
+            "manual.trigger"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered status_icon_hud.display.refresh_value"
+        "BehaviorTriggered hud.behavior.refresh_value",
+        "ActionDispatched set_hud_value"
       ]
     }
   ]

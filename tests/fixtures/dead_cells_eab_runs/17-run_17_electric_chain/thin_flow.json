@@ -1,14 +1,13 @@
 {
   "flows": [
     {
-      "flow_id": "flow_combat_damage_number_hud_display_refresh_value",
+      "flow_id": "flow_hud_behavior_refresh_value",
       "entity_id": "combat_damage_number_hud",
-      "ability_id": "combat_damage_number_hud.display",
-      "source_behavior_id": "combat_damage_number_hud.display.refresh_value",
+      "source_behavior_id": "hud.behavior.refresh_value",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -16,24 +15,23 @@
             "actions"
           ],
           "engine_ports": [
-            "widget.set_text",
-            "widget.set_percent"
+            "manual.trigger"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered combat_damage_number_hud.display.refresh_value"
+        "BehaviorTriggered hud.behavior.refresh_value",
+        "ActionDispatched set_hud_value"
       ]
     },
     {
-      "flow_id": "flow_electric_vfx_emit_spawn_particles",
+      "flow_id": "flow_vfx_behavior_spawn_particles",
       "entity_id": "electric_vfx",
-      "ability_id": "electric_vfx.emit",
-      "source_behavior_id": "electric_vfx.emit.spawn_particles",
+      "source_behavior_id": "vfx.behavior.spawn_particles",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -41,90 +39,13 @@
             "actions"
           ],
           "engine_ports": [
-            "component.set_visibility"
+            "manual.trigger"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered electric_vfx.emit.spawn_particles"
-      ]
-    },
-    {
-      "flow_id": "flow_electric_whip_apply_shock_chain",
-      "entity_id": "electric_whip",
-      "ability_id": "electric_whip.attack.apply_shock_chain",
-      "source_behavior_id": "electric_whip.apply_shock_chain",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "kismet.sphere_trace_single",
-            "component.set_visibility",
-            "widget.set_text",
-            "widget.set_percent"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered electric_whip.apply_shock_chain"
-      ]
-    },
-    {
-      "flow_id": "flow_inquisitor_pursuit_detect_player",
-      "entity_id": "inquisitor",
-      "ability_id": "inquisitor.pursuit",
-      "source_behavior_id": "inquisitor.pursuit.detect_player",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "actor.get_distance_to",
-            "pawn.add_movement_input"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered inquisitor.pursuit.detect_player"
-      ]
-    },
-    {
-      "flow_id": "flow_player_combat_attack",
-      "entity_id": "player",
-      "ability_id": "player.combat",
-      "source_behavior_id": "player.combat.attack",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "input.action_binding",
-            "kismet.line_trace_single",
-            "gameplay_statics.apply_damage"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered player.combat.attack"
+        "BehaviorTriggered vfx.behavior.spawn_particles",
+        "ActionDispatched spawn_vfx"
       ]
     }
   ]

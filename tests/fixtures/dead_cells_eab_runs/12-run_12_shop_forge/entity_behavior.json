@@ -1,4 +1,5 @@
 {
+  "schema_version": "autoue-eab-canonical/v2",
   "entities": [
     {
       "entity_id": "forge_station",
@@ -13,87 +14,18 @@
         "equipment"
       ],
       "spawnable": false,
-      "abilities": [
+      "capability_bindings": [
         {
-          "ability_id": "forge_station.upgrade.apply_item_upgrade",
-          "capability_id": "forge_station.upgrade.apply_item_upgrade",
-          "entity_id": "forge_station",
-          "display_name": "forge_station.upgrade.apply_item_upgrade",
-          "display_name_zh": "应用装备升级。",
-          "summary": "应用装备升级。",
-          "summary_zh": "应用装备升级。",
-          "semantic_role": "capability",
-          "capability_kind": "upgrade",
-          "action_kind": "apply_item_upgrade",
-          "runtime_primitives": [
-            "modify_equipment",
-            "spend_currency"
-          ],
-          "engine_ports": [],
-          "runtime_features": [
+          "capability_id": "upgrade.apply_item_upgrade",
+          "params": {},
+          "tags": [
+            "forge",
             "upgrade",
-            "inventory",
-            "currency"
-          ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "behaviors": [
-            {
-              "behavior_id": "forge_station.apply_item_upgrade",
-              "ability_id": "forge_station.upgrade.apply_item_upgrade",
-              "entity_id": "forge_station",
-              "primary_entity_id": "forge_station",
-              "display_name": "forge_station.apply_item_upgrade",
-              "display_name_zh": "应用装备升级。",
-              "trigger": "应用装备升级。",
-              "execution": "应用装备升级。",
-              "result": "应用装备升级。",
-              "required_capability_ids": [
-                "forge_station.upgrade.apply_item_upgrade",
-                "status_icon_hud.display"
-              ],
-              "trigger_model": {
-                "type": "input_action",
-                "source_entity_id": "player",
-                "target_entity_id": "forge_station"
-              },
-              "conditions": [],
-              "effects": [
-                {
-                  "type": "apply_item_upgrade"
-                }
-              ],
-              "verification_logs": [
-                "BehaviorTriggered forge_station.apply_item_upgrade"
-              ],
-              "semantic_role": "behavior",
-              "source_refs": [
-                "autoue-behavior-driven-runtime"
-              ],
-              "runtime_features": [
-                "currency",
-                "hud",
-                "inventory",
-                "upgrade"
-              ]
-            }
+            "equipment"
           ]
         }
-      ]
-    },
-    {
-      "entity_id": "gold_pickup",
-      "display_name": "Gold Pickup",
-      "display_name_zh": "金币",
-      "entity_kind": "pickup",
-      "summary": "敌人或容器掉落的货币。",
-      "summary_zh": "敌人或容器掉落的货币。",
-      "content_tags": [
-        "gold",
-        "currency",
-        "pickup"
       ],
-      "spawnable": false,
-      "abilities": []
+      "capabilities": []
     },
     {
       "entity_id": "shop_room_vendor",
@@ -108,75 +40,18 @@
         "reward"
       ],
       "spawnable": false,
-      "abilities": [
+      "capability_bindings": [
         {
-          "ability_id": "shop_room_vendor.transaction.purchase_item",
-          "capability_id": "shop_room_vendor.transaction.purchase_item",
-          "entity_id": "shop_room_vendor",
-          "display_name": "shop_room_vendor.transaction.purchase_item",
-          "display_name_zh": "购买商店物品。",
-          "summary": "购买商店物品。",
-          "summary_zh": "购买商店物品。",
-          "semantic_role": "capability",
-          "capability_kind": "transaction",
-          "action_kind": "purchase_item",
-          "runtime_primitives": [
-            "check_currency",
-            "spend_currency",
-            "add_item"
-          ],
-          "engine_ports": [],
-          "runtime_features": [
-            "transaction",
-            "inventory",
-            "currency"
-          ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "behaviors": [
-            {
-              "behavior_id": "shop_room_vendor.purchase_item",
-              "ability_id": "shop_room_vendor.transaction.purchase_item",
-              "entity_id": "shop_room_vendor",
-              "primary_entity_id": "shop_room_vendor",
-              "display_name": "shop_room_vendor.purchase_item",
-              "display_name_zh": "购买商店物品。",
-              "trigger": "购买商店物品。",
-              "execution": "购买商店物品。",
-              "result": "购买商店物品。",
-              "required_capability_ids": [
-                "shop_room_vendor.transaction.purchase_item",
-                "gold_pickup.collect",
-                "status_icon_hud.display"
-              ],
-              "trigger_model": {
-                "type": "input_action",
-                "source_entity_id": "player",
-                "target_entity_id": "shop_room_vendor"
-              },
-              "conditions": [],
-              "effects": [
-                {
-                  "type": "purchase_item"
-                }
-              ],
-              "verification_logs": [
-                "BehaviorTriggered shop_room_vendor.purchase_item"
-              ],
-              "semantic_role": "behavior",
-              "source_refs": [
-                "autoue-behavior-driven-runtime"
-              ],
-              "runtime_features": [
-                "currency",
-                "hud",
-                "inventory",
-                "pickup",
-                "transaction"
-              ]
-            }
+          "capability_id": "economy.transaction.purchase_item",
+          "params": {},
+          "tags": [
+            "shop",
+            "vendor",
+            "reward"
           ]
         }
-      ]
+      ],
+      "capabilities": []
     },
     {
       "entity_id": "status_icon_hud",
@@ -191,58 +66,81 @@
         "buff"
       ],
       "spawnable": false,
-      "abilities": [
+      "capability_bindings": [
         {
-          "ability_id": "status_icon_hud.display",
-          "entity_id": "status_icon_hud",
-          "display_name": "Status Icon HUD Display",
-          "display_name_zh": "状态图标HUD显示",
-          "summary": "负责把数值、图标或地图状态呈现到屏幕。",
-          "summary_zh": "负责把数值、图标或地图状态呈现到屏幕。",
-          "capability_id": "status_icon_hud.display",
+          "capability_id": "hud.display.refresh_value",
+          "params": {},
+          "tags": [
+            "hud",
+            "status",
+            "buff"
+          ]
+        },
+        {
+          "capability_id": "hud.feedback.flash_warning",
+          "params": {},
+          "tags": [
+            "hud",
+            "status",
+            "buff"
+          ]
+        }
+      ],
+      "capabilities": [
+        {
+          "capability_id": "hud.display.refresh_value",
+          "display_name": "Hud Display Refresh_Value",
+          "display_name_zh": "刷新 HUD 数值",
+          "summary": "刷新 HUD 数值",
+          "summary_zh": "刷新 HUD 数值",
           "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
           "capability_kind": "hud_binding",
-          "runtime_primitives": [
-            "hud_refresh",
-            "tag_state"
-          ],
+          "action_kind": "refresh_value",
+          "runtime_handler": "ActionDispatcher.setHudValue",
+          "params_schema": {},
+          "default_params": {},
           "engine_ports": [
             "widget.set_text",
             "widget.set_percent"
           ],
           "runtime_features": [
-            "hud"
+            "world_adapter",
+            "entity_registry",
+            "state_blackboard",
+            "action_dispatcher"
           ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
-          "action_kind": "refresh_value",
           "behaviors": [
             {
-              "behavior_id": "status_icon_hud.display.refresh_value",
-              "ability_id": "status_icon_hud.display",
-              "entity_id": "status_icon_hud",
-              "display_name": "Status Icon HUD Refresh Value",
-              "display_name_zh": "状态图标HUD刷新数值",
-              "trigger": "tracked value changes",
-              "execution": "updates bars, icons, counters, or map tiles",
-              "result": "HUD reflects current state",
-              "source_refs": [
-                "dead-cells-inspired-library"
-              ],
-              "primary_entity_id": "status_icon_hud",
+              "behavior_id": "hud.behavior.refresh_value",
+              "display_name": "Hud Behavior Refresh_Value",
+              "display_name_zh": "刷新 HUD 数值",
+              "summary": "刷新 HUD 数值",
+              "summary_zh": "刷新 HUD 数值",
+              "semantic_role": "behavior",
+              "behavior_kind": "hud_update",
+              "primary_entity_kind": "hud",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
               "required_capability_ids": [
-                "status_icon_hud.display"
-              ],
-              "trigger_model": {
-                "type": "legacy_text",
-                "description": "tracked value changes"
-              },
-              "effects": [
-                "HUD reflects current state"
+                "hud.display.refresh_value"
               ],
               "runtime_features": [
-                "hud"
+                "world_adapter",
+                "entity_registry",
+                "state_blackboard",
+                "action_dispatcher"
               ],
-              "semantic_role": "behavior"
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "refresh_value",
+                  "uses": "hud.display.refresh_value"
+                }
+              ]
             }
           ]
         }

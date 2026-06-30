@@ -1,4 +1,5 @@
 {
+  "schema_version": "autoue-eab-canonical/v2",
   "entities": [
     {
       "entity_id": "freeze_trap",
@@ -12,92 +13,318 @@
         "freeze"
       ],
       "spawnable": false,
-      "abilities": [
+      "capability_bindings": [
         {
-          "ability_id": "freeze_trap.sensor.detect_player_overlap",
-          "capability_id": "freeze_trap.sensor.detect_player_overlap",
-          "entity_id": "freeze_trap",
-          "display_name": "freeze_trap.sensor.detect_player_overlap",
-          "display_name_zh": "检测玩家进入冰冻陷阱。",
-          "summary": "检测玩家进入冰冻陷阱。",
-          "summary_zh": "检测玩家进入冰冻陷阱。",
+          "capability_id": "hazard.effect.apply_freeze",
+          "params": {},
+          "tags": [
+            "trap",
+            "freeze"
+          ]
+        },
+        {
+          "capability_id": "hazard.sensor.detect_overlap",
+          "params": {},
+          "tags": [
+            "trap",
+            "freeze"
+          ]
+        },
+        {
+          "capability_id": "vfx.visibility.set_visible_while_state",
+          "params": {},
+          "tags": [
+            "trap",
+            "freeze"
+          ]
+        },
+        {
+          "capability_id": "camera.feedback.camera_impulse",
+          "params": {},
+          "tags": [
+            "trap",
+            "freeze"
+          ]
+        }
+      ],
+      "capabilities": [
+        {
+          "capability_id": "camera.feedback.camera_impulse",
+          "display_name": "Camera Feedback Camera_Impulse",
+          "display_name_zh": "镜头冲击反馈",
+          "summary": "镜头冲击反馈",
+          "summary_zh": "镜头冲击反馈",
           "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "camera_feedback",
+          "action_kind": "camera_impulse",
+          "runtime_handler": "ActionDispatcher.cameraImpulse",
+          "params_schema": {},
+          "default_params": {},
+          "engine_ports": [
+            "camera.update_view_target"
+          ],
+          "runtime_features": [
+            "world_adapter",
+            "action_dispatcher"
+          ],
+          "behaviors": [
+            {
+              "behavior_id": "hazard.behavior.freeze_on_overlap",
+              "display_name": "Hazard Behavior Freeze_On_Overlap",
+              "display_name_zh": "重叠时冰冻",
+              "summary": "重叠时冰冻",
+              "summary_zh": "重叠时冰冻",
+              "semantic_role": "behavior",
+              "behavior_kind": "hazard_effect",
+              "primary_entity_kind": "trap",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
+              "required_capability_ids": [
+                "hazard.sensor.detect_overlap",
+                "hazard.effect.apply_freeze",
+                "vfx.visibility.set_visible_while_state",
+                "camera.feedback.camera_impulse"
+              ],
+              "runtime_features": [
+                "world_adapter",
+                "entity_registry",
+                "trigger_router",
+                "state_blackboard",
+                "action_dispatcher"
+              ],
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "detect_overlap",
+                  "uses": "hazard.sensor.detect_overlap"
+                },
+                {
+                  "step": "apply_freeze",
+                  "uses": "hazard.effect.apply_freeze"
+                },
+                {
+                  "step": "set_visible_while_state",
+                  "uses": "vfx.visibility.set_visible_while_state"
+                },
+                {
+                  "step": "camera_impulse",
+                  "uses": "camera.feedback.camera_impulse"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "capability_id": "hazard.effect.apply_freeze",
+          "display_name": "Hazard Effect Apply_Freeze",
+          "display_name_zh": "施加冰冻",
+          "summary": "施加冰冻",
+          "summary_zh": "施加冰冻",
+          "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "apply_effect",
+          "action_kind": "apply_freeze",
+          "runtime_handler": "ActionDispatcher.writeState",
+          "params_schema": {},
+          "default_params": {},
+          "engine_ports": [],
+          "runtime_features": [
+            "state_blackboard",
+            "action_dispatcher"
+          ],
+          "behaviors": [
+            {
+              "behavior_id": "hazard.behavior.freeze_on_overlap",
+              "display_name": "Hazard Behavior Freeze_On_Overlap",
+              "display_name_zh": "重叠时冰冻",
+              "summary": "重叠时冰冻",
+              "summary_zh": "重叠时冰冻",
+              "semantic_role": "behavior",
+              "behavior_kind": "hazard_effect",
+              "primary_entity_kind": "trap",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
+              "required_capability_ids": [
+                "hazard.sensor.detect_overlap",
+                "hazard.effect.apply_freeze",
+                "vfx.visibility.set_visible_while_state",
+                "camera.feedback.camera_impulse"
+              ],
+              "runtime_features": [
+                "world_adapter",
+                "entity_registry",
+                "trigger_router",
+                "state_blackboard",
+                "action_dispatcher"
+              ],
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "detect_overlap",
+                  "uses": "hazard.sensor.detect_overlap"
+                },
+                {
+                  "step": "apply_freeze",
+                  "uses": "hazard.effect.apply_freeze"
+                },
+                {
+                  "step": "set_visible_while_state",
+                  "uses": "vfx.visibility.set_visible_while_state"
+                },
+                {
+                  "step": "camera_impulse",
+                  "uses": "camera.feedback.camera_impulse"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "capability_id": "hazard.sensor.detect_overlap",
+          "display_name": "Hazard Sensor Detect_Overlap",
+          "display_name_zh": "机关检测重叠",
+          "summary": "机关检测重叠",
+          "summary_zh": "机关检测重叠",
+          "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
           "capability_kind": "sensor_overlap",
           "action_kind": "detect_overlap",
-          "runtime_primitives": [
-            "overlap_zone"
-          ],
+          "runtime_handler": "TriggerRouter.bindOverlapEnter",
+          "params_schema": {},
+          "default_params": {},
           "engine_ports": [
             "primitive.on_component_begin_overlap"
           ],
           "runtime_features": [
-            "trigger_router",
-            "world_adapter"
+            "world_adapter",
+            "entity_registry",
+            "trigger_router"
           ],
-          "definition": "Runtime capability; trigger/result live in Behavior Library.",
           "behaviors": [
             {
-              "behavior_id": "freeze_trap.freeze_player_on_overlap",
-              "ability_id": "freeze_trap.sensor.detect_player_overlap",
-              "entity_id": "freeze_trap",
-              "primary_entity_id": "freeze_trap",
-              "display_name": "freeze_trap.freeze_player_on_overlap",
-              "display_name_zh": "重叠后冰冻玩家并播放反馈。",
-              "trigger": "重叠后冰冻玩家并播放反馈。",
-              "execution": "重叠后冰冻玩家并播放反馈。",
-              "result": "重叠后冰冻玩家并播放反馈。",
-              "required_capability_ids": [
-                "freeze_trap.sensor.detect_player_overlap",
-                "freeze_trap.effect.apply_freeze_to_player",
-                "player.movement.block_while_effect_active",
-                "freeze_vfx.emit.show_freeze",
-                "side_camera.camera.apply_impulse"
-              ],
-              "trigger_model": {
-                "type": "overlap_enter",
-                "source_entity_id": "player",
-                "target_entity_id": "freeze_trap"
-              },
-              "conditions": [],
-              "effects": [
-                {
-                  "type": "write_state",
-                  "key": "player.effects.frozen",
-                  "value": {
-                    "active": true,
-                    "duration": 1.25
-                  }
-                },
-                {
-                  "type": "movement_gate",
-                  "target_entity_id": "player",
-                  "blocked_by": "player.effects.frozen"
-                },
-                {
-                  "type": "set_vfx_visible",
-                  "entity_id": "freeze_vfx",
-                  "visible_while": "player.effects.frozen"
-                },
-                {
-                  "type": "camera_impulse",
-                  "duration": 0.35
-                }
-              ],
-              "verification_logs": [
-                "BehaviorTriggered freeze_trap.freeze_player_on_overlap"
-              ],
+              "behavior_id": "hazard.behavior.freeze_on_overlap",
+              "display_name": "Hazard Behavior Freeze_On_Overlap",
+              "display_name_zh": "重叠时冰冻",
+              "summary": "重叠时冰冻",
+              "summary_zh": "重叠时冰冻",
               "semantic_role": "behavior",
-              "source_refs": [
-                "autoue-behavior-driven-runtime"
+              "behavior_kind": "hazard_effect",
+              "primary_entity_kind": "trap",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
+              "required_capability_ids": [
+                "hazard.sensor.detect_overlap",
+                "hazard.effect.apply_freeze",
+                "vfx.visibility.set_visible_while_state",
+                "camera.feedback.camera_impulse"
               ],
               "runtime_features": [
-                "action_dispatcher",
-                "camera",
-                "movement",
-                "state_blackboard",
+                "world_adapter",
+                "entity_registry",
                 "trigger_router",
-                "vfx",
-                "world_adapter"
+                "state_blackboard",
+                "action_dispatcher"
+              ],
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "detect_overlap",
+                  "uses": "hazard.sensor.detect_overlap"
+                },
+                {
+                  "step": "apply_freeze",
+                  "uses": "hazard.effect.apply_freeze"
+                },
+                {
+                  "step": "set_visible_while_state",
+                  "uses": "vfx.visibility.set_visible_while_state"
+                },
+                {
+                  "step": "camera_impulse",
+                  "uses": "camera.feedback.camera_impulse"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "capability_id": "vfx.visibility.set_visible_while_state",
+          "display_name": "Vfx Visibility Set_Visible_While_State",
+          "display_name_zh": "按状态显示特效",
+          "summary": "按状态显示特效",
+          "summary_zh": "按状态显示特效",
+          "semantic_role": "capability",
+          "capability_scope": "canonical_prototype",
+          "capability_kind": "vfx_binding",
+          "action_kind": "set_visible_while_state",
+          "runtime_handler": "ActionDispatcher.setVfxVisible",
+          "params_schema": {},
+          "default_params": {},
+          "engine_ports": [
+            "component.set_visibility"
+          ],
+          "runtime_features": [
+            "world_adapter",
+            "entity_registry",
+            "state_blackboard",
+            "action_dispatcher"
+          ],
+          "behaviors": [
+            {
+              "behavior_id": "hazard.behavior.freeze_on_overlap",
+              "display_name": "Hazard Behavior Freeze_On_Overlap",
+              "display_name_zh": "重叠时冰冻",
+              "summary": "重叠时冰冻",
+              "summary_zh": "重叠时冰冻",
+              "semantic_role": "behavior",
+              "behavior_kind": "hazard_effect",
+              "primary_entity_kind": "trap",
+              "trigger": "on event",
+              "execution": "compose canonical capabilities",
+              "result": "runtime executes behavior",
+              "required_capability_ids": [
+                "hazard.sensor.detect_overlap",
+                "hazard.effect.apply_freeze",
+                "vfx.visibility.set_visible_while_state",
+                "camera.feedback.camera_impulse"
+              ],
+              "runtime_features": [
+                "world_adapter",
+                "entity_registry",
+                "trigger_router",
+                "state_blackboard",
+                "action_dispatcher"
+              ],
+              "trigger_model": {
+                "kind": "on_event"
+              },
+              "flow": [
+                {
+                  "step": "detect_overlap",
+                  "uses": "hazard.sensor.detect_overlap"
+                },
+                {
+                  "step": "apply_freeze",
+                  "uses": "hazard.effect.apply_freeze"
+                },
+                {
+                  "step": "set_visible_while_state",
+                  "uses": "vfx.visibility.set_visible_while_state"
+                },
+                {
+                  "step": "camera_impulse",
+                  "uses": "camera.feedback.camera_impulse"
+                }
               ]
             }
           ]
@@ -117,7 +344,36 @@
         "freeze"
       ],
       "spawnable": false,
-      "abilities": []
+      "capability_bindings": [
+        {
+          "capability_id": "vfx.lifecycle.cleanup_after_duration",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "freeze"
+          ]
+        },
+        {
+          "capability_id": "vfx.spawn.spawn_particles",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "freeze"
+          ]
+        },
+        {
+          "capability_id": "vfx.visibility.set_visible_while_state",
+          "params": {},
+          "tags": [
+            "vfx",
+            "particle",
+            "freeze"
+          ]
+        }
+      ],
+      "capabilities": []
     },
     {
       "entity_id": "player",
@@ -132,7 +388,36 @@
         "combat"
       ],
       "spawnable": false,
-      "abilities": []
+      "capability_bindings": [
+        {
+          "capability_id": "player.attack.apply_damage",
+          "params": {},
+          "tags": [
+            "player",
+            "prisoner",
+            "combat"
+          ]
+        },
+        {
+          "capability_id": "player.movement.block_by_state",
+          "params": {},
+          "tags": [
+            "player",
+            "prisoner",
+            "combat"
+          ]
+        },
+        {
+          "capability_id": "player.movement.move_actor",
+          "params": {},
+          "tags": [
+            "player",
+            "prisoner",
+            "combat"
+          ]
+        }
+      ],
+      "capabilities": []
     },
     {
       "entity_id": "side_camera",
@@ -145,7 +430,23 @@
         "camera"
       ],
       "spawnable": false,
-      "abilities": []
+      "capability_bindings": [
+        {
+          "capability_id": "pickup.feedback.spawn_reward_visual",
+          "params": {},
+          "tags": [
+            "camera"
+          ]
+        },
+        {
+          "capability_id": "camera.feedback.camera_impulse",
+          "params": {},
+          "tags": [
+            "camera"
+          ]
+        }
+      ],
+      "capabilities": []
     }
   ],
   "non_goals": []

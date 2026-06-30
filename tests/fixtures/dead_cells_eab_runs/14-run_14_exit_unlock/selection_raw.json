@@ -4,13 +4,21 @@
     "level_exit_door",
     "status_icon_hud"
   ],
-  "selected_capability_ids": [],
+  "selected_capability_ids": [
+    "enemy.spawn.spawn_actor",
+    "enemy.sensor.detect_player_by_distance",
+    "enemy.movement.chase_target",
+    "enemy.attack.melee_hitbox",
+    "enemy.health.receive_damage",
+    "enemy.death.emit_death_event",
+    "encounter.complete.complete_when_all_dead",
+    "encounter.exit.unlock_exit",
+    "level.transition.activate",
+    "hud.display.refresh_value"
+  ],
   "selected_behavior_ids": [
-    "player.combat.attack",
-    "zombie.offense.resolve_hit",
-    "level_exit_door.lock.evaluate_unlock",
-    "level_exit_door.transition.accept_entry",
-    "level_exit_door.transition.finish_transition",
-    "status_icon_hud.alert.flash_warning"
+    "enemy.behavior.chase_and_melee",
+    "exit.behavior.unlock_and_transition",
+    "hud.behavior.refresh_value"
   ]
 }

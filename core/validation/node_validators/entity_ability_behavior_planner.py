@@ -49,12 +49,12 @@ def validate_entity_ability_behavior_planner(node: str, data: dict[str, Any]) ->
                 validate_spawnable_enemy_entity(entity, label=node)
             except EncounterValidationError as exc:
                 raise WorkflowValidationError(str(exc)) from exc
-        for ai, ability in enumerate(require_list(node, entity, "abilities")):
-            if not isinstance(ability, dict):
-                raise WorkflowValidationError(f"{node}: abilities[{ai}] must be object")
-            for key in ("ability_id", "display_name", "summary"):
-                require_string(node, ability, key, non_empty=True)
-            for bi, behavior in enumerate(require_list(node, ability, "behaviors", non_empty=True)):
+        for ai, capability in enumerate(require_list(node, entity, "capabilities")):
+            if not isinstance(capability, dict):
+                raise WorkflowValidationError(f"{node}: capabilities[{ai}] must be object")
+            for key in ("capability_id", "display_name", "summary"):
+                require_string(node, capability, key, non_empty=True)
+            for bi, behavior in enumerate(require_list(node, capability, "behaviors")):
                 if not isinstance(behavior, dict):
                     raise WorkflowValidationError(f"{node}: behaviors[{bi}] must be object")
                 for key in ("behavior_id", "display_name", "trigger", "execution", "result"):

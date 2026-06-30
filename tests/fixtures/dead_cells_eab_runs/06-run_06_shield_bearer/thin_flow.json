@@ -1,14 +1,13 @@
 {
   "flows": [
     {
-      "flow_id": "flow_parry_spark_vfx_emit_spawn_particles",
+      "flow_id": "flow_vfx_behavior_spawn_particles",
       "entity_id": "parry_spark_vfx",
-      "ability_id": "parry_spark_vfx.emit",
-      "source_behavior_id": "parry_spark_vfx.emit.spawn_particles",
+      "source_behavior_id": "vfx.behavior.spawn_particles",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -16,23 +15,23 @@
             "actions"
           ],
           "engine_ports": [
-            "component.set_visibility"
+            "manual.trigger"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered parry_spark_vfx.emit.spawn_particles"
+        "BehaviorTriggered vfx.behavior.spawn_particles",
+        "ActionDispatched spawn_vfx"
       ]
     },
     {
-      "flow_id": "flow_player_combat_attack",
-      "entity_id": "player",
-      "ability_id": "player.combat",
-      "source_behavior_id": "player.combat.attack",
+      "flow_id": "flow_enemy_behavior_block_then_counter",
+      "entity_id": "shield_bearer",
+      "source_behavior_id": "enemy.behavior.block_then_counter",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -40,100 +39,31 @@
             "actions"
           ],
           "engine_ports": [
-            "input.action_binding",
-            "kismet.line_trace_single",
+            "actor.spawn",
             "gameplay_statics.apply_damage"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered player.combat.attack"
+        "BehaviorTriggered enemy.behavior.block_then_counter",
+        "ActionDispatched enemy_spawn_actor",
+        "ActionDispatched enemy_detect_player",
+        "ActionDispatched enemy_chase_target",
+        "ActionDispatched enemy_directional_block",
+        "ActionDispatched enemy_melee_attack",
+        "ActionDispatched enemy_receive_damage",
+        "ActionDispatched enemy_emit_death_event",
+        "ActionDispatched encounter_complete_when_all_dead"
       ]
     },
     {
-      "flow_id": "flow_player_movement_dodge_roll",
-      "entity_id": "player",
-      "ability_id": "player.movement",
-      "source_behavior_id": "player.movement.dodge_roll",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "input.action_binding",
-            "pawn.add_movement_input"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered player.movement.dodge_roll"
-      ]
-    },
-    {
-      "flow_id": "flow_shield_bearer_offense_resolve_hit",
-      "entity_id": "shield_bearer",
-      "ability_id": "shield_bearer.offense",
-      "source_behavior_id": "shield_bearer.offense.resolve_hit",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "kismet.sphere_trace_single",
-            "gameplay_statics.apply_damage"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered shield_bearer.offense.resolve_hit"
-      ]
-    },
-    {
-      "flow_id": "flow_shield_bearer_pursuit_close_gap",
-      "entity_id": "shield_bearer",
-      "ability_id": "shield_bearer.pursuit",
-      "source_behavior_id": "shield_bearer.pursuit.close_gap",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "actor.get_distance_to",
-            "pawn.add_movement_input"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered shield_bearer.pursuit.close_gap"
-      ]
-    },
-    {
-      "flow_id": "flow_status_icon_hud_display_refresh_value",
+      "flow_id": "flow_hud_behavior_refresh_value",
       "entity_id": "status_icon_hud",
-      "ability_id": "status_icon_hud.display",
-      "source_behavior_id": "status_icon_hud.display.refresh_value",
+      "source_behavior_id": "hud.behavior.refresh_value",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -141,13 +71,13 @@
             "actions"
           ],
           "engine_ports": [
-            "widget.set_text",
-            "widget.set_percent"
+            "manual.trigger"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered status_icon_hud.display.refresh_value"
+        "BehaviorTriggered hud.behavior.refresh_value",
+        "ActionDispatched set_hud_value"
       ]
     }
   ]

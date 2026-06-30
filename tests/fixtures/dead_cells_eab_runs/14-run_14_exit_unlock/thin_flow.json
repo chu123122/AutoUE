@@ -1,14 +1,13 @@
 {
   "flows": [
     {
-      "flow_id": "flow_level_exit_door_lock_evaluate_unlock",
+      "flow_id": "flow_exit_behavior_unlock_and_transition",
       "entity_id": "level_exit_door",
-      "ability_id": "level_exit_door.lock",
-      "source_behavior_id": "level_exit_door.lock.evaluate_unlock",
+      "source_behavior_id": "exit.behavior.unlock_and_transition",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -21,94 +20,19 @@
         }
       ],
       "verification": [
-        "BehaviorTriggered level_exit_door.lock.evaluate_unlock"
+        "BehaviorTriggered exit.behavior.unlock_and_transition",
+        "ActionDispatched unlock_exit",
+        "ActionDispatched open_exit"
       ]
     },
     {
-      "flow_id": "flow_level_exit_door_transition_accept_entry",
-      "entity_id": "level_exit_door",
-      "ability_id": "level_exit_door.transition",
-      "source_behavior_id": "level_exit_door.transition.accept_entry",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "primitive.on_component_begin_overlap",
-            "gameplay_statics.open_level"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered level_exit_door.transition.accept_entry"
-      ]
-    },
-    {
-      "flow_id": "flow_level_exit_door_transition_finish_transition",
-      "entity_id": "level_exit_door",
-      "ability_id": "level_exit_door.transition",
-      "source_behavior_id": "level_exit_door.transition.finish_transition",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "primitive.on_component_begin_overlap",
-            "gameplay_statics.open_level"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered level_exit_door.transition.finish_transition"
-      ]
-    },
-    {
-      "flow_id": "flow_player_combat_attack",
-      "entity_id": "player",
-      "ability_id": "player.combat",
-      "source_behavior_id": "player.combat.attack",
-      "stages": [
-        {
-          "stage": "Event/Result",
-          "contract": "compile behavior spec",
-          "inputs": [
-            "trigger"
-          ],
-          "outputs": [
-            "actions"
-          ],
-          "engine_ports": [
-            "input.action_binding",
-            "kismet.line_trace_single",
-            "gameplay_statics.apply_damage"
-          ]
-        }
-      ],
-      "verification": [
-        "BehaviorTriggered player.combat.attack"
-      ]
-    },
-    {
-      "flow_id": "flow_status_icon_hud_alert_flash_warning",
+      "flow_id": "flow_hud_behavior_refresh_value",
       "entity_id": "status_icon_hud",
-      "ability_id": "status_icon_hud.alert",
-      "source_behavior_id": "status_icon_hud.alert.flash_warning",
+      "source_behavior_id": "hud.behavior.refresh_value",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -116,23 +40,23 @@
             "actions"
           ],
           "engine_ports": [
-            "widget.set_render_opacity"
+            "manual.trigger"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered status_icon_hud.alert.flash_warning"
+        "BehaviorTriggered hud.behavior.refresh_value",
+        "ActionDispatched set_hud_value"
       ]
     },
     {
-      "flow_id": "flow_zombie_offense_resolve_hit",
+      "flow_id": "flow_enemy_behavior_chase_and_melee",
       "entity_id": "zombie",
-      "ability_id": "zombie.offense",
-      "source_behavior_id": "zombie.offense.resolve_hit",
+      "source_behavior_id": "enemy.behavior.chase_and_melee",
       "stages": [
         {
           "stage": "Event/Result",
-          "contract": "compile behavior spec",
+          "contract": "compile canonical behavior spec",
           "inputs": [
             "trigger"
           ],
@@ -140,13 +64,20 @@
             "actions"
           ],
           "engine_ports": [
-            "kismet.sphere_trace_single",
+            "actor.spawn",
             "gameplay_statics.apply_damage"
           ]
         }
       ],
       "verification": [
-        "BehaviorTriggered zombie.offense.resolve_hit"
+        "BehaviorTriggered enemy.behavior.chase_and_melee",
+        "ActionDispatched enemy_spawn_actor",
+        "ActionDispatched enemy_detect_player",
+        "ActionDispatched enemy_chase_target",
+        "ActionDispatched enemy_melee_attack",
+        "ActionDispatched enemy_receive_damage",
+        "ActionDispatched enemy_emit_death_event",
+        "ActionDispatched encounter_complete_when_all_dead"
       ]
     }
   ]
