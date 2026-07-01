@@ -128,7 +128,7 @@ def _compact_payload(raw_result: dict[str, Any]) -> dict[str, Any]:
     }
 
 def _use_fixture(node: BaseLLMNode) -> bool:
-    return node.model.__class__.__name__ == "ScriptedSmokeChatModel"
+    return bool(getattr(node.model, "use_mcp_fixture", False))
 
 def build_mcp_context(node: BaseLLMNode, state: GraphState, full_input: str) -> None:
     thin_text = state.llm_outputs.get("ThinGameplayFlowPlanner", "")

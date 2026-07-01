@@ -11,7 +11,11 @@
       "area_count": 0,
       "allowed_enemy_tags": [
         "ground",
-        "melee"
+        "melee",
+        "ranged",
+        "flying",
+        "explosive",
+        "shield"
       ],
       "can_initial_spawn": true,
       "can_runtime_spawn": false

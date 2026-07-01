@@ -11,6 +11,7 @@ from core.content_library import (
     render_candidate_set_prompt,
     validate_selection_against_library_and_candidates,
 )
+from core.scripted_enemy_cases import candidate_query_for_case
 from core.workflow_validation import parse_node_json, validate_node_output
 
 ENTITY_ABILITY_BEHAVIOR_PLANNER_PROMPT = """SCHEMA: EntityAbilityBehaviorPlanner
@@ -28,7 +29,11 @@ def _output_root(state: GraphState) -> Path:
 
 
 def build_planner_context(node: BaseLLMNode, state: GraphState, full_input: str) -> None:
-    candidate_set = build_candidate_set(full_input)
+    candidate_query = full_input
+    case = getattr(node.model, "scripted_enemy_case", "")
+    if isinstance(case, str) and case:
+        candidate_query += "\n" + candidate_query_for_case(case)
+    candidate_set = build_candidate_set(candidate_query)
     state._eab_candidate_set = candidate_set
     node.full_input = (
         "User/scene/gameplay input:\n"

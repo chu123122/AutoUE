@@ -149,7 +149,7 @@ DEFAULT_SUPPORT_MATRIX = CapabilitySupportMatrix([
     _entry("enemy_attack", "area_burst", None, [], ["gameplay_statics.apply_damage"], supported=False, reason="enemy area burst runtime handler is not implemented"),
     _entry("enemy_defense", "directional_block", "EnemyCombat.resolveDirectionalBlock", ["enemy_runtime", "enemy_combat", "enemy_presentation", "enemy_health"], ["actor.get_forward_vector"]),
     _entry("enemy_defense", "invulnerable_window", None, [], [], supported=False, reason="enemy invulnerable window runtime handler is not implemented"),
-    _entry("enemy_health", "receive_damage", "EnemyHealth.applyDamage", ["enemy_runtime", "enemy_health", "enemy_presentation", "enemy_registry", "world_adapter"], ["gameplay_statics.apply_damage", "actor.on_take_any_damage"]),
+    _entry("enemy_health", "receive_damage", "EnemyHealth.applyDamage", ["enemy_runtime", "enemy_health", "enemy_presentation", "enemy_registry", "world_adapter", "player_combat_runtime", "hit_query_runtime"], ["gameplay_statics.apply_damage", "actor.on_take_any_damage"]),
     _entry("enemy_death", "emit_death_event", "EnemyDeathEvents.emitDeath", ["enemy_runtime", "enemy_death_events", "enemy_presentation", "enemy_registry", "encounter_manager"], ["actor.on_destroyed"]),
     _entry("enemy_reward", "drop_on_death", None, [], [], supported=False, reason="enemy reward drop runtime handler is not implemented"),
     _entry("encounter", "complete_when_all_dead", "EncounterManager.completeWhenAllDead", ["enemy_runtime", "encounter_manager", "enemy_registry"], ["encounter.alive_count"]),

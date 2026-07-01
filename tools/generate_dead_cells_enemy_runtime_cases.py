@@ -11,21 +11,28 @@ if str(ROOT) not in sys.path:
 from core.BaseLLMNode import GraphState
 from core.behavior_spec import compile_and_check
 from core.content_library import build_candidate_set, canonicalize_selection, parse_selection_output, validate_selection_against_library_and_candidates
+from core.scripted_enemy_cases import (
+    ENGINE_PORTS_BY_ACTION as PORTS,
+    MELEE_CAPABILITIES as MELEE,
+    PROJECTILE_CAPABILITIES as PROJECTILE,
+    SCRIPTED_ENEMY_CASES,
+    SELF_DESTRUCT_CAPABILITIES as SELF,
+    SHIELD_CAPABILITIES as SHIELD,
+)
 from custom_nodes.typescript_code_generator import build_codegen_output
 
 OUT = ROOT / "tests" / "fixtures" / "dead_cells_enemy_runtime_cases"
-MELEE=["enemy.spawn.spawn_actor","enemy.sensor.detect_player_by_distance","enemy.movement.chase_target","enemy.attack.melee_hitbox","enemy.health.receive_damage","enemy.death.emit_death_event","encounter.complete.complete_when_all_dead"]
-PROJECTILE=["enemy.spawn.spawn_actor","enemy.sensor.detect_player_by_distance","enemy.movement.keep_distance","enemy.attack.projectile_spawn","enemy.health.receive_damage","enemy.death.emit_death_event","encounter.complete.complete_when_all_dead"]
-SELF=["enemy.spawn.spawn_actor","enemy.sensor.detect_player_by_distance","enemy.movement.chase_target","enemy.attack.self_destruct","enemy.health.receive_damage","enemy.death.emit_death_event","encounter.complete.complete_when_all_dead"]
-SHIELD=["enemy.spawn.spawn_actor","enemy.sensor.detect_player_by_distance","enemy.movement.chase_target","enemy.defense.directional_block","enemy.attack.melee_hitbox","enemy.health.receive_damage","enemy.death.emit_death_event","encounter.complete.complete_when_all_dead"]
 CASES=[
-("01-zombie_melee","僵尸近战 canonical prototype runtime",["zombie"],MELEE,["enemy.behavior.chase_and_melee"]),
-("02-archer_projectile","弓箭手远程 canonical prototype runtime",["archer"],PROJECTILE,["enemy.behavior.keep_distance_and_projectile"]),
-("03-kamikaze_self_destruct","自爆蝙蝠 canonical prototype runtime",["kamikaze_bat"],SELF,["enemy.behavior.chase_and_self_destruct"]),
-("04-shield_bearer_block","持盾兵 canonical prototype runtime",["shield_bearer"],SHIELD,["enemy.behavior.block_then_counter"]),
+(
+    spec.fixture_name,
+    spec.prompt,
+    list(spec.entity_ids),
+    list(spec.capability_ids),
+    list(spec.behavior_ids),
+) for spec in SCRIPTED_ENEMY_CASES.values()
+]+[
 ("05-room_encounter_multi_enemy","多敌人 canonical prototype runtime",["zombie","archer","kamikaze_bat","shield_bearer"],list(dict.fromkeys(MELEE+PROJECTILE+SELF+SHIELD)),["enemy.behavior.chase_and_melee","enemy.behavior.keep_distance_and_projectile","enemy.behavior.chase_and_self_destruct","enemy.behavior.block_then_counter"]),
 ]
-PORTS={"enemy_spawn_actor":["actor.spawn"],"enemy_detect_player":["actor.get_distance_to"],"enemy_chase_target":["actor.set_actor_location"],"enemy_keep_distance":["actor.set_actor_location"],"enemy_melee_attack":["kismet.sphere_trace_single","gameplay_statics.apply_damage"],"enemy_projectile_attack":["projectile.spawn"],"enemy_self_destruct":["gameplay_statics.apply_damage","actor.destroy"],"enemy_directional_block":["actor.get_forward_vector"],"enemy_receive_damage":["actor.on_take_any_damage"],"enemy_emit_death_event":["actor.on_destroyed"],"encounter_complete_when_all_dead":["encounter.alive_count"]}
 
 def write_json(path: Path, data: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True); path.write_text(json.dumps(data,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
@@ -36,7 +43,7 @@ def thin_flow_for(spec: dict[str, Any]) -> dict[str, Any]:
         stages=[]
         for a in b["actions"]:
             ports=PORTS.get(a["type"],[])
-            if ports: stages.append({"stage":"Runtime","contract":f"{a['type']} for {b['behavior_id']}","inputs":["BehaviorSpec","runtime_params"],"outputs":[a["type"]],"engine_ports":ports})
+            if ports: stages.append({"stage":"Ability/Action","contract":f"{a['type']} for {b['behavior_id']}","inputs":["BehaviorSpec","runtime_params"],"outputs":[a["type"]],"engine_ports":ports})
         flows.append({"flow_id":b["flow_id"],"entity_id":b["entity_id"],"source_behavior_id":b["behavior_id"],"stages":stages,"verification":["EnemySpawned","EnemyDied","EncounterCompleted=1"]})
     return {"flows":flows}
 

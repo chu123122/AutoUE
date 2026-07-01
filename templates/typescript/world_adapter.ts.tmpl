@@ -238,7 +238,18 @@ export class AutoUEWorldAdapter {
   setVisibility(entity: AnyUEObject, visible: boolean): void { try { if (entity?.SetVisibility) entity.SetVisibility(visible, true); else if (entity?.SetActorHiddenInGame) entity.SetActorHiddenInGame(!visible); else this.log(`WorldAdapter.setVisibility unresolved ${visible ? 1 : 0}`); } catch (e) { this.log(`WorldAdapter.setVisibility failed: ${e}`); } }
   setHudValue(entityId: string, value: unknown): void { this.log(`WorldAdapter.setHudValue ${entityId}=${JSON.stringify(value)}`); }
   applyDamage(target: AnyUEObject, amount: number): void { try { const UE = this.context.UE; if (UE?.GameplayStatics?.ApplyDamage) UE.GameplayStatics.ApplyDamage(target, amount, undefined, this.context.actor, undefined); else this.log(`WorldAdapter.applyDamage ${amount}`); } catch (e) { this.log(`WorldAdapter.applyDamage failed: ${e}`); } }
-  spawnProjectile(classPath: string, transform: Record<string, any>, velocity?: AnyUEObject): AnyUEObject { const projectile = this.spawnActor(classPath, transform); try { if (velocity && projectile?.ProjectileMovement) projectile.ProjectileMovement.Velocity = velocity; } catch (e) { this.log(`WorldAdapter.spawnProjectile velocity failed: ${e}`); } return projectile; }
+  spawnProjectile(classPath: string, transform: Record<string, any>, velocity?: AnyUEObject): AnyUEObject {
+    try {
+      const projectile = this.spawnActor(classPath, transform);
+      try { if (velocity && projectile?.ProjectileMovement) projectile.ProjectileMovement.Velocity = velocity; } catch (e) { this.log(`WorldAdapter.spawnProjectile velocity failed: ${e}`); }
+      return projectile;
+    } catch (e) {
+      const location = transform?.location || transform?.Location || {};
+      const fallback = this.spawnTempShape(location, 24, { r: 0.1, g: 0.95, b: 1, a: 0.75 }, 0.45, 'Sphere');
+      this.log(`WorldAdapter.spawnProjectile fallback class=${classPath} reason=${e}`);
+      return fallback || { AutoUEFallbackProjectile: true, classPath, transform, velocity };
+    }
+  }
   setActorTag(actor: AnyUEObject, tag: string): void { try { if (actor?.Tags?.Add) actor.Tags.Add(tag); else this.log(`WorldAdapter.setActorTag ${tag}`); } catch (e) { this.log(`WorldAdapter.setActorTag failed: ${e}`); } }
   hasActorTag(actor: AnyUEObject, tag: string): boolean { try { if (actor?.ActorHasTag) return !!actor.ActorHasTag(tag); if (actor?.Tags?.Contains) return !!actor.Tags.Contains(tag); } catch (_) {} return false; }
   configureSpawnedEnemyActor(actor: AnyUEObject, params: Record<string, any> = {}): void {

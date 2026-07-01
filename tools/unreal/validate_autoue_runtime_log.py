@@ -40,6 +40,16 @@ MOVED_RE = re.compile(
     r"EnemyMoved\s+enemy_id=(?P<enemy_id>\S+)\s+from=(?P<from>-?\d+,-?\d+,-?\d+)\s+"
     r"to=(?P<to>-?\d+,-?\d+,-?\d+)\s+target_distance=(?P<target_distance>\d+)"
 )
+ATTACK_TELEGRAPH_RE = re.compile(r"EnemyAttackTelegraph\s+enemy_id=(?P<enemy_id>\S+)\s+type=(?P<type>\S+)")
+ATTACK_ACTIVE_RE = re.compile(r"EnemyAttackActive\s+enemy_id=(?P<enemy_id>\S+)\s+type=(?P<type>\S+)")
+ATTACK_RESOLVED_RE = re.compile(r"EnemyAttackResolved\s+enemy_id=(?P<enemy_id>\S+)\s+type=(?P<type>\S+)\s+hit=(?P<hit>[01])")
+
+EXPECTED_ATTACK_BY_CASE = {
+    "zombie": "melee_hitbox",
+    "archer": "projectile_spawn",
+    "kamikaze": "self_destruct",
+    "shield": "melee_hitbox",
+}
 
 
 def _first_index(lines: list[str], marker: str, start: int = 0) -> int:
@@ -54,6 +64,9 @@ def validate_autoue_runtime_log(
     *,
     require_in_range: bool = False,
     require_enemy_move: bool = False,
+    require_attack_phase: bool = False,
+    enemy_case: str = "",
+    require_encounter_complete: bool = False,
 ) -> dict:
     lines = log_path.read_text(encoding="utf-8", errors="replace").splitlines()
     errors: list[str] = []
@@ -149,6 +162,51 @@ def validate_autoue_runtime_log(
     if require_enemy_move and not movements:
         errors.append("no EnemyMoved record found")
 
+    telegraphs = []
+    actives = []
+    resolved = []
+    for line in lines:
+        match = ATTACK_TELEGRAPH_RE.search(line)
+        if match:
+            telegraphs.append(match.groupdict())
+        match = ATTACK_ACTIVE_RE.search(line)
+        if match:
+            actives.append(match.groupdict())
+        match = ATTACK_RESOLVED_RE.search(line)
+        if match:
+            data = match.groupdict()
+            data["hit"] = data["hit"] == "1"
+            resolved.append(data)
+    evidence["enemy_attack_telegraph_count"] = len(telegraphs)
+    evidence["enemy_attack_active_count"] = len(actives)
+    evidence["enemy_attack_resolved_count"] = len(resolved)
+    evidence["enemy_attack_telegraph_sample"] = telegraphs[:5]
+    evidence["enemy_attack_active_sample"] = actives[:5]
+    evidence["enemy_attack_resolved_sample"] = resolved[:5]
+    if require_attack_phase:
+        if not telegraphs:
+            errors.append("no EnemyAttackTelegraph record found")
+        if not actives:
+            errors.append("no EnemyAttackActive record found")
+        if not resolved:
+            errors.append("no EnemyAttackResolved record found")
+
+    case = str(enemy_case or "")
+    if case:
+        expected = EXPECTED_ATTACK_BY_CASE.get(case)
+        if expected is None:
+            errors.append(f"unknown enemy_case: {case}")
+        elif not any(item.get("type") == expected for item in resolved):
+            errors.append(f"no EnemyAttackResolved type={expected} record found for enemy_case={case}")
+        if case == "kamikaze" and not any("EnemyDied" in line for line in lines):
+            errors.append("no EnemyDied record found for enemy_case=kamikaze")
+        if case == "shield" and not any("EnemyDirectionalBlock" in line or "EnemyBlocked" in line for line in lines):
+            errors.append("no EnemyDirectionalBlock or EnemyBlocked record found for enemy_case=shield")
+
+    evidence["encounter_completed"] = any("EncounterCompleted=1" in line for line in lines)
+    if require_encounter_complete and not evidence["encounter_completed"]:
+        errors.append("no EncounterCompleted=1 record found")
+
     return {
         "result": "fail" if errors else "pass",
         "errors": errors,
@@ -161,6 +219,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("log", help="Unreal/PuerTS runtime log path")
     parser.add_argument("--require-in-range", action="store_true", help="also require enemy perception in_range=1")
     parser.add_argument("--require-enemy-move", action="store_true", help="also require generated enemy movement")
+    parser.add_argument("--require-attack-phase", action="store_true", help="also require enemy attack telegraph/active/resolved markers")
+    parser.add_argument("--enemy-case", choices=sorted(EXPECTED_ATTACK_BY_CASE), default="", help="also require case-specific attack markers")
+    parser.add_argument("--require-encounter-complete", action="store_true", help="also require EncounterCompleted=1")
     parser.add_argument("--write-report", help="optional JSON report path")
     args = parser.parse_args(argv)
 
@@ -168,6 +229,9 @@ def main(argv: list[str] | None = None) -> int:
         Path(args.log),
         require_in_range=args.require_in_range,
         require_enemy_move=args.require_enemy_move,
+        require_attack_phase=args.require_attack_phase,
+        enemy_case=args.enemy_case,
+        require_encounter_complete=args.require_encounter_complete,
     )
     if args.write_report:
         Path(args.write_report).parent.mkdir(parents=True, exist_ok=True)

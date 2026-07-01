@@ -9,6 +9,14 @@ import urllib.request
 from dataclasses import dataclass
 from typing import Any, Dict, Iterable, Mapping
 
+from core.scripted_enemy_cases import (
+    SCRIPTED_ENEMY_CASES,
+    candidate_query_for_case,
+    encounter_for_case,
+    get_scripted_enemy_case,
+    thin_flow_for_case,
+)
+
 
 @dataclass
 class SimpleChatResponse:
@@ -149,6 +157,8 @@ class CodexCliChatModel:
 class ScriptedSmokeChatModel:
     """Deterministic local model for workflow smoke tests; never calls network."""
 
+    use_mcp_fixture = True
+
     def invoke(self, messages: Iterable[Any]) -> SimpleChatResponse:
         normalized = OpenAICompatibleChatModel(api_key="x", base_url="http://127.0.0.1", model="x")._normalize_messages(messages)
         system = "\n".join(m["content"] for m in normalized if m["role"] == "system")
@@ -206,6 +216,111 @@ class ScriptedSmokeChatModel:
         return SimpleChatResponse(content=content, response_metadata={"token_usage": {"input_tokens": 0, "output_tokens": 0}})
 
 
+class ScriptedEnemyChatModel:
+    """Deterministic enemy model for end-to-end enemy main-chain smoke tests."""
+
+    use_mcp_fixture = True
+
+    def __init__(self, case: str):
+        self.case = case
+        self.scripted_enemy_case = case
+        self.spec = get_scripted_enemy_case(case)
+
+    def _normalize(self, messages: Iterable[Any]) -> tuple[str, str]:
+        normalized = OpenAICompatibleChatModel(api_key="x", base_url="http://127.0.0.1", model="x")._normalize_messages(messages)
+        system = "\n".join(m["content"] for m in normalized if m["role"] == "system")
+        user = "\n".join(m["content"] for m in normalized if m["role"] != "system")
+        return system, user
+
+    def _spawn_group_from_input(self, user: str) -> str:
+        decoder = json.JSONDecoder()
+        groups: list[str] = []
+        for index, char in enumerate(user):
+            if char != "{":
+                continue
+            try:
+                data, _end = decoder.raw_decode(user[index:])
+            except Exception:
+                continue
+            if not isinstance(data, dict) or data.get("schema_version") != "autoue-scene-spawn-manifest/v1":
+                continue
+            for group in data.get("spawn_groups", []):
+                if isinstance(group, dict) and isinstance(group.get("spawn_group"), str) and group["spawn_group"]:
+                    groups.append(group["spawn_group"])
+        if "room_01_guard" in groups:
+            return "room_01_guard"
+        if groups:
+            return groups[0]
+        raise RuntimeError("ScriptedEnemyChatModel EncounterSpecPlanner requires a non-empty scene-spawn-manifest spawn_groups list")
+
+    def _ue_api_output(self) -> dict[str, Any]:
+        thin = thin_flow_for_case(self.case)
+        seen: dict[str, dict[str, Any]] = {}
+        for flow in thin.get("flows", []):
+            for stage in flow.get("stages", []):
+                for port in stage.get("engine_ports", []):
+                    row = seen.setdefault(
+                        port,
+                        {
+                            "engine_port_id": port,
+                            "flow_ids": [],
+                            "behavior_ids": [],
+                            "query": f"Unreal Engine PuerTS gameplay API for {port}",
+                            "raw_path": f"flow/04-ue-api-mcp/raw/{port}.raw.json",
+                            "adjudication_path": f"flow/04-ue-api-mcp/adjudication/{port}.json",
+                            "verdict": "hit",
+                            "hit_type": "direct_hit",
+                            "evidence_symbols": [],
+                            "notes": "scripted enemy hit",
+                        },
+                    )
+                    flow_id = flow.get("flow_id")
+                    behavior_id = flow.get("source_behavior_id")
+                    if flow_id and flow_id not in row["flow_ids"]:
+                        row["flow_ids"].append(flow_id)
+                    if behavior_id and behavior_id not in row["behavior_ids"]:
+                        row["behavior_ids"].append(behavior_id)
+                    symbol = {
+                        "actor.spawn": "UE.World.SpawnActor",
+                        "actor.get_distance_to": "UE.Actor.GetDistanceTo",
+                        "actor.set_actor_location": "UE.Actor.K2_SetActorLocation",
+                        "kismet.sphere_trace_single": "UE.KismetSystemLibrary.SphereTraceSingle",
+                        "gameplay_statics.apply_damage": "UE.GameplayStatics.ApplyDamage",
+                        "projectile.spawn": "UE.World.SpawnActor",
+                        "actor.destroy": "UE.Actor.K2_DestroyActor",
+                        "actor.get_forward_vector": "UE.Actor.GetActorForwardVector",
+                        "actor.on_take_any_damage": "UE.Actor.OnTakeAnyDamage",
+                        "actor.on_destroyed": "UE.Actor.OnDestroyed",
+                        "encounter.alive_count": "AutoUE.EnemyRegistry.aliveCount",
+                    }.get(port, "UE.Actor")
+                    if symbol not in row["evidence_symbols"]:
+                        row["evidence_symbols"].append(symbol)
+        return {"queries": list(seen.values()), "summary": {"all_required_ports_hit": True, "blocked_engine_ports": []}}
+
+    def invoke(self, messages: Iterable[Any]) -> SimpleChatResponse:
+        system, user = self._normalize(messages)
+        spec = self.spec
+        if "SCHEMA: SceneAndGameplaySplitter" in system:
+            content = {
+                "scene_description": f"A deterministic side-scroller test room with a {spec.entity_ids[0]} enemy encounter.",
+                "gameplay_description": f"Spawn one {spec.entity_ids[0]} on level start and validate visible enemy combat phases.",
+            }
+        elif "SCHEMA: EntityAbilityBehaviorPlanner" in system:
+            content = spec.selection
+        elif "SCHEMA: ThinGameplayFlowPlanner" in system:
+            content = thin_flow_for_case(self.case)
+        elif "SCHEMA: EncounterSpecPlanner" in system:
+            content = encounter_for_case(self.case, self._spawn_group_from_input(user))
+        elif "SCHEMA: UEApiMCPFeasibilitySearcher" in system:
+            content = self._ue_api_output()
+        else:
+            content = {"ok": True, "note": f"scripted enemy output for {self.case}"}
+        return SimpleChatResponse(
+            content=json.dumps(content, ensure_ascii=False),
+            response_metadata={"token_usage": {"input_tokens": 0, "output_tokens": 0}, "provider": "scripted_enemy", "case": self.case},
+        )
+
+
 def _env_or_default(profile: Mapping[str, Any], env_key: str, default_key: str = "", required: bool = False) -> str:
     env_name = profile.get(env_key)
     value = os.getenv(env_name, "") if env_name else ""
@@ -225,6 +340,11 @@ def create_llm(profile_name: str, profiles_config: Mapping[str, Any]):
     temperature = float(profile.get("temperature", 0.2))
     if provider == "scripted_smoke":
         return ScriptedSmokeChatModel()
+    if provider == "scripted_enemy":
+        case = str(profile.get("case") or "")
+        if case not in SCRIPTED_ENEMY_CASES:
+            raise ValueError(f"scripted_enemy profile requires case in {sorted(SCRIPTED_ENEMY_CASES)}; got {case!r}")
+        return ScriptedEnemyChatModel(case)
 
     if provider == "codex_cli":
         command = os.getenv(profile.get("command_env", "CODEX_CLI_PATH"), "") or profile.get("command", "codex")

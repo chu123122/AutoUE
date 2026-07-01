@@ -14,6 +14,22 @@
     "scripted_smoke": {
       "provider": "scripted_smoke"
     },
+    "scripted_enemy_zombie": {
+      "provider": "scripted_enemy",
+      "case": "zombie"
+    },
+    "scripted_enemy_archer": {
+      "provider": "scripted_enemy",
+      "case": "archer"
+    },
+    "scripted_enemy_kamikaze": {
+      "provider": "scripted_enemy",
+      "case": "kamikaze"
+    },
+    "scripted_enemy_shield": {
+      "provider": "scripted_enemy",
+      "case": "shield"
+    },
     "codex_cli_fast": {
       "provider": "codex_cli",
       "command_env": "CODEX_CLI_PATH",

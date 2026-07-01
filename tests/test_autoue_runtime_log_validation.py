@@ -15,6 +15,14 @@ GOOD_LOG = """
 [AUTOUE_GENERATED] EnemyMoved enemy_id=zombie_1 from=640,0,-1085 to=639,0,-1085 target_distance=80
 """.strip()
 
+GOOD_ATTACK_LOG = GOOD_LOG + """
+[AUTOUE_GENERATED] EnemyDetectPlayer enemy_id=zombie_1 distance=80 in_range=1
+[AUTOUE_GENERATED] EnemyAttackTelegraph enemy_id=zombie_1 type=melee_hitbox windup=0.35
+[AUTOUE_GENERATED] EnemyAttackActive enemy_id=zombie_1 type=melee_hitbox
+[AUTOUE_GENERATED] EnemyAttackResolved enemy_id=zombie_1 type=melee_hitbox hit=1 damage=1
+[AUTOUE_GENERATED] EncounterCompleted=1 ExitUnlocked=1
+"""
+
 
 def write_log(tmp_path: Path, text: str) -> Path:
     path = tmp_path / "runtime.log"
@@ -76,3 +84,34 @@ def test_autoue_runtime_log_ignores_known_endpie_puerts_shutdown_noise(tmp_path)
 
     assert report["result"] == "pass"
     assert report["evidence"]["ignored_puerts_error_lines"]
+
+
+def test_autoue_runtime_log_can_require_attack_phase_and_case_type(tmp_path):
+    from tools.unreal.validate_autoue_runtime_log import validate_autoue_runtime_log
+
+    report = validate_autoue_runtime_log(
+        write_log(tmp_path, GOOD_ATTACK_LOG),
+        require_in_range=True,
+        require_enemy_move=True,
+        require_attack_phase=True,
+        enemy_case="zombie",
+        require_encounter_complete=True,
+    )
+
+    assert report["result"] == "pass"
+    assert report["evidence"]["enemy_attack_resolved_count"] == 1
+    assert report["evidence"]["encounter_completed"] is True
+
+
+def test_autoue_runtime_log_rejects_wrong_case_attack_type(tmp_path):
+    from tools.unreal.validate_autoue_runtime_log import validate_autoue_runtime_log
+
+    report = validate_autoue_runtime_log(
+        write_log(tmp_path, GOOD_ATTACK_LOG),
+        require_attack_phase=True,
+        enemy_case="archer",
+        require_encounter_complete=True,
+    )
+
+    assert report["result"] == "fail"
+    assert any("type=projectile_spawn" in err for err in report["errors"])

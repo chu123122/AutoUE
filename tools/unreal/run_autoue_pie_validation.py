@@ -188,12 +188,29 @@ def _generated_enemies(world) -> list:
 def _move_pawn_near_enemy(pawn, enemy) -> bool:
     try:
         e = enemy.get_actor_location()
-        target = unreal.Vector(float(e.x) - 80.0, float(e.y), float(e.z) + 8.0)
+        target = unreal.Vector(float(e.x) - 30.0, float(e.y), float(e.z) + 8.0)
         pawn.set_actor_location(target, False, True)
         _log(f"PawnMovedNearEnemy target={round(target.x)},{round(target.y)},{round(target.z)}")
         return True
     except Exception as exc:
         _log(f"PawnMoveNearEnemyFailed error={exc}")
+        return False
+
+
+def _apply_damage_to_enemy(pawn, enemy, amount: float = 999.0) -> bool:
+    try:
+        pc = None
+        world = _pie_world()
+        if world:
+            try:
+                pc = unreal.GameplayStatics.get_player_controller(world, 0)
+            except Exception:
+                pc = None
+        unreal.GameplayStatics.apply_damage(enemy, amount, pc, pawn, None)
+        _log(f"EnemyDamageApplied actor={_actor_name(enemy)} amount={amount}")
+        return True
+    except Exception as exc:
+        _log(f"EnemyDamageApplyFailed actor={_actor_name(enemy)} error={exc}")
         return False
 
 
@@ -207,6 +224,7 @@ class PieValidation:
         self.errors: list[str] = []
         self.right_tag_count = 0
         self.attack_tag_count = 0
+        self.damage_pulse_count = 0
         self.moved_near_enemy = False
         self.finalized = False
 
@@ -277,17 +295,20 @@ class PieValidation:
                 return
 
             if self.state == "drive_attack":
-                if pawn and enemies and not self.moved_near_enemy:
-                    self.moved_near_enemy = _move_pawn_near_enemy(pawn, enemies[0])
+                if pawn and enemies:
+                    self.moved_near_enemy = _move_pawn_near_enemy(pawn, enemies[0]) or self.moved_near_enemy
                 if pawn:
                     _add_tag(pawn, "AUTOUE_INPUT_ATTACK")
                     self.attack_tag_count += 1
-                if time.time() - self.state_since > 2.5:
+                if pawn and enemies and time.time() - self.state_since > 1.0 and self.damage_pulse_count < 3:
+                    if _apply_damage_to_enemy(pawn, enemies[0]):
+                        self.damage_pulse_count += 1
+                if time.time() - self.state_since > 5.0:
                     self.transition("observe")
                 return
 
             if self.state == "observe":
-                if time.time() - self.state_since > 2.0:
+                if time.time() - self.state_since > 4.0:
                     self.finish("done")
                 return
         except Exception:
@@ -315,6 +336,7 @@ class PieValidation:
             "errors": self.errors,
             "right_tag_count": self.right_tag_count,
             "attack_tag_count": self.attack_tag_count,
+            "damage_pulse_count": self.damage_pulse_count,
             "moved_near_enemy": self.moved_near_enemy,
             "last_sample": sample,
             "samples": self.samples,
