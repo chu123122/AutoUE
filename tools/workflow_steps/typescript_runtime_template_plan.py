@@ -51,6 +51,7 @@ ENEMY_RUNTIME_TEMPLATES: list[TemplateRow] = [
     ("enemy_perception", "TypeScript/content/generated/AutoUEEnemyPerception.ts", "createAutoUEEnemyPerception", "AutoUEEnemyPerceptionContext"),
     ("enemy_movement", "TypeScript/content/generated/AutoUEEnemyMovement.ts", "createAutoUEEnemyMovement", "AutoUEEnemyMovementContext"),
     ("enemy_combat", "TypeScript/content/generated/AutoUEEnemyCombat.ts", "createAutoUEEnemyCombat", "AutoUEEnemyCombatContext"),
+    ("enemy_presentation_runtime", "TypeScript/content/generated/AutoUEEnemyPresentationRuntime.ts", "createAutoUEEnemyPresentationRuntime", "AutoUEEnemyPresentationRuntimeContext"),
     ("enemy_health", "TypeScript/content/generated/AutoUEEnemyHealth.ts", "createAutoUEEnemyHealth", "AutoUEEnemyHealthContext"),
     ("enemy_death_events", "TypeScript/content/generated/AutoUEEnemyDeathEvents.ts", "createAutoUEEnemyDeathEvents", "AutoUEEnemyDeathEventsContext"),
     ("enemy_ability_dispatcher", "TypeScript/content/generated/AutoUEEnemyAbilityDispatcher.ts", "createAutoUEEnemyAbilityDispatcher", "AutoUEEnemyAbilityDispatcherContext"),
@@ -73,6 +74,7 @@ TEMPLATE_BY_MODULE: dict[str, TemplateRow] = {
 }
 TEMPLATE_BY_MODULE["encounter_manager"] = TEMPLATE_BY_MODULE["enemy_encounter_manager"]
 TEMPLATE_BY_MODULE["enemy_runtime"] = TEMPLATE_BY_MODULE["enemy_registry"]
+TEMPLATE_BY_MODULE["enemy_presentation"] = TEMPLATE_BY_MODULE["enemy_presentation_runtime"]
 
 ENEMY_CLUSTER = {row[0] for row in ENEMY_RUNTIME_TEMPLATES}
 CORE_ALWAYS = [
@@ -104,9 +106,10 @@ IMPORT_DEPS: dict[str, set[str]] = {
     "enemy_brain": {"enemy_registry", "enemy_perception", "enemy_ability_dispatcher", "world_adapter"},
     "enemy_perception": {"world_adapter", "enemy_registry"},
     "enemy_movement": {"world_adapter", "enemy_registry"},
-    "enemy_combat": {"world_adapter", "enemy_registry", "enemy_death_events"},
-    "enemy_health": {"world_adapter", "enemy_registry", "enemy_death_events"},
-    "enemy_death_events": {"world_adapter", "enemy_registry", "enemy_encounter_manager"},
+    "enemy_combat": {"world_adapter", "enemy_registry", "enemy_death_events", "enemy_presentation_runtime"},
+    "enemy_presentation_runtime": {"world_adapter"},
+    "enemy_health": {"world_adapter", "enemy_registry", "enemy_death_events", "enemy_presentation_runtime"},
+    "enemy_death_events": {"world_adapter", "enemy_registry", "enemy_encounter_manager", "enemy_presentation_runtime"},
     "enemy_ability_dispatcher": {"enemy_spawn_runtime", "enemy_perception", "enemy_movement", "enemy_combat", "enemy_health", "enemy_death_events", "enemy_encounter_manager"},
 }
 

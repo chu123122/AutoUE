@@ -138,7 +138,10 @@
             "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
             "projectile_speed": 900,
             "cooldown_seconds": 1.6,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.45,
+            "active_seconds": 0.18,
+            "recover_seconds": 0.25
           },
           "tags": []
         },
@@ -239,7 +242,10 @@
             "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
             "projectile_speed": 900,
             "cooldown_seconds": 1.6,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.45,
+            "active_seconds": 0.18,
+            "recover_seconds": 0.25
           },
           "tags": []
         },
@@ -368,7 +374,10 @@
             "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
             "projectile_speed": 900,
             "cooldown_seconds": 1.6,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.45,
+            "active_seconds": 0.18,
+            "recover_seconds": 0.25
           },
           "tags": []
         },
@@ -760,7 +769,10 @@
             "attack_range": 155,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -857,7 +869,10 @@
             "attack_range": 155,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -1037,7 +1052,10 @@
             "attack_range": 150,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -1134,7 +1152,10 @@
             "attack_range": 150,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -1551,7 +1572,10 @@
             "attack_range": 155,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -1771,7 +1795,10 @@
             "attack_range": 155,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -2169,7 +2196,10 @@
             "attack_range": 150,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -2266,7 +2296,10 @@
             "attack_range": 155,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -2397,7 +2430,10 @@
             "attack_range": 155,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -2499,7 +2535,10 @@
             "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
             "projectile_speed": 900,
             "cooldown_seconds": 1.6,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.45,
+            "active_seconds": 0.18,
+            "recover_seconds": 0.25
           },
           "tags": []
         },
@@ -2596,7 +2635,10 @@
             "attack_range": 150,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -2868,7 +2910,10 @@
             "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
             "projectile_speed": 900,
             "cooldown_seconds": 1.6,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.45,
+            "active_seconds": 0.18,
+            "recover_seconds": 0.25
           },
           "tags": []
         },
@@ -2989,7 +3034,11 @@
             "explosion_radius": 180,
             "cooldown_seconds": 0.5,
             "kill_self": true,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.75,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.1,
+            "explode_radius": 180
           },
           "tags": []
         }
@@ -3065,7 +3114,10 @@
             "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
             "projectile_speed": 900,
             "cooldown_seconds": 1.6,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.45,
+            "active_seconds": 0.18,
+            "recover_seconds": 0.25
           },
           "tags": []
         },
@@ -3162,7 +3214,10 @@
             "attack_range": 155,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -3295,7 +3350,10 @@
             "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
             "projectile_speed": 900,
             "cooldown_seconds": 1.6,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.45,
+            "active_seconds": 0.18,
+            "recover_seconds": 0.25
           },
           "tags": []
         },
@@ -3568,7 +3626,10 @@
             "attack_range": 155,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -3729,7 +3790,10 @@
             "attack_range": 155,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -4035,7 +4099,10 @@
             "attack_range": 155,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -4147,7 +4214,10 @@
             "attack_range": 150,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -4259,7 +4329,10 @@
             "attack_range": 155,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -4371,7 +4444,10 @@
             "attack_range": 155,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -4517,7 +4593,10 @@
             "attack_range": 155,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -4614,7 +4693,10 @@
             "attack_range": 155,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -4760,7 +4842,10 @@
             "attack_range": 150,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -4857,7 +4942,10 @@
             "attack_range": 155,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -5081,7 +5169,10 @@
             "attack_range": 150,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -5178,7 +5269,10 @@
             "attack_range": 150,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -5434,7 +5528,10 @@
             "attack_range": 155,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -5723,7 +5820,10 @@
             "attack_range": 150,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -5974,7 +6074,10 @@
             "attack_range": 160,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },

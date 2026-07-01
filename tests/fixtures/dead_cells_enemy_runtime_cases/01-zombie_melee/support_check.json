@@ -13,6 +13,7 @@
     "enemy_health",
     "enemy_movement",
     "enemy_perception",
+    "enemy_presentation",
     "enemy_registry",
     "enemy_runtime",
     "enemy_spawn_runtime",
@@ -91,6 +92,7 @@
       "required_runtime_modules": [
         "enemy_runtime",
         "enemy_combat",
+        "enemy_presentation",
         "enemy_registry",
         "world_adapter"
       ],
@@ -109,6 +111,7 @@
       "required_runtime_modules": [
         "enemy_runtime",
         "enemy_health",
+        "enemy_presentation",
         "enemy_registry",
         "world_adapter"
       ],
@@ -127,6 +130,7 @@
       "required_runtime_modules": [
         "enemy_runtime",
         "enemy_death_events",
+        "enemy_presentation",
         "enemy_registry",
         "encounter_manager"
       ],

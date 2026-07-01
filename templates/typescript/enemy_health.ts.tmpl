@@ -1,9 +1,22 @@
-export interface {{interface_name}} { readonly worldAdapter: any; readonly registry: any; readonly deathEvents?: any; readonly log?: (message: string) => void; }
+export interface {{interface_name}} { readonly worldAdapter: any; readonly registry: any; readonly deathEvents?: any; readonly presentation?: any; readonly log?: (message: string) => void; }
 const LOG_PREFIX = '[AUTOUE_GENERATED]';
 function log(ctx: {{interface_name}}, message: string): void { (ctx.log || console.warn)(`${LOG_PREFIX} ${message}`); }
 export class AutoUEEnemyHealth {
   constructor(private readonly context: {{interface_name}}) {}
   bindDamage(enemy: any, params: Record<string, any> = {}): void { this.context.worldAdapter.bindOnTakeAnyDamage(enemy.actor, (amount: number) => this.applyDamage(enemy, amount, 'OnTakeAnyDamage', params)); }
-  applyDamage(enemy: any, amount: number, source = 'runtime', _params: Record<string, any> = {}): void { if (!enemy.alive) return; enemy.hp = Math.max(0, Number(enemy.hp || 0) - Number(amount || 0)); log(this.context, `EnemyDamaged enemy_id=${enemy.enemy_id} hp=${enemy.hp} source=${source}`); if (enemy.hp <= 0) this.context.deathEvents?.emitDeath(enemy, source); }
+  applyDamage(enemy: any, amount: number, source = 'runtime', _params: Record<string, any> = {}): void {
+    if (!enemy.alive) return;
+    let finalAmount = Number(amount || 0);
+    const block = enemy.block;
+    if (block?.active && finalAmount > 0) {
+      const reduced = Math.max(0, finalAmount * (1 - Number(block.reduction || 0)));
+      log(this.context, `EnemyBlocked enemy_id=${enemy.enemy_id} source=${source} original_damage=${finalAmount} final_damage=${reduced}`);
+      this.context.presentation?.block?.(enemy, block);
+      finalAmount = reduced;
+    }
+    enemy.hp = Math.max(0, Number(enemy.hp || 0) - finalAmount);
+    log(this.context, `EnemyDamaged enemy_id=${enemy.enemy_id} hp=${enemy.hp} source=${source}`);
+    if (enemy.hp <= 0) this.context.deathEvents?.emitDeath(enemy, source);
+  }
 }
 export function {{export_name}}(context: {{interface_name}}): AutoUEEnemyHealth { return new AutoUEEnemyHealth(context); }

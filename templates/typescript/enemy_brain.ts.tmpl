@@ -1,4 +1,12 @@
-export interface {{interface_name}} { readonly registry: any; readonly worldAdapter: any; readonly perception: any; readonly dispatcher: any; readonly log?: (message: string) => void; }
+export interface {{interface_name}} { readonly registry: any; readonly worldAdapter: any; readonly perception: any; readonly movement: any; readonly combat: any; readonly dispatcher: any; readonly log?: (message: string) => void; }
+type PatternPlan = { move?: string; attack?: string; defense?: string; minRange?: number; maxRange?: number; };
+const PATTERN_TABLE: Record<string, PatternPlan> = {
+  fast_chase_and_melee: { move: 'EnemyMovement.chaseTarget', attack: 'EnemyCombat.resolveMeleeHit', maxRange: 190 },
+  heavy_chase_and_melee: { move: 'EnemyMovement.chaseTarget', attack: 'EnemyCombat.resolveMeleeHit', maxRange: 210 },
+  keep_distance_and_projectile: { move: 'EnemyMovement.keepDistance', attack: 'EnemyCombat.spawnProjectile', minRange: 220, maxRange: 720 },
+  chase_and_self_destruct: { move: 'EnemyMovement.chaseTarget', attack: 'EnemyCombat.selfDestruct', maxRange: 210 },
+  shield_chase_counter: { move: 'EnemyMovement.chaseTarget', defense: 'EnemyCombat.resolveDirectionalBlock', attack: 'EnemyCombat.resolveMeleeHit', maxRange: 190 },
+};
 export class AutoUEEnemyBrain {
   constructor(private readonly context: {{interface_name}}) {}
   private behaviorDrivesEnemy(behavior: any): boolean {
@@ -7,30 +15,66 @@ export class AutoUEEnemyBrain {
       return handler === 'EnemyPerception.detectPlayer' || handler.indexOf('EnemyMovement.') === 0 || handler.indexOf('EnemyCombat.') === 0;
     });
   }
+  private cap(behavior: any, handler: string): any | undefined { return (behavior.resolved_capabilities || []).find((item: any) => item.handler === handler); }
+  private distance(enemy: any, target: any): number { try { return this.context.worldAdapter.getDistanceBetweenActors(enemy.actor, target); } catch (_) { return Number.POSITIVE_INFINITY; } }
+  private params(capability: any): Record<string, any> { return capability?.params || {}; }
+  private canStart(plan: PatternPlan, enemy: any, target: any, attackCap: any): boolean {
+    if (!attackCap) return false;
+    const dist = this.distance(enemy, target);
+    const params = this.params(attackCap);
+    const maxRange = Number(plan.maxRange || params.attack_range || enemy.runtime_params?.attack_range || 180);
+    const minRange = Number(plan.minRange || 0);
+    return dist <= maxRange && dist >= minRange;
+  }
+  private dispatchCombat(capability: any, enemy: any, target: any, now: number, dt: number): void { if (capability) this.context.dispatcher.dispatch(capability, enemy, target, now, dt); }
+  private tickPattern(enemy: any, target: any, now: number, dt: number, behavior: any, plan: PatternPlan): boolean {
+    const defenseCap = plan.defense ? this.cap(behavior, plan.defense) : undefined;
+    if (defenseCap) this.context.combat.resolveDirectionalBlock(enemy, target, this.params(defenseCap));
+    const moveCap = plan.move ? this.cap(behavior, plan.move) : undefined;
+    const attackCap = plan.attack ? this.cap(behavior, plan.attack) : undefined;
+    const phase = enemy.attack?.phase || 'idle';
+    if (moveCap && (phase === 'idle' || phase === 'cooldown')) this.context.dispatcher.dispatch(moveCap, enemy, target, now, dt);
+    if ((enemy.attack?.phase || 'idle') === 'idle' || (enemy.attack?.phase || 'idle') === 'cooldown') {
+      if (this.canStart(plan, enemy, target, attackCap)) this.dispatchCombat(attackCap, enemy, target, now, dt);
+    }
+    this.context.combat.advance(enemy, target, now);
+    return !!(defenseCap || attackCap || moveCap);
+  }
+  private tickFallback(enemy: any, target: any, now: number, dt: number, behavior: any): boolean {
+    let acted = this.context.combat.advance(enemy, target, now);
+    for (const capability of behavior.resolved_capabilities || []) {
+      if (capability.handler === 'EnemySpawnRuntime.spawnEnemy') continue;
+      if (capability.handler === 'EnemyPerception.detectPlayer') continue;
+      if (capability.handler === 'EncounterManager.completeWhenAllDead') continue;
+      if (capability.handler === 'EnemyHealth.applyDamage') continue;
+      if (capability.handler === 'EnemyDeathEvents.emitDeath') continue;
+      const phase = enemy.attack?.phase || 'idle';
+      if (String(capability.handler || '').indexOf('EnemyMovement.') === 0 && phase !== 'idle' && phase !== 'cooldown') continue;
+      this.context.dispatcher.dispatch(capability, enemy, target, now, dt);
+      acted = true;
+    }
+    this.context.combat.advance(enemy, target, now);
+    return acted;
+  }
   tick(now: number, dt: number, behaviorSpec: any): void {
     for (const enemy of this.context.registry.getAliveEnemies()) {
       const actor = this.context.worldAdapter.resolveActor?.(enemy.actor, [enemy.enemy_id, enemy.runtime_params?.actor_tag, enemy.runtime_params?.enemy_tag, enemy.entity_id]) || enemy.actor;
       if (!actor) { this.context.registry.updateState(enemy.enemy_id, 'Idle'); continue; }
       enemy.actor = actor;
       const behaviors = (behaviorSpec.behaviors || []).filter((item: any) => item.bound_entity_id === enemy.entity_id && item.runtime_domain === 'enemy_runtime' && this.behaviorDrivesEnemy(item));
-      if (!behaviors.length) continue;
+      if (!behaviors.length) { this.context.combat.advance(enemy, enemy.target, now); continue; }
       let acted = false;
       for (const behavior of behaviors) {
-        const perceptionSpec = (behavior.resolved_capabilities || []).find((item: any) => item.handler === 'EnemyPerception.detectPlayer');
-        const perception = this.context.perception.detectPlayer(enemy, perceptionSpec?.params || {});
-        if (!perception.in_range) continue;
+        const perceptionSpec = this.cap(behavior, 'EnemyPerception.detectPlayer');
+        const perception = this.context.perception.detectPlayer(enemy, this.params(perceptionSpec));
+        if (!perception.in_range) { this.context.combat.advance(enemy, enemy.target, now); continue; }
         const target = perception.target_actor || this.context.worldAdapter.findPlayerPawn();
-        for (const capability of behavior.resolved_capabilities || []) {
-          if (capability.handler === 'EnemySpawnRuntime.spawnEnemy') continue;
-          if (capability.handler === 'EnemyPerception.detectPlayer') continue;
-          if (capability.handler === 'EncounterManager.completeWhenAllDead') continue;
-          if (capability.handler === 'EnemyHealth.applyDamage') continue;
-          if (capability.handler === 'EnemyDeathEvents.emitDeath') continue;
-          this.context.dispatcher.dispatch(capability, enemy, target, now, dt);
-          acted = true;
-        }
+        enemy.target = target;
+        const pattern = String(behavior.runtime_params?.pattern || enemy.runtime_params?.pattern || '');
+        const plan = PATTERN_TABLE[pattern];
+        acted = (plan ? this.tickPattern(enemy, target, now, dt, behavior, plan) : this.tickFallback(enemy, target, now, dt, behavior)) || acted;
       }
-      if (!acted) this.context.registry.updateState(enemy.enemy_id, 'Idle');
+      if (!acted && (enemy.attack?.phase || 'idle') === 'idle') this.context.registry.updateState(enemy.enemy_id, 'Idle');
     }
   }
 }

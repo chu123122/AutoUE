@@ -16,7 +16,7 @@ const DISABLED_FEATURES = {{disabled_features_json}} as string[];
 const BEHAVIOR_SPEC = {{behavior_spec_json}};
 
 type GeneratedState = { elapsed: number; roomComplete: boolean; };
-type RuntimeServices = { worldAdapter?: any; enemyRegistry?: any; spawnPointRegistry?: any; enemySpawn?: any; enemySpawnManager?: any; enemyPerception?: any; enemyMovement?: any; enemyCombat?: any; enemyHealth?: any; enemyDeathEvents?: any; enemyDispatcher?: any; enemyBrain?: any; encounterManager?: any; playerCombat?: any; hitQuery?: any; };
+type RuntimeServices = { worldAdapter?: any; enemyRegistry?: any; spawnPointRegistry?: any; enemySpawn?: any; enemySpawnManager?: any; enemyPerception?: any; enemyMovement?: any; enemyCombat?: any; enemyPresentation?: any; enemyHealth?: any; enemyDeathEvents?: any; enemyDispatcher?: any; enemyBrain?: any; encounterManager?: any; playerCombat?: any; hitQuery?: any; };
 export interface {{interface_name}} { readonly spec?: any; readonly router?: any; readonly conditions?: any; readonly dispatcher?: any; readonly log?: (message: string) => void; }
 function log(message: string): void { console.warn(`${LOG_PREFIX} ${message}`); }
 function moduleLog(message: string): void { console.warn(String(message).indexOf(LOG_PREFIX) >= 0 ? String(message) : `${LOG_PREFIX} ${message}`); }
@@ -49,6 +49,7 @@ function runtimeServices(actor: UE.Character): RuntimeServices {
     const deathFactory = generatedFactory('./AutoUEEnemyDeathEvents', 'createAutoUEEnemyDeathEvents');
     const healthFactory = generatedFactory('./AutoUEEnemyHealth', 'createAutoUEEnemyHealth');
     const combatFactory = generatedFactory('./AutoUEEnemyCombat', 'createAutoUEEnemyCombat');
+    const presentationFactory = generatedFactory('./AutoUEEnemyPresentationRuntime', 'createAutoUEEnemyPresentationRuntime');
     const perceptionFactory = generatedFactory('./AutoUEEnemyPerception', 'createAutoUEEnemyPerception');
     const movementFactory = generatedFactory('./AutoUEEnemyMovement', 'createAutoUEEnemyMovement');
     const dispatcherFactory = generatedFactory('./AutoUEEnemyAbilityDispatcher', 'createAutoUEEnemyAbilityDispatcher');
@@ -58,13 +59,14 @@ function runtimeServices(actor: UE.Character): RuntimeServices {
     if (services.worldAdapter && services.enemyRegistry && spawnFactory) services.enemySpawn = spawnFactory({ worldAdapter: services.worldAdapter, registry: services.enemyRegistry, spec: BEHAVIOR_SPEC, log: moduleLog });
     if (services.enemyRegistry && services.spawnPointRegistry && services.enemySpawn && spawnManagerFactory) services.enemySpawnManager = spawnManagerFactory({ spawnPointRegistry: services.spawnPointRegistry, enemySpawn: services.enemySpawn, registry: services.enemyRegistry, log: moduleLog });
     if (services.enemyRegistry && services.enemySpawnManager && encounterFactory) services.encounterManager = encounterFactory({ registry: services.enemyRegistry, spawnManager: services.enemySpawnManager, log: moduleLog });
-    if (services.worldAdapter && services.enemyRegistry && deathFactory) services.enemyDeathEvents = deathFactory({ worldAdapter: services.worldAdapter, registry: services.enemyRegistry, encounterManager: services.encounterManager, log: moduleLog });
-    if (services.worldAdapter && services.enemyRegistry && healthFactory) services.enemyHealth = healthFactory({ worldAdapter: services.worldAdapter, registry: services.enemyRegistry, deathEvents: services.enemyDeathEvents, log: moduleLog });
-    if (services.worldAdapter && services.enemyRegistry && combatFactory) services.enemyCombat = combatFactory({ worldAdapter: services.worldAdapter, registry: services.enemyRegistry, deathEvents: services.enemyDeathEvents, log: moduleLog });
+    if (services.worldAdapter && presentationFactory) services.enemyPresentation = presentationFactory({ worldAdapter: services.worldAdapter, log: moduleLog });
+    if (services.worldAdapter && services.enemyRegistry && deathFactory) services.enemyDeathEvents = deathFactory({ worldAdapter: services.worldAdapter, registry: services.enemyRegistry, encounterManager: services.encounterManager, presentation: services.enemyPresentation, log: moduleLog });
+    if (services.worldAdapter && services.enemyRegistry && healthFactory) services.enemyHealth = healthFactory({ worldAdapter: services.worldAdapter, registry: services.enemyRegistry, deathEvents: services.enemyDeathEvents, presentation: services.enemyPresentation, log: moduleLog });
+    if (services.worldAdapter && services.enemyRegistry && combatFactory) services.enemyCombat = combatFactory({ worldAdapter: services.worldAdapter, registry: services.enemyRegistry, deathEvents: services.enemyDeathEvents, health: services.enemyHealth, presentation: services.enemyPresentation, log: moduleLog });
     if (services.worldAdapter && services.enemyRegistry && perceptionFactory) services.enemyPerception = perceptionFactory({ worldAdapter: services.worldAdapter, registry: services.enemyRegistry, log: moduleLog });
     if (services.worldAdapter && services.enemyRegistry && movementFactory) services.enemyMovement = movementFactory({ worldAdapter: services.worldAdapter, registry: services.enemyRegistry, log: moduleLog });
     if (dispatcherFactory) services.enemyDispatcher = dispatcherFactory({ spawnRuntime: services.enemySpawn, perception: services.enemyPerception, movement: services.enemyMovement, combat: services.enemyCombat, health: services.enemyHealth, deathEvents: services.enemyDeathEvents, encounterManager: services.encounterManager, log: moduleLog });
-    if (brainFactory && services.enemyRegistry && services.worldAdapter && services.enemyPerception && services.enemyDispatcher) services.enemyBrain = brainFactory({ registry: services.enemyRegistry, worldAdapter: services.worldAdapter, perception: services.enemyPerception, dispatcher: services.enemyDispatcher, log: moduleLog });
+    if (brainFactory && services.enemyRegistry && services.worldAdapter && services.enemyPerception && services.enemyMovement && services.enemyCombat && services.enemyDispatcher) services.enemyBrain = brainFactory({ registry: services.enemyRegistry, worldAdapter: services.worldAdapter, perception: services.enemyPerception, movement: services.enemyMovement, combat: services.enemyCombat, dispatcher: services.enemyDispatcher, log: moduleLog });
   }
   if (runtimeFeature('player_combat_runtime')) {
     const playerCombatFactory = generatedFactory('./AutoUEPlayerCombatRuntime', 'createAutoUEPlayerCombatRuntime');

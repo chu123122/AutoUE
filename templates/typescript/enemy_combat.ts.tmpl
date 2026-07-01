@@ -1,13 +1,125 @@
-export interface {{interface_name}} { readonly worldAdapter: any; readonly registry: any; readonly health?: any; readonly deathEvents?: any; readonly log?: (message: string) => void; }
+type AnyUEObject = any;
+export interface {{interface_name}} { readonly worldAdapter: any; readonly registry: any; readonly health?: any; readonly deathEvents?: any; readonly presentation?: any; readonly log?: (message: string) => void; }
 const LOG_PREFIX = '[AUTOUE_GENERATED]';
 function log(ctx: {{interface_name}}, message: string): void { (ctx.log || console.warn)(`${LOG_PREFIX} ${message}`); }
+function num(value: any, fallback: number): number { const n = Number(value); return Number.isFinite(n) ? n : fallback; }
 export class AutoUEEnemyCombat {
   constructor(private readonly context: {{interface_name}}) {}
-  private ready(enemy: any, key: string, now: number): boolean { return Number(enemy.cooldowns?.[key] || 0) <= now; }
-  private cooldown(enemy: any, key: string, now: number, params: Record<string, any> = {}): void { enemy.cooldowns[key] = now + Number(params.cooldown_seconds || enemy.runtime_params?.cooldown || 1.2); }
-  resolveMeleeHit(enemy: any, target: any, now: number, params: Record<string, any> = {}): void { if (!this.ready(enemy, 'attack', now)) return; this.context.registry.updateState(enemy.enemy_id, 'Telegraphing'); log(this.context, `EnemyAttackTelegraph enemy_id=${enemy.enemy_id}`); this.context.registry.updateState(enemy.enemy_id, 'Attacking'); const damage = Number(params.attack_damage || enemy.runtime_params?.attack_damage || 10); const targetActor = this.context.worldAdapter.resolveActor?.(target, ['player']) || target; const hits = this.context.worldAdapter.resolveMelee?.(enemy.actor, { ...params, targetTag: 'Player', range: params.attack_range || enemy.runtime_params?.attack_range || 160, radius: params.hitbox_radius || 110 }) || []; const hit = !!targetActor && hits.indexOf(targetActor) >= 0; if (hit) this.context.worldAdapter.applyDamage(targetActor, damage); log(this.context, `EnemyAttackResolved enemy_id=${enemy.enemy_id} hit=${hit ? 1 : 0} damage=${hit ? damage : 0}`); this.cooldown(enemy, 'attack', now, params); this.context.registry.updateState(enemy.enemy_id, 'Recovering'); }
-  spawnProjectile(enemy: any, target: any, now: number, params: Record<string, any> = {}): void { if (!this.ready(enemy, 'projectile', now)) return; const classPath = params.projectile_class_path || enemy.runtime_params?.projectile_class_path; if (!classPath) throw new Error(`projectile_spawn missing projectile_class_path enemy_id=${enemy.enemy_id}`); log(this.context, `EnemyAttackTelegraph enemy_id=${enemy.enemy_id}`); this.context.worldAdapter.spawnProjectile(classPath, { location: this.context.worldAdapter.getActorLocation(enemy.actor) }, undefined); log(this.context, `EnemyAttackResolved enemy_id=${enemy.enemy_id} hit=projectile`); this.cooldown(enemy, 'projectile', now, params); }
-  selfDestruct(enemy: any, target: any, now: number, params: Record<string, any> = {}): void { if (!this.ready(enemy, 'self_destruct', now)) return; log(this.context, `EnemyAttackTelegraph enemy_id=${enemy.enemy_id}`); this.context.worldAdapter.applyDamage(target, Number(params.attack_damage || enemy.runtime_params?.attack_damage || 18)); log(this.context, `EnemyAttackResolved enemy_id=${enemy.enemy_id} hit=self_destruct`); this.context.deathEvents?.emitDeath(enemy, 'self_destruct'); }
-  resolveDirectionalBlock(enemy: any, params: Record<string, any> = {}): boolean { log(this.context, `EnemyDirectionalBlock enemy_id=${enemy.enemy_id} angle=${params.block_angle_degrees || 0}`); return true; }
+  private current(enemy: any): any { if (!enemy.attack) enemy.attack = { phase: 'idle', started_at: 0, phase_started_at: 0, cooldown_until: 0, hit_applied: false, params: {} }; return enemy.attack; }
+  private cooldownKey(type: string): string { return type === 'projectile_spawn' ? 'projectile' : type === 'self_destruct' ? 'self_destruct' : 'attack'; }
+  private ready(enemy: any, key: string, now: number): boolean {
+    const attack = this.current(enemy);
+    if (attack.phase !== 'idle' && !(attack.phase === 'cooldown' && num(attack.cooldown_until, 0) <= now)) return false;
+    if (attack.phase === 'cooldown' && num(attack.cooldown_until, 0) <= now) attack.phase = 'idle';
+    return Number(enemy.cooldowns?.[key] || 0) <= now;
+  }
+  private mergedParams(enemy: any, params: Record<string, any> = {}): Record<string, any> { return { ...(enemy.runtime_params || {}), ...(params || {}) }; }
+  private durations(params: Record<string, any>): { windup: number; active: number; recover: number; cooldown: number } {
+    return { windup: num(params.windup_seconds, 0.28), active: num(params.active_seconds, 0.2), recover: num(params.recover_seconds, 0.22), cooldown: num(params.cooldown_seconds || params.cooldown, 1.2) };
+  }
+  beginAttack(enemy: any, target: AnyUEObject, now: number, attackType: string, params: Record<string, any> = {}): boolean {
+    if (!enemy?.alive) return false;
+    const key = this.cooldownKey(attackType);
+    if (!this.ready(enemy, key, now)) return false;
+    const merged = this.mergedParams(enemy, params);
+    enemy.target = target;
+    enemy.attack = { phase: 'windup', attack_type: attackType, key, started_at: now, phase_started_at: now, cooldown_until: 0, hit_applied: false, params: merged, target };
+    this.context.registry.updateState(enemy.enemy_id, 'Telegraphing');
+    this.context.presentation?.telegraph?.(enemy, merged);
+    log(this.context, `EnemyAttackTelegraph enemy_id=${enemy.enemy_id} type=${attackType} windup=${this.durations(merged).windup}`);
+    return true;
+  }
+  advance(enemy: any, target: AnyUEObject, now: number): boolean {
+    if (!enemy?.alive) return false;
+    const attack = this.current(enemy);
+    if (attack.phase === 'idle') return false;
+    const params = attack.params || {};
+    const durations = this.durations(params);
+    const liveTarget = target || attack.target || enemy.target;
+    if (attack.phase === 'cooldown') {
+      if (now >= num(attack.cooldown_until, 0)) { attack.phase = 'idle'; this.context.registry.updateState(enemy.enemy_id, 'Idle'); }
+      return true;
+    }
+    if (attack.phase === 'windup' && now - num(attack.phase_started_at, now) >= durations.windup) {
+      attack.phase = 'active'; attack.phase_started_at = now; this.context.registry.updateState(enemy.enemy_id, 'Attacking'); this.context.presentation?.showHitbox?.(enemy, params); log(this.context, `EnemyAttackActive enemy_id=${enemy.enemy_id} type=${attack.attack_type}`);
+    }
+    if (attack.phase === 'active') {
+      if (!attack.hit_applied) { this.resolveActive(enemy, liveTarget, now, attack); attack.hit_applied = true; }
+      if (now - num(attack.phase_started_at, now) >= durations.active) { attack.phase = 'recover'; attack.phase_started_at = now; this.context.registry.updateState(enemy.enemy_id, 'Recovering'); }
+    }
+    if (attack.phase === 'recover' && now - num(attack.phase_started_at, now) >= durations.recover) {
+      attack.phase = 'cooldown'; attack.phase_started_at = now; attack.cooldown_until = now + durations.cooldown; enemy.cooldowns[attack.key || this.cooldownKey(String(attack.attack_type || 'attack'))] = attack.cooldown_until;
+    }
+    return true;
+  }
+  private resolveActive(enemy: any, target: AnyUEObject, now: number, attack: any): void {
+    const type = String(attack.attack_type || 'melee_hitbox');
+    if (type === 'projectile_spawn') { this.resolveProjectile(enemy, target, attack.params || {}, now); return; }
+    if (type === 'self_destruct') { this.resolveSelfDestruct(enemy, target, attack.params || {}, now); return; }
+    this.resolveMeleeActive(enemy, target, attack.params || {});
+  }
+  private resolveMeleeActive(enemy: any, target: AnyUEObject, params: Record<string, any>): void {
+    const damage = num(params.attack_damage, num(enemy.runtime_params?.attack_damage, 10));
+    const targetActor = this.context.worldAdapter.resolveActor?.(target, ['player', 'Player']) || target;
+    const hits = this.context.worldAdapter.resolveMelee?.(enemy.actor, { ...params, targetTag: params.target_tag || 'Player', range: params.attack_range || enemy.runtime_params?.attack_range || 160, radius: params.hitbox_radius || 110 }) || [];
+    const hit = !!targetActor && hits.indexOf(targetActor) >= 0;
+    if (hit) { this.context.worldAdapter.applyDamage(targetActor, damage); this.context.presentation?.impact?.(enemy, targetActor, params); }
+    log(this.context, `EnemyAttackResolved enemy_id=${enemy.enemy_id} type=melee_hitbox hit=${hit ? 1 : 0} damage=${hit ? damage : 0}`);
+  }
+  private resolveProjectile(enemy: any, target: AnyUEObject, params: Record<string, any>, _now: number): void {
+    const classPath = params.projectile_class_path || enemy.runtime_params?.projectile_class_path;
+    if (!classPath) throw new Error(`projectile_spawn missing projectile_class_path enemy_id=${enemy.enemy_id}`);
+    const from = this.context.worldAdapter.getActorLocation(enemy.actor);
+    const targetActor = this.context.worldAdapter.resolveActor?.(target, ['player', 'Player']) || target;
+    let velocity: AnyUEObject | undefined = undefined;
+    try {
+      const to = targetActor ? this.context.worldAdapter.getActorLocation(targetActor) : undefined;
+      if (to) {
+        const dx = Number(to.X || 0) - Number(from.X || 0); const dy = Number(to.Y || 0) - Number(from.Y || 0); const dz = Number(to.Z || 0) - Number(from.Z || 0);
+        const len = Math.max(1, Math.sqrt(dx * dx + dy * dy + dz * dz)); const speed = num(params.projectile_speed, 900);
+        velocity = { X: dx / len * speed, Y: dy / len * speed, Z: dz / len * speed };
+      }
+    } catch (_) {}
+    const projectile = this.context.worldAdapter.spawnProjectile(classPath, { location: from }, velocity);
+    this.context.presentation?.projectileFx?.(enemy, projectile, params);
+    log(this.context, `EnemyAttackResolved enemy_id=${enemy.enemy_id} type=projectile_spawn hit=${projectile ? 1 : 0} damage=0`);
+  }
+  private resolveSelfDestruct(enemy: any, target: AnyUEObject, params: Record<string, any>, _now: number): void {
+    const radius = num(params.explosion_radius || params.explode_radius || params.attack_range, 180);
+    const damage = num(params.attack_damage, 18);
+    const origin = this.context.worldAdapter.getActorLocation(enemy.actor);
+    const hits = this.context.worldAdapter.overlapActors?.(origin, radius, { ...params, targetTag: params.target_tag || 'Player', ignoreActors: [enemy.actor] }) || [];
+    const targetActor = this.context.worldAdapter.resolveActor?.(target, ['player', 'Player']) || target;
+    const hitSet = hits.length ? hits : (targetActor && this.context.worldAdapter.getDistanceBetweenActors(enemy.actor, targetActor) <= radius ? [targetActor] : []);
+    for (const actor of hitSet) this.context.worldAdapter.applyDamage(actor, damage);
+    this.context.presentation?.explosion?.(enemy, params);
+    log(this.context, `EnemyAttackResolved enemy_id=${enemy.enemy_id} type=self_destruct hit=${hitSet.length ? 1 : 0} damage=${hitSet.length ? damage : 0}`);
+    if (params.kill_self !== false) this.context.deathEvents?.emitDeath(enemy, 'self_destruct');
+  }
+  resolveMeleeHit(enemy: any, target: AnyUEObject, now: number, params: Record<string, any> = {}): void { this.beginAttack(enemy, target, now, 'melee_hitbox', params); }
+  spawnProjectile(enemy: any, target: AnyUEObject, now: number, params: Record<string, any> = {}): void { this.beginAttack(enemy, target, now, 'projectile_spawn', params); }
+  selfDestruct(enemy: any, target: AnyUEObject, now: number, params: Record<string, any> = {}): void { this.beginAttack(enemy, target, now, 'self_destruct', params); }
+  resolveDirectionalBlock(enemy: any, sourceOrParams?: AnyUEObject | Record<string, any>, maybeParams: Record<string, any> = {}): boolean {
+    const source = maybeParams && Object.keys(maybeParams).length ? sourceOrParams : undefined;
+    const params = maybeParams && Object.keys(maybeParams).length ? maybeParams : (sourceOrParams || {}) as Record<string, any>;
+    const merged = this.mergedParams(enemy, params);
+    const reduction = Math.max(0, Math.min(1, num(merged.damage_reduction, 1)));
+    let active = true;
+    try {
+      if (source) {
+        const enemyLoc = this.context.worldAdapter.getActorLocation(enemy.actor); const srcLoc = this.context.worldAdapter.getActorLocation(source);
+        const forward = this.context.worldAdapter.getForwardVector(enemy.actor) || { X: 1, Y: 0, Z: 0 };
+        const dx = Number(srcLoc.X || 0) - Number(enemyLoc.X || 0); const dy = Number(srcLoc.Y || 0) - Number(enemyLoc.Y || 0);
+        const len = Math.max(1, Math.sqrt(dx * dx + dy * dy));
+        const dot = (Number(forward.X || 0) * dx + Number(forward.Y || 0) * dy) / len;
+        const halfAngle = num(merged.block_angle_degrees, 120) * 0.5;
+        active = dot >= Math.cos(halfAngle * Math.PI / 180);
+      }
+    } catch (_) { active = true; }
+    enemy.block = { active, reduction, source_entity_id: merged.source_entity_id || 'player', angle_degrees: num(merged.block_angle_degrees, 120), expires_at: Number.POSITIVE_INFINITY };
+    if (active) this.context.presentation?.block?.(enemy, { ...merged, reduction });
+    log(this.context, `EnemyDirectionalBlock enemy_id=${enemy.enemy_id} active=${active ? 1 : 0} reduction=${reduction} angle=${enemy.block.angle_degrees}`);
+    return active;
+  }
 }
 export function {{export_name}}(context: {{interface_name}}): AutoUEEnemyCombat { return new AutoUEEnemyCombat(context); }

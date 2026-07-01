@@ -182,11 +182,34 @@
         "target_entity_id": {
           "type": "string",
           "required": true
+        },
+        "windup_seconds": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "active_seconds": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "recover_seconds": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "hitbox_radius": {
+          "type": "number",
+          "required": true,
+          "min": 0
         }
       },
       "default_params": {
         "hitbox_radius": 90,
-        "target_entity_id": "player"
+        "target_entity_id": "player",
+        "windup_seconds": 0.28,
+        "active_seconds": 0.2,
+        "recover_seconds": 0.22
       },
       "engine_ports": [
         "kismet.sphere_trace_single",
@@ -196,7 +219,8 @@
         "enemy_runtime",
         "enemy_combat",
         "enemy_registry",
-        "world_adapter"
+        "world_adapter",
+        "enemy_presentation"
       ]
     },
     {
@@ -238,10 +262,28 @@
         "target_entity_id": {
           "type": "string",
           "required": true
+        },
+        "windup_seconds": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "active_seconds": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "recover_seconds": {
+          "type": "number",
+          "required": true,
+          "min": 0
         }
       },
       "default_params": {
-        "target_entity_id": "player"
+        "target_entity_id": "player",
+        "windup_seconds": 0.45,
+        "active_seconds": 0.2,
+        "recover_seconds": 0.22
       },
       "engine_ports": [
         "projectile.spawn"
@@ -250,7 +292,8 @@
         "enemy_runtime",
         "enemy_combat",
         "enemy_projectile_runtime",
-        "world_adapter"
+        "world_adapter",
+        "enemy_presentation"
       ]
     },
     {
@@ -288,11 +331,35 @@
         "target_entity_id": {
           "type": "string",
           "required": true
+        },
+        "windup_seconds": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "active_seconds": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "recover_seconds": {
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        "explode_radius": {
+          "type": "number",
+          "required": false,
+          "min": 0
         }
       },
       "default_params": {
         "kill_self": true,
-        "target_entity_id": "player"
+        "target_entity_id": "player",
+        "windup_seconds": 0.75,
+        "active_seconds": 0.2,
+        "recover_seconds": 0.1,
+        "explode_radius": 180
       },
       "engine_ports": [
         "gameplay_statics.apply_damage",
@@ -303,7 +370,8 @@
         "enemy_combat",
         "enemy_health",
         "enemy_death_events",
-        "world_adapter"
+        "world_adapter",
+        "enemy_presentation"
       ]
     },
     {
@@ -338,7 +406,8 @@
         "enemy_runtime",
         "enemy_death_events",
         "enemy_registry",
-        "encounter_manager"
+        "encounter_manager",
+        "enemy_presentation"
       ]
     },
     {
@@ -377,7 +446,8 @@
       "runtime_features": [
         "enemy_runtime",
         "enemy_combat",
-        "enemy_health"
+        "enemy_health",
+        "enemy_presentation"
       ]
     },
     {
@@ -426,7 +496,8 @@
         "enemy_runtime",
         "enemy_health",
         "enemy_registry",
-        "world_adapter"
+        "world_adapter",
+        "enemy_presentation"
       ]
     },
     {

@@ -69,7 +69,10 @@
             "attack_range": 160,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -161,7 +164,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -229,11 +233,34 @@
             "target_entity_id": {
               "type": "string",
               "required": true
+            },
+            "windup_seconds": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "active_seconds": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "recover_seconds": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "hitbox_radius": {
+              "type": "number",
+              "required": true,
+              "min": 0
             }
           },
           "default_params": {
             "hitbox_radius": 90,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "engine_ports": [
             "kismet.sphere_trace_single",
@@ -243,7 +270,8 @@
             "enemy_runtime",
             "enemy_combat",
             "enemy_registry",
-            "world_adapter"
+            "world_adapter",
+            "enemy_presentation"
           ],
           "behaviors": [
             {
@@ -275,7 +303,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -345,7 +374,8 @@
             "enemy_runtime",
             "enemy_death_events",
             "enemy_registry",
-            "encounter_manager"
+            "encounter_manager",
+            "enemy_presentation"
           ],
           "behaviors": [
             {
@@ -377,7 +407,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -442,7 +473,8 @@
             "enemy_runtime",
             "enemy_health",
             "enemy_registry",
-            "world_adapter"
+            "world_adapter",
+            "enemy_presentation"
           ],
           "behaviors": [
             {
@@ -474,7 +506,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -577,7 +610,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -679,7 +713,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -790,7 +825,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"

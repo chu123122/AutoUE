@@ -11,7 +11,7 @@ export class AutoUEEnemyAbilityDispatcher {
       case 'EnemyCombat.resolveMeleeHit': this.context.combat?.resolveMeleeHit(enemy, target, now, params); return;
       case 'EnemyCombat.spawnProjectile': this.context.combat?.spawnProjectile(enemy, target, now, params); return;
       case 'EnemyCombat.selfDestruct': this.context.combat?.selfDestruct(enemy, target, now, params); return;
-      case 'EnemyCombat.resolveDirectionalBlock': this.context.combat?.resolveDirectionalBlock(enemy, params); return;
+      case 'EnemyCombat.resolveDirectionalBlock': this.context.combat?.resolveDirectionalBlock(enemy, target, params); return;
       case 'EnemyHealth.applyDamage': this.context.health?.bindDamage(enemy, params); return;
       case 'EnemyDeathEvents.emitDeath': this.context.deathEvents?.bind(enemy, params); return;
       case 'EncounterManager.completeWhenAllDead': this.context.encounterManager?.completeWhenAllDead(params); return;

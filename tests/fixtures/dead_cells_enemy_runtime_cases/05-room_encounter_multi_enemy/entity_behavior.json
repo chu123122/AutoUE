@@ -73,7 +73,10 @@
             "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
             "projectile_speed": 900,
             "cooldown_seconds": 1.6,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.45,
+            "active_seconds": 0.18,
+            "recover_seconds": 0.25
           },
           "tags": []
         },
@@ -166,7 +169,8 @@
                 "enemy_projectile_runtime",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -200,7 +204,10 @@
                   "step": "complete_when_all_dead",
                   "uses": "encounter.complete.complete_when_all_dead"
                 }
-              ]
+              ],
+              "runtime_params": {
+                "pattern": "keep_distance_and_projectile"
+              }
             }
           ]
         },
@@ -243,10 +250,28 @@
             "target_entity_id": {
               "type": "string",
               "required": true
+            },
+            "windup_seconds": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "active_seconds": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "recover_seconds": {
+              "type": "number",
+              "required": true,
+              "min": 0
             }
           },
           "default_params": {
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.45,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "engine_ports": [
             "projectile.spawn"
@@ -255,7 +280,8 @@
             "enemy_runtime",
             "enemy_combat",
             "enemy_projectile_runtime",
-            "world_adapter"
+            "world_adapter",
+            "enemy_presentation"
           ],
           "behaviors": [
             {
@@ -288,7 +314,8 @@
                 "enemy_projectile_runtime",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -322,7 +349,10 @@
                   "step": "complete_when_all_dead",
                   "uses": "encounter.complete.complete_when_all_dead"
                 }
-              ]
+              ],
+              "runtime_params": {
+                "pattern": "keep_distance_and_projectile"
+              }
             }
           ]
         },
@@ -358,7 +388,8 @@
             "enemy_runtime",
             "enemy_death_events",
             "enemy_registry",
-            "encounter_manager"
+            "encounter_manager",
+            "enemy_presentation"
           ],
           "behaviors": [
             {
@@ -391,7 +422,8 @@
                 "enemy_projectile_runtime",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -425,7 +457,10 @@
                   "step": "complete_when_all_dead",
                   "uses": "encounter.complete.complete_when_all_dead"
                 }
-              ]
+              ],
+              "runtime_params": {
+                "pattern": "keep_distance_and_projectile"
+              }
             }
           ]
         },
@@ -456,7 +491,8 @@
             "enemy_runtime",
             "enemy_health",
             "enemy_registry",
-            "world_adapter"
+            "world_adapter",
+            "enemy_presentation"
           ],
           "behaviors": [
             {
@@ -489,7 +525,8 @@
                 "enemy_projectile_runtime",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -523,7 +560,10 @@
                   "step": "complete_when_all_dead",
                   "uses": "encounter.complete.complete_when_all_dead"
                 }
-              ]
+              ],
+              "runtime_params": {
+                "pattern": "keep_distance_and_projectile"
+              }
             }
           ]
         },
@@ -598,7 +638,8 @@
                 "enemy_projectile_runtime",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -632,7 +673,10 @@
                   "step": "complete_when_all_dead",
                   "uses": "encounter.complete.complete_when_all_dead"
                 }
-              ]
+              ],
+              "runtime_params": {
+                "pattern": "keep_distance_and_projectile"
+              }
             }
           ]
         },
@@ -701,7 +745,8 @@
                 "enemy_projectile_runtime",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -735,7 +780,10 @@
                   "step": "complete_when_all_dead",
                   "uses": "encounter.complete.complete_when_all_dead"
                 }
-              ]
+              ],
+              "runtime_params": {
+                "pattern": "keep_distance_and_projectile"
+              }
             }
           ]
         },
@@ -813,7 +861,8 @@
                 "enemy_projectile_runtime",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -847,7 +896,10 @@
                   "step": "complete_when_all_dead",
                   "uses": "encounter.complete.complete_when_all_dead"
                 }
-              ]
+              ],
+              "runtime_params": {
+                "pattern": "keep_distance_and_projectile"
+              }
             }
           ]
         }
@@ -945,7 +997,11 @@
             "explosion_radius": 180,
             "cooldown_seconds": 0.5,
             "kill_self": true,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.75,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.1,
+            "explode_radius": 180
           },
           "tags": []
         }
@@ -1014,7 +1070,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -1048,7 +1105,10 @@
                   "step": "complete_when_all_dead",
                   "uses": "encounter.complete.complete_when_all_dead"
                 }
-              ]
+              ],
+              "runtime_params": {
+                "pattern": "chase_and_self_destruct"
+              }
             }
           ]
         },
@@ -1087,11 +1147,35 @@
             "target_entity_id": {
               "type": "string",
               "required": true
+            },
+            "windup_seconds": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "active_seconds": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "recover_seconds": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "explode_radius": {
+              "type": "number",
+              "required": false,
+              "min": 0
             }
           },
           "default_params": {
             "kill_self": true,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.75,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.1,
+            "explode_radius": 180
           },
           "engine_ports": [
             "gameplay_statics.apply_damage",
@@ -1102,7 +1186,8 @@
             "enemy_combat",
             "enemy_health",
             "enemy_death_events",
-            "world_adapter"
+            "world_adapter",
+            "enemy_presentation"
           ],
           "behaviors": [
             {
@@ -1134,7 +1219,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -1168,7 +1254,10 @@
                   "step": "complete_when_all_dead",
                   "uses": "encounter.complete.complete_when_all_dead"
                 }
-              ]
+              ],
+              "runtime_params": {
+                "pattern": "chase_and_self_destruct"
+              }
             }
           ]
         },
@@ -1204,7 +1293,8 @@
             "enemy_runtime",
             "enemy_death_events",
             "enemy_registry",
-            "encounter_manager"
+            "encounter_manager",
+            "enemy_presentation"
           ],
           "behaviors": [
             {
@@ -1236,7 +1326,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -1270,7 +1361,10 @@
                   "step": "complete_when_all_dead",
                   "uses": "encounter.complete.complete_when_all_dead"
                 }
-              ]
+              ],
+              "runtime_params": {
+                "pattern": "chase_and_self_destruct"
+              }
             }
           ]
         },
@@ -1301,7 +1395,8 @@
             "enemy_runtime",
             "enemy_health",
             "enemy_registry",
-            "world_adapter"
+            "world_adapter",
+            "enemy_presentation"
           ],
           "behaviors": [
             {
@@ -1333,7 +1428,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -1367,7 +1463,10 @@
                   "step": "complete_when_all_dead",
                   "uses": "encounter.complete.complete_when_all_dead"
                 }
-              ]
+              ],
+              "runtime_params": {
+                "pattern": "chase_and_self_destruct"
+              }
             }
           ]
         },
@@ -1436,7 +1535,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -1470,7 +1570,10 @@
                   "step": "complete_when_all_dead",
                   "uses": "encounter.complete.complete_when_all_dead"
                 }
-              ]
+              ],
+              "runtime_params": {
+                "pattern": "chase_and_self_destruct"
+              }
             }
           ]
         },
@@ -1538,7 +1641,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -1572,7 +1676,10 @@
                   "step": "complete_when_all_dead",
                   "uses": "encounter.complete.complete_when_all_dead"
                 }
-              ]
+              ],
+              "runtime_params": {
+                "pattern": "chase_and_self_destruct"
+              }
             }
           ]
         },
@@ -1649,7 +1756,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -1683,7 +1791,10 @@
                   "step": "complete_when_all_dead",
                   "uses": "encounter.complete.complete_when_all_dead"
                 }
-              ]
+              ],
+              "runtime_params": {
+                "pattern": "chase_and_self_destruct"
+              }
             }
           ]
         }
@@ -1757,7 +1868,10 @@
             "attack_range": 150,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -1859,7 +1973,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -1897,7 +2012,10 @@
                   "step": "complete_when_all_dead",
                   "uses": "encounter.complete.complete_when_all_dead"
                 }
-              ]
+              ],
+              "runtime_params": {
+                "pattern": "shield_chase_counter"
+              }
             },
             {
               "behavior_id": "enemy.behavior.chase_and_melee",
@@ -1928,7 +2046,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -1996,11 +2115,34 @@
             "target_entity_id": {
               "type": "string",
               "required": true
+            },
+            "windup_seconds": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "active_seconds": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "recover_seconds": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "hitbox_radius": {
+              "type": "number",
+              "required": true,
+              "min": 0
             }
           },
           "default_params": {
             "hitbox_radius": 90,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "engine_ports": [
             "kismet.sphere_trace_single",
@@ -2010,7 +2152,8 @@
             "enemy_runtime",
             "enemy_combat",
             "enemy_registry",
-            "world_adapter"
+            "world_adapter",
+            "enemy_presentation"
           ],
           "behaviors": [
             {
@@ -2043,7 +2186,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -2081,7 +2225,10 @@
                   "step": "complete_when_all_dead",
                   "uses": "encounter.complete.complete_when_all_dead"
                 }
-              ]
+              ],
+              "runtime_params": {
+                "pattern": "shield_chase_counter"
+              }
             },
             {
               "behavior_id": "enemy.behavior.chase_and_melee",
@@ -2112,7 +2259,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -2182,7 +2330,8 @@
             "enemy_runtime",
             "enemy_death_events",
             "enemy_registry",
-            "encounter_manager"
+            "encounter_manager",
+            "enemy_presentation"
           ],
           "behaviors": [
             {
@@ -2215,7 +2364,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -2253,7 +2403,10 @@
                   "step": "complete_when_all_dead",
                   "uses": "encounter.complete.complete_when_all_dead"
                 }
-              ]
+              ],
+              "runtime_params": {
+                "pattern": "shield_chase_counter"
+              }
             },
             {
               "behavior_id": "enemy.behavior.chase_and_melee",
@@ -2284,7 +2437,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -2358,7 +2512,8 @@
           "runtime_features": [
             "enemy_runtime",
             "enemy_combat",
-            "enemy_health"
+            "enemy_health",
+            "enemy_presentation"
           ],
           "behaviors": [
             {
@@ -2391,7 +2546,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -2429,7 +2585,10 @@
                   "step": "complete_when_all_dead",
                   "uses": "encounter.complete.complete_when_all_dead"
                 }
-              ]
+              ],
+              "runtime_params": {
+                "pattern": "shield_chase_counter"
+              }
             }
           ]
         },
@@ -2460,7 +2619,8 @@
             "enemy_runtime",
             "enemy_health",
             "enemy_registry",
-            "world_adapter"
+            "world_adapter",
+            "enemy_presentation"
           ],
           "behaviors": [
             {
@@ -2493,7 +2653,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -2531,7 +2692,10 @@
                   "step": "complete_when_all_dead",
                   "uses": "encounter.complete.complete_when_all_dead"
                 }
-              ]
+              ],
+              "runtime_params": {
+                "pattern": "shield_chase_counter"
+              }
             },
             {
               "behavior_id": "enemy.behavior.chase_and_melee",
@@ -2562,7 +2726,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -2666,7 +2831,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -2704,7 +2870,10 @@
                   "step": "complete_when_all_dead",
                   "uses": "encounter.complete.complete_when_all_dead"
                 }
-              ]
+              ],
+              "runtime_params": {
+                "pattern": "shield_chase_counter"
+              }
             },
             {
               "behavior_id": "enemy.behavior.chase_and_melee",
@@ -2735,7 +2904,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -2838,7 +3008,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -2876,7 +3047,10 @@
                   "step": "complete_when_all_dead",
                   "uses": "encounter.complete.complete_when_all_dead"
                 }
-              ]
+              ],
+              "runtime_params": {
+                "pattern": "shield_chase_counter"
+              }
             },
             {
               "behavior_id": "enemy.behavior.chase_and_melee",
@@ -2907,7 +3081,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -3019,7 +3194,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -3057,7 +3233,10 @@
                   "step": "complete_when_all_dead",
                   "uses": "encounter.complete.complete_when_all_dead"
                 }
-              ]
+              ],
+              "runtime_params": {
+                "pattern": "shield_chase_counter"
+              }
             },
             {
               "behavior_id": "enemy.behavior.chase_and_melee",
@@ -3088,7 +3267,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -3196,7 +3376,10 @@
             "attack_range": 160,
             "hitbox_radius": 90,
             "cooldown_seconds": 1.2,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "tags": []
         },
@@ -3288,7 +3471,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -3356,11 +3540,34 @@
             "target_entity_id": {
               "type": "string",
               "required": true
+            },
+            "windup_seconds": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "active_seconds": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "recover_seconds": {
+              "type": "number",
+              "required": true,
+              "min": 0
+            },
+            "hitbox_radius": {
+              "type": "number",
+              "required": true,
+              "min": 0
             }
           },
           "default_params": {
             "hitbox_radius": 90,
-            "target_entity_id": "player"
+            "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22
           },
           "engine_ports": [
             "kismet.sphere_trace_single",
@@ -3370,7 +3577,8 @@
             "enemy_runtime",
             "enemy_combat",
             "enemy_registry",
-            "world_adapter"
+            "world_adapter",
+            "enemy_presentation"
           ],
           "behaviors": [
             {
@@ -3402,7 +3610,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -3472,7 +3681,8 @@
             "enemy_runtime",
             "enemy_death_events",
             "enemy_registry",
-            "encounter_manager"
+            "encounter_manager",
+            "enemy_presentation"
           ],
           "behaviors": [
             {
@@ -3504,7 +3714,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -3569,7 +3780,8 @@
             "enemy_runtime",
             "enemy_health",
             "enemy_registry",
-            "world_adapter"
+            "world_adapter",
+            "enemy_presentation"
           ],
           "behaviors": [
             {
@@ -3601,7 +3813,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -3704,7 +3917,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -3806,7 +4020,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"
@@ -3917,7 +4132,8 @@
                 "enemy_combat",
                 "enemy_health",
                 "enemy_death_events",
-                "encounter_manager"
+                "encounter_manager",
+                "enemy_presentation"
               ],
               "trigger_model": {
                 "kind": "on_event"

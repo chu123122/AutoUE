@@ -225,15 +225,34 @@ def _runtime_domain_for_behavior(canonical: Mapping[str, Any], actions: list[dic
     return "behavior_runtime"
 
 
+def _pattern_for_behavior(behavior_id: str) -> str | None:
+    mapping = {
+        "enemy.behavior.fast_chase_and_melee": "fast_chase_and_melee",
+        "enemy.behavior.heavy_chase_and_melee": "heavy_chase_and_melee",
+        "enemy.behavior.keep_distance_and_projectile": "keep_distance_and_projectile",
+        "enemy.behavior.pressure_projectile_kite": "keep_distance_and_projectile",
+        "enemy.behavior.chase_and_self_destruct": "chase_and_self_destruct",
+        "enemy.behavior.flying_self_destruct": "chase_and_self_destruct",
+        "enemy.behavior.shield_chase_counter": "shield_chase_counter",
+        "enemy.behavior.block_then_counter": "shield_chase_counter",
+    }
+    return mapping.get(behavior_id)
+
+
 def _runtime_params_for_behavior(canonical: Mapping[str, Any]) -> dict[str, Any]:
     lib = load_dead_cells_library()
     entity = lib["entities"].get(str(canonical.get("bound_entity_id") or canonical.get("entity_id") or ""))
     params = dict(entity.get("runtime") or {}) if isinstance(entity, Mapping) else {}
     if isinstance(canonical.get("runtime_params"), Mapping):
         params.update(dict(canonical["runtime_params"]))
+    behavior_pattern = _pattern_for_behavior(str(canonical.get("behavior_id") or ""))
+    if behavior_pattern and "pattern" not in params:
+        params["pattern"] = behavior_pattern
     for resolved in canonical.get("resolved_capabilities", []) or []:
         if isinstance(resolved, Mapping) and resolved.get("capability_id") == "enemy.spawn.spawn_actor" and isinstance(resolved.get("params"), Mapping):
             params.update(dict(resolved["params"]))
+    if behavior_pattern and "pattern" not in params:
+        params["pattern"] = behavior_pattern
     return params
 
 

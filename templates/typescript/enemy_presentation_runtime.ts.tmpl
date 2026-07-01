@@ -1,0 +1,15 @@
+type AnyUEObject = any;
+export interface {{interface_name}} { readonly worldAdapter: any; readonly log?: (message: string) => void; }
+const LOG_PREFIX = '[AUTOUE_GENERATED]';
+function log(ctx: {{interface_name}}, message: string): void { (ctx.log || console.warn)(`${LOG_PREFIX} ${message}`); }
+export class AutoUEEnemyPresentationRuntime {
+  constructor(private readonly context: {{interface_name}}) {}
+  telegraph(enemy: any, params: Record<string, any> = {}): void { this.context.worldAdapter.setActorTag?.(enemy.actor, 'AUTOUE_ENEMY_TELEGRAPH'); log(this.context, `EnemyPresentationTelegraph enemy_id=${enemy.enemy_id} radius=${Math.round(Number(params.hitbox_radius || params.explosion_radius || params.attack_range || 0))}`); }
+  showHitbox(enemy: any, params: Record<string, any> = {}): void { this.context.worldAdapter.setActorTag?.(enemy.actor, 'AUTOUE_ENEMY_ATTACK_ACTIVE'); log(this.context, `EnemyPresentationHitbox enemy_id=${enemy.enemy_id} radius=${Math.round(Number(params.hitbox_radius || params.explosion_radius || params.attack_range || 0))}`); }
+  impact(enemy: any, target: AnyUEObject, params: Record<string, any> = {}): void { if (target) this.context.worldAdapter.cameraImpulse?.(Number(params.impact_impulse_seconds || 0.08)); log(this.context, `EnemyPresentationImpact enemy_id=${enemy.enemy_id} target=${target ? 'valid' : 'missing'}`); }
+  projectileFx(enemy: any, projectile: AnyUEObject, params: Record<string, any> = {}): void { if (projectile) this.context.worldAdapter.setActorTag?.(projectile, 'AUTOUE_ENEMY_PROJECTILE'); log(this.context, `EnemyPresentationProjectile enemy_id=${enemy.enemy_id} projectile=${projectile ? 'valid' : 'missing'} speed=${Math.round(Number(params.projectile_speed || 0))}`); }
+  explosion(enemy: any, params: Record<string, any> = {}): void { this.context.worldAdapter.cameraImpulse?.(Number(params.explosion_impulse_seconds || 0.16)); log(this.context, `EnemyPresentationExplosion enemy_id=${enemy.enemy_id} radius=${Math.round(Number(params.explosion_radius || params.explode_radius || 0))}`); }
+  death(enemy: any): void { this.context.worldAdapter.setActorTag?.(enemy.actor, 'AUTOUE_ENEMY_DEATH_FX'); log(this.context, `EnemyPresentationDeath enemy_id=${enemy.enemy_id}`); }
+  block(enemy: any, params: Record<string, any> = {}): void { this.context.worldAdapter.setActorTag?.(enemy.actor, 'AUTOUE_ENEMY_BLOCKING'); log(this.context, `EnemyPresentationBlock enemy_id=${enemy.enemy_id} reduction=${Number(params.damage_reduction ?? params.reduction ?? 1)}`); }
+}
+export function {{export_name}}(context: {{interface_name}}): AutoUEEnemyPresentationRuntime { return new AutoUEEnemyPresentationRuntime(context); }

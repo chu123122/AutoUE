@@ -63,7 +63,8 @@
         "enemy_combat",
         "enemy_health",
         "enemy_death_events",
-        "encounter_manager"
+        "encounter_manager",
+        "enemy_presentation"
       ],
       "trigger_model": {
         "kind": "on_event"
@@ -101,7 +102,10 @@
           "step": "complete_when_all_dead",
           "uses": "encounter.complete.complete_when_all_dead"
         }
-      ]
+      ],
+      "runtime_params": {
+        "pattern": "shield_chase_counter"
+      }
     },
     {
       "behavior_id": "enemy.behavior.chase_and_melee",
@@ -132,7 +136,8 @@
         "enemy_combat",
         "enemy_health",
         "enemy_death_events",
-        "encounter_manager"
+        "encounter_manager",
+        "enemy_presentation"
       ],
       "trigger_model": {
         "kind": "on_event"
@@ -197,7 +202,8 @@
         "enemy_combat",
         "enemy_health",
         "enemy_death_events",
-        "encounter_manager"
+        "encounter_manager",
+        "enemy_presentation"
       ],
       "trigger_model": {
         "kind": "on_event"
@@ -231,7 +237,10 @@
           "step": "complete_when_all_dead",
           "uses": "encounter.complete.complete_when_all_dead"
         }
-      ]
+      ],
+      "runtime_params": {
+        "pattern": "chase_and_self_destruct"
+      }
     },
     {
       "behavior_id": "enemy.behavior.elite_chase_and_melee",
@@ -262,7 +271,8 @@
         "enemy_combat",
         "enemy_health",
         "enemy_death_events",
-        "encounter_manager"
+        "encounter_manager",
+        "enemy_presentation"
       ],
       "trigger_model": {
         "kind": "on_event"
@@ -337,7 +347,8 @@
         "enemy_combat",
         "enemy_health",
         "enemy_death_events",
-        "encounter_manager"
+        "encounter_manager",
+        "enemy_presentation"
       ],
       "trigger_model": {
         "kind": "on_event"
@@ -383,7 +394,10 @@
         "flying"
       ],
       "variation_policy": "phase1_runtime_safe_existing_enemy_runtime",
-      "phase1_note": "Reuses existing supported enemy runtime capabilities; entity capability params provide the actual runtime variation."
+      "phase1_note": "Reuses existing supported enemy runtime capabilities; entity capability params provide the actual runtime variation.",
+      "runtime_params": {
+        "pattern": "fast_chase_and_melee"
+      }
     },
     {
       "behavior_id": "enemy.behavior.flying_self_destruct",
@@ -414,7 +428,8 @@
         "enemy_combat",
         "enemy_health",
         "enemy_death_events",
-        "encounter_manager"
+        "encounter_manager",
+        "enemy_presentation"
       ],
       "trigger_model": {
         "kind": "on_event"
@@ -458,7 +473,10 @@
         "explosive"
       ],
       "variation_policy": "phase1_runtime_safe_existing_enemy_runtime",
-      "phase1_note": "Reuses existing supported enemy runtime capabilities; entity capability params provide the actual runtime variation."
+      "phase1_note": "Reuses existing supported enemy runtime capabilities; entity capability params provide the actual runtime variation.",
+      "runtime_params": {
+        "pattern": "chase_and_self_destruct"
+      }
     },
     {
       "behavior_id": "enemy.behavior.heavy_chase_and_melee",
@@ -489,7 +507,8 @@
         "enemy_combat",
         "enemy_health",
         "enemy_death_events",
-        "encounter_manager"
+        "encounter_manager",
+        "enemy_presentation"
       ],
       "trigger_model": {
         "kind": "on_event"
@@ -533,7 +552,10 @@
         "boss"
       ],
       "variation_policy": "phase1_runtime_safe_existing_enemy_runtime",
-      "phase1_note": "Reuses existing supported enemy runtime capabilities; entity capability params provide the actual runtime variation."
+      "phase1_note": "Reuses existing supported enemy runtime capabilities; entity capability params provide the actual runtime variation.",
+      "runtime_params": {
+        "pattern": "heavy_chase_and_melee"
+      }
     },
     {
       "behavior_id": "enemy.behavior.keep_distance_and_projectile",
@@ -565,7 +587,8 @@
         "enemy_projectile_runtime",
         "enemy_health",
         "enemy_death_events",
-        "encounter_manager"
+        "encounter_manager",
+        "enemy_presentation"
       ],
       "trigger_model": {
         "kind": "on_event"
@@ -599,7 +622,10 @@
           "step": "complete_when_all_dead",
           "uses": "encounter.complete.complete_when_all_dead"
         }
-      ]
+      ],
+      "runtime_params": {
+        "pattern": "keep_distance_and_projectile"
+      }
     },
     {
       "behavior_id": "enemy.behavior.pressure_projectile_kite",
@@ -631,7 +657,8 @@
         "enemy_projectile_runtime",
         "enemy_health",
         "enemy_death_events",
-        "encounter_manager"
+        "encounter_manager",
+        "enemy_presentation"
       ],
       "trigger_model": {
         "kind": "on_event"
@@ -675,7 +702,10 @@
         "caster"
       ],
       "variation_policy": "phase1_runtime_safe_existing_enemy_runtime",
-      "phase1_note": "Reuses existing supported enemy runtime capabilities; entity capability params provide the actual runtime variation."
+      "phase1_note": "Reuses existing supported enemy runtime capabilities; entity capability params provide the actual runtime variation.",
+      "runtime_params": {
+        "pattern": "keep_distance_and_projectile"
+      }
     },
     {
       "behavior_id": "enemy.behavior.shield_chase_counter",
@@ -707,7 +737,8 @@
         "enemy_combat",
         "enemy_health",
         "enemy_death_events",
-        "encounter_manager"
+        "encounter_manager",
+        "enemy_presentation"
       ],
       "trigger_model": {
         "kind": "on_event"
@@ -753,7 +784,10 @@
         "shield"
       ],
       "variation_policy": "phase1_runtime_safe_existing_enemy_runtime",
-      "phase1_note": "Reuses existing supported enemy runtime capabilities; entity capability params provide the actual runtime variation."
+      "phase1_note": "Reuses existing supported enemy runtime capabilities; entity capability params provide the actual runtime variation.",
+      "runtime_params": {
+        "pattern": "shield_chase_counter"
+      }
     },
     {
       "behavior_id": "exit.behavior.unlock_and_transition",

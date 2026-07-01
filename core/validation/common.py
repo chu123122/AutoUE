@@ -62,6 +62,7 @@ ALLOWED_TEMPLATES = {
         "enemy_perception",
         "enemy_movement",
         "enemy_combat",
+        "enemy_presentation_runtime",
         "enemy_health",
         "enemy_death_events",
         "enemy_ability_dispatcher",

@@ -21,7 +21,8 @@
         "enemy_projectile_runtime",
         "enemy_health",
         "enemy_death_events",
-        "encounter_manager"
+        "encounter_manager",
+        "enemy_presentation"
       ],
       "runtime_params": {
         "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
@@ -32,6 +33,7 @@
         "attack_range": 620,
         "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
         "keep_distance": 420,
+        "pattern": "keep_distance_and_projectile",
         "spawn_tags": [
           "ground",
           "ranged"
@@ -102,6 +104,9 @@
           "handler": "EnemyCombat.spawnProjectile",
           "params": {
             "target_entity_id": "player",
+            "windup_seconds": 0.45,
+            "active_seconds": 0.18,
+            "recover_seconds": 0.25,
             "attack_damage": 8,
             "attack_range": 620,
             "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
@@ -218,6 +223,9 @@
           "entity_id": "archer",
           "params": {
             "target_entity_id": "player",
+            "windup_seconds": 0.45,
+            "active_seconds": 0.18,
+            "recover_seconds": 0.25,
             "attack_damage": 8,
             "attack_range": 620,
             "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",

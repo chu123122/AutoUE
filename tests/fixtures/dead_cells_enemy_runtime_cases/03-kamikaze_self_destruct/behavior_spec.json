@@ -20,7 +20,8 @@
         "enemy_combat",
         "enemy_health",
         "enemy_death_events",
-        "encounter_manager"
+        "encounter_manager",
+        "enemy_presentation"
       ],
       "runtime_params": {
         "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
@@ -29,6 +30,7 @@
         "move_speed": 380,
         "sense_radius": 950,
         "attack_range": 120,
+        "pattern": "chase_and_self_destruct",
         "spawn_tags": [
           "explosive",
           "flying"
@@ -99,6 +101,10 @@
           "params": {
             "kill_self": true,
             "target_entity_id": "player",
+            "windup_seconds": 0.75,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.1,
+            "explode_radius": 180,
             "attack_damage": 18,
             "attack_range": 120,
             "explosion_radius": 180,
@@ -214,6 +220,10 @@
           "params": {
             "kill_self": true,
             "target_entity_id": "player",
+            "windup_seconds": 0.75,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.1,
+            "explode_radius": 180,
             "attack_damage": 18,
             "attack_range": 120,
             "explosion_radius": 180,

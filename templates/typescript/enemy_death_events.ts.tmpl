@@ -1,7 +1,7 @@
-export interface {{interface_name}} { readonly worldAdapter: any; readonly registry: any; readonly encounterManager?: any; readonly log?: (message: string) => void; }
+export interface {{interface_name}} { readonly worldAdapter: any; readonly registry: any; readonly encounterManager?: any; readonly presentation?: any; readonly log?: (message: string) => void; }
 export class AutoUEEnemyDeathEvents {
   constructor(private readonly context: {{interface_name}}) {}
   bind(enemy: any, params: Record<string, any> = {}): void { try { this.context.worldAdapter.bindOnEnemyDied(enemy.actor, () => this.emitDeath(enemy, params.death_event_name || 'OnEnemyDied')); } catch (_) { this.context.worldAdapter.bindOnDestroyed(enemy.actor, () => this.emitDeath(enemy, params.death_event_name || 'OnDestroyed')); } }
-  emitDeath(enemy: any, reason = 'runtime'): void { if (!this.context.registry.markDead(enemy.enemy_id)) return; try { this.context.worldAdapter.setActorTag(enemy.actor, 'AUTOUE_GENERATED_ENEMY_DEFEATED'); } catch (_) {} this.context.encounterManager?.onEnemyDied?.(enemy, reason); }
+  emitDeath(enemy: any, reason = 'runtime'): void { if (!this.context.registry.markDead(enemy.enemy_id)) return; try { this.context.worldAdapter.setActorTag(enemy.actor, 'AUTOUE_GENERATED_ENEMY_DEFEATED'); } catch (_) {} this.context.presentation?.death?.(enemy); this.context.encounterManager?.onEnemyDied?.(enemy, reason); }
 }
 export function {{export_name}}(context: {{interface_name}}): AutoUEEnemyDeathEvents { return new AutoUEEnemyDeathEvents(context); }

@@ -20,7 +20,8 @@
         "enemy_combat",
         "enemy_health",
         "enemy_death_events",
-        "encounter_manager"
+        "encounter_manager",
+        "enemy_presentation"
       ],
       "runtime_params": {
         "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
@@ -29,6 +30,7 @@
         "move_speed": 220,
         "sense_radius": 850,
         "attack_range": 150,
+        "pattern": "shield_chase_counter",
         "spawn_tags": [
           "ground",
           "shield"
@@ -116,6 +118,9 @@
           "params": {
             "hitbox_radius": 90,
             "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22,
             "attack_damage": 10,
             "attack_range": 150,
             "cooldown_seconds": 1.2,
@@ -243,6 +248,9 @@
           "params": {
             "hitbox_radius": 90,
             "target_entity_id": "player",
+            "windup_seconds": 0.28,
+            "active_seconds": 0.2,
+            "recover_seconds": 0.22,
             "attack_damage": 10,
             "attack_range": 150,
             "cooldown_seconds": 1.2,
