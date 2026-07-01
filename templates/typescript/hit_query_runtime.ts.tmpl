@@ -1,0 +1,8 @@
+export interface {{interface_name}} { readonly worldAdapter?: any; readonly log?: (message: string) => void; }
+const LOG_PREFIX = '[AUTOUE_GENERATED]';
+function log(ctx: {{interface_name}}, message: string): void { (ctx.log || console.warn)(`${LOG_PREFIX} ${message}`); }
+export class AutoUEHitQueryRuntime {
+  constructor(private readonly context: {{interface_name}} = {}) {}
+  resolveMelee(source: any, params: Record<string, any> = {}): any[] { const targets = this.context.worldAdapter?.resolveMelee?.(source, params) || []; log(this.context, `HitResolved entity_id=${params.entity_id || 'player'} count=${targets.length} range=${params.range || 135}`); return targets; }
+}
+export function {{export_name}}(context: {{interface_name}} = {}): AutoUEHitQueryRuntime { return new AutoUEHitQueryRuntime(context); }

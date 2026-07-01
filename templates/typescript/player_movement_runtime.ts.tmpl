@@ -1,0 +1,19 @@
+export interface {{interface_name}} { readonly log?: (message: string) => void; }
+const LOG_PREFIX = '[AUTOUE_GENERATED]';
+function log(ctx: {{interface_name}}, message: string): void { (ctx.log || console.warn)(`${LOG_PREFIX} ${message}`); }
+export type AutoUEMoveIntent = { axis?: number; dash?: boolean; dt?: number; frozen?: boolean };
+export class AutoUEPlayerMovementRuntime {
+  constructor(private readonly context: {{interface_name}} = {}) {}
+  readAxis(input: any = {}): number { const axis = Number(input.axis || 0); log(this.context, `InputAxisRead axis=${axis}`); return axis; }
+  applyIntent(actor: any, intent: AutoUEMoveIntent = {}, params: Record<string, any> = {}): boolean {
+    if (intent.frozen) { log(this.context, 'MoveBlocked reason=frozen'); return false; }
+    const axis = Number(intent.axis || 0);
+    if (!axis) return false;
+    const speed = Number(params.speed || 620);
+    const dt = Math.max(0, Number(intent.dt || 0.016));
+    try { actor?.K2_AddActorWorldOffset?.({ X: axis * speed * dt, Y: 0, Z: 0 }, true, undefined, true); } catch (_) {}
+    log(this.context, `MoveApplied entity_id=${params.entity_id || 'player'} axis=${axis} speed=${speed}`);
+    return true;
+  }
+}
+export function {{export_name}}(context: {{interface_name}} = {}): AutoUEPlayerMovementRuntime { return new AutoUEPlayerMovementRuntime(context); }

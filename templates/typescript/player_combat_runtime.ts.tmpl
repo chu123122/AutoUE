@@ -1,0 +1,11 @@
+export interface {{interface_name}} { readonly log?: (message: string) => void; readonly now?: () => number; }
+const LOG_PREFIX = '[AUTOUE_GENERATED]';
+function log(ctx: {{interface_name}}, message: string): void { (ctx.log || console.warn)(`${LOG_PREFIX} ${message}`); }
+export class AutoUEPlayerCombatRuntime {
+  private nextAttackAt = 0;
+  constructor(private readonly context: {{interface_name}} = {}) {}
+  readAction(input: any = {}, params: Record<string, any> = {}): boolean { const action = String(params.action || 'attack'); const pressed = Boolean(input.attack || input.attackPressed || input.attackPulseUntil); log(this.context, `InputActionRead action=${action} pressed=${pressed ? 1 : 0}`); return pressed; }
+  cooldownGate(pressed: boolean, params: Record<string, any> = {}): boolean { const now = this.context.now ? this.context.now() : Date.now() / 1000; if (!pressed || now < this.nextAttackAt) return false; this.nextAttackAt = now + Number(params.cooldown || 0.35); return true; }
+  resolveAttack(targets: any[] = [], damageRuntime?: { apply?: (target: any, params?: Record<string, any>) => void }, params: Record<string, any> = {}): number { for (const target of targets) damageRuntime?.apply?.(target, params); log(this.context, `PlayerAttackResolved entity_id=${params.entity_id || 'player'} hit_count=${targets.length}`); return targets.length; }
+}
+export function {{export_name}}(context: {{interface_name}} = {}): AutoUEPlayerCombatRuntime { return new AutoUEPlayerCombatRuntime(context); }

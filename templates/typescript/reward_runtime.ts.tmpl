@@ -1,0 +1,8 @@
+export interface {{interface_name}} { readonly state?: any; readonly log?: (message: string) => void; }
+const LOG_PREFIX = '[AUTOUE_GENERATED]';
+function log(ctx: {{interface_name}}, message: string): void { (ctx.log || console.warn)(`${LOG_PREFIX} ${message}`); }
+export class AutoUERewardRuntime {
+  constructor(private readonly context: {{interface_name}} = {}) {}
+  grant(player: any, params: Record<string, any> = {}): Record<string, any> { const rewardType = String(params.reward_type || 'gold'); const amount = Number(params.amount || params.reward_amount || 1); try { this.context.state?.add?.(`player.reward.${rewardType}`, amount); } catch (_) {} log(this.context, `RewardGranted entity_id=${params.entity_id || 'pickup'} reward_type=${rewardType} amount=${amount}`); return { player, reward_type: rewardType, amount }; }
+}
+export function {{export_name}}(context: {{interface_name}} = {}): AutoUERewardRuntime { return new AutoUERewardRuntime(context); }

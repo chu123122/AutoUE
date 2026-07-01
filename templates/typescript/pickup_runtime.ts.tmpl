@@ -1,0 +1,11 @@
+export interface {{interface_name}} { readonly log?: (message: string) => void; readonly worldAdapter?: any; }
+const LOG_PREFIX = '[AUTOUE_GENERATED]';
+function log(ctx: {{interface_name}}, message: string): void { (ctx.log || console.warn)(`${LOG_PREFIX} ${message}`); }
+export class AutoUEPickupRuntime {
+  private consumed = new Set<string>();
+  constructor(private readonly context: {{interface_name}} = {}) {}
+  detectOverlap(pickup: any, target: any, params: Record<string, any> = {}): boolean { const ok = Boolean(target); log(this.context, `PickupOverlap entity_id=${params.entity_id || pickup?.entity_id || 'pickup'} target=${params.target || 'player'} hit=${ok ? 1 : 0}`); return ok; }
+  onceGate(pickupId: string): boolean { if (this.consumed.has(pickupId)) return false; this.consumed.add(pickupId); return true; }
+  consume(pickup: any, params: Record<string, any> = {}): void { try { this.context.worldAdapter?.destroyActor?.(pickup); } catch (_) {} log(this.context, `PickupConsumed entity_id=${params.entity_id || pickup?.entity_id || 'pickup'}`); }
+}
+export function {{export_name}}(context: {{interface_name}} = {}): AutoUEPickupRuntime { return new AutoUEPickupRuntime(context); }

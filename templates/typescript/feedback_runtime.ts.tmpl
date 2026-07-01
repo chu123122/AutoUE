@@ -1,0 +1,9 @@
+export interface {{interface_name}} { readonly worldAdapter?: any; readonly state?: any; readonly log?: (message: string) => void; }
+const LOG_PREFIX = '[AUTOUE_GENERATED]';
+function log(ctx: {{interface_name}}, message: string): void { (ctx.log || console.warn)(`${LOG_PREFIX} ${message}`); }
+export class AutoUEFeedbackRuntime {
+  constructor(private readonly context: {{interface_name}} = {}) {}
+  hudUpdate(params: Record<string, any> = {}): void { log(this.context, `HudUpdated reward_type=${params.reward_type || 'unknown'} amount=${params.amount || 1}`); log(this.context, 'RewardFeedbackShown channel=hud'); }
+  setVisibility(actor: any, params: Record<string, any> = {}): void { const visible = Boolean(params.visible); try { this.context.worldAdapter?.setVisibility?.(actor, visible); } catch (_) {} log(this.context, `VisibilityChanged entity_id=${params.entity_id || actor?.entity_id || 'pickup'} visible=${visible ? 1 : 0}`); }
+}
+export function {{export_name}}(context: {{interface_name}} = {}): AutoUEFeedbackRuntime { return new AutoUEFeedbackRuntime(context); }

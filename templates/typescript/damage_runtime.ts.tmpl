@@ -1,0 +1,8 @@
+export interface {{interface_name}} { readonly worldAdapter?: any; readonly log?: (message: string) => void; }
+const LOG_PREFIX = '[AUTOUE_GENERATED]';
+function log(ctx: {{interface_name}}, message: string): void { (ctx.log || console.warn)(`${LOG_PREFIX} ${message}`); }
+export class AutoUEDamageRuntime {
+  constructor(private readonly context: {{interface_name}} = {}) {}
+  apply(target: any, params: Record<string, any> = {}): void { const amount = Number(params.amount || params.attack_damage || 30); try { this.context.worldAdapter?.applyDamage?.(target, amount); } catch (_) {} log(this.context, `DamageApplied target_entity_id=${target?.entity_id || target?.enemy_id || 'unknown'} amount=${amount}`); }
+}
+export function {{export_name}}(context: {{interface_name}} = {}): AutoUEDamageRuntime { return new AutoUEDamageRuntime(context); }

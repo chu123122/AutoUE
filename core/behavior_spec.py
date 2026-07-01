@@ -5,8 +5,9 @@ import re
 from pathlib import Path
 from typing import Any, Mapping
 
+from core.behavior_recipes import compile_behavior_recipe, has_behavior_recipe, primitive_support_summary
 from core.content_library import load_dead_cells_library
-from core.runtime_support_matrix import DEFAULT_SUPPORT_MATRIX, SUPPORTED_ACTION_TYPES, check_capability_support
+from core.runtime_support_matrix import DEFAULT_SUPPORT_MATRIX, FRAMEWORK_RUNTIME_MODULES, SUPPORTED_ACTION_TYPES, check_capability_support
 
 BEHAVIOR_SPEC_PATH = "flow/06-behavior-spec.json"
 SUPPORT_CHECK_PATH = "flow/06-runtime-support-check.json"
@@ -51,8 +52,25 @@ def selected_capability_ids(entity_behavior: Mapping[str, Any]) -> list[str]:
     return seen
 
 
+def _flow_key(entity_id: str, behavior_id: str) -> str:
+    return f"{entity_id}::{behavior_id}" if entity_id else behavior_id
+
+
 def _flow_by_behavior(thin_flow: Mapping[str, Any] | None) -> dict[str, dict[str, Any]]:
-    return {str(flow["source_behavior_id"]): dict(flow) for flow in (thin_flow or {}).get("flows", []) if isinstance(flow, Mapping) and flow.get("source_behavior_id")}
+    flows: dict[str, dict[str, Any]] = {}
+    counts: dict[str, int] = {}
+    for flow in (thin_flow or {}).get("flows", []) if isinstance(thin_flow, Mapping) else []:
+        if not isinstance(flow, Mapping) or not flow.get("source_behavior_id"):
+            continue
+        behavior_id = str(flow["source_behavior_id"])
+        entity_id = str(flow.get("entity_id") or "")
+        counts[behavior_id] = counts.get(behavior_id, 0) + 1
+        flows[_flow_key(entity_id, behavior_id)] = dict(flow)
+    for key, flow in list(flows.items()):
+        behavior_id = str(flow.get("source_behavior_id") or "")
+        if counts.get(behavior_id, 0) == 1:
+            flows[behavior_id] = flow
+    return flows
 
 
 def _ports_for_flow(flow: Mapping[str, Any] | None) -> list[str]:
@@ -168,6 +186,25 @@ def _actions_for_behavior(behavior: Mapping[str, Any]) -> list[dict[str, Any]]:
     return actions
 
 
+def _attach_recipe_handlers(canonical: dict[str, Any], primitive_plan: list[dict[str, Any]]) -> None:
+    if not primitive_plan:
+        return
+    behavior_id = str(canonical.get("behavior_id") or "")
+    covered_capabilities = {str(step.get("capability_id") or "") for step in primitive_plan if step.get("capability_id")}
+    for capability in canonical.get("resolved_capabilities", []) or []:
+        if isinstance(capability, dict) and capability.get("capability_id") in covered_capabilities and not capability.get("handler"):
+            capability["handler"] = f"BehaviorRecipe.{behavior_id}"
+
+
+def _primitive_runtime_modules(primitive_plan: list[dict[str, Any]]) -> list[str]:
+    modules: list[str] = []
+    for step in primitive_plan:
+        for module in step.get("required_runtime_modules", []) or []:
+            if isinstance(module, str) and module and module not in modules:
+                modules.append(module)
+    return modules
+
+
 def _conditions_for_behavior(behavior: Mapping[str, Any], actions: list[dict[str, Any]]) -> list[dict[str, Any]]:
     raw = behavior.get("conditions")
     conditions = [dict(item) for item in raw if isinstance(item, Mapping)] if isinstance(raw, list) else []
@@ -216,24 +253,33 @@ def compile_behavior_spec(entity_behavior: Mapping[str, Any], thin_flow: Mapping
         if missing:
             raise ValueError(f"BehaviorSpecCompiler: behavior {behavior_id} references unknown capabilities: {missing}")
         canonical["resolved_capabilities"] = resolve_behavior_capabilities(canonical)
+        primitive_plan = compile_behavior_recipe(canonical) if has_behavior_recipe(behavior_id) else []
+        _attach_recipe_handlers(canonical, primitive_plan)
         actions = _actions_for_behavior(canonical)
         unknown = sorted({str(a.get("type")) for a in actions if a.get("type") not in SUPPORTED_ACTION_TYPES})
         if unknown:
             raise ValueError(f"BehaviorSpecCompiler: behavior {behavior_id} uses unknown action types: {unknown}")
-        flow = flows.get(behavior_id, {})
+        flow = flows.get(_flow_key(str(canonical.get("bound_entity_id") or canonical.get("entity_id") or ""), behavior_id), flows.get(behavior_id, {}))
         trigger = canonical.get("trigger_model") if isinstance(canonical.get("trigger_model"), Mapping) else {"type": "manual", "description": canonical.get("trigger", "")}
         logs = canonical.get("verification_logs") if isinstance(canonical.get("verification_logs"), list) else None
         if not logs:
             logs = [f"BehaviorTriggered {behavior_id}"] + [f"ActionDispatched {a.get('type')}" for a in actions]
+            logs += [f"PrimitiveReady {step['primitive_id']}" for step in primitive_plan]
+        runtime_features = list(canonical.get("runtime_features") or [])
+        for module in _primitive_runtime_modules(primitive_plan):
+            if module not in runtime_features:
+                runtime_features.append(module)
         behaviors.append({
             "behavior_id": behavior_id,
             "bound_entity_id": canonical.get("bound_entity_id"),
             "primary_entity_id": canonical.get("primary_entity_id") or canonical.get("entity_id"),
             "entity_id": canonical.get("entity_id"),
             "runtime_domain": _runtime_domain_for_behavior(canonical, actions),
-            "runtime_features": list(canonical.get("runtime_features") or []),
+            "runtime_features": runtime_features,
             "runtime_params": _runtime_params_for_behavior(canonical),
             "resolved_capabilities": list(canonical.get("resolved_capabilities") or []),
+            "primitive_plan": primitive_plan,
+            "presentation_effects": [],
             "flow_id": flow.get("flow_id") or f"flow_{_safe_id(behavior_id)}",
             "trigger": dict(trigger),
             "conditions": _conditions_for_behavior(canonical, actions),
@@ -248,18 +294,71 @@ def compile_behavior_spec(entity_behavior: Mapping[str, Any], thin_flow: Mapping
 def check_behavior_spec_support(behavior_spec: Mapping[str, Any]) -> dict[str, Any]:
     capability_ids: list[str] = []
     behavior_by_capability: dict[str, list[str]] = {}
+    recipe_covered_capabilities: set[str] = set()
+    recipe_behavior_ids: set[str] = set()
+    primitive_plan: list[Mapping[str, Any]] = []
     for behavior in behavior_spec.get("behaviors", []) if isinstance(behavior_spec, Mapping) else []:
         if isinstance(behavior, Mapping):
             behavior_id = str(behavior.get("behavior_id") or "")
+            behavior_primitives = [step for step in behavior.get("primitive_plan", []) or [] if isinstance(step, Mapping)]
+            if behavior_primitives:
+                recipe_behavior_ids.add(behavior_id)
+                primitive_plan.extend(behavior_primitives)
+                for step in behavior_primitives:
+                    capability_id = step.get("capability_id")
+                    if isinstance(capability_id, str) and capability_id:
+                        recipe_covered_capabilities.add(capability_id)
             for capability_id in behavior.get("required_capability_ids", []) or []:
                 if isinstance(capability_id, str) and capability_id:
                     if capability_id not in capability_ids:
                         capability_ids.append(capability_id)
                     behavior_by_capability.setdefault(capability_id, []).append(behavior_id)
-    check = check_capability_support(capability_ids)
-    check["unsupported_behaviors"] = sorted({bid for item in check["unsupported_capabilities"] for bid in behavior_by_capability.get(item.get("capability_id", ""), [])})
-    check["behavior_by_capability"] = {k: sorted(set(v)) for k, v in sorted(behavior_by_capability.items())}
-    return check
+    base_check = check_capability_support(capability_ids)
+    primitive_check = primitive_support_summary(list(primitive_plan))
+    unsupported_primitives = list(primitive_check["unsupported_primitives"])
+    can_cover_by_recipe = not unsupported_primitives
+    unsupported_capabilities = [
+        item for item in base_check["unsupported_capabilities"]
+        if not (can_cover_by_recipe and item.get("capability_id") in recipe_covered_capabilities)
+    ]
+    supported_capabilities = list(base_check["supported_capabilities"])
+    if can_cover_by_recipe:
+        for item in base_check["unsupported_capabilities"]:
+            capability_id = str(item.get("capability_id") or "")
+            if capability_id in recipe_covered_capabilities:
+                supported_capabilities.append({
+                    **item,
+                    "supported": True,
+                    "handler": "BehaviorRecipe.primitive_plan",
+                    "reason": "covered by supported Behavior Recipe primitives",
+                })
+    required_modules = set(FRAMEWORK_RUNTIME_MODULES)
+    required_modules.update(base_check.get("required_runtime_modules", []))
+    required_modules.update(primitive_check.get("required_runtime_modules", []))
+    engine_ports = set(base_check.get("engine_ports", []))
+    engine_ports.update(primitive_check.get("engine_ports", []))
+    unsupported_behaviors = sorted({
+        bid
+        for item in unsupported_capabilities
+        for bid in behavior_by_capability.get(item.get("capability_id", ""), [])
+    })
+    if unsupported_primitives:
+        unsupported_behaviors = sorted(set(unsupported_behaviors) | recipe_behavior_ids)
+    status = "unsupported" if unsupported_capabilities or unsupported_primitives else "supported"
+    return {
+        "schema_version": "autoue-runtime-support-check/v2",
+        "status": status,
+        "static_support": status,
+        "runtime_proof": "not_run",
+        "required_runtime_modules": sorted(required_modules),
+        "engine_ports": sorted(engine_ports),
+        "supported_capabilities": supported_capabilities,
+        "unsupported_capabilities": unsupported_capabilities,
+        "supported_primitives": primitive_check["supported_primitives"],
+        "unsupported_primitives": unsupported_primitives,
+        "unsupported_behaviors": unsupported_behaviors,
+        "behavior_by_capability": {k: sorted(set(v)) for k, v in sorted(behavior_by_capability.items())},
+    }
 
 
 def write_behavior_artifacts(root: str | Path, behavior_spec: Mapping[str, Any], support_check: Mapping[str, Any]) -> None:
