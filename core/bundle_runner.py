@@ -18,6 +18,7 @@ from core.config import iter_enabled_nodes, load_llm_profiles, load_runtime_conf
 from core.llm_factory import create_llm
 from core.runtime_validation import run_runtime_validation, runtime_validation_config
 from core.workflow_loader import create_node_from_spec, read_prompt_text
+from tools.unreal.stage_generated_ts_to_aidev import StageConfig, stage_generated_ts_bundle
 
 SCENE_SPAWN_MANIFEST_REL = Path("flow") / "scene-spawn-manifest.json"
 
@@ -169,7 +170,32 @@ def execute_node(bundle: RunBundle, node, spec: Mapping[str, Any], runtime_confi
     bundle.save()
     validation = validate_bundle_node(bundle, {**dict(spec), "inputs": inputs, "outputs": outputs})
     print(json.dumps({"node": name, "output_port": output_port, "validation": validation["result"]}, ensure_ascii=False))
+    maybe_stage_generated_ts_to_aidev(bundle, name, runtime_config)
     return {"command": result, "validation": validation}
+
+
+def maybe_stage_generated_ts_to_aidev(bundle: RunBundle, node_name: str, runtime_config: Mapping[str, Any]) -> None:
+    cfg = runtime_config.get("aidev_staging", {}) if isinstance(runtime_config, Mapping) else {}
+    if not isinstance(cfg, Mapping) or not cfg.get("enabled", False):
+        return
+    after_node = str(cfg.get("after_node") or "TypeScriptRuntimeTemplatePlanner")
+    if node_name != after_node:
+        return
+    aidev_root = cfg.get("aidev_root")
+    if not aidev_root:
+        raise RuntimeError("aidev_staging.enabled requires aidev_root")
+    report = stage_generated_ts_bundle(
+        StageConfig(
+            bundle=bundle.root,
+            aidev_root=Path(str(aidev_root)),
+            apply=bool(cfg.get("apply", False)),
+            run_tsc=bool(cfg.get("run_tsc", False)),
+            report_path=Path(str(cfg.get("report_path") or "flow/aidev-stage-report.json")),
+        )
+    )
+    bundle.add_artifact("aidev_stage_report", {"kind": "json", "path": str(cfg.get("report_path") or "flow/aidev-stage-report.json").replace("\\", "/")})
+    bundle.save()
+    print(json.dumps({"node": node_name, "aidev_staging": report.get("status"), "report": str((bundle.root / str(cfg.get("report_path") or "flow/aidev-stage-report.json")).resolve())}, ensure_ascii=False))
 
 
 def run_bundle_workflow(args) -> int:

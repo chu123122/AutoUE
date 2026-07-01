@@ -33,6 +33,14 @@
     "launches_pie": false,
     "injects_player_input": false
   },
+  "aidev_staging": {
+    "enabled": false,
+    "after_node": "TypeScriptRuntimeTemplatePlanner",
+    "aidev_root": "",
+    "apply": false,
+    "run_tsc": false,
+    "report_path": "flow/aidev-stage-report.json"
+  },
   "scene_spawn_manifest": {
     "enabled": false,
     "unreal_editor": "",
