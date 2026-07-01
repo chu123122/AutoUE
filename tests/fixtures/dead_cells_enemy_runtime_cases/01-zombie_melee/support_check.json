@@ -1,6 +1,8 @@
 {
-  "schema_version": "autoue-runtime-support-check/v1",
+  "schema_version": "autoue-runtime-support-check/v2",
   "status": "supported",
+  "static_support": "supported",
+  "runtime_proof": "not_run",
   "required_runtime_modules": [
     "action_dispatcher",
     "behavior_orchestrator",
@@ -153,6 +155,8 @@
     }
   ],
   "unsupported_capabilities": [],
+  "supported_primitives": [],
+  "unsupported_primitives": [],
   "unsupported_behaviors": [],
   "behavior_by_capability": {
     "encounter.complete.complete_when_all_dead": [

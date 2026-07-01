@@ -163,6 +163,8 @@
           }
         }
       ],
+      "primitive_plan": [],
+      "presentation_effects": [],
       "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
       "trigger": {
         "kind": "on_event"
@@ -441,6 +443,8 @@
           }
         }
       ],
+      "primitive_plan": [],
+      "presentation_effects": [],
       "flow_id": "flow_enemy_behavior_chase_and_self_destruct",
       "trigger": {
         "kind": "on_event"
@@ -735,6 +739,8 @@
           }
         }
       ],
+      "primitive_plan": [],
+      "presentation_effects": [],
       "flow_id": "flow_enemy_behavior_block_then_counter",
       "trigger": {
         "kind": "on_event"
@@ -1027,6 +1033,8 @@
           }
         }
       ],
+      "primitive_plan": [],
+      "presentation_effects": [],
       "flow_id": "flow_enemy_behavior_chase_and_melee",
       "trigger": {
         "kind": "on_event"
@@ -1303,6 +1311,8 @@
           }
         }
       ],
+      "primitive_plan": [],
+      "presentation_effects": [],
       "flow_id": "flow_enemy_behavior_chase_and_melee",
       "trigger": {
         "kind": "on_event"

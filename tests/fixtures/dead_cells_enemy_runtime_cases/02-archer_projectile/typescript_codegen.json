@@ -16,12 +16,17 @@
     "entity_registry",
     "state_blackboard",
     "trigger_router",
-    "world_adapter"
+    "world_adapter",
+    "encounter_spec_data",
+    "spawn_point_registry",
+    "enemy_spawn_manager"
   ],
   "disabled_features": [],
   "support_check": {
-    "schema_version": "autoue-runtime-support-check/v1",
+    "schema_version": "autoue-runtime-support-check/v2",
     "status": "supported",
+    "static_support": "supported",
+    "runtime_proof": "not_run",
     "required_runtime_modules": [
       "action_dispatcher",
       "behavior_orchestrator",
@@ -174,6 +179,8 @@
       }
     ],
     "unsupported_capabilities": [],
+    "supported_primitives": [],
+    "unsupported_primitives": [],
     "unsupported_behaviors": [],
     "behavior_by_capability": {
       "encounter.complete.complete_when_all_dead": [
@@ -198,6 +205,332 @@
         "enemy.behavior.keep_distance_and_projectile"
       ]
     }
+  },
+  "behavior_spec": {
+    "schema_version": "autoue-behavior-spec/v1",
+    "source_nodes": [
+      "EntityAbilityBehaviorPlanner",
+      "ThinGameplayFlowPlanner",
+      "PuerTSRuntimeMappingCompiler"
+    ],
+    "behaviors": [
+      {
+        "behavior_id": "enemy.behavior.keep_distance_and_projectile",
+        "bound_entity_id": "archer",
+        "primary_entity_id": "archer",
+        "entity_id": "archer",
+        "runtime_domain": "enemy_runtime",
+        "runtime_features": [
+          "enemy_runtime",
+          "enemy_spawn_runtime",
+          "enemy_perception",
+          "enemy_movement",
+          "enemy_combat",
+          "enemy_projectile_runtime",
+          "enemy_health",
+          "enemy_death_events",
+          "encounter_manager"
+        ],
+        "runtime_params": {
+          "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+          "enemy_tag": "AUTOUE_ENEMY_ARCHER",
+          "default_hp": 24,
+          "move_speed": 235,
+          "sense_radius": 1100,
+          "attack_range": 620,
+          "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+          "keep_distance": 420,
+          "spawn_tags": [
+            "ground",
+            "ranged"
+          ],
+          "bound_entity_id": "archer",
+          "entity_id": "archer"
+        },
+        "resolved_capabilities": [
+          {
+            "capability_id": "enemy.spawn.spawn_actor",
+            "capability_kind": "enemy_spawn",
+            "action_kind": "spawn_actor",
+            "handler": "EnemySpawnRuntime.spawnEnemy",
+            "params": {
+              "spawn_tags": [
+                "ground",
+                "ranged"
+              ],
+              "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+              "enemy_tag": "AUTOUE_ENEMY_ARCHER",
+              "default_hp": 24,
+              "move_speed": 235,
+              "bound_entity_id": "archer",
+              "entity_id": "archer"
+            },
+            "source_entity_binding": {
+              "entity_id": "archer",
+              "capability_id": "enemy.spawn.spawn_actor"
+            }
+          },
+          {
+            "capability_id": "enemy.sensor.detect_player_by_distance",
+            "capability_kind": "enemy_sensor",
+            "action_kind": "detect_player_by_distance",
+            "handler": "EnemyPerception.detectPlayer",
+            "params": {
+              "target_entity_id": "player",
+              "sense_radius": 1100,
+              "bound_entity_id": "archer",
+              "entity_id": "archer"
+            },
+            "source_entity_binding": {
+              "entity_id": "archer",
+              "capability_id": "enemy.sensor.detect_player_by_distance"
+            }
+          },
+          {
+            "capability_id": "enemy.movement.keep_distance",
+            "capability_kind": "enemy_movement",
+            "action_kind": "keep_distance",
+            "handler": "EnemyMovement.keepDistance",
+            "params": {
+              "target_entity_id": "player",
+              "move_speed": 235,
+              "keep_distance": 420,
+              "bound_entity_id": "archer",
+              "entity_id": "archer"
+            },
+            "source_entity_binding": {
+              "entity_id": "archer",
+              "capability_id": "enemy.movement.keep_distance"
+            }
+          },
+          {
+            "capability_id": "enemy.attack.projectile_spawn",
+            "capability_kind": "enemy_attack",
+            "action_kind": "projectile_spawn",
+            "handler": "EnemyCombat.spawnProjectile",
+            "params": {
+              "target_entity_id": "player",
+              "attack_damage": 8,
+              "attack_range": 620,
+              "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+              "projectile_speed": 900,
+              "cooldown_seconds": 1.6,
+              "bound_entity_id": "archer",
+              "entity_id": "archer"
+            },
+            "source_entity_binding": {
+              "entity_id": "archer",
+              "capability_id": "enemy.attack.projectile_spawn"
+            }
+          },
+          {
+            "capability_id": "enemy.health.receive_damage",
+            "capability_kind": "enemy_health",
+            "action_kind": "receive_damage",
+            "handler": "EnemyHealth.applyDamage",
+            "params": {
+              "max_hp": 24,
+              "bound_entity_id": "archer",
+              "entity_id": "archer"
+            },
+            "source_entity_binding": {
+              "entity_id": "archer",
+              "capability_id": "enemy.health.receive_damage"
+            }
+          },
+          {
+            "capability_id": "enemy.death.emit_death_event",
+            "capability_kind": "enemy_death",
+            "action_kind": "emit_death_event",
+            "handler": "EnemyDeathEvents.emitDeath",
+            "params": {
+              "death_event_name": "EnemyDied",
+              "decrement_alive_count": true,
+              "bound_entity_id": "archer",
+              "entity_id": "archer"
+            },
+            "source_entity_binding": {
+              "entity_id": "archer",
+              "capability_id": "enemy.death.emit_death_event"
+            }
+          },
+          {
+            "capability_id": "encounter.complete.complete_when_all_dead",
+            "capability_kind": "encounter",
+            "action_kind": "complete_when_all_dead",
+            "handler": "EncounterManager.completeWhenAllDead",
+            "params": {
+              "completion_event_name": "EncounterCompleted",
+              "completion_state_key": "encounter.room.completed",
+              "bound_entity_id": "archer",
+              "entity_id": "archer"
+            },
+            "source_entity_binding": {
+              "entity_id": "archer",
+              "capability_id": "encounter.complete.complete_when_all_dead"
+            }
+          }
+        ],
+        "primitive_plan": [],
+        "presentation_effects": [],
+        "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
+        "trigger": {
+          "kind": "on_event"
+        },
+        "conditions": [],
+        "actions": [
+          {
+            "type": "enemy_spawn_actor",
+            "capability_id": "enemy.spawn.spawn_actor",
+            "entity_id": "archer",
+            "params": {
+              "spawn_tags": [
+                "ground",
+                "ranged"
+              ],
+              "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+              "enemy_tag": "AUTOUE_ENEMY_ARCHER",
+              "default_hp": 24,
+              "move_speed": 235,
+              "bound_entity_id": "archer",
+              "entity_id": "archer"
+            }
+          },
+          {
+            "type": "enemy_detect_player",
+            "capability_id": "enemy.sensor.detect_player_by_distance",
+            "entity_id": "archer",
+            "params": {
+              "target_entity_id": "player",
+              "sense_radius": 1100,
+              "bound_entity_id": "archer",
+              "entity_id": "archer"
+            }
+          },
+          {
+            "type": "enemy_keep_distance",
+            "capability_id": "enemy.movement.keep_distance",
+            "entity_id": "archer",
+            "params": {
+              "target_entity_id": "player",
+              "move_speed": 235,
+              "keep_distance": 420,
+              "bound_entity_id": "archer",
+              "entity_id": "archer"
+            },
+            "target_entity_id": "player"
+          },
+          {
+            "type": "enemy_projectile_attack",
+            "capability_id": "enemy.attack.projectile_spawn",
+            "entity_id": "archer",
+            "params": {
+              "target_entity_id": "player",
+              "attack_damage": 8,
+              "attack_range": 620,
+              "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+              "projectile_speed": 900,
+              "cooldown_seconds": 1.6,
+              "bound_entity_id": "archer",
+              "entity_id": "archer"
+            },
+            "target_entity_id": "player"
+          },
+          {
+            "type": "enemy_receive_damage",
+            "capability_id": "enemy.health.receive_damage",
+            "entity_id": "archer",
+            "params": {
+              "max_hp": 24,
+              "bound_entity_id": "archer",
+              "entity_id": "archer"
+            }
+          },
+          {
+            "type": "enemy_emit_death_event",
+            "capability_id": "enemy.death.emit_death_event",
+            "entity_id": "archer",
+            "params": {
+              "death_event_name": "EnemyDied",
+              "decrement_alive_count": true,
+              "bound_entity_id": "archer",
+              "entity_id": "archer"
+            }
+          },
+          {
+            "type": "encounter_complete_when_all_dead",
+            "capability_id": "encounter.complete.complete_when_all_dead",
+            "entity_id": "archer",
+            "params": {
+              "completion_event_name": "EncounterCompleted",
+              "completion_state_key": "encounter.room.completed",
+              "bound_entity_id": "archer",
+              "entity_id": "archer"
+            }
+          }
+        ],
+        "required_capability_ids": [
+          "enemy.spawn.spawn_actor",
+          "enemy.sensor.detect_player_by_distance",
+          "enemy.movement.keep_distance",
+          "enemy.attack.projectile_spawn",
+          "enemy.health.receive_damage",
+          "enemy.death.emit_death_event",
+          "encounter.complete.complete_when_all_dead"
+        ],
+        "engine_port_ids": [
+          "actor.spawn",
+          "actor.get_distance_to",
+          "actor.set_actor_location",
+          "projectile.spawn",
+          "actor.on_take_any_damage",
+          "actor.on_destroyed",
+          "encounter.alive_count"
+        ],
+        "verification_logs": [
+          "BehaviorTriggered enemy.behavior.keep_distance_and_projectile",
+          "ActionDispatched enemy_spawn_actor",
+          "ActionDispatched enemy_detect_player",
+          "ActionDispatched enemy_keep_distance",
+          "ActionDispatched enemy_projectile_attack",
+          "ActionDispatched enemy_receive_damage",
+          "ActionDispatched enemy_emit_death_event",
+          "ActionDispatched encounter_complete_when_all_dead"
+        ]
+      }
+    ]
+  },
+  "encounter_spec": {
+    "schema_version": "autoue-encounter-spec/v1",
+    "encounters": [
+      {
+        "encounter_id": "room_01_initial_guard",
+        "trigger": {
+          "type": "on_level_start"
+        },
+        "spawn_group": "room_01_guard",
+        "enemy_budget": 1,
+        "composition": [
+          {
+            "enemy": "archer",
+            "count": 1
+          }
+        ],
+        "spawn_policy": {
+          "avoid_camera_view": false,
+          "min_distance_to_player": 400,
+          "consume_spawn_point": true,
+          "max_alive": 1
+        },
+        "completion": {
+          "type": "all_spawned_enemies_defeated",
+          "set_flags": [
+            "enemy_defeated",
+            "exit_unlocked"
+          ]
+        }
+      }
+    ]
   },
   "template_inputs": [
     {
@@ -229,7 +562,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -397,6 +733,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -524,9 +862,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -679,6 +1053,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -734,7 +1110,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -902,6 +1281,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -1029,9 +1410,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -1184,6 +1601,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -1239,7 +1658,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -1407,6 +1829,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -1534,9 +1958,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -1689,6 +2149,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -1744,7 +2206,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -1912,6 +2377,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -2039,9 +2506,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -2194,6 +2697,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -2249,7 +2754,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -2417,6 +2925,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -2544,9 +3054,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -2699,6 +3245,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -2754,7 +3302,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -2922,6 +3473,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -3049,9 +3602,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -3204,6 +3793,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -3259,7 +3850,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -3427,6 +4021,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -3554,9 +4150,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -3709,6 +4341,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -3764,7 +4398,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -3932,6 +4569,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -4059,9 +4698,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -4214,6 +4889,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -4269,7 +4946,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -4437,6 +5117,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -4564,9 +5246,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -4719,6 +5437,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -4774,7 +5494,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -4942,6 +5665,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -5069,9 +5794,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -5224,6 +5985,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -5279,7 +6042,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -5447,6 +6213,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -5574,9 +6342,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -5729,6 +6533,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -5784,7 +6590,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -5952,6 +6761,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -6079,9 +6890,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -6234,6 +7081,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -6289,7 +7138,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -6457,6 +7309,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -6584,9 +7438,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -6739,6 +7629,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -6794,7 +7686,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -6962,6 +7857,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -7089,9 +7986,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -7244,6 +8177,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -7299,7 +8234,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -7467,6 +8405,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -7594,9 +8534,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -7749,6 +8725,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -7804,7 +8782,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -7972,6 +8953,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -8099,9 +9082,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -8254,6 +9273,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -8309,7 +9330,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -8477,6 +9501,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -8604,9 +9630,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -8759,6 +9821,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -8814,7 +9878,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -8982,6 +10049,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -9109,9 +10178,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -9264,6 +10369,1652 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
+        "unsupported_behaviors": [],
+        "behavior_by_capability": {
+          "encounter.complete.complete_when_all_dead": [
+            "enemy.behavior.keep_distance_and_projectile"
+          ],
+          "enemy.attack.projectile_spawn": [
+            "enemy.behavior.keep_distance_and_projectile"
+          ],
+          "enemy.death.emit_death_event": [
+            "enemy.behavior.keep_distance_and_projectile"
+          ],
+          "enemy.health.receive_damage": [
+            "enemy.behavior.keep_distance_and_projectile"
+          ],
+          "enemy.movement.keep_distance": [
+            "enemy.behavior.keep_distance_and_projectile"
+          ],
+          "enemy.sensor.detect_player_by_distance": [
+            "enemy.behavior.keep_distance_and_projectile"
+          ],
+          "enemy.spawn.spawn_actor": [
+            "enemy.behavior.keep_distance_and_projectile"
+          ]
+        }
+      }
+    },
+    {
+      "template": "encounter_spec_data",
+      "path": "TypeScript/content/generated/AutoUEGeneratedEncounterSpec.ts",
+      "export_name": "getAutoUEGeneratedEncounterSpec",
+      "interface_name": "AutoUEGeneratedEncounterSpecContext",
+      "entity_id": "archer",
+      "behavior_id": "enemy.behavior.keep_distance_and_projectile",
+      "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
+      "runtime_mapping_path": "flow/05-puerts-runtime-mapping.json",
+      "action_label": "execute BehaviorSpec action chain",
+      "target_label": "BehaviorSpec",
+      "result_label": "runtime framework dispatches data actions",
+      "runtime_features": [
+        "action_dispatcher",
+        "behavior_orchestrator",
+        "condition_checker",
+        "encounter_manager",
+        "enemy_combat",
+        "enemy_death_events",
+        "enemy_health",
+        "enemy_movement",
+        "enemy_perception",
+        "enemy_projectile_runtime",
+        "enemy_registry",
+        "enemy_runtime",
+        "enemy_spawn_runtime",
+        "entity_registry",
+        "state_blackboard",
+        "trigger_router",
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
+      ],
+      "disabled_features": [],
+      "behavior_spec": {
+        "schema_version": "autoue-behavior-spec/v1",
+        "source_nodes": [
+          "EntityAbilityBehaviorPlanner",
+          "ThinGameplayFlowPlanner",
+          "PuerTSRuntimeMappingCompiler"
+        ],
+        "behaviors": [
+          {
+            "behavior_id": "enemy.behavior.keep_distance_and_projectile",
+            "bound_entity_id": "archer",
+            "primary_entity_id": "archer",
+            "entity_id": "archer",
+            "runtime_domain": "enemy_runtime",
+            "runtime_features": [
+              "enemy_runtime",
+              "enemy_spawn_runtime",
+              "enemy_perception",
+              "enemy_movement",
+              "enemy_combat",
+              "enemy_projectile_runtime",
+              "enemy_health",
+              "enemy_death_events",
+              "encounter_manager"
+            ],
+            "runtime_params": {
+              "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+              "enemy_tag": "AUTOUE_ENEMY_ARCHER",
+              "default_hp": 24,
+              "move_speed": 235,
+              "sense_radius": 1100,
+              "attack_range": 620,
+              "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+              "keep_distance": 420,
+              "spawn_tags": [
+                "ground",
+                "ranged"
+              ],
+              "bound_entity_id": "archer",
+              "entity_id": "archer"
+            },
+            "resolved_capabilities": [
+              {
+                "capability_id": "enemy.spawn.spawn_actor",
+                "capability_kind": "enemy_spawn",
+                "action_kind": "spawn_actor",
+                "handler": "EnemySpawnRuntime.spawnEnemy",
+                "params": {
+                  "spawn_tags": [
+                    "ground",
+                    "ranged"
+                  ],
+                  "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+                  "enemy_tag": "AUTOUE_ENEMY_ARCHER",
+                  "default_hp": 24,
+                  "move_speed": 235,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "source_entity_binding": {
+                  "entity_id": "archer",
+                  "capability_id": "enemy.spawn.spawn_actor"
+                }
+              },
+              {
+                "capability_id": "enemy.sensor.detect_player_by_distance",
+                "capability_kind": "enemy_sensor",
+                "action_kind": "detect_player_by_distance",
+                "handler": "EnemyPerception.detectPlayer",
+                "params": {
+                  "target_entity_id": "player",
+                  "sense_radius": 1100,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "source_entity_binding": {
+                  "entity_id": "archer",
+                  "capability_id": "enemy.sensor.detect_player_by_distance"
+                }
+              },
+              {
+                "capability_id": "enemy.movement.keep_distance",
+                "capability_kind": "enemy_movement",
+                "action_kind": "keep_distance",
+                "handler": "EnemyMovement.keepDistance",
+                "params": {
+                  "target_entity_id": "player",
+                  "move_speed": 235,
+                  "keep_distance": 420,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "source_entity_binding": {
+                  "entity_id": "archer",
+                  "capability_id": "enemy.movement.keep_distance"
+                }
+              },
+              {
+                "capability_id": "enemy.attack.projectile_spawn",
+                "capability_kind": "enemy_attack",
+                "action_kind": "projectile_spawn",
+                "handler": "EnemyCombat.spawnProjectile",
+                "params": {
+                  "target_entity_id": "player",
+                  "attack_damage": 8,
+                  "attack_range": 620,
+                  "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+                  "projectile_speed": 900,
+                  "cooldown_seconds": 1.6,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "source_entity_binding": {
+                  "entity_id": "archer",
+                  "capability_id": "enemy.attack.projectile_spawn"
+                }
+              },
+              {
+                "capability_id": "enemy.health.receive_damage",
+                "capability_kind": "enemy_health",
+                "action_kind": "receive_damage",
+                "handler": "EnemyHealth.applyDamage",
+                "params": {
+                  "max_hp": 24,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "source_entity_binding": {
+                  "entity_id": "archer",
+                  "capability_id": "enemy.health.receive_damage"
+                }
+              },
+              {
+                "capability_id": "enemy.death.emit_death_event",
+                "capability_kind": "enemy_death",
+                "action_kind": "emit_death_event",
+                "handler": "EnemyDeathEvents.emitDeath",
+                "params": {
+                  "death_event_name": "EnemyDied",
+                  "decrement_alive_count": true,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "source_entity_binding": {
+                  "entity_id": "archer",
+                  "capability_id": "enemy.death.emit_death_event"
+                }
+              },
+              {
+                "capability_id": "encounter.complete.complete_when_all_dead",
+                "capability_kind": "encounter",
+                "action_kind": "complete_when_all_dead",
+                "handler": "EncounterManager.completeWhenAllDead",
+                "params": {
+                  "completion_event_name": "EncounterCompleted",
+                  "completion_state_key": "encounter.room.completed",
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "source_entity_binding": {
+                  "entity_id": "archer",
+                  "capability_id": "encounter.complete.complete_when_all_dead"
+                }
+              }
+            ],
+            "primitive_plan": [],
+            "presentation_effects": [],
+            "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
+            "trigger": {
+              "kind": "on_event"
+            },
+            "conditions": [],
+            "actions": [
+              {
+                "type": "enemy_spawn_actor",
+                "capability_id": "enemy.spawn.spawn_actor",
+                "entity_id": "archer",
+                "params": {
+                  "spawn_tags": [
+                    "ground",
+                    "ranged"
+                  ],
+                  "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+                  "enemy_tag": "AUTOUE_ENEMY_ARCHER",
+                  "default_hp": 24,
+                  "move_speed": 235,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                }
+              },
+              {
+                "type": "enemy_detect_player",
+                "capability_id": "enemy.sensor.detect_player_by_distance",
+                "entity_id": "archer",
+                "params": {
+                  "target_entity_id": "player",
+                  "sense_radius": 1100,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                }
+              },
+              {
+                "type": "enemy_keep_distance",
+                "capability_id": "enemy.movement.keep_distance",
+                "entity_id": "archer",
+                "params": {
+                  "target_entity_id": "player",
+                  "move_speed": 235,
+                  "keep_distance": 420,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "target_entity_id": "player"
+              },
+              {
+                "type": "enemy_projectile_attack",
+                "capability_id": "enemy.attack.projectile_spawn",
+                "entity_id": "archer",
+                "params": {
+                  "target_entity_id": "player",
+                  "attack_damage": 8,
+                  "attack_range": 620,
+                  "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+                  "projectile_speed": 900,
+                  "cooldown_seconds": 1.6,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "target_entity_id": "player"
+              },
+              {
+                "type": "enemy_receive_damage",
+                "capability_id": "enemy.health.receive_damage",
+                "entity_id": "archer",
+                "params": {
+                  "max_hp": 24,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                }
+              },
+              {
+                "type": "enemy_emit_death_event",
+                "capability_id": "enemy.death.emit_death_event",
+                "entity_id": "archer",
+                "params": {
+                  "death_event_name": "EnemyDied",
+                  "decrement_alive_count": true,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                }
+              },
+              {
+                "type": "encounter_complete_when_all_dead",
+                "capability_id": "encounter.complete.complete_when_all_dead",
+                "entity_id": "archer",
+                "params": {
+                  "completion_event_name": "EncounterCompleted",
+                  "completion_state_key": "encounter.room.completed",
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                }
+              }
+            ],
+            "required_capability_ids": [
+              "enemy.spawn.spawn_actor",
+              "enemy.sensor.detect_player_by_distance",
+              "enemy.movement.keep_distance",
+              "enemy.attack.projectile_spawn",
+              "enemy.health.receive_damage",
+              "enemy.death.emit_death_event",
+              "encounter.complete.complete_when_all_dead"
+            ],
+            "engine_port_ids": [
+              "actor.spawn",
+              "actor.get_distance_to",
+              "actor.set_actor_location",
+              "projectile.spawn",
+              "actor.on_take_any_damage",
+              "actor.on_destroyed",
+              "encounter.alive_count"
+            ],
+            "verification_logs": [
+              "BehaviorTriggered enemy.behavior.keep_distance_and_projectile",
+              "ActionDispatched enemy_spawn_actor",
+              "ActionDispatched enemy_detect_player",
+              "ActionDispatched enemy_keep_distance",
+              "ActionDispatched enemy_projectile_attack",
+              "ActionDispatched enemy_receive_damage",
+              "ActionDispatched enemy_emit_death_event",
+              "ActionDispatched encounter_complete_when_all_dead"
+            ]
+          }
+        ]
+      },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
+      "support_check": {
+        "schema_version": "autoue-runtime-support-check/v2",
+        "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
+        "required_runtime_modules": [
+          "action_dispatcher",
+          "behavior_orchestrator",
+          "condition_checker",
+          "encounter_manager",
+          "enemy_combat",
+          "enemy_death_events",
+          "enemy_health",
+          "enemy_movement",
+          "enemy_perception",
+          "enemy_projectile_runtime",
+          "enemy_registry",
+          "enemy_runtime",
+          "enemy_spawn_runtime",
+          "entity_registry",
+          "state_blackboard",
+          "trigger_router",
+          "world_adapter"
+        ],
+        "engine_ports": [
+          "actor.get_distance_to",
+          "actor.on_destroyed",
+          "actor.on_take_any_damage",
+          "actor.set_actor_location",
+          "actor.spawn",
+          "encounter.alive_count",
+          "gameplay_statics.apply_damage",
+          "projectile.spawn"
+        ],
+        "supported_capabilities": [
+          {
+            "capability_kind": "enemy_spawn",
+            "action_kind": "spawn_actor",
+            "handler": "EnemySpawnRuntime.spawnEnemy",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_spawn_runtime",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "actor.spawn"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.spawn.spawn_actor"
+          },
+          {
+            "capability_kind": "enemy_sensor",
+            "action_kind": "detect_player_by_distance",
+            "handler": "EnemyPerception.detectPlayer",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_perception",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "actor.get_distance_to"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.sensor.detect_player_by_distance"
+          },
+          {
+            "capability_kind": "enemy_movement",
+            "action_kind": "keep_distance",
+            "handler": "EnemyMovement.keepDistance",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_movement",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "actor.get_distance_to",
+              "actor.set_actor_location"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.movement.keep_distance"
+          },
+          {
+            "capability_kind": "enemy_attack",
+            "action_kind": "projectile_spawn",
+            "handler": "EnemyCombat.spawnProjectile",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_combat",
+              "enemy_projectile_runtime",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "projectile.spawn"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.attack.projectile_spawn"
+          },
+          {
+            "capability_kind": "enemy_health",
+            "action_kind": "receive_damage",
+            "handler": "EnemyHealth.applyDamage",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_health",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "gameplay_statics.apply_damage",
+              "actor.on_take_any_damage"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.health.receive_damage"
+          },
+          {
+            "capability_kind": "enemy_death",
+            "action_kind": "emit_death_event",
+            "handler": "EnemyDeathEvents.emitDeath",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_death_events",
+              "enemy_registry",
+              "encounter_manager"
+            ],
+            "engine_ports": [
+              "actor.on_destroyed"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.death.emit_death_event"
+          },
+          {
+            "capability_kind": "encounter",
+            "action_kind": "complete_when_all_dead",
+            "handler": "EncounterManager.completeWhenAllDead",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "encounter_manager",
+              "enemy_registry"
+            ],
+            "engine_ports": [
+              "encounter.alive_count"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "encounter.complete.complete_when_all_dead"
+          }
+        ],
+        "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
+        "unsupported_behaviors": [],
+        "behavior_by_capability": {
+          "encounter.complete.complete_when_all_dead": [
+            "enemy.behavior.keep_distance_and_projectile"
+          ],
+          "enemy.attack.projectile_spawn": [
+            "enemy.behavior.keep_distance_and_projectile"
+          ],
+          "enemy.death.emit_death_event": [
+            "enemy.behavior.keep_distance_and_projectile"
+          ],
+          "enemy.health.receive_damage": [
+            "enemy.behavior.keep_distance_and_projectile"
+          ],
+          "enemy.movement.keep_distance": [
+            "enemy.behavior.keep_distance_and_projectile"
+          ],
+          "enemy.sensor.detect_player_by_distance": [
+            "enemy.behavior.keep_distance_and_projectile"
+          ],
+          "enemy.spawn.spawn_actor": [
+            "enemy.behavior.keep_distance_and_projectile"
+          ]
+        }
+      }
+    },
+    {
+      "template": "spawn_point_registry",
+      "path": "TypeScript/content/generated/AutoUESpawnPointRegistry.ts",
+      "export_name": "createAutoUESpawnPointRegistry",
+      "interface_name": "AutoUESpawnPointRegistryContext",
+      "entity_id": "archer",
+      "behavior_id": "enemy.behavior.keep_distance_and_projectile",
+      "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
+      "runtime_mapping_path": "flow/05-puerts-runtime-mapping.json",
+      "action_label": "execute BehaviorSpec action chain",
+      "target_label": "BehaviorSpec",
+      "result_label": "runtime framework dispatches data actions",
+      "runtime_features": [
+        "action_dispatcher",
+        "behavior_orchestrator",
+        "condition_checker",
+        "encounter_manager",
+        "enemy_combat",
+        "enemy_death_events",
+        "enemy_health",
+        "enemy_movement",
+        "enemy_perception",
+        "enemy_projectile_runtime",
+        "enemy_registry",
+        "enemy_runtime",
+        "enemy_spawn_runtime",
+        "entity_registry",
+        "state_blackboard",
+        "trigger_router",
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
+      ],
+      "disabled_features": [],
+      "behavior_spec": {
+        "schema_version": "autoue-behavior-spec/v1",
+        "source_nodes": [
+          "EntityAbilityBehaviorPlanner",
+          "ThinGameplayFlowPlanner",
+          "PuerTSRuntimeMappingCompiler"
+        ],
+        "behaviors": [
+          {
+            "behavior_id": "enemy.behavior.keep_distance_and_projectile",
+            "bound_entity_id": "archer",
+            "primary_entity_id": "archer",
+            "entity_id": "archer",
+            "runtime_domain": "enemy_runtime",
+            "runtime_features": [
+              "enemy_runtime",
+              "enemy_spawn_runtime",
+              "enemy_perception",
+              "enemy_movement",
+              "enemy_combat",
+              "enemy_projectile_runtime",
+              "enemy_health",
+              "enemy_death_events",
+              "encounter_manager"
+            ],
+            "runtime_params": {
+              "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+              "enemy_tag": "AUTOUE_ENEMY_ARCHER",
+              "default_hp": 24,
+              "move_speed": 235,
+              "sense_radius": 1100,
+              "attack_range": 620,
+              "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+              "keep_distance": 420,
+              "spawn_tags": [
+                "ground",
+                "ranged"
+              ],
+              "bound_entity_id": "archer",
+              "entity_id": "archer"
+            },
+            "resolved_capabilities": [
+              {
+                "capability_id": "enemy.spawn.spawn_actor",
+                "capability_kind": "enemy_spawn",
+                "action_kind": "spawn_actor",
+                "handler": "EnemySpawnRuntime.spawnEnemy",
+                "params": {
+                  "spawn_tags": [
+                    "ground",
+                    "ranged"
+                  ],
+                  "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+                  "enemy_tag": "AUTOUE_ENEMY_ARCHER",
+                  "default_hp": 24,
+                  "move_speed": 235,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "source_entity_binding": {
+                  "entity_id": "archer",
+                  "capability_id": "enemy.spawn.spawn_actor"
+                }
+              },
+              {
+                "capability_id": "enemy.sensor.detect_player_by_distance",
+                "capability_kind": "enemy_sensor",
+                "action_kind": "detect_player_by_distance",
+                "handler": "EnemyPerception.detectPlayer",
+                "params": {
+                  "target_entity_id": "player",
+                  "sense_radius": 1100,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "source_entity_binding": {
+                  "entity_id": "archer",
+                  "capability_id": "enemy.sensor.detect_player_by_distance"
+                }
+              },
+              {
+                "capability_id": "enemy.movement.keep_distance",
+                "capability_kind": "enemy_movement",
+                "action_kind": "keep_distance",
+                "handler": "EnemyMovement.keepDistance",
+                "params": {
+                  "target_entity_id": "player",
+                  "move_speed": 235,
+                  "keep_distance": 420,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "source_entity_binding": {
+                  "entity_id": "archer",
+                  "capability_id": "enemy.movement.keep_distance"
+                }
+              },
+              {
+                "capability_id": "enemy.attack.projectile_spawn",
+                "capability_kind": "enemy_attack",
+                "action_kind": "projectile_spawn",
+                "handler": "EnemyCombat.spawnProjectile",
+                "params": {
+                  "target_entity_id": "player",
+                  "attack_damage": 8,
+                  "attack_range": 620,
+                  "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+                  "projectile_speed": 900,
+                  "cooldown_seconds": 1.6,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "source_entity_binding": {
+                  "entity_id": "archer",
+                  "capability_id": "enemy.attack.projectile_spawn"
+                }
+              },
+              {
+                "capability_id": "enemy.health.receive_damage",
+                "capability_kind": "enemy_health",
+                "action_kind": "receive_damage",
+                "handler": "EnemyHealth.applyDamage",
+                "params": {
+                  "max_hp": 24,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "source_entity_binding": {
+                  "entity_id": "archer",
+                  "capability_id": "enemy.health.receive_damage"
+                }
+              },
+              {
+                "capability_id": "enemy.death.emit_death_event",
+                "capability_kind": "enemy_death",
+                "action_kind": "emit_death_event",
+                "handler": "EnemyDeathEvents.emitDeath",
+                "params": {
+                  "death_event_name": "EnemyDied",
+                  "decrement_alive_count": true,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "source_entity_binding": {
+                  "entity_id": "archer",
+                  "capability_id": "enemy.death.emit_death_event"
+                }
+              },
+              {
+                "capability_id": "encounter.complete.complete_when_all_dead",
+                "capability_kind": "encounter",
+                "action_kind": "complete_when_all_dead",
+                "handler": "EncounterManager.completeWhenAllDead",
+                "params": {
+                  "completion_event_name": "EncounterCompleted",
+                  "completion_state_key": "encounter.room.completed",
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "source_entity_binding": {
+                  "entity_id": "archer",
+                  "capability_id": "encounter.complete.complete_when_all_dead"
+                }
+              }
+            ],
+            "primitive_plan": [],
+            "presentation_effects": [],
+            "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
+            "trigger": {
+              "kind": "on_event"
+            },
+            "conditions": [],
+            "actions": [
+              {
+                "type": "enemy_spawn_actor",
+                "capability_id": "enemy.spawn.spawn_actor",
+                "entity_id": "archer",
+                "params": {
+                  "spawn_tags": [
+                    "ground",
+                    "ranged"
+                  ],
+                  "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+                  "enemy_tag": "AUTOUE_ENEMY_ARCHER",
+                  "default_hp": 24,
+                  "move_speed": 235,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                }
+              },
+              {
+                "type": "enemy_detect_player",
+                "capability_id": "enemy.sensor.detect_player_by_distance",
+                "entity_id": "archer",
+                "params": {
+                  "target_entity_id": "player",
+                  "sense_radius": 1100,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                }
+              },
+              {
+                "type": "enemy_keep_distance",
+                "capability_id": "enemy.movement.keep_distance",
+                "entity_id": "archer",
+                "params": {
+                  "target_entity_id": "player",
+                  "move_speed": 235,
+                  "keep_distance": 420,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "target_entity_id": "player"
+              },
+              {
+                "type": "enemy_projectile_attack",
+                "capability_id": "enemy.attack.projectile_spawn",
+                "entity_id": "archer",
+                "params": {
+                  "target_entity_id": "player",
+                  "attack_damage": 8,
+                  "attack_range": 620,
+                  "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+                  "projectile_speed": 900,
+                  "cooldown_seconds": 1.6,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "target_entity_id": "player"
+              },
+              {
+                "type": "enemy_receive_damage",
+                "capability_id": "enemy.health.receive_damage",
+                "entity_id": "archer",
+                "params": {
+                  "max_hp": 24,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                }
+              },
+              {
+                "type": "enemy_emit_death_event",
+                "capability_id": "enemy.death.emit_death_event",
+                "entity_id": "archer",
+                "params": {
+                  "death_event_name": "EnemyDied",
+                  "decrement_alive_count": true,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                }
+              },
+              {
+                "type": "encounter_complete_when_all_dead",
+                "capability_id": "encounter.complete.complete_when_all_dead",
+                "entity_id": "archer",
+                "params": {
+                  "completion_event_name": "EncounterCompleted",
+                  "completion_state_key": "encounter.room.completed",
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                }
+              }
+            ],
+            "required_capability_ids": [
+              "enemy.spawn.spawn_actor",
+              "enemy.sensor.detect_player_by_distance",
+              "enemy.movement.keep_distance",
+              "enemy.attack.projectile_spawn",
+              "enemy.health.receive_damage",
+              "enemy.death.emit_death_event",
+              "encounter.complete.complete_when_all_dead"
+            ],
+            "engine_port_ids": [
+              "actor.spawn",
+              "actor.get_distance_to",
+              "actor.set_actor_location",
+              "projectile.spawn",
+              "actor.on_take_any_damage",
+              "actor.on_destroyed",
+              "encounter.alive_count"
+            ],
+            "verification_logs": [
+              "BehaviorTriggered enemy.behavior.keep_distance_and_projectile",
+              "ActionDispatched enemy_spawn_actor",
+              "ActionDispatched enemy_detect_player",
+              "ActionDispatched enemy_keep_distance",
+              "ActionDispatched enemy_projectile_attack",
+              "ActionDispatched enemy_receive_damage",
+              "ActionDispatched enemy_emit_death_event",
+              "ActionDispatched encounter_complete_when_all_dead"
+            ]
+          }
+        ]
+      },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
+      "support_check": {
+        "schema_version": "autoue-runtime-support-check/v2",
+        "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
+        "required_runtime_modules": [
+          "action_dispatcher",
+          "behavior_orchestrator",
+          "condition_checker",
+          "encounter_manager",
+          "enemy_combat",
+          "enemy_death_events",
+          "enemy_health",
+          "enemy_movement",
+          "enemy_perception",
+          "enemy_projectile_runtime",
+          "enemy_registry",
+          "enemy_runtime",
+          "enemy_spawn_runtime",
+          "entity_registry",
+          "state_blackboard",
+          "trigger_router",
+          "world_adapter"
+        ],
+        "engine_ports": [
+          "actor.get_distance_to",
+          "actor.on_destroyed",
+          "actor.on_take_any_damage",
+          "actor.set_actor_location",
+          "actor.spawn",
+          "encounter.alive_count",
+          "gameplay_statics.apply_damage",
+          "projectile.spawn"
+        ],
+        "supported_capabilities": [
+          {
+            "capability_kind": "enemy_spawn",
+            "action_kind": "spawn_actor",
+            "handler": "EnemySpawnRuntime.spawnEnemy",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_spawn_runtime",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "actor.spawn"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.spawn.spawn_actor"
+          },
+          {
+            "capability_kind": "enemy_sensor",
+            "action_kind": "detect_player_by_distance",
+            "handler": "EnemyPerception.detectPlayer",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_perception",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "actor.get_distance_to"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.sensor.detect_player_by_distance"
+          },
+          {
+            "capability_kind": "enemy_movement",
+            "action_kind": "keep_distance",
+            "handler": "EnemyMovement.keepDistance",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_movement",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "actor.get_distance_to",
+              "actor.set_actor_location"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.movement.keep_distance"
+          },
+          {
+            "capability_kind": "enemy_attack",
+            "action_kind": "projectile_spawn",
+            "handler": "EnemyCombat.spawnProjectile",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_combat",
+              "enemy_projectile_runtime",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "projectile.spawn"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.attack.projectile_spawn"
+          },
+          {
+            "capability_kind": "enemy_health",
+            "action_kind": "receive_damage",
+            "handler": "EnemyHealth.applyDamage",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_health",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "gameplay_statics.apply_damage",
+              "actor.on_take_any_damage"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.health.receive_damage"
+          },
+          {
+            "capability_kind": "enemy_death",
+            "action_kind": "emit_death_event",
+            "handler": "EnemyDeathEvents.emitDeath",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_death_events",
+              "enemy_registry",
+              "encounter_manager"
+            ],
+            "engine_ports": [
+              "actor.on_destroyed"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.death.emit_death_event"
+          },
+          {
+            "capability_kind": "encounter",
+            "action_kind": "complete_when_all_dead",
+            "handler": "EncounterManager.completeWhenAllDead",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "encounter_manager",
+              "enemy_registry"
+            ],
+            "engine_ports": [
+              "encounter.alive_count"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "encounter.complete.complete_when_all_dead"
+          }
+        ],
+        "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
+        "unsupported_behaviors": [],
+        "behavior_by_capability": {
+          "encounter.complete.complete_when_all_dead": [
+            "enemy.behavior.keep_distance_and_projectile"
+          ],
+          "enemy.attack.projectile_spawn": [
+            "enemy.behavior.keep_distance_and_projectile"
+          ],
+          "enemy.death.emit_death_event": [
+            "enemy.behavior.keep_distance_and_projectile"
+          ],
+          "enemy.health.receive_damage": [
+            "enemy.behavior.keep_distance_and_projectile"
+          ],
+          "enemy.movement.keep_distance": [
+            "enemy.behavior.keep_distance_and_projectile"
+          ],
+          "enemy.sensor.detect_player_by_distance": [
+            "enemy.behavior.keep_distance_and_projectile"
+          ],
+          "enemy.spawn.spawn_actor": [
+            "enemy.behavior.keep_distance_and_projectile"
+          ]
+        }
+      }
+    },
+    {
+      "template": "enemy_spawn_manager",
+      "path": "TypeScript/content/generated/AutoUEEnemySpawnManager.ts",
+      "export_name": "createAutoUEEnemySpawnManager",
+      "interface_name": "AutoUEEnemySpawnManagerContext",
+      "entity_id": "archer",
+      "behavior_id": "enemy.behavior.keep_distance_and_projectile",
+      "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
+      "runtime_mapping_path": "flow/05-puerts-runtime-mapping.json",
+      "action_label": "execute BehaviorSpec action chain",
+      "target_label": "BehaviorSpec",
+      "result_label": "runtime framework dispatches data actions",
+      "runtime_features": [
+        "action_dispatcher",
+        "behavior_orchestrator",
+        "condition_checker",
+        "encounter_manager",
+        "enemy_combat",
+        "enemy_death_events",
+        "enemy_health",
+        "enemy_movement",
+        "enemy_perception",
+        "enemy_projectile_runtime",
+        "enemy_registry",
+        "enemy_runtime",
+        "enemy_spawn_runtime",
+        "entity_registry",
+        "state_blackboard",
+        "trigger_router",
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
+      ],
+      "disabled_features": [],
+      "behavior_spec": {
+        "schema_version": "autoue-behavior-spec/v1",
+        "source_nodes": [
+          "EntityAbilityBehaviorPlanner",
+          "ThinGameplayFlowPlanner",
+          "PuerTSRuntimeMappingCompiler"
+        ],
+        "behaviors": [
+          {
+            "behavior_id": "enemy.behavior.keep_distance_and_projectile",
+            "bound_entity_id": "archer",
+            "primary_entity_id": "archer",
+            "entity_id": "archer",
+            "runtime_domain": "enemy_runtime",
+            "runtime_features": [
+              "enemy_runtime",
+              "enemy_spawn_runtime",
+              "enemy_perception",
+              "enemy_movement",
+              "enemy_combat",
+              "enemy_projectile_runtime",
+              "enemy_health",
+              "enemy_death_events",
+              "encounter_manager"
+            ],
+            "runtime_params": {
+              "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+              "enemy_tag": "AUTOUE_ENEMY_ARCHER",
+              "default_hp": 24,
+              "move_speed": 235,
+              "sense_radius": 1100,
+              "attack_range": 620,
+              "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+              "keep_distance": 420,
+              "spawn_tags": [
+                "ground",
+                "ranged"
+              ],
+              "bound_entity_id": "archer",
+              "entity_id": "archer"
+            },
+            "resolved_capabilities": [
+              {
+                "capability_id": "enemy.spawn.spawn_actor",
+                "capability_kind": "enemy_spawn",
+                "action_kind": "spawn_actor",
+                "handler": "EnemySpawnRuntime.spawnEnemy",
+                "params": {
+                  "spawn_tags": [
+                    "ground",
+                    "ranged"
+                  ],
+                  "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+                  "enemy_tag": "AUTOUE_ENEMY_ARCHER",
+                  "default_hp": 24,
+                  "move_speed": 235,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "source_entity_binding": {
+                  "entity_id": "archer",
+                  "capability_id": "enemy.spawn.spawn_actor"
+                }
+              },
+              {
+                "capability_id": "enemy.sensor.detect_player_by_distance",
+                "capability_kind": "enemy_sensor",
+                "action_kind": "detect_player_by_distance",
+                "handler": "EnemyPerception.detectPlayer",
+                "params": {
+                  "target_entity_id": "player",
+                  "sense_radius": 1100,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "source_entity_binding": {
+                  "entity_id": "archer",
+                  "capability_id": "enemy.sensor.detect_player_by_distance"
+                }
+              },
+              {
+                "capability_id": "enemy.movement.keep_distance",
+                "capability_kind": "enemy_movement",
+                "action_kind": "keep_distance",
+                "handler": "EnemyMovement.keepDistance",
+                "params": {
+                  "target_entity_id": "player",
+                  "move_speed": 235,
+                  "keep_distance": 420,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "source_entity_binding": {
+                  "entity_id": "archer",
+                  "capability_id": "enemy.movement.keep_distance"
+                }
+              },
+              {
+                "capability_id": "enemy.attack.projectile_spawn",
+                "capability_kind": "enemy_attack",
+                "action_kind": "projectile_spawn",
+                "handler": "EnemyCombat.spawnProjectile",
+                "params": {
+                  "target_entity_id": "player",
+                  "attack_damage": 8,
+                  "attack_range": 620,
+                  "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+                  "projectile_speed": 900,
+                  "cooldown_seconds": 1.6,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "source_entity_binding": {
+                  "entity_id": "archer",
+                  "capability_id": "enemy.attack.projectile_spawn"
+                }
+              },
+              {
+                "capability_id": "enemy.health.receive_damage",
+                "capability_kind": "enemy_health",
+                "action_kind": "receive_damage",
+                "handler": "EnemyHealth.applyDamage",
+                "params": {
+                  "max_hp": 24,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "source_entity_binding": {
+                  "entity_id": "archer",
+                  "capability_id": "enemy.health.receive_damage"
+                }
+              },
+              {
+                "capability_id": "enemy.death.emit_death_event",
+                "capability_kind": "enemy_death",
+                "action_kind": "emit_death_event",
+                "handler": "EnemyDeathEvents.emitDeath",
+                "params": {
+                  "death_event_name": "EnemyDied",
+                  "decrement_alive_count": true,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "source_entity_binding": {
+                  "entity_id": "archer",
+                  "capability_id": "enemy.death.emit_death_event"
+                }
+              },
+              {
+                "capability_id": "encounter.complete.complete_when_all_dead",
+                "capability_kind": "encounter",
+                "action_kind": "complete_when_all_dead",
+                "handler": "EncounterManager.completeWhenAllDead",
+                "params": {
+                  "completion_event_name": "EncounterCompleted",
+                  "completion_state_key": "encounter.room.completed",
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "source_entity_binding": {
+                  "entity_id": "archer",
+                  "capability_id": "encounter.complete.complete_when_all_dead"
+                }
+              }
+            ],
+            "primitive_plan": [],
+            "presentation_effects": [],
+            "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
+            "trigger": {
+              "kind": "on_event"
+            },
+            "conditions": [],
+            "actions": [
+              {
+                "type": "enemy_spawn_actor",
+                "capability_id": "enemy.spawn.spawn_actor",
+                "entity_id": "archer",
+                "params": {
+                  "spawn_tags": [
+                    "ground",
+                    "ranged"
+                  ],
+                  "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+                  "enemy_tag": "AUTOUE_ENEMY_ARCHER",
+                  "default_hp": 24,
+                  "move_speed": 235,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                }
+              },
+              {
+                "type": "enemy_detect_player",
+                "capability_id": "enemy.sensor.detect_player_by_distance",
+                "entity_id": "archer",
+                "params": {
+                  "target_entity_id": "player",
+                  "sense_radius": 1100,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                }
+              },
+              {
+                "type": "enemy_keep_distance",
+                "capability_id": "enemy.movement.keep_distance",
+                "entity_id": "archer",
+                "params": {
+                  "target_entity_id": "player",
+                  "move_speed": 235,
+                  "keep_distance": 420,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "target_entity_id": "player"
+              },
+              {
+                "type": "enemy_projectile_attack",
+                "capability_id": "enemy.attack.projectile_spawn",
+                "entity_id": "archer",
+                "params": {
+                  "target_entity_id": "player",
+                  "attack_damage": 8,
+                  "attack_range": 620,
+                  "projectile_class_path": "/Game/AutoUE/Projectiles/BP_AutoUEEnemyProjectile.BP_AutoUEEnemyProjectile_C",
+                  "projectile_speed": 900,
+                  "cooldown_seconds": 1.6,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                },
+                "target_entity_id": "player"
+              },
+              {
+                "type": "enemy_receive_damage",
+                "capability_id": "enemy.health.receive_damage",
+                "entity_id": "archer",
+                "params": {
+                  "max_hp": 24,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                }
+              },
+              {
+                "type": "enemy_emit_death_event",
+                "capability_id": "enemy.death.emit_death_event",
+                "entity_id": "archer",
+                "params": {
+                  "death_event_name": "EnemyDied",
+                  "decrement_alive_count": true,
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                }
+              },
+              {
+                "type": "encounter_complete_when_all_dead",
+                "capability_id": "encounter.complete.complete_when_all_dead",
+                "entity_id": "archer",
+                "params": {
+                  "completion_event_name": "EncounterCompleted",
+                  "completion_state_key": "encounter.room.completed",
+                  "bound_entity_id": "archer",
+                  "entity_id": "archer"
+                }
+              }
+            ],
+            "required_capability_ids": [
+              "enemy.spawn.spawn_actor",
+              "enemy.sensor.detect_player_by_distance",
+              "enemy.movement.keep_distance",
+              "enemy.attack.projectile_spawn",
+              "enemy.health.receive_damage",
+              "enemy.death.emit_death_event",
+              "encounter.complete.complete_when_all_dead"
+            ],
+            "engine_port_ids": [
+              "actor.spawn",
+              "actor.get_distance_to",
+              "actor.set_actor_location",
+              "projectile.spawn",
+              "actor.on_take_any_damage",
+              "actor.on_destroyed",
+              "encounter.alive_count"
+            ],
+            "verification_logs": [
+              "BehaviorTriggered enemy.behavior.keep_distance_and_projectile",
+              "ActionDispatched enemy_spawn_actor",
+              "ActionDispatched enemy_detect_player",
+              "ActionDispatched enemy_keep_distance",
+              "ActionDispatched enemy_projectile_attack",
+              "ActionDispatched enemy_receive_damage",
+              "ActionDispatched enemy_emit_death_event",
+              "ActionDispatched encounter_complete_when_all_dead"
+            ]
+          }
+        ]
+      },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
+      "support_check": {
+        "schema_version": "autoue-runtime-support-check/v2",
+        "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
+        "required_runtime_modules": [
+          "action_dispatcher",
+          "behavior_orchestrator",
+          "condition_checker",
+          "encounter_manager",
+          "enemy_combat",
+          "enemy_death_events",
+          "enemy_health",
+          "enemy_movement",
+          "enemy_perception",
+          "enemy_projectile_runtime",
+          "enemy_registry",
+          "enemy_runtime",
+          "enemy_spawn_runtime",
+          "entity_registry",
+          "state_blackboard",
+          "trigger_router",
+          "world_adapter"
+        ],
+        "engine_ports": [
+          "actor.get_distance_to",
+          "actor.on_destroyed",
+          "actor.on_take_any_damage",
+          "actor.set_actor_location",
+          "actor.spawn",
+          "encounter.alive_count",
+          "gameplay_statics.apply_damage",
+          "projectile.spawn"
+        ],
+        "supported_capabilities": [
+          {
+            "capability_kind": "enemy_spawn",
+            "action_kind": "spawn_actor",
+            "handler": "EnemySpawnRuntime.spawnEnemy",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_spawn_runtime",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "actor.spawn"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.spawn.spawn_actor"
+          },
+          {
+            "capability_kind": "enemy_sensor",
+            "action_kind": "detect_player_by_distance",
+            "handler": "EnemyPerception.detectPlayer",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_perception",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "actor.get_distance_to"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.sensor.detect_player_by_distance"
+          },
+          {
+            "capability_kind": "enemy_movement",
+            "action_kind": "keep_distance",
+            "handler": "EnemyMovement.keepDistance",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_movement",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "actor.get_distance_to",
+              "actor.set_actor_location"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.movement.keep_distance"
+          },
+          {
+            "capability_kind": "enemy_attack",
+            "action_kind": "projectile_spawn",
+            "handler": "EnemyCombat.spawnProjectile",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_combat",
+              "enemy_projectile_runtime",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "projectile.spawn"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.attack.projectile_spawn"
+          },
+          {
+            "capability_kind": "enemy_health",
+            "action_kind": "receive_damage",
+            "handler": "EnemyHealth.applyDamage",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_health",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "gameplay_statics.apply_damage",
+              "actor.on_take_any_damage"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.health.receive_damage"
+          },
+          {
+            "capability_kind": "enemy_death",
+            "action_kind": "emit_death_event",
+            "handler": "EnemyDeathEvents.emitDeath",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_death_events",
+              "enemy_registry",
+              "encounter_manager"
+            ],
+            "engine_ports": [
+              "actor.on_destroyed"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.death.emit_death_event"
+          },
+          {
+            "capability_kind": "encounter",
+            "action_kind": "complete_when_all_dead",
+            "handler": "EncounterManager.completeWhenAllDead",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "encounter_manager",
+              "enemy_registry"
+            ],
+            "engine_ports": [
+              "encounter.alive_count"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "encounter.complete.complete_when_all_dead"
+          }
+        ],
+        "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -9319,7 +12070,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -9487,6 +12241,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -9614,9 +12370,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -9769,6 +12561,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -9824,7 +12618,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -9992,6 +12789,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -10119,9 +12918,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -10274,6 +13109,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -10329,7 +13166,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -10497,6 +13337,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -10624,9 +13466,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -10779,6 +13657,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -10834,7 +13714,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -11002,6 +13885,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -11129,9 +14014,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -11284,6 +14205,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -11339,7 +14262,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -11507,6 +14433,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -11634,9 +14562,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -11789,6 +14753,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -11844,7 +14810,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -12012,6 +14981,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -12139,9 +15110,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -12294,6 +15301,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -12349,7 +15358,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -12517,6 +15529,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -12644,9 +15658,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -12799,6 +15849,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -12854,7 +15906,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -13022,6 +16077,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -13149,9 +16206,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -13304,6 +16397,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -13359,7 +16454,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -13527,6 +16625,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -13654,9 +16754,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -13809,6 +16945,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -13864,7 +17002,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -14032,6 +17173,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -14159,9 +17302,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -14314,6 +17493,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -14369,7 +17550,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -14537,6 +17721,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_keep_distance_and_projectile",
             "trigger": {
               "kind": "on_event"
@@ -14664,9 +17850,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "archer",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -14819,6 +18041,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [

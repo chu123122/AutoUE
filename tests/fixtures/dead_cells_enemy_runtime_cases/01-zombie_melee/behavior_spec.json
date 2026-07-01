@@ -158,6 +158,8 @@
           }
         }
       ],
+      "primitive_plan": [],
+      "presentation_effects": [],
       "flow_id": "flow_enemy_behavior_chase_and_melee",
       "trigger": {
         "kind": "on_event"

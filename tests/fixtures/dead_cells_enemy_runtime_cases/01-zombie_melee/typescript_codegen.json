@@ -15,12 +15,17 @@
     "entity_registry",
     "state_blackboard",
     "trigger_router",
-    "world_adapter"
+    "world_adapter",
+    "encounter_spec_data",
+    "spawn_point_registry",
+    "enemy_spawn_manager"
   ],
   "disabled_features": [],
   "support_check": {
-    "schema_version": "autoue-runtime-support-check/v1",
+    "schema_version": "autoue-runtime-support-check/v2",
     "status": "supported",
+    "static_support": "supported",
+    "runtime_proof": "not_run",
     "required_runtime_modules": [
       "action_dispatcher",
       "behavior_orchestrator",
@@ -173,6 +178,8 @@
       }
     ],
     "unsupported_capabilities": [],
+    "supported_primitives": [],
+    "unsupported_primitives": [],
     "unsupported_behaviors": [],
     "behavior_by_capability": {
       "encounter.complete.complete_when_all_dead": [
@@ -197,6 +204,326 @@
         "enemy.behavior.chase_and_melee"
       ]
     }
+  },
+  "behavior_spec": {
+    "schema_version": "autoue-behavior-spec/v1",
+    "source_nodes": [
+      "EntityAbilityBehaviorPlanner",
+      "ThinGameplayFlowPlanner",
+      "PuerTSRuntimeMappingCompiler"
+    ],
+    "behaviors": [
+      {
+        "behavior_id": "enemy.behavior.chase_and_melee",
+        "bound_entity_id": "zombie",
+        "primary_entity_id": "zombie",
+        "entity_id": "zombie",
+        "runtime_domain": "enemy_runtime",
+        "runtime_features": [
+          "enemy_runtime",
+          "enemy_spawn_runtime",
+          "enemy_perception",
+          "enemy_movement",
+          "enemy_combat",
+          "enemy_health",
+          "enemy_death_events",
+          "encounter_manager"
+        ],
+        "runtime_params": {
+          "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+          "enemy_tag": "AUTOUE_ENEMY_ZOMBIE",
+          "default_hp": 30,
+          "move_speed": 260,
+          "sense_radius": 900,
+          "attack_range": 160,
+          "spawn_tags": [
+            "ground",
+            "melee"
+          ],
+          "bound_entity_id": "zombie",
+          "entity_id": "zombie"
+        },
+        "resolved_capabilities": [
+          {
+            "capability_id": "enemy.spawn.spawn_actor",
+            "capability_kind": "enemy_spawn",
+            "action_kind": "spawn_actor",
+            "handler": "EnemySpawnRuntime.spawnEnemy",
+            "params": {
+              "spawn_tags": [
+                "ground",
+                "melee"
+              ],
+              "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+              "enemy_tag": "AUTOUE_ENEMY_ZOMBIE",
+              "default_hp": 30,
+              "move_speed": 260,
+              "bound_entity_id": "zombie",
+              "entity_id": "zombie"
+            },
+            "source_entity_binding": {
+              "entity_id": "zombie",
+              "capability_id": "enemy.spawn.spawn_actor"
+            }
+          },
+          {
+            "capability_id": "enemy.sensor.detect_player_by_distance",
+            "capability_kind": "enemy_sensor",
+            "action_kind": "detect_player_by_distance",
+            "handler": "EnemyPerception.detectPlayer",
+            "params": {
+              "target_entity_id": "player",
+              "sense_radius": 900,
+              "bound_entity_id": "zombie",
+              "entity_id": "zombie"
+            },
+            "source_entity_binding": {
+              "entity_id": "zombie",
+              "capability_id": "enemy.sensor.detect_player_by_distance"
+            }
+          },
+          {
+            "capability_id": "enemy.movement.chase_target",
+            "capability_kind": "enemy_movement",
+            "action_kind": "chase_target",
+            "handler": "EnemyMovement.chaseTarget",
+            "params": {
+              "target_entity_id": "player",
+              "move_speed": 260,
+              "bound_entity_id": "zombie",
+              "entity_id": "zombie"
+            },
+            "source_entity_binding": {
+              "entity_id": "zombie",
+              "capability_id": "enemy.movement.chase_target"
+            }
+          },
+          {
+            "capability_id": "enemy.attack.melee_hitbox",
+            "capability_kind": "enemy_attack",
+            "action_kind": "melee_hitbox",
+            "handler": "EnemyCombat.resolveMeleeHit",
+            "params": {
+              "hitbox_radius": 90,
+              "target_entity_id": "player",
+              "attack_damage": 10,
+              "attack_range": 160,
+              "cooldown_seconds": 1.2,
+              "bound_entity_id": "zombie",
+              "entity_id": "zombie"
+            },
+            "source_entity_binding": {
+              "entity_id": "zombie",
+              "capability_id": "enemy.attack.melee_hitbox"
+            }
+          },
+          {
+            "capability_id": "enemy.health.receive_damage",
+            "capability_kind": "enemy_health",
+            "action_kind": "receive_damage",
+            "handler": "EnemyHealth.applyDamage",
+            "params": {
+              "max_hp": 30,
+              "bound_entity_id": "zombie",
+              "entity_id": "zombie"
+            },
+            "source_entity_binding": {
+              "entity_id": "zombie",
+              "capability_id": "enemy.health.receive_damage"
+            }
+          },
+          {
+            "capability_id": "enemy.death.emit_death_event",
+            "capability_kind": "enemy_death",
+            "action_kind": "emit_death_event",
+            "handler": "EnemyDeathEvents.emitDeath",
+            "params": {
+              "death_event_name": "EnemyDied",
+              "decrement_alive_count": true,
+              "bound_entity_id": "zombie",
+              "entity_id": "zombie"
+            },
+            "source_entity_binding": {
+              "entity_id": "zombie",
+              "capability_id": "enemy.death.emit_death_event"
+            }
+          },
+          {
+            "capability_id": "encounter.complete.complete_when_all_dead",
+            "capability_kind": "encounter",
+            "action_kind": "complete_when_all_dead",
+            "handler": "EncounterManager.completeWhenAllDead",
+            "params": {
+              "completion_event_name": "EncounterCompleted",
+              "completion_state_key": "encounter.room.completed",
+              "bound_entity_id": "zombie",
+              "entity_id": "zombie"
+            },
+            "source_entity_binding": {
+              "entity_id": "zombie",
+              "capability_id": "encounter.complete.complete_when_all_dead"
+            }
+          }
+        ],
+        "primitive_plan": [],
+        "presentation_effects": [],
+        "flow_id": "flow_enemy_behavior_chase_and_melee",
+        "trigger": {
+          "kind": "on_event"
+        },
+        "conditions": [],
+        "actions": [
+          {
+            "type": "enemy_spawn_actor",
+            "capability_id": "enemy.spawn.spawn_actor",
+            "entity_id": "zombie",
+            "params": {
+              "spawn_tags": [
+                "ground",
+                "melee"
+              ],
+              "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+              "enemy_tag": "AUTOUE_ENEMY_ZOMBIE",
+              "default_hp": 30,
+              "move_speed": 260,
+              "bound_entity_id": "zombie",
+              "entity_id": "zombie"
+            }
+          },
+          {
+            "type": "enemy_detect_player",
+            "capability_id": "enemy.sensor.detect_player_by_distance",
+            "entity_id": "zombie",
+            "params": {
+              "target_entity_id": "player",
+              "sense_radius": 900,
+              "bound_entity_id": "zombie",
+              "entity_id": "zombie"
+            }
+          },
+          {
+            "type": "enemy_chase_target",
+            "capability_id": "enemy.movement.chase_target",
+            "entity_id": "zombie",
+            "params": {
+              "target_entity_id": "player",
+              "move_speed": 260,
+              "bound_entity_id": "zombie",
+              "entity_id": "zombie"
+            },
+            "target_entity_id": "player"
+          },
+          {
+            "type": "enemy_melee_attack",
+            "capability_id": "enemy.attack.melee_hitbox",
+            "entity_id": "zombie",
+            "params": {
+              "hitbox_radius": 90,
+              "target_entity_id": "player",
+              "attack_damage": 10,
+              "attack_range": 160,
+              "cooldown_seconds": 1.2,
+              "bound_entity_id": "zombie",
+              "entity_id": "zombie"
+            },
+            "target_entity_id": "player"
+          },
+          {
+            "type": "enemy_receive_damage",
+            "capability_id": "enemy.health.receive_damage",
+            "entity_id": "zombie",
+            "params": {
+              "max_hp": 30,
+              "bound_entity_id": "zombie",
+              "entity_id": "zombie"
+            }
+          },
+          {
+            "type": "enemy_emit_death_event",
+            "capability_id": "enemy.death.emit_death_event",
+            "entity_id": "zombie",
+            "params": {
+              "death_event_name": "EnemyDied",
+              "decrement_alive_count": true,
+              "bound_entity_id": "zombie",
+              "entity_id": "zombie"
+            }
+          },
+          {
+            "type": "encounter_complete_when_all_dead",
+            "capability_id": "encounter.complete.complete_when_all_dead",
+            "entity_id": "zombie",
+            "params": {
+              "completion_event_name": "EncounterCompleted",
+              "completion_state_key": "encounter.room.completed",
+              "bound_entity_id": "zombie",
+              "entity_id": "zombie"
+            }
+          }
+        ],
+        "required_capability_ids": [
+          "enemy.spawn.spawn_actor",
+          "enemy.sensor.detect_player_by_distance",
+          "enemy.movement.chase_target",
+          "enemy.attack.melee_hitbox",
+          "enemy.health.receive_damage",
+          "enemy.death.emit_death_event",
+          "encounter.complete.complete_when_all_dead"
+        ],
+        "engine_port_ids": [
+          "actor.spawn",
+          "actor.get_distance_to",
+          "actor.set_actor_location",
+          "kismet.sphere_trace_single",
+          "gameplay_statics.apply_damage",
+          "actor.on_take_any_damage",
+          "actor.on_destroyed",
+          "encounter.alive_count"
+        ],
+        "verification_logs": [
+          "BehaviorTriggered enemy.behavior.chase_and_melee",
+          "ActionDispatched enemy_spawn_actor",
+          "ActionDispatched enemy_detect_player",
+          "ActionDispatched enemy_chase_target",
+          "ActionDispatched enemy_melee_attack",
+          "ActionDispatched enemy_receive_damage",
+          "ActionDispatched enemy_emit_death_event",
+          "ActionDispatched encounter_complete_when_all_dead"
+        ]
+      }
+    ]
+  },
+  "encounter_spec": {
+    "schema_version": "autoue-encounter-spec/v1",
+    "encounters": [
+      {
+        "encounter_id": "room_01_initial_guard",
+        "trigger": {
+          "type": "on_level_start"
+        },
+        "spawn_group": "room_01_guard",
+        "enemy_budget": 1,
+        "composition": [
+          {
+            "enemy": "zombie",
+            "count": 1
+          }
+        ],
+        "spawn_policy": {
+          "avoid_camera_view": false,
+          "min_distance_to_player": 400,
+          "consume_spawn_point": true,
+          "max_alive": 1
+        },
+        "completion": {
+          "type": "all_spawned_enemies_defeated",
+          "set_flags": [
+            "enemy_defeated",
+            "exit_unlocked"
+          ]
+        }
+      }
+    ]
   },
   "template_inputs": [
     {
@@ -227,7 +554,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -390,6 +720,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -516,9 +848,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -671,6 +1039,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -725,7 +1095,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -888,6 +1261,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -1014,9 +1389,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -1169,6 +1580,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -1223,7 +1636,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -1386,6 +1802,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -1512,9 +1930,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -1667,6 +2121,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -1721,7 +2177,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -1884,6 +2343,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -2010,9 +2471,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -2165,6 +2662,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -2219,7 +2718,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -2382,6 +2884,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -2508,9 +3012,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -2663,6 +3203,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -2717,7 +3259,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -2880,6 +3425,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -3006,9 +3553,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -3161,6 +3744,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -3215,7 +3800,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -3378,6 +3966,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -3504,9 +4094,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -3659,6 +4285,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -3713,7 +4341,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -3876,6 +4507,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -4002,9 +4635,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -4157,6 +4826,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -4211,7 +4882,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -4374,6 +5048,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -4500,9 +5176,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -4655,6 +5367,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -4709,7 +5423,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -4872,6 +5589,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -4998,9 +5717,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -5153,6 +5908,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -5207,7 +5964,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -5370,6 +6130,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -5496,9 +6258,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -5651,6 +6449,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -5705,7 +6505,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -5868,6 +6671,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -5994,9 +6799,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -6149,6 +6990,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -6203,7 +7046,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -6366,6 +7212,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -6492,9 +7340,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -6647,6 +7531,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -6701,7 +7587,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -6864,6 +7753,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -6990,9 +7881,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -7145,6 +8072,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -7199,7 +8128,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -7362,6 +8294,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -7488,9 +8422,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -7643,6 +8613,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -7697,7 +8669,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -7860,6 +8835,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -7986,9 +8963,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -8141,6 +9154,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -8195,7 +9210,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -8358,6 +9376,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -8484,9 +9504,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -8639,6 +9695,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -8693,7 +9751,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -8856,6 +9917,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -8982,9 +10045,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -9137,6 +10236,1631 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
+        "unsupported_behaviors": [],
+        "behavior_by_capability": {
+          "encounter.complete.complete_when_all_dead": [
+            "enemy.behavior.chase_and_melee"
+          ],
+          "enemy.attack.melee_hitbox": [
+            "enemy.behavior.chase_and_melee"
+          ],
+          "enemy.death.emit_death_event": [
+            "enemy.behavior.chase_and_melee"
+          ],
+          "enemy.health.receive_damage": [
+            "enemy.behavior.chase_and_melee"
+          ],
+          "enemy.movement.chase_target": [
+            "enemy.behavior.chase_and_melee"
+          ],
+          "enemy.sensor.detect_player_by_distance": [
+            "enemy.behavior.chase_and_melee"
+          ],
+          "enemy.spawn.spawn_actor": [
+            "enemy.behavior.chase_and_melee"
+          ]
+        }
+      }
+    },
+    {
+      "template": "encounter_spec_data",
+      "path": "TypeScript/content/generated/AutoUEGeneratedEncounterSpec.ts",
+      "export_name": "getAutoUEGeneratedEncounterSpec",
+      "interface_name": "AutoUEGeneratedEncounterSpecContext",
+      "entity_id": "zombie",
+      "behavior_id": "enemy.behavior.chase_and_melee",
+      "flow_id": "flow_enemy_behavior_chase_and_melee",
+      "runtime_mapping_path": "flow/05-puerts-runtime-mapping.json",
+      "action_label": "execute BehaviorSpec action chain",
+      "target_label": "BehaviorSpec",
+      "result_label": "runtime framework dispatches data actions",
+      "runtime_features": [
+        "action_dispatcher",
+        "behavior_orchestrator",
+        "condition_checker",
+        "encounter_manager",
+        "enemy_combat",
+        "enemy_death_events",
+        "enemy_health",
+        "enemy_movement",
+        "enemy_perception",
+        "enemy_registry",
+        "enemy_runtime",
+        "enemy_spawn_runtime",
+        "entity_registry",
+        "state_blackboard",
+        "trigger_router",
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
+      ],
+      "disabled_features": [],
+      "behavior_spec": {
+        "schema_version": "autoue-behavior-spec/v1",
+        "source_nodes": [
+          "EntityAbilityBehaviorPlanner",
+          "ThinGameplayFlowPlanner",
+          "PuerTSRuntimeMappingCompiler"
+        ],
+        "behaviors": [
+          {
+            "behavior_id": "enemy.behavior.chase_and_melee",
+            "bound_entity_id": "zombie",
+            "primary_entity_id": "zombie",
+            "entity_id": "zombie",
+            "runtime_domain": "enemy_runtime",
+            "runtime_features": [
+              "enemy_runtime",
+              "enemy_spawn_runtime",
+              "enemy_perception",
+              "enemy_movement",
+              "enemy_combat",
+              "enemy_health",
+              "enemy_death_events",
+              "encounter_manager"
+            ],
+            "runtime_params": {
+              "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+              "enemy_tag": "AUTOUE_ENEMY_ZOMBIE",
+              "default_hp": 30,
+              "move_speed": 260,
+              "sense_radius": 900,
+              "attack_range": 160,
+              "spawn_tags": [
+                "ground",
+                "melee"
+              ],
+              "bound_entity_id": "zombie",
+              "entity_id": "zombie"
+            },
+            "resolved_capabilities": [
+              {
+                "capability_id": "enemy.spawn.spawn_actor",
+                "capability_kind": "enemy_spawn",
+                "action_kind": "spawn_actor",
+                "handler": "EnemySpawnRuntime.spawnEnemy",
+                "params": {
+                  "spawn_tags": [
+                    "ground",
+                    "melee"
+                  ],
+                  "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+                  "enemy_tag": "AUTOUE_ENEMY_ZOMBIE",
+                  "default_hp": 30,
+                  "move_speed": 260,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "source_entity_binding": {
+                  "entity_id": "zombie",
+                  "capability_id": "enemy.spawn.spawn_actor"
+                }
+              },
+              {
+                "capability_id": "enemy.sensor.detect_player_by_distance",
+                "capability_kind": "enemy_sensor",
+                "action_kind": "detect_player_by_distance",
+                "handler": "EnemyPerception.detectPlayer",
+                "params": {
+                  "target_entity_id": "player",
+                  "sense_radius": 900,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "source_entity_binding": {
+                  "entity_id": "zombie",
+                  "capability_id": "enemy.sensor.detect_player_by_distance"
+                }
+              },
+              {
+                "capability_id": "enemy.movement.chase_target",
+                "capability_kind": "enemy_movement",
+                "action_kind": "chase_target",
+                "handler": "EnemyMovement.chaseTarget",
+                "params": {
+                  "target_entity_id": "player",
+                  "move_speed": 260,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "source_entity_binding": {
+                  "entity_id": "zombie",
+                  "capability_id": "enemy.movement.chase_target"
+                }
+              },
+              {
+                "capability_id": "enemy.attack.melee_hitbox",
+                "capability_kind": "enemy_attack",
+                "action_kind": "melee_hitbox",
+                "handler": "EnemyCombat.resolveMeleeHit",
+                "params": {
+                  "hitbox_radius": 90,
+                  "target_entity_id": "player",
+                  "attack_damage": 10,
+                  "attack_range": 160,
+                  "cooldown_seconds": 1.2,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "source_entity_binding": {
+                  "entity_id": "zombie",
+                  "capability_id": "enemy.attack.melee_hitbox"
+                }
+              },
+              {
+                "capability_id": "enemy.health.receive_damage",
+                "capability_kind": "enemy_health",
+                "action_kind": "receive_damage",
+                "handler": "EnemyHealth.applyDamage",
+                "params": {
+                  "max_hp": 30,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "source_entity_binding": {
+                  "entity_id": "zombie",
+                  "capability_id": "enemy.health.receive_damage"
+                }
+              },
+              {
+                "capability_id": "enemy.death.emit_death_event",
+                "capability_kind": "enemy_death",
+                "action_kind": "emit_death_event",
+                "handler": "EnemyDeathEvents.emitDeath",
+                "params": {
+                  "death_event_name": "EnemyDied",
+                  "decrement_alive_count": true,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "source_entity_binding": {
+                  "entity_id": "zombie",
+                  "capability_id": "enemy.death.emit_death_event"
+                }
+              },
+              {
+                "capability_id": "encounter.complete.complete_when_all_dead",
+                "capability_kind": "encounter",
+                "action_kind": "complete_when_all_dead",
+                "handler": "EncounterManager.completeWhenAllDead",
+                "params": {
+                  "completion_event_name": "EncounterCompleted",
+                  "completion_state_key": "encounter.room.completed",
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "source_entity_binding": {
+                  "entity_id": "zombie",
+                  "capability_id": "encounter.complete.complete_when_all_dead"
+                }
+              }
+            ],
+            "primitive_plan": [],
+            "presentation_effects": [],
+            "flow_id": "flow_enemy_behavior_chase_and_melee",
+            "trigger": {
+              "kind": "on_event"
+            },
+            "conditions": [],
+            "actions": [
+              {
+                "type": "enemy_spawn_actor",
+                "capability_id": "enemy.spawn.spawn_actor",
+                "entity_id": "zombie",
+                "params": {
+                  "spawn_tags": [
+                    "ground",
+                    "melee"
+                  ],
+                  "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+                  "enemy_tag": "AUTOUE_ENEMY_ZOMBIE",
+                  "default_hp": 30,
+                  "move_speed": 260,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                }
+              },
+              {
+                "type": "enemy_detect_player",
+                "capability_id": "enemy.sensor.detect_player_by_distance",
+                "entity_id": "zombie",
+                "params": {
+                  "target_entity_id": "player",
+                  "sense_radius": 900,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                }
+              },
+              {
+                "type": "enemy_chase_target",
+                "capability_id": "enemy.movement.chase_target",
+                "entity_id": "zombie",
+                "params": {
+                  "target_entity_id": "player",
+                  "move_speed": 260,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "target_entity_id": "player"
+              },
+              {
+                "type": "enemy_melee_attack",
+                "capability_id": "enemy.attack.melee_hitbox",
+                "entity_id": "zombie",
+                "params": {
+                  "hitbox_radius": 90,
+                  "target_entity_id": "player",
+                  "attack_damage": 10,
+                  "attack_range": 160,
+                  "cooldown_seconds": 1.2,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "target_entity_id": "player"
+              },
+              {
+                "type": "enemy_receive_damage",
+                "capability_id": "enemy.health.receive_damage",
+                "entity_id": "zombie",
+                "params": {
+                  "max_hp": 30,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                }
+              },
+              {
+                "type": "enemy_emit_death_event",
+                "capability_id": "enemy.death.emit_death_event",
+                "entity_id": "zombie",
+                "params": {
+                  "death_event_name": "EnemyDied",
+                  "decrement_alive_count": true,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                }
+              },
+              {
+                "type": "encounter_complete_when_all_dead",
+                "capability_id": "encounter.complete.complete_when_all_dead",
+                "entity_id": "zombie",
+                "params": {
+                  "completion_event_name": "EncounterCompleted",
+                  "completion_state_key": "encounter.room.completed",
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                }
+              }
+            ],
+            "required_capability_ids": [
+              "enemy.spawn.spawn_actor",
+              "enemy.sensor.detect_player_by_distance",
+              "enemy.movement.chase_target",
+              "enemy.attack.melee_hitbox",
+              "enemy.health.receive_damage",
+              "enemy.death.emit_death_event",
+              "encounter.complete.complete_when_all_dead"
+            ],
+            "engine_port_ids": [
+              "actor.spawn",
+              "actor.get_distance_to",
+              "actor.set_actor_location",
+              "kismet.sphere_trace_single",
+              "gameplay_statics.apply_damage",
+              "actor.on_take_any_damage",
+              "actor.on_destroyed",
+              "encounter.alive_count"
+            ],
+            "verification_logs": [
+              "BehaviorTriggered enemy.behavior.chase_and_melee",
+              "ActionDispatched enemy_spawn_actor",
+              "ActionDispatched enemy_detect_player",
+              "ActionDispatched enemy_chase_target",
+              "ActionDispatched enemy_melee_attack",
+              "ActionDispatched enemy_receive_damage",
+              "ActionDispatched enemy_emit_death_event",
+              "ActionDispatched encounter_complete_when_all_dead"
+            ]
+          }
+        ]
+      },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
+      "support_check": {
+        "schema_version": "autoue-runtime-support-check/v2",
+        "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
+        "required_runtime_modules": [
+          "action_dispatcher",
+          "behavior_orchestrator",
+          "condition_checker",
+          "encounter_manager",
+          "enemy_combat",
+          "enemy_death_events",
+          "enemy_health",
+          "enemy_movement",
+          "enemy_perception",
+          "enemy_registry",
+          "enemy_runtime",
+          "enemy_spawn_runtime",
+          "entity_registry",
+          "state_blackboard",
+          "trigger_router",
+          "world_adapter"
+        ],
+        "engine_ports": [
+          "actor.get_distance_to",
+          "actor.on_destroyed",
+          "actor.on_take_any_damage",
+          "actor.set_actor_location",
+          "actor.spawn",
+          "encounter.alive_count",
+          "gameplay_statics.apply_damage",
+          "kismet.sphere_trace_single"
+        ],
+        "supported_capabilities": [
+          {
+            "capability_kind": "enemy_spawn",
+            "action_kind": "spawn_actor",
+            "handler": "EnemySpawnRuntime.spawnEnemy",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_spawn_runtime",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "actor.spawn"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.spawn.spawn_actor"
+          },
+          {
+            "capability_kind": "enemy_sensor",
+            "action_kind": "detect_player_by_distance",
+            "handler": "EnemyPerception.detectPlayer",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_perception",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "actor.get_distance_to"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.sensor.detect_player_by_distance"
+          },
+          {
+            "capability_kind": "enemy_movement",
+            "action_kind": "chase_target",
+            "handler": "EnemyMovement.chaseTarget",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_movement",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "actor.get_distance_to",
+              "actor.set_actor_location"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.movement.chase_target"
+          },
+          {
+            "capability_kind": "enemy_attack",
+            "action_kind": "melee_hitbox",
+            "handler": "EnemyCombat.resolveMeleeHit",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_combat",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "kismet.sphere_trace_single",
+              "gameplay_statics.apply_damage"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.attack.melee_hitbox"
+          },
+          {
+            "capability_kind": "enemy_health",
+            "action_kind": "receive_damage",
+            "handler": "EnemyHealth.applyDamage",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_health",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "gameplay_statics.apply_damage",
+              "actor.on_take_any_damage"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.health.receive_damage"
+          },
+          {
+            "capability_kind": "enemy_death",
+            "action_kind": "emit_death_event",
+            "handler": "EnemyDeathEvents.emitDeath",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_death_events",
+              "enemy_registry",
+              "encounter_manager"
+            ],
+            "engine_ports": [
+              "actor.on_destroyed"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.death.emit_death_event"
+          },
+          {
+            "capability_kind": "encounter",
+            "action_kind": "complete_when_all_dead",
+            "handler": "EncounterManager.completeWhenAllDead",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "encounter_manager",
+              "enemy_registry"
+            ],
+            "engine_ports": [
+              "encounter.alive_count"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "encounter.complete.complete_when_all_dead"
+          }
+        ],
+        "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
+        "unsupported_behaviors": [],
+        "behavior_by_capability": {
+          "encounter.complete.complete_when_all_dead": [
+            "enemy.behavior.chase_and_melee"
+          ],
+          "enemy.attack.melee_hitbox": [
+            "enemy.behavior.chase_and_melee"
+          ],
+          "enemy.death.emit_death_event": [
+            "enemy.behavior.chase_and_melee"
+          ],
+          "enemy.health.receive_damage": [
+            "enemy.behavior.chase_and_melee"
+          ],
+          "enemy.movement.chase_target": [
+            "enemy.behavior.chase_and_melee"
+          ],
+          "enemy.sensor.detect_player_by_distance": [
+            "enemy.behavior.chase_and_melee"
+          ],
+          "enemy.spawn.spawn_actor": [
+            "enemy.behavior.chase_and_melee"
+          ]
+        }
+      }
+    },
+    {
+      "template": "spawn_point_registry",
+      "path": "TypeScript/content/generated/AutoUESpawnPointRegistry.ts",
+      "export_name": "createAutoUESpawnPointRegistry",
+      "interface_name": "AutoUESpawnPointRegistryContext",
+      "entity_id": "zombie",
+      "behavior_id": "enemy.behavior.chase_and_melee",
+      "flow_id": "flow_enemy_behavior_chase_and_melee",
+      "runtime_mapping_path": "flow/05-puerts-runtime-mapping.json",
+      "action_label": "execute BehaviorSpec action chain",
+      "target_label": "BehaviorSpec",
+      "result_label": "runtime framework dispatches data actions",
+      "runtime_features": [
+        "action_dispatcher",
+        "behavior_orchestrator",
+        "condition_checker",
+        "encounter_manager",
+        "enemy_combat",
+        "enemy_death_events",
+        "enemy_health",
+        "enemy_movement",
+        "enemy_perception",
+        "enemy_registry",
+        "enemy_runtime",
+        "enemy_spawn_runtime",
+        "entity_registry",
+        "state_blackboard",
+        "trigger_router",
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
+      ],
+      "disabled_features": [],
+      "behavior_spec": {
+        "schema_version": "autoue-behavior-spec/v1",
+        "source_nodes": [
+          "EntityAbilityBehaviorPlanner",
+          "ThinGameplayFlowPlanner",
+          "PuerTSRuntimeMappingCompiler"
+        ],
+        "behaviors": [
+          {
+            "behavior_id": "enemy.behavior.chase_and_melee",
+            "bound_entity_id": "zombie",
+            "primary_entity_id": "zombie",
+            "entity_id": "zombie",
+            "runtime_domain": "enemy_runtime",
+            "runtime_features": [
+              "enemy_runtime",
+              "enemy_spawn_runtime",
+              "enemy_perception",
+              "enemy_movement",
+              "enemy_combat",
+              "enemy_health",
+              "enemy_death_events",
+              "encounter_manager"
+            ],
+            "runtime_params": {
+              "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+              "enemy_tag": "AUTOUE_ENEMY_ZOMBIE",
+              "default_hp": 30,
+              "move_speed": 260,
+              "sense_radius": 900,
+              "attack_range": 160,
+              "spawn_tags": [
+                "ground",
+                "melee"
+              ],
+              "bound_entity_id": "zombie",
+              "entity_id": "zombie"
+            },
+            "resolved_capabilities": [
+              {
+                "capability_id": "enemy.spawn.spawn_actor",
+                "capability_kind": "enemy_spawn",
+                "action_kind": "spawn_actor",
+                "handler": "EnemySpawnRuntime.spawnEnemy",
+                "params": {
+                  "spawn_tags": [
+                    "ground",
+                    "melee"
+                  ],
+                  "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+                  "enemy_tag": "AUTOUE_ENEMY_ZOMBIE",
+                  "default_hp": 30,
+                  "move_speed": 260,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "source_entity_binding": {
+                  "entity_id": "zombie",
+                  "capability_id": "enemy.spawn.spawn_actor"
+                }
+              },
+              {
+                "capability_id": "enemy.sensor.detect_player_by_distance",
+                "capability_kind": "enemy_sensor",
+                "action_kind": "detect_player_by_distance",
+                "handler": "EnemyPerception.detectPlayer",
+                "params": {
+                  "target_entity_id": "player",
+                  "sense_radius": 900,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "source_entity_binding": {
+                  "entity_id": "zombie",
+                  "capability_id": "enemy.sensor.detect_player_by_distance"
+                }
+              },
+              {
+                "capability_id": "enemy.movement.chase_target",
+                "capability_kind": "enemy_movement",
+                "action_kind": "chase_target",
+                "handler": "EnemyMovement.chaseTarget",
+                "params": {
+                  "target_entity_id": "player",
+                  "move_speed": 260,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "source_entity_binding": {
+                  "entity_id": "zombie",
+                  "capability_id": "enemy.movement.chase_target"
+                }
+              },
+              {
+                "capability_id": "enemy.attack.melee_hitbox",
+                "capability_kind": "enemy_attack",
+                "action_kind": "melee_hitbox",
+                "handler": "EnemyCombat.resolveMeleeHit",
+                "params": {
+                  "hitbox_radius": 90,
+                  "target_entity_id": "player",
+                  "attack_damage": 10,
+                  "attack_range": 160,
+                  "cooldown_seconds": 1.2,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "source_entity_binding": {
+                  "entity_id": "zombie",
+                  "capability_id": "enemy.attack.melee_hitbox"
+                }
+              },
+              {
+                "capability_id": "enemy.health.receive_damage",
+                "capability_kind": "enemy_health",
+                "action_kind": "receive_damage",
+                "handler": "EnemyHealth.applyDamage",
+                "params": {
+                  "max_hp": 30,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "source_entity_binding": {
+                  "entity_id": "zombie",
+                  "capability_id": "enemy.health.receive_damage"
+                }
+              },
+              {
+                "capability_id": "enemy.death.emit_death_event",
+                "capability_kind": "enemy_death",
+                "action_kind": "emit_death_event",
+                "handler": "EnemyDeathEvents.emitDeath",
+                "params": {
+                  "death_event_name": "EnemyDied",
+                  "decrement_alive_count": true,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "source_entity_binding": {
+                  "entity_id": "zombie",
+                  "capability_id": "enemy.death.emit_death_event"
+                }
+              },
+              {
+                "capability_id": "encounter.complete.complete_when_all_dead",
+                "capability_kind": "encounter",
+                "action_kind": "complete_when_all_dead",
+                "handler": "EncounterManager.completeWhenAllDead",
+                "params": {
+                  "completion_event_name": "EncounterCompleted",
+                  "completion_state_key": "encounter.room.completed",
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "source_entity_binding": {
+                  "entity_id": "zombie",
+                  "capability_id": "encounter.complete.complete_when_all_dead"
+                }
+              }
+            ],
+            "primitive_plan": [],
+            "presentation_effects": [],
+            "flow_id": "flow_enemy_behavior_chase_and_melee",
+            "trigger": {
+              "kind": "on_event"
+            },
+            "conditions": [],
+            "actions": [
+              {
+                "type": "enemy_spawn_actor",
+                "capability_id": "enemy.spawn.spawn_actor",
+                "entity_id": "zombie",
+                "params": {
+                  "spawn_tags": [
+                    "ground",
+                    "melee"
+                  ],
+                  "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+                  "enemy_tag": "AUTOUE_ENEMY_ZOMBIE",
+                  "default_hp": 30,
+                  "move_speed": 260,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                }
+              },
+              {
+                "type": "enemy_detect_player",
+                "capability_id": "enemy.sensor.detect_player_by_distance",
+                "entity_id": "zombie",
+                "params": {
+                  "target_entity_id": "player",
+                  "sense_radius": 900,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                }
+              },
+              {
+                "type": "enemy_chase_target",
+                "capability_id": "enemy.movement.chase_target",
+                "entity_id": "zombie",
+                "params": {
+                  "target_entity_id": "player",
+                  "move_speed": 260,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "target_entity_id": "player"
+              },
+              {
+                "type": "enemy_melee_attack",
+                "capability_id": "enemy.attack.melee_hitbox",
+                "entity_id": "zombie",
+                "params": {
+                  "hitbox_radius": 90,
+                  "target_entity_id": "player",
+                  "attack_damage": 10,
+                  "attack_range": 160,
+                  "cooldown_seconds": 1.2,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "target_entity_id": "player"
+              },
+              {
+                "type": "enemy_receive_damage",
+                "capability_id": "enemy.health.receive_damage",
+                "entity_id": "zombie",
+                "params": {
+                  "max_hp": 30,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                }
+              },
+              {
+                "type": "enemy_emit_death_event",
+                "capability_id": "enemy.death.emit_death_event",
+                "entity_id": "zombie",
+                "params": {
+                  "death_event_name": "EnemyDied",
+                  "decrement_alive_count": true,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                }
+              },
+              {
+                "type": "encounter_complete_when_all_dead",
+                "capability_id": "encounter.complete.complete_when_all_dead",
+                "entity_id": "zombie",
+                "params": {
+                  "completion_event_name": "EncounterCompleted",
+                  "completion_state_key": "encounter.room.completed",
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                }
+              }
+            ],
+            "required_capability_ids": [
+              "enemy.spawn.spawn_actor",
+              "enemy.sensor.detect_player_by_distance",
+              "enemy.movement.chase_target",
+              "enemy.attack.melee_hitbox",
+              "enemy.health.receive_damage",
+              "enemy.death.emit_death_event",
+              "encounter.complete.complete_when_all_dead"
+            ],
+            "engine_port_ids": [
+              "actor.spawn",
+              "actor.get_distance_to",
+              "actor.set_actor_location",
+              "kismet.sphere_trace_single",
+              "gameplay_statics.apply_damage",
+              "actor.on_take_any_damage",
+              "actor.on_destroyed",
+              "encounter.alive_count"
+            ],
+            "verification_logs": [
+              "BehaviorTriggered enemy.behavior.chase_and_melee",
+              "ActionDispatched enemy_spawn_actor",
+              "ActionDispatched enemy_detect_player",
+              "ActionDispatched enemy_chase_target",
+              "ActionDispatched enemy_melee_attack",
+              "ActionDispatched enemy_receive_damage",
+              "ActionDispatched enemy_emit_death_event",
+              "ActionDispatched encounter_complete_when_all_dead"
+            ]
+          }
+        ]
+      },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
+      "support_check": {
+        "schema_version": "autoue-runtime-support-check/v2",
+        "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
+        "required_runtime_modules": [
+          "action_dispatcher",
+          "behavior_orchestrator",
+          "condition_checker",
+          "encounter_manager",
+          "enemy_combat",
+          "enemy_death_events",
+          "enemy_health",
+          "enemy_movement",
+          "enemy_perception",
+          "enemy_registry",
+          "enemy_runtime",
+          "enemy_spawn_runtime",
+          "entity_registry",
+          "state_blackboard",
+          "trigger_router",
+          "world_adapter"
+        ],
+        "engine_ports": [
+          "actor.get_distance_to",
+          "actor.on_destroyed",
+          "actor.on_take_any_damage",
+          "actor.set_actor_location",
+          "actor.spawn",
+          "encounter.alive_count",
+          "gameplay_statics.apply_damage",
+          "kismet.sphere_trace_single"
+        ],
+        "supported_capabilities": [
+          {
+            "capability_kind": "enemy_spawn",
+            "action_kind": "spawn_actor",
+            "handler": "EnemySpawnRuntime.spawnEnemy",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_spawn_runtime",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "actor.spawn"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.spawn.spawn_actor"
+          },
+          {
+            "capability_kind": "enemy_sensor",
+            "action_kind": "detect_player_by_distance",
+            "handler": "EnemyPerception.detectPlayer",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_perception",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "actor.get_distance_to"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.sensor.detect_player_by_distance"
+          },
+          {
+            "capability_kind": "enemy_movement",
+            "action_kind": "chase_target",
+            "handler": "EnemyMovement.chaseTarget",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_movement",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "actor.get_distance_to",
+              "actor.set_actor_location"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.movement.chase_target"
+          },
+          {
+            "capability_kind": "enemy_attack",
+            "action_kind": "melee_hitbox",
+            "handler": "EnemyCombat.resolveMeleeHit",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_combat",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "kismet.sphere_trace_single",
+              "gameplay_statics.apply_damage"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.attack.melee_hitbox"
+          },
+          {
+            "capability_kind": "enemy_health",
+            "action_kind": "receive_damage",
+            "handler": "EnemyHealth.applyDamage",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_health",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "gameplay_statics.apply_damage",
+              "actor.on_take_any_damage"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.health.receive_damage"
+          },
+          {
+            "capability_kind": "enemy_death",
+            "action_kind": "emit_death_event",
+            "handler": "EnemyDeathEvents.emitDeath",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_death_events",
+              "enemy_registry",
+              "encounter_manager"
+            ],
+            "engine_ports": [
+              "actor.on_destroyed"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.death.emit_death_event"
+          },
+          {
+            "capability_kind": "encounter",
+            "action_kind": "complete_when_all_dead",
+            "handler": "EncounterManager.completeWhenAllDead",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "encounter_manager",
+              "enemy_registry"
+            ],
+            "engine_ports": [
+              "encounter.alive_count"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "encounter.complete.complete_when_all_dead"
+          }
+        ],
+        "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
+        "unsupported_behaviors": [],
+        "behavior_by_capability": {
+          "encounter.complete.complete_when_all_dead": [
+            "enemy.behavior.chase_and_melee"
+          ],
+          "enemy.attack.melee_hitbox": [
+            "enemy.behavior.chase_and_melee"
+          ],
+          "enemy.death.emit_death_event": [
+            "enemy.behavior.chase_and_melee"
+          ],
+          "enemy.health.receive_damage": [
+            "enemy.behavior.chase_and_melee"
+          ],
+          "enemy.movement.chase_target": [
+            "enemy.behavior.chase_and_melee"
+          ],
+          "enemy.sensor.detect_player_by_distance": [
+            "enemy.behavior.chase_and_melee"
+          ],
+          "enemy.spawn.spawn_actor": [
+            "enemy.behavior.chase_and_melee"
+          ]
+        }
+      }
+    },
+    {
+      "template": "enemy_spawn_manager",
+      "path": "TypeScript/content/generated/AutoUEEnemySpawnManager.ts",
+      "export_name": "createAutoUEEnemySpawnManager",
+      "interface_name": "AutoUEEnemySpawnManagerContext",
+      "entity_id": "zombie",
+      "behavior_id": "enemy.behavior.chase_and_melee",
+      "flow_id": "flow_enemy_behavior_chase_and_melee",
+      "runtime_mapping_path": "flow/05-puerts-runtime-mapping.json",
+      "action_label": "execute BehaviorSpec action chain",
+      "target_label": "BehaviorSpec",
+      "result_label": "runtime framework dispatches data actions",
+      "runtime_features": [
+        "action_dispatcher",
+        "behavior_orchestrator",
+        "condition_checker",
+        "encounter_manager",
+        "enemy_combat",
+        "enemy_death_events",
+        "enemy_health",
+        "enemy_movement",
+        "enemy_perception",
+        "enemy_registry",
+        "enemy_runtime",
+        "enemy_spawn_runtime",
+        "entity_registry",
+        "state_blackboard",
+        "trigger_router",
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
+      ],
+      "disabled_features": [],
+      "behavior_spec": {
+        "schema_version": "autoue-behavior-spec/v1",
+        "source_nodes": [
+          "EntityAbilityBehaviorPlanner",
+          "ThinGameplayFlowPlanner",
+          "PuerTSRuntimeMappingCompiler"
+        ],
+        "behaviors": [
+          {
+            "behavior_id": "enemy.behavior.chase_and_melee",
+            "bound_entity_id": "zombie",
+            "primary_entity_id": "zombie",
+            "entity_id": "zombie",
+            "runtime_domain": "enemy_runtime",
+            "runtime_features": [
+              "enemy_runtime",
+              "enemy_spawn_runtime",
+              "enemy_perception",
+              "enemy_movement",
+              "enemy_combat",
+              "enemy_health",
+              "enemy_death_events",
+              "encounter_manager"
+            ],
+            "runtime_params": {
+              "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+              "enemy_tag": "AUTOUE_ENEMY_ZOMBIE",
+              "default_hp": 30,
+              "move_speed": 260,
+              "sense_radius": 900,
+              "attack_range": 160,
+              "spawn_tags": [
+                "ground",
+                "melee"
+              ],
+              "bound_entity_id": "zombie",
+              "entity_id": "zombie"
+            },
+            "resolved_capabilities": [
+              {
+                "capability_id": "enemy.spawn.spawn_actor",
+                "capability_kind": "enemy_spawn",
+                "action_kind": "spawn_actor",
+                "handler": "EnemySpawnRuntime.spawnEnemy",
+                "params": {
+                  "spawn_tags": [
+                    "ground",
+                    "melee"
+                  ],
+                  "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+                  "enemy_tag": "AUTOUE_ENEMY_ZOMBIE",
+                  "default_hp": 30,
+                  "move_speed": 260,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "source_entity_binding": {
+                  "entity_id": "zombie",
+                  "capability_id": "enemy.spawn.spawn_actor"
+                }
+              },
+              {
+                "capability_id": "enemy.sensor.detect_player_by_distance",
+                "capability_kind": "enemy_sensor",
+                "action_kind": "detect_player_by_distance",
+                "handler": "EnemyPerception.detectPlayer",
+                "params": {
+                  "target_entity_id": "player",
+                  "sense_radius": 900,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "source_entity_binding": {
+                  "entity_id": "zombie",
+                  "capability_id": "enemy.sensor.detect_player_by_distance"
+                }
+              },
+              {
+                "capability_id": "enemy.movement.chase_target",
+                "capability_kind": "enemy_movement",
+                "action_kind": "chase_target",
+                "handler": "EnemyMovement.chaseTarget",
+                "params": {
+                  "target_entity_id": "player",
+                  "move_speed": 260,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "source_entity_binding": {
+                  "entity_id": "zombie",
+                  "capability_id": "enemy.movement.chase_target"
+                }
+              },
+              {
+                "capability_id": "enemy.attack.melee_hitbox",
+                "capability_kind": "enemy_attack",
+                "action_kind": "melee_hitbox",
+                "handler": "EnemyCombat.resolveMeleeHit",
+                "params": {
+                  "hitbox_radius": 90,
+                  "target_entity_id": "player",
+                  "attack_damage": 10,
+                  "attack_range": 160,
+                  "cooldown_seconds": 1.2,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "source_entity_binding": {
+                  "entity_id": "zombie",
+                  "capability_id": "enemy.attack.melee_hitbox"
+                }
+              },
+              {
+                "capability_id": "enemy.health.receive_damage",
+                "capability_kind": "enemy_health",
+                "action_kind": "receive_damage",
+                "handler": "EnemyHealth.applyDamage",
+                "params": {
+                  "max_hp": 30,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "source_entity_binding": {
+                  "entity_id": "zombie",
+                  "capability_id": "enemy.health.receive_damage"
+                }
+              },
+              {
+                "capability_id": "enemy.death.emit_death_event",
+                "capability_kind": "enemy_death",
+                "action_kind": "emit_death_event",
+                "handler": "EnemyDeathEvents.emitDeath",
+                "params": {
+                  "death_event_name": "EnemyDied",
+                  "decrement_alive_count": true,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "source_entity_binding": {
+                  "entity_id": "zombie",
+                  "capability_id": "enemy.death.emit_death_event"
+                }
+              },
+              {
+                "capability_id": "encounter.complete.complete_when_all_dead",
+                "capability_kind": "encounter",
+                "action_kind": "complete_when_all_dead",
+                "handler": "EncounterManager.completeWhenAllDead",
+                "params": {
+                  "completion_event_name": "EncounterCompleted",
+                  "completion_state_key": "encounter.room.completed",
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "source_entity_binding": {
+                  "entity_id": "zombie",
+                  "capability_id": "encounter.complete.complete_when_all_dead"
+                }
+              }
+            ],
+            "primitive_plan": [],
+            "presentation_effects": [],
+            "flow_id": "flow_enemy_behavior_chase_and_melee",
+            "trigger": {
+              "kind": "on_event"
+            },
+            "conditions": [],
+            "actions": [
+              {
+                "type": "enemy_spawn_actor",
+                "capability_id": "enemy.spawn.spawn_actor",
+                "entity_id": "zombie",
+                "params": {
+                  "spawn_tags": [
+                    "ground",
+                    "melee"
+                  ],
+                  "actor_class_path": "/Game/AutoUE/Enemies/BP_AutoUECombatEnemy.BP_AutoUECombatEnemy_C",
+                  "enemy_tag": "AUTOUE_ENEMY_ZOMBIE",
+                  "default_hp": 30,
+                  "move_speed": 260,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                }
+              },
+              {
+                "type": "enemy_detect_player",
+                "capability_id": "enemy.sensor.detect_player_by_distance",
+                "entity_id": "zombie",
+                "params": {
+                  "target_entity_id": "player",
+                  "sense_radius": 900,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                }
+              },
+              {
+                "type": "enemy_chase_target",
+                "capability_id": "enemy.movement.chase_target",
+                "entity_id": "zombie",
+                "params": {
+                  "target_entity_id": "player",
+                  "move_speed": 260,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "target_entity_id": "player"
+              },
+              {
+                "type": "enemy_melee_attack",
+                "capability_id": "enemy.attack.melee_hitbox",
+                "entity_id": "zombie",
+                "params": {
+                  "hitbox_radius": 90,
+                  "target_entity_id": "player",
+                  "attack_damage": 10,
+                  "attack_range": 160,
+                  "cooldown_seconds": 1.2,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                },
+                "target_entity_id": "player"
+              },
+              {
+                "type": "enemy_receive_damage",
+                "capability_id": "enemy.health.receive_damage",
+                "entity_id": "zombie",
+                "params": {
+                  "max_hp": 30,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                }
+              },
+              {
+                "type": "enemy_emit_death_event",
+                "capability_id": "enemy.death.emit_death_event",
+                "entity_id": "zombie",
+                "params": {
+                  "death_event_name": "EnemyDied",
+                  "decrement_alive_count": true,
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                }
+              },
+              {
+                "type": "encounter_complete_when_all_dead",
+                "capability_id": "encounter.complete.complete_when_all_dead",
+                "entity_id": "zombie",
+                "params": {
+                  "completion_event_name": "EncounterCompleted",
+                  "completion_state_key": "encounter.room.completed",
+                  "bound_entity_id": "zombie",
+                  "entity_id": "zombie"
+                }
+              }
+            ],
+            "required_capability_ids": [
+              "enemy.spawn.spawn_actor",
+              "enemy.sensor.detect_player_by_distance",
+              "enemy.movement.chase_target",
+              "enemy.attack.melee_hitbox",
+              "enemy.health.receive_damage",
+              "enemy.death.emit_death_event",
+              "encounter.complete.complete_when_all_dead"
+            ],
+            "engine_port_ids": [
+              "actor.spawn",
+              "actor.get_distance_to",
+              "actor.set_actor_location",
+              "kismet.sphere_trace_single",
+              "gameplay_statics.apply_damage",
+              "actor.on_take_any_damage",
+              "actor.on_destroyed",
+              "encounter.alive_count"
+            ],
+            "verification_logs": [
+              "BehaviorTriggered enemy.behavior.chase_and_melee",
+              "ActionDispatched enemy_spawn_actor",
+              "ActionDispatched enemy_detect_player",
+              "ActionDispatched enemy_chase_target",
+              "ActionDispatched enemy_melee_attack",
+              "ActionDispatched enemy_receive_damage",
+              "ActionDispatched enemy_emit_death_event",
+              "ActionDispatched encounter_complete_when_all_dead"
+            ]
+          }
+        ]
+      },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
+      "support_check": {
+        "schema_version": "autoue-runtime-support-check/v2",
+        "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
+        "required_runtime_modules": [
+          "action_dispatcher",
+          "behavior_orchestrator",
+          "condition_checker",
+          "encounter_manager",
+          "enemy_combat",
+          "enemy_death_events",
+          "enemy_health",
+          "enemy_movement",
+          "enemy_perception",
+          "enemy_registry",
+          "enemy_runtime",
+          "enemy_spawn_runtime",
+          "entity_registry",
+          "state_blackboard",
+          "trigger_router",
+          "world_adapter"
+        ],
+        "engine_ports": [
+          "actor.get_distance_to",
+          "actor.on_destroyed",
+          "actor.on_take_any_damage",
+          "actor.set_actor_location",
+          "actor.spawn",
+          "encounter.alive_count",
+          "gameplay_statics.apply_damage",
+          "kismet.sphere_trace_single"
+        ],
+        "supported_capabilities": [
+          {
+            "capability_kind": "enemy_spawn",
+            "action_kind": "spawn_actor",
+            "handler": "EnemySpawnRuntime.spawnEnemy",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_spawn_runtime",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "actor.spawn"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.spawn.spawn_actor"
+          },
+          {
+            "capability_kind": "enemy_sensor",
+            "action_kind": "detect_player_by_distance",
+            "handler": "EnemyPerception.detectPlayer",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_perception",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "actor.get_distance_to"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.sensor.detect_player_by_distance"
+          },
+          {
+            "capability_kind": "enemy_movement",
+            "action_kind": "chase_target",
+            "handler": "EnemyMovement.chaseTarget",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_movement",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "actor.get_distance_to",
+              "actor.set_actor_location"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.movement.chase_target"
+          },
+          {
+            "capability_kind": "enemy_attack",
+            "action_kind": "melee_hitbox",
+            "handler": "EnemyCombat.resolveMeleeHit",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_combat",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "kismet.sphere_trace_single",
+              "gameplay_statics.apply_damage"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.attack.melee_hitbox"
+          },
+          {
+            "capability_kind": "enemy_health",
+            "action_kind": "receive_damage",
+            "handler": "EnemyHealth.applyDamage",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_health",
+              "enemy_registry",
+              "world_adapter"
+            ],
+            "engine_ports": [
+              "gameplay_statics.apply_damage",
+              "actor.on_take_any_damage"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.health.receive_damage"
+          },
+          {
+            "capability_kind": "enemy_death",
+            "action_kind": "emit_death_event",
+            "handler": "EnemyDeathEvents.emitDeath",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "enemy_death_events",
+              "enemy_registry",
+              "encounter_manager"
+            ],
+            "engine_ports": [
+              "actor.on_destroyed"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "enemy.death.emit_death_event"
+          },
+          {
+            "capability_kind": "encounter",
+            "action_kind": "complete_when_all_dead",
+            "handler": "EncounterManager.completeWhenAllDead",
+            "required_runtime_modules": [
+              "enemy_runtime",
+              "encounter_manager",
+              "enemy_registry"
+            ],
+            "engine_ports": [
+              "encounter.alive_count"
+            ],
+            "supported": true,
+            "reason": "",
+            "capability_id": "encounter.complete.complete_when_all_dead"
+          }
+        ],
+        "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -9191,7 +11915,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -9354,6 +12081,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -9480,9 +12209,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -9635,6 +12400,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -9689,7 +12456,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -9852,6 +12622,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -9978,9 +12750,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -10133,6 +12941,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -10187,7 +12997,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -10350,6 +13163,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -10476,9 +13291,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -10631,6 +13482,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -10685,7 +13538,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -10848,6 +13704,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -10974,9 +13832,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -11129,6 +14023,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -11183,7 +14079,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -11346,6 +14245,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -11472,9 +14373,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -11627,6 +14564,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -11681,7 +14620,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -11844,6 +14786,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -11970,9 +14914,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -12125,6 +15105,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -12179,7 +15161,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -12342,6 +15327,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -12468,9 +15455,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -12623,6 +15646,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -12677,7 +15702,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -12840,6 +15868,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -12966,9 +15996,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -13121,6 +16187,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -13175,7 +16243,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -13338,6 +16409,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -13464,9 +16537,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -13619,6 +16728,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -13673,7 +16784,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -13836,6 +16950,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -13962,9 +17078,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -14117,6 +17269,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [
@@ -14171,7 +17325,10 @@
         "entity_registry",
         "state_blackboard",
         "trigger_router",
-        "world_adapter"
+        "world_adapter",
+        "encounter_spec_data",
+        "spawn_point_registry",
+        "enemy_spawn_manager"
       ],
       "disabled_features": [],
       "behavior_spec": {
@@ -14334,6 +17491,8 @@
                 }
               }
             ],
+            "primitive_plan": [],
+            "presentation_effects": [],
             "flow_id": "flow_enemy_behavior_chase_and_melee",
             "trigger": {
               "kind": "on_event"
@@ -14460,9 +17619,45 @@
           }
         ]
       },
+      "encounter_spec": {
+        "schema_version": "autoue-encounter-spec/v1",
+        "encounters": [
+          {
+            "encounter_id": "room_01_initial_guard",
+            "trigger": {
+              "type": "on_level_start"
+            },
+            "spawn_group": "room_01_guard",
+            "enemy_budget": 1,
+            "composition": [
+              {
+                "enemy": "zombie",
+                "count": 1
+              }
+            ],
+            "spawn_policy": {
+              "avoid_camera_view": false,
+              "min_distance_to_player": 400,
+              "consume_spawn_point": true,
+              "max_alive": 1
+            },
+            "completion": {
+              "type": "all_spawned_enemies_defeated",
+              "set_flags": [
+                "enemy_defeated",
+                "exit_unlocked"
+              ]
+            }
+          }
+        ]
+      },
+      "encounter_spec_path": "flow/03-encounter-spec.json",
+      "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json",
       "support_check": {
-        "schema_version": "autoue-runtime-support-check/v1",
+        "schema_version": "autoue-runtime-support-check/v2",
         "status": "supported",
+        "static_support": "supported",
+        "runtime_proof": "not_run",
         "required_runtime_modules": [
           "action_dispatcher",
           "behavior_orchestrator",
@@ -14615,6 +17810,8 @@
           }
         ],
         "unsupported_capabilities": [],
+        "supported_primitives": [],
+        "unsupported_primitives": [],
         "unsupported_behaviors": [],
         "behavior_by_capability": {
           "encounter.complete.complete_when_all_dead": [

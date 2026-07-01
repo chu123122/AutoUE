@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import shutil
 import sys
 from pathlib import Path
 from typing import Any
@@ -42,12 +41,18 @@ def thin_flow_for(spec: dict[str, Any]) -> dict[str, Any]:
     return {"flows":flows}
 
 def codegen_for(spec: dict[str, Any], support: dict[str, Any]) -> dict[str, Any]:
-    mapping={"runtime_mapping_path":"flow/05-puerts-runtime-mapping.json","behavior_spec_path":"flow/06-behavior-spec.json","support_check_path":"flow/06-runtime-support-check.json","runtime_features":support["required_runtime_modules"],"disabled_features":[],"behavior_spec":spec,"support_check":support,"mappings":[],"blocked_mappings":[]}
+    composition = [{"enemy": str(behavior.get("entity_id") or behavior.get("bound_entity_id") or "zombie"), "count": 1} for behavior in spec.get("behaviors", [])]
+    encounter_spec = {"schema_version": "autoue-encounter-spec/v1", "encounters": [{"encounter_id": "room_01_initial_guard", "trigger": {"type": "on_level_start"}, "spawn_group": "room_01_guard", "enemy_budget": max(1, len(composition)), "composition": composition or [{"enemy": "zombie", "count": 1}], "spawn_policy": {"avoid_camera_view": False, "min_distance_to_player": 400, "consume_spawn_point": True, "max_alive": max(1, len(composition))}, "completion": {"type": "all_spawned_enemies_defeated", "set_flags": ["enemy_defeated", "exit_unlocked"]}}]}
+    required_modules = ["encounter_spec_data", "spawn_point_registry", "enemy_spawn_manager"]
+    runtime_features = list(support["required_runtime_modules"])
+    for module in required_modules:
+        if module not in runtime_features:
+            runtime_features.append(module)
+    mapping={"runtime_mapping_path":"flow/05-puerts-runtime-mapping.json","behavior_spec_path":"flow/06-behavior-spec.json","support_check_path":"flow/06-runtime-support-check.json","encounter_spec_path":"flow/03-encounter-spec.json","scene_spawn_manifest_path":"flow/scene-spawn-manifest.json","runtime_features":runtime_features,"disabled_features":[],"behavior_spec":spec,"encounter_spec":encounter_spec,"support_check":support,"mappings":[],"blocked_mappings":[]}
     state=GraphState(llm_outputs={"PuerTSRuntimeMappingCompiler":json.dumps(mapping,ensure_ascii=False),"TypeScriptImplementationSlotProjector":json.dumps({"implementation_slots":[]}),"TypeScriptInteractiveTemplatePlanner":json.dumps({"template_inputs":[{"path":"TypeScript/content/generated/interactive/EnemyRuntimeHarness.ts"}]})})
     return build_codegen_output(state)
 
 def main() -> int:
-    if OUT.exists(): shutil.rmtree(OUT)
     OUT.mkdir(parents=True,exist_ok=True)
     for name,prompt,entities,caps,behaviors in CASES:
         root=OUT/name; root.mkdir(parents=True,exist_ok=True); (root/"prompt.txt").write_text(prompt+"\n",encoding="utf-8")
