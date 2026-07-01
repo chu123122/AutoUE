@@ -14,6 +14,8 @@ CORE_BEHAVIOR_IDS = {"enemy.behavior.chase_and_melee", "hud.behavior.refresh_val
 QUERY_SYNONYMS = {
     "玩家": ["player"], "僵尸": ["zombie", "enemy", "melee"], "弓箭": ["archer", "ranged", "projectile"], "射手": ["archer", "ranged"],
     "持盾": ["shield_bearer", "shield", "block"], "盾": ["shield", "block"], "自爆": ["kamikaze", "explosive", "self_destruct"], "蝙蝠": ["bat", "kamikaze"],
+    "快速": ["fast", "runner", "rampager"], "高速": ["fast", "runner", "rampager"], "轻型": ["fast"], "重型": ["heavy", "golem"], "精英": ["elite"],
+    "风筝": ["kite", "ranged", "projectile"], "压制": ["pressure", "ranged", "projectile"], "施法": ["caster", "ranged"], "飞行": ["flying"],
     "敌人": ["enemy"], "追击": ["chase"], "远程": ["ranged", "projectile"], "近战": ["melee"], "房间": ["room", "encounter"],
     "冰冻": ["freeze", "frozen"], "冰": ["freeze"], "陷阱": ["trap", "hazard"], "特效": ["vfx", "particle"], "粒子": ["vfx", "particle"],
     "镜头": ["camera"], "相机": ["camera"], "HUD": ["hud"], "界面": ["hud"], "血条": ["health_bar_hud", "health"], "伤害数字": ["combat_damage_number_hud", "damage"],
@@ -189,7 +191,13 @@ def _explicit_ids(query: str, items: dict[str, dict[str, Any]], id_key: str) -> 
 def _entity_can_satisfy(entity: Mapping[str, Any], behavior: Mapping[str, Any]) -> bool:
     required = set(behavior.get("required_capability_ids", []))
     bound = {b.get("capability_id") for b in entity.get("capability_bindings", []) if isinstance(b, Mapping)}
-    return required.issubset(bound)
+    if not required.issubset(bound):
+        return False
+    compatible_tags = {str(tag) for tag in behavior.get("compatible_entity_tags", []) or []}
+    if compatible_tags:
+        entity_tags = {str(tag) for tag in entity.get("content_tags", []) or []}
+        return bool(compatible_tags & entity_tags)
+    return True
 
 
 def _binding_summary(entity: Mapping[str, Any]) -> dict[str, Any]:
@@ -295,6 +303,9 @@ def validate_selection_against_library_and_candidates(node: str, selection: dict
         missing = set(behavior.get("required_capability_ids", [])) - selected_caps
         if missing:
             raise _validation_error(f"{node}: selected_capability_ids do not cover behavior {behavior_id}: {sorted(missing)}")
+        selected_entities = [lib["entities"][entity_id] for entity_id in selection.get("selected_entity_ids", []) if entity_id in lib["entities"]]
+        if behavior.get("compatible_entity_tags") and selected_entities and not any(_entity_can_satisfy(entity, behavior) for entity in selected_entities):
+            raise _validation_error(f"{node}: selected behavior_id {behavior_id} cannot bind to selected_entity_ids: {selection.get('selected_entity_ids', [])}")
 
 
 def canonicalize_selection(selection: dict[str, list[str]]) -> dict[str, Any]:

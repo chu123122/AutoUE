@@ -18,6 +18,14 @@ ENEMY_CHASE_MELEE = ["enemy.spawn.spawn_actor", "enemy.sensor.detect_player_by_d
 ARCHER_PROJECTILE = ["enemy.spawn.spawn_actor", "enemy.sensor.detect_player_by_distance", "enemy.movement.keep_distance", "enemy.attack.projectile_spawn", "enemy.health.receive_damage", "enemy.death.emit_death_event", "encounter.complete.complete_when_all_dead"]
 KAMIKAZE = ["enemy.spawn.spawn_actor", "enemy.sensor.detect_player_by_distance", "enemy.movement.chase_target", "enemy.attack.self_destruct", "enemy.health.receive_damage", "enemy.death.emit_death_event", "encounter.complete.complete_when_all_dead"]
 SHIELD = ["enemy.spawn.spawn_actor", "enemy.sensor.detect_player_by_distance", "enemy.movement.chase_target", "enemy.defense.directional_block", "enemy.attack.melee_hitbox", "enemy.health.receive_damage", "enemy.death.emit_death_event", "encounter.complete.complete_when_all_dead"]
+PHASE1_ENEMY_BEHAVIOR_CASES = {
+    "runner": ("enemy.behavior.fast_chase_and_melee", set(ENEMY_CHASE_MELEE)),
+    "golem": ("enemy.behavior.heavy_chase_and_melee", set(ENEMY_CHASE_MELEE)),
+    "slasher": ("enemy.behavior.elite_chase_and_melee", set(ENEMY_CHASE_MELEE)),
+    "inquisitor": ("enemy.behavior.pressure_projectile_kite", set(ARCHER_PROJECTILE)),
+    "kamikaze_bat": ("enemy.behavior.flying_self_destruct", set(KAMIKAZE)),
+    "shield_bearer": ("enemy.behavior.shield_chase_counter", set(SHIELD)),
+}
 
 
 def test_dead_cells_libraries_are_canonical_and_exclude_audio():
@@ -92,6 +100,29 @@ def test_enemy_entities_bind_canonical_capabilities_and_support_matrix_is_precis
     assert unsupported["status"] == "unsupported"
 
 
+@pytest.mark.parametrize(("entity_id", "behavior_id", "required"), [(entity_id, behavior_id, required) for entity_id, (behavior_id, required) in PHASE1_ENEMY_BEHAVIOR_CASES.items()])
+def test_phase1_enemy_behavior_variants_reuse_supported_runtime(entity_id: str, behavior_id: str, required: set[str]):
+    from core.runtime_support_matrix import check_capability_support
+
+    lib = load_dead_cells_library()
+    behavior = lib["behaviors"][behavior_id]
+    bound = {b["capability_id"] for b in lib["entities"][entity_id]["capability_bindings"]}
+    assert set(behavior["required_capability_ids"]) == required
+    assert required.issubset(bound)
+    assert behavior["variation_policy"] == "phase1_runtime_safe_existing_enemy_runtime"
+    assert set(behavior["compatible_entity_tags"]) & set(lib["entities"][entity_id]["content_tags"])
+    assert check_capability_support(required)["status"] == "supported"
+
+
+def test_phase1_enemy_behavior_variants_respect_entity_tags_at_selection_boundary():
+    cs = build_candidate_set("快速敌人追击近战")
+    bad = parse_selection_output("EntityAbilityBehaviorPlanner", {"selected_entity_ids": ["golem"], "selected_capability_ids": ENEMY_CHASE_MELEE, "selected_behavior_ids": ["enemy.behavior.fast_chase_and_melee"]})
+    with pytest.raises(WorkflowValidationError, match="cannot bind"):
+        validate_selection_against_library_and_candidates("EntityAbilityBehaviorPlanner", bad, cs)
+    good = parse_selection_output("EntityAbilityBehaviorPlanner", {"selected_entity_ids": ["runner"], "selected_capability_ids": ENEMY_CHASE_MELEE, "selected_behavior_ids": ["enemy.behavior.fast_chase_and_melee"]})
+    validate_selection_against_library_and_candidates("EntityAbilityBehaviorPlanner", good, cs)
+
+
 def test_legacy_ids_are_rejected_at_selection_boundary():
     with pytest.raises(WorkflowValidationError, match="selected_ability_ids"):
         parse_selection_output("EntityAbilityBehaviorPlanner", {"selected_ability_ids": ["zombie.offense"], "selected_behavior_ids": []})
@@ -147,13 +178,23 @@ def test_enemy_runtime_codegen_declares_and_renders_required_templates(tmp_path)
     from custom_nodes.typescript_code_generator import build_codegen_output
 
     spec, support = compile_and_check(_enemy_runtime_selection())
-    mapping = {"runtime_mapping_path": "flow/05-puerts-runtime-mapping.json", "behavior_spec_path": "flow/06-behavior-spec.json", "support_check_path": "flow/06-runtime-support-check.json", "runtime_features": support["required_runtime_modules"], "disabled_features": [], "behavior_spec": spec, "support_check": support, "mappings": [{"entity_id": "zombie", "behavior_id": "enemy.behavior.chase_and_melee", "flow_id": "flow_enemy_behavior_chase_and_melee", "runtime_owner": "TypeScript/content/generated/AutoUEBehaviorSpec.generated.ts", "implementation_carrier": "template_rendered_ts", "selected_runtime_owner": "AutoUEBehaviorSpec.generated", "existing_framework_candidates": ["AutoUE enemy runtime framework"], "why_not_existing_framework": "requires generated BehaviorSpec plus enemy runtime modules", "temporary_or_canonical": "canonical", "migration_path": "regenerate BehaviorSpec data only", "engine_port_mappings": [], "thin_contracts": ["spawn true enemy actor"], "ability_binding": "behavior_spec:enemy.behavior.chase_and_melee", "verification_evidence": ["EnemySpawned", "EnemyDied", "EncounterCompleted=1"]}], "blocked_mappings": []}
+    encounter_spec = {"schema_version": "autoue-encounter-spec/v1", "encounters": [{"encounter_id": "room_01_initial_guard", "trigger": {"type": "on_level_start"}, "spawn_group": "room_01_guard", "enemy_budget": 1, "composition": [{"enemy": "zombie", "count": 1}], "spawn_policy": {"consume_spawn_point": True}, "completion": {"type": "all_spawned_enemies_defeated"}}]}
+    mapping = {"runtime_mapping_path": "flow/05-puerts-runtime-mapping.json", "behavior_spec_path": "flow/06-behavior-spec.json", "support_check_path": "flow/06-runtime-support-check.json", "encounter_spec_path": "flow/03-encounter-spec.json", "scene_spawn_manifest_path": "flow/scene-spawn-manifest.json", "runtime_features": support["required_runtime_modules"] + ["encounter_spec_data", "spawn_point_registry", "enemy_spawn_manager"], "disabled_features": [], "behavior_spec": spec, "encounter_spec": encounter_spec, "support_check": support, "mappings": [{"entity_id": "zombie", "behavior_id": "enemy.behavior.chase_and_melee", "flow_id": "flow_enemy_behavior_chase_and_melee", "runtime_owner": "TypeScript/content/generated/AutoUEBehaviorSpec.generated.ts", "implementation_carrier": "template_rendered_ts", "selected_runtime_owner": "AutoUEBehaviorSpec.generated", "existing_framework_candidates": ["AutoUE enemy runtime framework"], "why_not_existing_framework": "requires generated BehaviorSpec plus enemy runtime modules", "temporary_or_canonical": "canonical", "migration_path": "regenerate BehaviorSpec data only", "engine_port_mappings": [], "thin_contracts": ["spawn true enemy actor"], "ability_binding": "behavior_spec:enemy.behavior.chase_and_melee", "verification_evidence": ["EnemySpawned", "EnemyDied", "EncounterCompleted=1"]}], "blocked_mappings": []}
     state = GraphState(save_dir=str(tmp_path), llm_outputs={"PuerTSRuntimeMappingCompiler": json.dumps(mapping), "TypeScriptImplementationSlotProjector": json.dumps({"implementation_slots": []}), "TypeScriptInteractiveTemplatePlanner": json.dumps({"template_inputs": [{"path": "TypeScript/content/generated/interactive/Zombie.ts"}]})})
     output = build_codegen_output(state)
     validate_node_output("TypeScriptRuntimeTemplatePlanner", json.dumps(output, ensure_ascii=False))
     write_files_from_output(state, "TypeScriptRuntimeTemplatePlanner", json.dumps(output, ensure_ascii=False))
     assert (tmp_path / "TypeScript/content/generated/AutoUEEnemyRegistry.ts").exists()
     assert (tmp_path / "TypeScript/content/generated/AutoUEEncounterManager.ts").exists()
+    assert (tmp_path / "TypeScript/content/generated/AutoUEGeneratedEncounterSpec.ts").exists()
+    assert (tmp_path / "TypeScript/content/generated/AutoUESpawnPointRegistry.ts").exists()
+    assert (tmp_path / "TypeScript/content/generated/AutoUEEnemySpawnManager.ts").exists()
+    runtime = (tmp_path / "TypeScript/content/generated/AutoUEGeneratedRuntime.ts").read_text(encoding="utf-8")
+    assert "spawnGeneratedEnemies" not in runtime
+    assert "getAutoUEGeneratedEncounterSpec" in runtime
+    assert "startInitialEncounters" in runtime
+    assert "EnemyRuntimeReady managed_by=EncounterManager" in runtime
+    assert "createAutoUEEnemySpawnRuntime" in runtime
 
 
 def test_docs_exist():

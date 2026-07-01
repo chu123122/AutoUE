@@ -2,7 +2,7 @@
   "schema_version": "autoue-dead-cells-capability-prototypes/v1",
   "theme": "dead_cells",
   "library_role": "behavior_library",
-  "count": 14,
+  "count": 20,
   "behaviors": [
     {
       "behavior_id": "encounter.behavior.complete_when_all_dead",
@@ -234,6 +234,308 @@
       ]
     },
     {
+      "behavior_id": "enemy.behavior.elite_chase_and_melee",
+      "display_name": "Enemy Behavior Elite_Chase_And_Melee",
+      "display_name_zh": "精英敌人追击近战",
+      "summary": "精英/Boss 敌人使用已有追击近战 runtime，先作为 runtime-safe 语义分型。",
+      "summary_zh": "精英/Boss 敌人使用已有追击近战 runtime，先作为 runtime-safe 语义分型。",
+      "semantic_role": "behavior",
+      "behavior_kind": "enemy_combat_loop",
+      "primary_entity_kind": "enemy",
+      "trigger": "on event",
+      "execution": "compose canonical capabilities",
+      "result": "runtime executes behavior",
+      "required_capability_ids": [
+        "enemy.spawn.spawn_actor",
+        "enemy.sensor.detect_player_by_distance",
+        "enemy.movement.chase_target",
+        "enemy.attack.melee_hitbox",
+        "enemy.health.receive_damage",
+        "enemy.death.emit_death_event",
+        "encounter.complete.complete_when_all_dead"
+      ],
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_spawn_runtime",
+        "enemy_perception",
+        "enemy_movement",
+        "enemy_combat",
+        "enemy_health",
+        "enemy_death_events",
+        "encounter_manager"
+      ],
+      "trigger_model": {
+        "kind": "on_event"
+      },
+      "flow": [
+        {
+          "step": "spawn_actor",
+          "uses": "enemy.spawn.spawn_actor"
+        },
+        {
+          "step": "detect_player_by_distance",
+          "uses": "enemy.sensor.detect_player_by_distance"
+        },
+        {
+          "step": "chase_target",
+          "uses": "enemy.movement.chase_target"
+        },
+        {
+          "step": "melee_hitbox",
+          "uses": "enemy.attack.melee_hitbox"
+        },
+        {
+          "step": "receive_damage",
+          "uses": "enemy.health.receive_damage"
+        },
+        {
+          "step": "emit_death_event",
+          "uses": "enemy.death.emit_death_event"
+        },
+        {
+          "step": "complete_when_all_dead",
+          "uses": "encounter.complete.complete_when_all_dead"
+        }
+      ],
+      "selection_tags": [
+        "elite",
+        "boss"
+      ],
+      "compatible_entity_tags": [
+        "elite",
+        "boss"
+      ],
+      "variation_policy": "phase1_runtime_safe_existing_enemy_runtime",
+      "phase1_note": "Reuses existing supported enemy runtime capabilities; entity capability params provide the actual runtime variation."
+    },
+    {
+      "behavior_id": "enemy.behavior.fast_chase_and_melee",
+      "display_name": "Enemy Behavior Fast_Chase_And_Melee",
+      "display_name_zh": "快速敌人追击近战",
+      "summary": "快速/轻型敌人使用已有追击近战 runtime，由实体参数决定速度和血量。",
+      "summary_zh": "快速/轻型敌人使用已有追击近战 runtime，由实体参数决定速度和血量。",
+      "semantic_role": "behavior",
+      "behavior_kind": "enemy_combat_loop",
+      "primary_entity_kind": "enemy",
+      "trigger": "on event",
+      "execution": "compose canonical capabilities",
+      "result": "runtime executes behavior",
+      "required_capability_ids": [
+        "enemy.spawn.spawn_actor",
+        "enemy.sensor.detect_player_by_distance",
+        "enemy.movement.chase_target",
+        "enemy.attack.melee_hitbox",
+        "enemy.health.receive_damage",
+        "enemy.death.emit_death_event",
+        "encounter.complete.complete_when_all_dead"
+      ],
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_spawn_runtime",
+        "enemy_perception",
+        "enemy_movement",
+        "enemy_combat",
+        "enemy_health",
+        "enemy_death_events",
+        "encounter_manager"
+      ],
+      "trigger_model": {
+        "kind": "on_event"
+      },
+      "flow": [
+        {
+          "step": "spawn_actor",
+          "uses": "enemy.spawn.spawn_actor"
+        },
+        {
+          "step": "detect_player_by_distance",
+          "uses": "enemy.sensor.detect_player_by_distance"
+        },
+        {
+          "step": "chase_target",
+          "uses": "enemy.movement.chase_target"
+        },
+        {
+          "step": "melee_hitbox",
+          "uses": "enemy.attack.melee_hitbox"
+        },
+        {
+          "step": "receive_damage",
+          "uses": "enemy.health.receive_damage"
+        },
+        {
+          "step": "emit_death_event",
+          "uses": "enemy.death.emit_death_event"
+        },
+        {
+          "step": "complete_when_all_dead",
+          "uses": "encounter.complete.complete_when_all_dead"
+        }
+      ],
+      "selection_tags": [
+        "fast",
+        "swarm",
+        "flying"
+      ],
+      "compatible_entity_tags": [
+        "fast",
+        "swarm",
+        "flying"
+      ],
+      "variation_policy": "phase1_runtime_safe_existing_enemy_runtime",
+      "phase1_note": "Reuses existing supported enemy runtime capabilities; entity capability params provide the actual runtime variation."
+    },
+    {
+      "behavior_id": "enemy.behavior.flying_self_destruct",
+      "display_name": "Enemy Behavior Flying_Self_Destruct",
+      "display_name_zh": "飞行自爆敌人追击爆炸",
+      "summary": "飞行/爆炸敌人使用已有追击自爆 runtime。",
+      "summary_zh": "飞行/爆炸敌人使用已有追击自爆 runtime。",
+      "semantic_role": "behavior",
+      "behavior_kind": "enemy_combat_loop",
+      "primary_entity_kind": "enemy",
+      "trigger": "on event",
+      "execution": "compose canonical capabilities",
+      "result": "runtime executes behavior",
+      "required_capability_ids": [
+        "enemy.spawn.spawn_actor",
+        "enemy.sensor.detect_player_by_distance",
+        "enemy.movement.chase_target",
+        "enemy.attack.self_destruct",
+        "enemy.health.receive_damage",
+        "enemy.death.emit_death_event",
+        "encounter.complete.complete_when_all_dead"
+      ],
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_spawn_runtime",
+        "enemy_perception",
+        "enemy_movement",
+        "enemy_combat",
+        "enemy_health",
+        "enemy_death_events",
+        "encounter_manager"
+      ],
+      "trigger_model": {
+        "kind": "on_event"
+      },
+      "flow": [
+        {
+          "step": "spawn_actor",
+          "uses": "enemy.spawn.spawn_actor"
+        },
+        {
+          "step": "detect_player_by_distance",
+          "uses": "enemy.sensor.detect_player_by_distance"
+        },
+        {
+          "step": "chase_target",
+          "uses": "enemy.movement.chase_target"
+        },
+        {
+          "step": "self_destruct",
+          "uses": "enemy.attack.self_destruct"
+        },
+        {
+          "step": "receive_damage",
+          "uses": "enemy.health.receive_damage"
+        },
+        {
+          "step": "emit_death_event",
+          "uses": "enemy.death.emit_death_event"
+        },
+        {
+          "step": "complete_when_all_dead",
+          "uses": "encounter.complete.complete_when_all_dead"
+        }
+      ],
+      "selection_tags": [
+        "flying",
+        "explosive"
+      ],
+      "compatible_entity_tags": [
+        "flying",
+        "explosive"
+      ],
+      "variation_policy": "phase1_runtime_safe_existing_enemy_runtime",
+      "phase1_note": "Reuses existing supported enemy runtime capabilities; entity capability params provide the actual runtime variation."
+    },
+    {
+      "behavior_id": "enemy.behavior.heavy_chase_and_melee",
+      "display_name": "Enemy Behavior Heavy_Chase_And_Melee",
+      "display_name_zh": "重型敌人追击重击",
+      "summary": "重型/Boss 敌人使用已有追击近战 runtime，由实体参数决定血量、速度和伤害。",
+      "summary_zh": "重型/Boss 敌人使用已有追击近战 runtime，由实体参数决定血量、速度和伤害。",
+      "semantic_role": "behavior",
+      "behavior_kind": "enemy_combat_loop",
+      "primary_entity_kind": "enemy",
+      "trigger": "on event",
+      "execution": "compose canonical capabilities",
+      "result": "runtime executes behavior",
+      "required_capability_ids": [
+        "enemy.spawn.spawn_actor",
+        "enemy.sensor.detect_player_by_distance",
+        "enemy.movement.chase_target",
+        "enemy.attack.melee_hitbox",
+        "enemy.health.receive_damage",
+        "enemy.death.emit_death_event",
+        "encounter.complete.complete_when_all_dead"
+      ],
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_spawn_runtime",
+        "enemy_perception",
+        "enemy_movement",
+        "enemy_combat",
+        "enemy_health",
+        "enemy_death_events",
+        "encounter_manager"
+      ],
+      "trigger_model": {
+        "kind": "on_event"
+      },
+      "flow": [
+        {
+          "step": "spawn_actor",
+          "uses": "enemy.spawn.spawn_actor"
+        },
+        {
+          "step": "detect_player_by_distance",
+          "uses": "enemy.sensor.detect_player_by_distance"
+        },
+        {
+          "step": "chase_target",
+          "uses": "enemy.movement.chase_target"
+        },
+        {
+          "step": "melee_hitbox",
+          "uses": "enemy.attack.melee_hitbox"
+        },
+        {
+          "step": "receive_damage",
+          "uses": "enemy.health.receive_damage"
+        },
+        {
+          "step": "emit_death_event",
+          "uses": "enemy.death.emit_death_event"
+        },
+        {
+          "step": "complete_when_all_dead",
+          "uses": "encounter.complete.complete_when_all_dead"
+        }
+      ],
+      "selection_tags": [
+        "heavy",
+        "boss"
+      ],
+      "compatible_entity_tags": [
+        "heavy",
+        "boss"
+      ],
+      "variation_policy": "phase1_runtime_safe_existing_enemy_runtime",
+      "phase1_note": "Reuses existing supported enemy runtime capabilities; entity capability params provide the actual runtime variation."
+    },
+    {
       "behavior_id": "enemy.behavior.keep_distance_and_projectile",
       "display_name": "Enemy Behavior Keep_Distance_And_Projectile",
       "display_name_zh": "敌人保持距离远程攻击",
@@ -298,6 +600,160 @@
           "uses": "encounter.complete.complete_when_all_dead"
         }
       ]
+    },
+    {
+      "behavior_id": "enemy.behavior.pressure_projectile_kite",
+      "display_name": "Enemy Behavior Pressure_Projectile_Kite",
+      "display_name_zh": "远程敌人风筝压制",
+      "summary": "远程/施法敌人使用已有保持距离和投射物 runtime。",
+      "summary_zh": "远程/施法敌人使用已有保持距离和投射物 runtime。",
+      "semantic_role": "behavior",
+      "behavior_kind": "enemy_combat_loop",
+      "primary_entity_kind": "enemy",
+      "trigger": "on event",
+      "execution": "compose canonical capabilities",
+      "result": "runtime executes behavior",
+      "required_capability_ids": [
+        "enemy.spawn.spawn_actor",
+        "enemy.sensor.detect_player_by_distance",
+        "enemy.movement.keep_distance",
+        "enemy.attack.projectile_spawn",
+        "enemy.health.receive_damage",
+        "enemy.death.emit_death_event",
+        "encounter.complete.complete_when_all_dead"
+      ],
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_spawn_runtime",
+        "enemy_perception",
+        "enemy_movement",
+        "enemy_combat",
+        "enemy_projectile_runtime",
+        "enemy_health",
+        "enemy_death_events",
+        "encounter_manager"
+      ],
+      "trigger_model": {
+        "kind": "on_event"
+      },
+      "flow": [
+        {
+          "step": "spawn_actor",
+          "uses": "enemy.spawn.spawn_actor"
+        },
+        {
+          "step": "detect_player_by_distance",
+          "uses": "enemy.sensor.detect_player_by_distance"
+        },
+        {
+          "step": "keep_distance",
+          "uses": "enemy.movement.keep_distance"
+        },
+        {
+          "step": "projectile_spawn",
+          "uses": "enemy.attack.projectile_spawn"
+        },
+        {
+          "step": "receive_damage",
+          "uses": "enemy.health.receive_damage"
+        },
+        {
+          "step": "emit_death_event",
+          "uses": "enemy.death.emit_death_event"
+        },
+        {
+          "step": "complete_when_all_dead",
+          "uses": "encounter.complete.complete_when_all_dead"
+        }
+      ],
+      "selection_tags": [
+        "ranged",
+        "caster"
+      ],
+      "compatible_entity_tags": [
+        "ranged",
+        "caster"
+      ],
+      "variation_policy": "phase1_runtime_safe_existing_enemy_runtime",
+      "phase1_note": "Reuses existing supported enemy runtime capabilities; entity capability params provide the actual runtime variation."
+    },
+    {
+      "behavior_id": "enemy.behavior.shield_chase_counter",
+      "display_name": "Enemy Behavior Shield_Chase_Counter",
+      "display_name_zh": "持盾敌人追击格挡反击",
+      "summary": "持盾敌人使用已有追击、格挡、近战反击 runtime。",
+      "summary_zh": "持盾敌人使用已有追击、格挡、近战反击 runtime。",
+      "semantic_role": "behavior",
+      "behavior_kind": "enemy_combat_loop",
+      "primary_entity_kind": "enemy",
+      "trigger": "on event",
+      "execution": "compose canonical capabilities",
+      "result": "runtime executes behavior",
+      "required_capability_ids": [
+        "enemy.spawn.spawn_actor",
+        "enemy.sensor.detect_player_by_distance",
+        "enemy.movement.chase_target",
+        "enemy.defense.directional_block",
+        "enemy.attack.melee_hitbox",
+        "enemy.health.receive_damage",
+        "enemy.death.emit_death_event",
+        "encounter.complete.complete_when_all_dead"
+      ],
+      "runtime_features": [
+        "enemy_runtime",
+        "enemy_spawn_runtime",
+        "enemy_perception",
+        "enemy_movement",
+        "enemy_combat",
+        "enemy_health",
+        "enemy_death_events",
+        "encounter_manager"
+      ],
+      "trigger_model": {
+        "kind": "on_event"
+      },
+      "flow": [
+        {
+          "step": "spawn_actor",
+          "uses": "enemy.spawn.spawn_actor"
+        },
+        {
+          "step": "detect_player_by_distance",
+          "uses": "enemy.sensor.detect_player_by_distance"
+        },
+        {
+          "step": "chase_target",
+          "uses": "enemy.movement.chase_target"
+        },
+        {
+          "step": "directional_block",
+          "uses": "enemy.defense.directional_block"
+        },
+        {
+          "step": "melee_hitbox",
+          "uses": "enemy.attack.melee_hitbox"
+        },
+        {
+          "step": "receive_damage",
+          "uses": "enemy.health.receive_damage"
+        },
+        {
+          "step": "emit_death_event",
+          "uses": "enemy.death.emit_death_event"
+        },
+        {
+          "step": "complete_when_all_dead",
+          "uses": "encounter.complete.complete_when_all_dead"
+        }
+      ],
+      "selection_tags": [
+        "shield"
+      ],
+      "compatible_entity_tags": [
+        "shield"
+      ],
+      "variation_policy": "phase1_runtime_safe_existing_enemy_runtime",
+      "phase1_note": "Reuses existing supported enemy runtime capabilities; entity capability params provide the actual runtime variation."
     },
     {
       "behavior_id": "exit.behavior.unlock_and_transition",
