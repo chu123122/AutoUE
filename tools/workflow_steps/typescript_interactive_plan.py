@@ -31,7 +31,7 @@ def run_typescript_interactive_plan(inputs: dict[str, str]) -> dict[str, Any]:
         behavior_id = str(mapping.get("behavior_id") or "")
         entity_id = str(mapping.get("entity_id") or "")
         flow_id = str(mapping.get("flow_id") or "")
-        name = _pascal(behavior_id)
+        name = _pascal(f"{entity_id}.{behavior_id}" if entity_id else behavior_id)
         path = f"{INTERACTIVE_TS_DIR}/{name}Interactable.ts"
         export_name = f"run{name}Interaction"
         interface_name = f"{name}InteractionContext"

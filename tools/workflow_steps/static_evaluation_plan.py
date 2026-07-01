@@ -21,11 +21,19 @@ def _safe_action(behavior_id: str) -> str:
     return f"validate_{text or 'behavior'}"
 
 
+def _trace_key(entity_id: str, behavior_id: str) -> str:
+    return f"{entity_id}::{behavior_id}" if entity_id else behavior_id
+
+
 def _interactive_by_behavior(interactive: Mapping[str, Any]) -> dict[str, dict[str, str]]:
     out: dict[str, dict[str, str]] = {}
     for trace in interactive.get("behavior_traces", []) if isinstance(interactive, Mapping) else []:
         if isinstance(trace, Mapping) and trace.get("behavior_id"):
-            out[str(trace["behavior_id"])] = {"file_path": str(trace.get("file_path") or ""), "export_name": str(trace.get("export_name") or "")}
+            behavior_id = str(trace["behavior_id"])
+            entity_id = str(trace.get("entity_id") or "")
+            row = {"file_path": str(trace.get("file_path") or ""), "export_name": str(trace.get("export_name") or "")}
+            out[_trace_key(entity_id, behavior_id)] = row
+            out.setdefault(behavior_id, row)
     return out
 
 
@@ -62,7 +70,7 @@ def run_static_evaluation_plan(inputs: dict[str, str]) -> dict[str, Any]:
         flow_id = str(runtime_mapping.get("flow_id") or "")
         ports = [str(p.get("engine_port_id")) for p in runtime_mapping.get("engine_port_mappings", []) if isinstance(p, Mapping) and p.get("engine_port_id")]
         adjudications = [str(p.get("adjudication_path")) for p in runtime_mapping.get("engine_port_mappings", []) if isinstance(p, Mapping) and p.get("adjudication_path")]
-        interactive_trace = interactive_lookup.get(behavior_id, {})
+        interactive_trace = interactive_lookup.get(_trace_key(entity_id, behavior_id), interactive_lookup.get(behavior_id, {}))
         ts_files = [p for p in [interactive_trace.get("file_path")] if p] + codegen_files
         trace = {
             "entity_id": entity_id,
@@ -81,7 +89,7 @@ def run_static_evaluation_plan(inputs: dict[str, str]) -> dict[str, Any]:
             expected.insert(1, {"type": "static_trace_present", "key": "interactive_adapter_export", "expected_value": interactive_trace["export_name"]})
         instructions.append({
             "step_id": index,
-            "action": _safe_action(behavior_id),
+            "action": _safe_action(f"{entity_id}.{behavior_id}" if entity_id else behavior_id),
             "target": entity_id or behavior_id,
             "description": f"validate static adapter trace for {behavior_id}",
             "driver": "adapter_call",

@@ -67,6 +67,13 @@ ALLOWED_TEMPLATES = {
         "enemy_ability_dispatcher",
         "enemy_projectile_runtime",
         "enemy_encounter_manager",
+        "player_movement_runtime",
+        "player_combat_runtime",
+        "hit_query_runtime",
+        "damage_runtime",
+        "pickup_runtime",
+        "reward_runtime",
+        "feedback_runtime",
     },
 }
 ALLOWED_STAGES = {"Input", "Ability/Action", "SpatialQuery/HitQuery", "Damage/Resource", "Event/Result", "Feedback/HUD", "Cleanup", "Custom"}
