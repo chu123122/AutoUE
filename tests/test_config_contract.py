@@ -88,7 +88,7 @@ def mapping():
     spec, support = behavior_spec_and_support()
     helpers = {'input.action_binding': 'TriggerRouter.bindInputAction', 'primitive.on_component_begin_overlap': 'TriggerRouter.bindOverlapEnter', 'component.set_visibility': 'WorldAdapter.setVisibility', 'camera.update_view_target': 'WorldAdapter.cameraImpulse'}
     syms = {'input.action_binding': 'UE.PlayerController.IsInputKeyDown', 'primitive.on_component_begin_overlap': 'UE.PrimitiveComponent.OnComponentBeginOverlap', 'component.set_visibility': 'UE.SceneComponent.SetVisibility', 'camera.update_view_target': 'UE.CameraComponent.K2_SetWorldLocation'}
-    return {'runtime_mapping_path': RUNTIME_MAPPING_PATH, 'behavior_spec_path': 'flow/06-behavior-spec.json', 'support_check_path': 'flow/06-runtime-support-check.json', 'runtime_features': RUNTIME_FEATURES, 'disabled_features': DISABLED_FEATURES, 'behavior_spec': spec, 'support_check': support, 'mappings': [{'entity_id': 'freeze_trap', 'behavior_id': BEHAVIOR_ID, 'flow_id': FLOW_ID, 'runtime_owner': RUNTIME_OWNER, 'implementation_carrier': 'template_rendered_ts', 'selected_runtime_owner': 'AutoUEBehaviorSpec.generated', 'existing_framework_candidates': ['AutoUE behavior runtime framework'], 'why_not_existing_framework': 'shared behavior framework renders BehaviorSpec instead of gameplay-specific TS', 'temporary_or_canonical': 'canonical', 'migration_path': 'regenerate BehaviorSpec data only', 'engine_port_mappings': [{'engine_port_id': p, 'adjudication_path': a, 'adapter_or_helper': helpers[p], 'verdict': 'hit', 'evidence_symbols': [syms[p]]} for p, a in zip(ENGINE_PORTS, ADJUDICATIONS)], 'thin_contracts': ['read input', 'detect overlap', 'write player.effects.frozen', 'show vfx', 'shake camera'], 'ability_binding': 'behavior_spec:hazard.behavior.freeze_on_overlap', 'verification_evidence': ['StateWritten player.effects.frozen']}], 'blocked_mappings': []}
+    return {'runtime_mapping_path': RUNTIME_MAPPING_PATH, 'behavior_spec_path': 'flow/06-behavior-spec.json', 'support_check_path': 'flow/06-runtime-support-check.json', 'encounter_spec_path': 'flow/03-encounter-spec.json', 'scene_spawn_manifest_path': 'flow/scene-spawn-manifest.json', 'runtime_features': RUNTIME_FEATURES, 'disabled_features': DISABLED_FEATURES, 'behavior_spec': spec, 'encounter_spec': encounter(), 'support_check': support, 'mappings': [{'entity_id': 'freeze_trap', 'behavior_id': BEHAVIOR_ID, 'flow_id': FLOW_ID, 'runtime_owner': RUNTIME_OWNER, 'implementation_carrier': 'template_rendered_ts', 'selected_runtime_owner': 'AutoUEBehaviorSpec.generated', 'existing_framework_candidates': ['AutoUE behavior runtime framework'], 'why_not_existing_framework': 'shared behavior framework renders BehaviorSpec instead of gameplay-specific TS', 'temporary_or_canonical': 'canonical', 'migration_path': 'regenerate BehaviorSpec data only', 'engine_port_mappings': [{'engine_port_id': p, 'adjudication_path': a, 'adapter_or_helper': helpers[p], 'verdict': 'hit', 'evidence_symbols': [syms[p]]} for p, a in zip(ENGINE_PORTS, ADJUDICATIONS)], 'thin_contracts': ['read input', 'detect overlap', 'write player.effects.frozen', 'show vfx', 'shake camera'], 'ability_binding': 'behavior_spec:hazard.behavior.freeze_on_overlap', 'verification_evidence': ['StateWritten player.effects.frozen']}], 'blocked_mappings': []}
 
 def analyzer():
     return {'typescript_sources': [{'path': RUNTIME_OWNER, 'role': 'runtime_owner', 'notes': 'mapping'}], 'implementation_slots': [{'entity_id': 'freeze_trap', 'behavior_id': BEHAVIOR_ID, 'flow_id': FLOW_ID, 'runtime_mapping_path': RUNTIME_MAPPING_PATH, 'target_ts_file': RUNTIME_OWNER, 'reason': 'mapping'}], 'missing_slots': []}
@@ -102,6 +102,7 @@ def codegen():
     state = GraphState(llm_outputs={
         'PuerTSRuntimeMappingCompiler': json.dumps(mapping()),
         'TypeScriptImplementationSlotProjector': json.dumps(analyzer()),
+        'EncounterSpecPlanner': json.dumps(encounter()),
         'TypeScriptInteractiveTemplatePlanner': json.dumps(interactive()),
     })
     return build_codegen_output(state)
@@ -444,7 +445,7 @@ def test_support_matrix_missing_entry_blocks_support_check():
     assert check['unsupported_capabilities'][0]['missing_matrix_entry'] is True
 
 
-def test_typescript_codegen_refuses_unsupported_runtime_mapping():
+def test_typescript_codegen_reports_unsupported_runtime_mapping_without_aborting():
     from core.BaseLLMNode import GraphState
     from custom_nodes.typescript_code_generator import build_codegen_output
 
@@ -459,12 +460,10 @@ def test_typescript_codegen_refuses_unsupported_runtime_mapping():
         'TypeScriptImplementationSlotProjector': json.dumps(analyzer()),
         'TypeScriptInteractiveTemplatePlanner': json.dumps(interactive()),
     })
-    try:
-        build_codegen_output(state)
-    except RuntimeError as exc:
-        assert 'refuses unsupported BehaviorSpec' in str(exc)
-    else:
-        raise AssertionError('TypeScriptRuntimeTemplatePlanner generated TS for unsupported runtime mapping')
+    output = build_codegen_output(state)
+    assert output['blocked_capabilities']
+    assert output['blocked_capabilities'][0]['capability_id'] == 'shop_room_vendor.transaction.purchase_item'
+    assert 'behavior_orchestrator' in output['rendered_runtime_modules']
 
 def test_template_renderer_writes_from_template_not_model_content(tmp_path):
     from core.BaseLLMNode import GraphState
@@ -486,33 +485,61 @@ def test_aidev_bridge_templates_expose_runtime_contract():
     for token in [
         'AUTOUE_INPUT_RIGHT_1S',
         'AUTOUE_INPUT_ATTACK',
-        'trapArmed',
-        'CameraShakeTriggered=1',
         'latestAutoUEGeneratedSnapshot',
-        'cameraShakeActive',
-        'updateAutoUEGeneratedSideCamera',
         'AUTOUE_ENEMY_ENCOUNTER_DISABLED',
-        'StateWritten player.effects.frozen',
+        'PlayerVisualReady=1',
+        'AUTOUE_GENERATED_PLAYER_VISUAL',
+        'SceneLightReady=1',
+        'AUTOUE_GENERATED_KEY_LIGHT',
+        'loadEncounterSpec',
+        'EnemyRuntimeReady',
+        'resolveMelee(actor',
     ]:
         assert token in runtime
+    for token in [
+        'trapRuntime(actor)',
+        'CameraShakeTriggered=1',
+        'StateWritten player.effects.frozen',
+        'AutoUEGenerated_IceTrap',
+        'const EXIT_X = -820;',
+        'updateAutoUEGeneratedSideCamera',
+    ]:
+        assert token not in runtime
+    assert 'const TRAP_X = -160;' in trap_runtime
     assert 'TRAP_REARM_RADIUS' in trap_runtime
     assert 'IceTrapTriggered' in trap_runtime
     assert 'AutoUEGenerated_FreezeVFX' in vfx_runtime
+    input_harness = (ROOT / 'templates' / 'typescript' / 'input_harness_runtime.ts.tmpl').read_text(encoding='utf-8')
+    for token in [
+        'if (hasTag(actor, INPUT_LEFT)) { input.axis = 1;',
+        'if (hasTag(actor, INPUT_RIGHT)) { input.axis = -1;',
+        'const keyAxis = (left ? 1 : 0) - (right ? 1 : 0);',
+    ]:
+        assert token in input_harness
     assert "makeWorldMesh(actor, 'AutoUEGenerated_Enemy'" not in runtime
-    assert 'createAutoUEEncounterManager' not in runtime
+    assert "runtimeFeature('enemy_runtime')" in runtime
+    assert 'createAutoUEEncounterManager' in runtime
     assert 'EnemyDamageApplied' not in runtime
     assert 'BeginDeferredActorSpawnFromClass' not in runtime
     for token in [
         'autoue-generated-scene-manifest/v3',
         'harness_input_tags',
         'AUTOUE_INPUT_RIGHT_1S',
-        'AutoUEGenerated_SideCamera',
+        'AutoUEGenerated_KeyLight',
     ]:
         assert token in scene
+    for token in [
+        'AutoUEGenerated_IceTrap',
+        'AutoUEGenerated_FreezeVFX',
+        'AutoUEGenerated_Exit',
+        'AutoUEGenerated_SideCamera',
+    ]:
+        assert token not in scene
     camera = (ROOT / 'templates' / 'typescript' / 'aid_camera_setup.ts.tmpl').read_text(encoding='utf-8')
     for token in [
         'sideOffsetY',
         'SIDE_CAMERA_YAW = 90',
+        'base.Y - sideDistance',
         'updateAutoUEGeneratedSideCamera',
         'K2_SetWorldLocation',
         'K2_SetWorldRotation',

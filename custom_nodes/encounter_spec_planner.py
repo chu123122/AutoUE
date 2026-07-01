@@ -35,8 +35,10 @@ def _load_manifest(root: Path) -> dict:
     manifest_path = root / SCENE_SPAWN_MANIFEST_PATH
     if not manifest_path.exists():
         raise RuntimeError(
-            f"missing deterministic scene spawn manifest: {manifest_path}. "
-            "Run tools/unreal/export_scene_spawn_manifest.py before EncounterSpecPlanner; do not fabricate spawn_group data."
+            f"EncounterSpecPlanner requires enemy spawn data, but missing deterministic scene spawn manifest: {manifest_path}. "
+            "Run tools/unreal/export_scene_spawn_manifest.py against the target UE map, or configure "
+            "runtime_config.scene_spawn_manifest.fixture_path with a checked-in fixture. "
+            "Do not fabricate spawn_group data and do not silently emit an empty encounter."
         )
     manifest = load_json_file(manifest_path)
     validate_scene_spawn_manifest_data(manifest)

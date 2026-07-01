@@ -1,21 +1,71 @@
 type AnyUEObject = any;
+declare function $ref<T = any>(): any;
+declare function $unref<T = any>(ref: any): T;
 export interface {{interface_name}} { readonly UE?: any; readonly actor?: AnyUEObject; readonly world?: AnyUEObject; readonly entities?: Record<string, AnyUEObject>; inputActions?: Record<string, () => void>; readonly registerTick?: (callback: (dt: number) => void) => void; readonly log?: (message: string) => void; }
 export class AutoUEWorldAdapter {
   constructor(private readonly context: {{interface_name}} = {}) {}
   log(message: string): void { if (this.context.log) this.context.log(message); }
   private failUnsupported(name: string): never { throw new Error(`AutoUEWorldAdapter.${name} unsupported in current PuerTS context`); }
+  isActorUsable(actor: AnyUEObject): boolean {
+    if (!actor) return false;
+    try {
+      if (actor.IsValid && !actor.IsValid()) return false;
+      if (actor.K2_GetActorLocation) actor.K2_GetActorLocation();
+      return true;
+    } catch (_) { return false; }
+  }
+  private tryGetActorLocation(actor: AnyUEObject): AnyUEObject | undefined {
+    const resolved = this.resolveActor(actor, []);
+    try {
+      if (resolved?.K2_GetActorLocation) return resolved.K2_GetActorLocation();
+      if (resolved?.GetActorLocation) return resolved.GetActorLocation();
+    } catch (e) { this.log(`WorldAdapter.getActorLocation failed: ${e}`); }
+    return undefined;
+  }
+  private actorsFromArray(value: any): AnyUEObject[] {
+    if (!value) return [];
+    if (Array.isArray(value)) return value.filter(Boolean);
+    try {
+      if (typeof value.Num === 'function' && typeof value.Get === 'function') {
+        const out: AnyUEObject[] = [];
+        for (let i = 0; i < value.Num(); i++) { const actor = value.Get(i); if (actor) out.push(actor); }
+        return out;
+      }
+    } catch (_) {}
+    return [];
+  }
+  private actorsWithTag(tag: string): AnyUEObject[] {
+    const UE = this.context.UE;
+    if (!UE || !tag || !this.context.world || !UE.GameplayStatics?.GetAllActorsWithTag) return [];
+    try {
+      const out: AnyUEObject[] = [];
+      UE.GameplayStatics.GetAllActorsWithTag(this.context.world, tag, out);
+      if (out.length) return out;
+    } catch (_) {}
+    try {
+      const ref = $ref<any>();
+      UE.GameplayStatics.GetAllActorsWithTag(this.context.world, tag, ref);
+      return this.actorsFromArray($unref<any>(ref));
+    } catch (e) { this.log(`WorldAdapter.actorsWithTag failed ${tag}: ${e}`); }
+    return [];
+  }
+  resolveActor(actor: AnyUEObject, fallbackTags: string[] = []): AnyUEObject | undefined {
+    if (this.isActorUsable(actor)) return actor;
+    for (const tag of fallbackTags || []) {
+      if (!tag) continue;
+      const found = this.findEntity({ tag, entity_id: tag });
+      if (this.isActorUsable(found)) return found;
+    }
+    return undefined;
+  }
   findEntity(binding: Record<string, unknown>): AnyUEObject | undefined {
     const entityId = String(binding.entity_id || binding.id || binding.target_entity_id || '');
     if (entityId && this.context.entities && this.context.entities[entityId]) return this.context.entities[entityId];
-    if ((entityId === 'player' || entityId === 'prisoner') && this.context.actor) return this.context.actor;
+    if (entityId === 'player' && this.context.actor) return this.context.actor;
     const tag = String(binding.tag || binding.actor_tag || entityId || '');
-    const UE = this.context.UE;
     try {
-      if (UE && tag && this.context.world && UE.GameplayStatics && UE.GameplayStatics.GetAllActorsWithTag) {
-        const out: AnyUEObject[] = [];
-        UE.GameplayStatics.GetAllActorsWithTag(this.context.world, tag, out);
-        if (out.length) return out[0];
-      }
+      const out = this.actorsWithTag(tag);
+      if (out.length) return out[0];
     } catch (e) { this.log(`WorldAdapter.findEntity tag lookup failed ${tag}: ${e}`); }
     this.log(`WorldAdapter.findEntity unresolved ${JSON.stringify(binding)}`);
     return undefined;
@@ -38,13 +88,52 @@ export class AutoUEWorldAdapter {
     this.failUnsupported('spawnActor');
   }
   destroyActor(actor: AnyUEObject): void { try { if (actor?.K2_DestroyActor) { actor.K2_DestroyActor(); return; } if (actor?.Destroy) { actor.Destroy(); return; } } catch (e) { this.log(`WorldAdapter.destroyActor failed: ${e}`); } this.failUnsupported('destroyActor'); }
-  getActorLocation(actor: AnyUEObject): AnyUEObject { try { if (actor?.K2_GetActorLocation) return actor.K2_GetActorLocation(); if (actor?.GetActorLocation) return actor.GetActorLocation(); } catch (e) { this.log(`WorldAdapter.getActorLocation failed: ${e}`); } this.failUnsupported('getActorLocation'); }
-  setActorLocation(actor: AnyUEObject, location: AnyUEObject): void { try { if (actor?.K2_SetActorLocation) { actor.K2_SetActorLocation(location, false, undefined, true); return; } if (actor?.SetActorLocation) { actor.SetActorLocation(location); return; } } catch (e) { this.log(`WorldAdapter.setActorLocation failed: ${e}`); } this.failUnsupported('setActorLocation'); }
+  getActorLocation(actor: AnyUEObject): AnyUEObject { const location = this.tryGetActorLocation(actor); if (location) return location; this.failUnsupported('getActorLocation'); }
+  setActorLocation(actor: AnyUEObject, location: AnyUEObject): void { const resolved = this.resolveActor(actor, []); try { if (resolved?.K2_SetActorLocation) { resolved.K2_SetActorLocation(location, true, undefined, true); return; } if (resolved?.SetActorLocation) { resolved.SetActorLocation(location); return; } } catch (e) { this.log(`WorldAdapter.setActorLocation failed: ${e}`); } this.failUnsupported('setActorLocation'); }
   getDistanceBetweenActors(a: AnyUEObject, b: AnyUEObject): number {
     try { if (a?.GetDistanceTo) return a.GetDistanceTo(b); } catch (_) {}
-    const al = this.getActorLocation(a); const bl = this.getActorLocation(b);
+    const al = this.tryGetActorLocation(a); const bl = this.tryGetActorLocation(b);
+    if (!al || !bl) { this.log(`WorldAdapter.distanceUnavailable a=${a ? 'valid' : 'missing'} b=${b ? 'valid' : 'missing'}`); return Number.POSITIVE_INFINITY; }
     const dx = (al.X || 0) - (bl.X || 0); const dy = (al.Y || 0) - (bl.Y || 0); const dz = (al.Z || 0) - (bl.Z || 0);
     return Math.sqrt(dx * dx + dy * dy + dz * dz);
+  }
+  overlapActors(center: AnyUEObject, radius: number, params: Record<string, any> = {}): AnyUEObject[] {
+    const UE = this.context.UE;
+    const ignore = (params.ignoreActors || params.ignore || []).filter(Boolean);
+    const unique = new Set<AnyUEObject>();
+    const push = (items: AnyUEObject[]) => { for (const item of items) if (item && ignore.indexOf(item) < 0) unique.add(item); };
+    try {
+      const outRef = $ref<any>();
+      const objectTypes = params.objectTypes || params.object_types || [];
+      const actorClass = params.actorClass || params.actor_class || undefined;
+      if (UE?.KismetSystemLibrary?.SphereOverlapActors) {
+        UE.KismetSystemLibrary.SphereOverlapActors(this.context.world || this.context.actor, center, radius, objectTypes, actorClass, ignore, outRef);
+        push(this.actorsFromArray($unref<any>(outRef)));
+      }
+    } catch (e) { this.log(`WorldAdapter.overlapActors sphere failed: ${e}`); }
+    const tags = ([] as string[]).concat(params.targetTag || [], params.targetTags || []).filter(Boolean).map(String);
+    for (const tag of tags) push(this.actorsWithTag(tag));
+    const result = Array.from(unique).filter((actor) => this.getDistanceBetweenActors({ K2_GetActorLocation: () => center }, actor) <= radius);
+    this.log(`WorldAdapter.overlapActors count=${result.length} radius=${Math.round(radius)}`);
+    return result;
+  }
+  resolveMelee(source: AnyUEObject, params: Record<string, any> = {}): AnyUEObject[] {
+    const sourceActor = this.resolveActor(source, ['player']) || source;
+    const origin = this.tryGetActorLocation(sourceActor);
+    if (!origin) { this.log('WorldAdapter.resolveMelee source_location_missing'); return []; }
+    const range = Number(params.range || params.attack_range || 135);
+    const radius = Number(params.radius || params.hitbox_radius || Math.max(80, range * 0.65));
+    const forward = this.getForwardVector(sourceActor) || { X: 1, Y: 0, Z: 0 };
+    const center = {
+      X: Number(origin.X || 0) + Number(forward.X || 0) * range * 0.5,
+      Y: Number(origin.Y || 0) + Number(forward.Y || 0) * range * 0.5,
+      Z: Number(origin.Z || 0) + Number(params.z_offset || 0),
+    };
+    const targets = this.overlapActors(center, radius, { ...params, ignoreActors: [sourceActor].concat(params.ignoreActors || []) });
+    const targetTag = String(params.targetTag || '');
+    const filtered = targetTag ? targets.filter((actor) => this.hasActorTag(actor, targetTag)) : targets;
+    this.log(`WorldAdapter.resolveMelee source=${sourceActor ? 'valid' : 'missing'} count=${filtered.length} range=${range} radius=${radius}`);
+    return filtered;
   }
   findPlayerPawn(): AnyUEObject { try { const UE = this.context.UE; if (UE?.GameplayStatics?.GetPlayerPawn) return UE.GameplayStatics.GetPlayerPawn(this.context.world || this.context.actor, 0); } catch (e) { this.log(`WorldAdapter.findPlayerPawn failed: ${e}`); } if (this.context.actor) return this.context.actor; this.failUnsupported('findPlayerPawn'); }
   bindOverlapEnter(target: AnyUEObject, callback: (other: AnyUEObject) => void): void {
@@ -74,6 +163,27 @@ export class AutoUEWorldAdapter {
   spawnProjectile(classPath: string, transform: Record<string, any>, velocity?: AnyUEObject): AnyUEObject { const projectile = this.spawnActor(classPath, transform); try { if (velocity && projectile?.ProjectileMovement) projectile.ProjectileMovement.Velocity = velocity; } catch (e) { this.log(`WorldAdapter.spawnProjectile velocity failed: ${e}`); } return projectile; }
   setActorTag(actor: AnyUEObject, tag: string): void { try { if (actor?.Tags?.Add) actor.Tags.Add(tag); else this.log(`WorldAdapter.setActorTag ${tag}`); } catch (e) { this.log(`WorldAdapter.setActorTag failed: ${e}`); } }
   hasActorTag(actor: AnyUEObject, tag: string): boolean { try { if (actor?.ActorHasTag) return !!actor.ActorHasTag(tag); if (actor?.Tags?.Contains) return !!actor.Tags.Contains(tag); } catch (_) {} return false; }
+  configureSpawnedEnemyActor(actor: AnyUEObject, params: Record<string, any> = {}): void {
+    const UE = this.context.UE;
+    try {
+      const movement = actor?.CharacterMovement || actor?.GetCharacterMovement?.();
+      if (movement) {
+        try { movement.MaxWalkSpeed = Number(params.move_speed || 240); } catch (_) {}
+        try { movement.GravityScale = Number(params.gravity_scale || 1); } catch (_) {}
+        try { movement.bRunPhysicsWithNoController = true; } catch (_) {}
+        try { movement.bConstrainToPlane = true; } catch (_) {}
+        try { movement.SetPlaneConstraintNormal(new UE.Vector(0, 1, 0)); } catch (_) {}
+        try { if (UE?.EMovementMode?.MOVE_Walking !== undefined) movement.SetMovementMode(UE.EMovementMode.MOVE_Walking); } catch (_) {}
+      }
+      const capsule = actor?.CapsuleComponent || actor?.GetCapsuleComponent?.();
+      if (capsule && UE?.ECollisionEnabled) {
+        try { capsule.SetCollisionEnabled(UE.ECollisionEnabled.QueryAndPhysics); } catch (_) {}
+        try { if (UE?.ECollisionProfileName) capsule.SetCollisionProfileName('Pawn'); } catch (_) {}
+      }
+      try { actor?.SetActorEnableCollision?.(true); } catch (_) {}
+      this.log(`EnemyPhysicsReady actor=${actor ? 'valid' : 'missing'} gravity=1`);
+    } catch (e) { this.log(`EnemyPhysicsConfigFailed: ${e}`); }
+  }
   getForwardVector(actor: AnyUEObject): AnyUEObject | undefined { try { if (actor?.GetActorForwardVector) return actor.GetActorForwardVector(); } catch (e) { this.log(`WorldAdapter.getForwardVector failed: ${e}`); } return undefined; }
   spawnVfx(entityId: string): void { const entity = this.findEntity({ entity_id: entityId }); if (entity) this.setVisibility(entity, true); else this.log(`WorldAdapter.spawnVfx ${entityId}`); }
   cameraImpulse(duration: number): void { this.log(`WorldAdapter.cameraImpulse ${duration}`); }

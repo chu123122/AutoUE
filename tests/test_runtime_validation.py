@@ -182,6 +182,9 @@ def test_run_workflow_runtime_validation_failure_returns_nonzero(tmp_path, monke
 
     runtime_config = tmp_path / "runtime.json"
     runtime_config.write_text(json.dumps({
+        "aidev_staging": {
+            "enabled": False
+        },
         "scene_spawn_manifest": {
             "allow_fixture": True,
             "fixture_path": "tests/fixtures/scene-spawn-manifest.valid.json"

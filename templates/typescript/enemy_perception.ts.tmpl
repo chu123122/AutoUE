@@ -4,8 +4,11 @@ function log(ctx: {{interface_name}}, message: string): void { (ctx.log || conso
 export class AutoUEEnemyPerception {
   constructor(private readonly context: {{interface_name}}) {}
   detectPlayer(enemy: any, params: Record<string, any> = {}): { visible: boolean; in_range: boolean; distance: number; target_actor?: any } {
-    const target = this.context.worldAdapter.findPlayerPawn();
-    const distance = this.context.worldAdapter.getDistanceBetweenActors(enemy.actor, target);
+    const enemyActor = this.context.worldAdapter.resolveActor?.(enemy.actor, [enemy.enemy_id, enemy.runtime_params?.actor_tag, enemy.runtime_params?.enemy_tag, enemy.entity_id]) || enemy.actor;
+    const target = this.context.worldAdapter.resolveActor?.(this.context.worldAdapter.findPlayerPawn(), ['player', 'Player']) || this.context.worldAdapter.findPlayerPawn();
+    if (!enemyActor || !target) return { visible: false, in_range: false, distance: Number.POSITIVE_INFINITY };
+    enemy.actor = enemyActor;
+    const distance = this.context.worldAdapter.getDistanceBetweenActors(enemyActor, target);
     const radius = Number(params.sense_radius || enemy.runtime_params?.sense_radius || 900);
     const result = { visible: true, in_range: distance <= radius, distance, target_actor: target };
     log(this.context, `EnemyDetectPlayer enemy_id=${enemy.enemy_id} distance=${Math.round(distance)} in_range=${result.in_range ? 1 : 0}`);

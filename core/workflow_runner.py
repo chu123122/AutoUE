@@ -125,7 +125,8 @@ def ensure_scene_spawn_manifest_for_demo(demo_output_dir: Path, runtime_config: 
 
     raise RuntimeError(
         f"EncounterSpecPlanner requires deterministic scene manifest at {target}. "
-        "Run tools/unreal/export_scene_spawn_manifest.py or configure scene_spawn_manifest.enabled."
+        "Run tools/unreal/export_scene_spawn_manifest.py, configure scene_spawn_manifest.enabled, "
+        "or set runtime_config.scene_spawn_manifest.fixture_path with scene_spawn_manifest.allow_fixture=true."
     )
 
 

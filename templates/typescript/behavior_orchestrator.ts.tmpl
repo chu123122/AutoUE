@@ -1,54 +1,87 @@
 import UE = require('ue');
 import { getAutoUEBehaviorSpec } from './AutoUEBehaviorSpec.generated';
-import { setupAutoUEGeneratedCamera, updateAutoUEGeneratedSideCamera } from './AutoUEGeneratedCameraHelper';
 import { getAutoUEGeneratedSceneManifest } from './AutoUEGeneratedSceneManifest';
 import { createAutoUEInputHarnessRuntime, AutoUEInputHarnessRuntime } from './AutoUEInputHarnessRuntime';
 import { createAutoUEMovementRuntime, AutoUEMovementRuntime } from './AutoUEMovementRuntime';
-import { createAutoUETrapRuntime, AutoUETrapRuntime } from './AutoUETrapRuntime';
 import { createAutoUEStateBlackboard, AutoUEStateBlackboard } from './AutoUEStateBlackboard';
-import { createAutoUEVfxRuntime, AutoUEVfxRuntime } from './AutoUEVfxRuntime';
+
+declare const require: (modulePath: string) => any;
 
 const LOG_PREFIX = '[AUTOUE_GENERATED]';
 const ROOM_Y = 0;
 const FLOOR_Z = 92;
-const EXIT_X = -820;
-const EXIT_RADIUS = 165;
-const FREEZE_STATE_KEY = 'player.effects.frozen';
-const FREEZE_SECONDS = 1.25;
-const CAMERA_SHAKE_SECONDS = 0.35;
 const BEHAVIOR_ID = {{behavior_id_json}};
 const RUNTIME_FEATURES = {{runtime_features_json}} as string[];
 const DISABLED_FEATURES = {{disabled_features_json}} as string[];
 const BEHAVIOR_SPEC = {{behavior_spec_json}};
 
-type GeneratedState = { elapsed: number; cameraShakeUntil: number; exitReached: boolean; roomComplete: boolean; trapArmed: boolean; trapTriggerCount: number; };
+type GeneratedState = { elapsed: number; roomComplete: boolean; };
+type RuntimeServices = { worldAdapter?: any; enemyRegistry?: any; spawnPointRegistry?: any; enemySpawn?: any; enemySpawnManager?: any; enemyPerception?: any; enemyMovement?: any; enemyCombat?: any; enemyHealth?: any; enemyDeathEvents?: any; enemyDispatcher?: any; enemyBrain?: any; encounterManager?: any; playerCombat?: any; hitQuery?: any; };
 export interface {{interface_name}} { readonly spec?: any; readonly router?: any; readonly conditions?: any; readonly dispatcher?: any; readonly log?: (message: string) => void; }
 function log(message: string): void { console.warn(`${LOG_PREFIX} ${message}`); }
+function moduleLog(message: string): void { console.warn(String(message).indexOf(LOG_PREFIX) >= 0 ? String(message) : `${LOG_PREFIX} ${message}`); }
+function runtimeFeature(name: string): boolean { return RUNTIME_FEATURES.indexOf(name) >= 0 && DISABLED_FEATURES.indexOf(name) < 0; }
+function generatedFactory(modulePath: string, exportName: string): any | undefined { try { const mod = require(modulePath); return mod ? mod[exportName] : undefined; } catch (e) { log(`RuntimeModuleUnavailable module=${modulePath} export=${exportName} error=${e}`); return undefined; } }
 function loc(actor: UE.Actor): UE.Vector { try { return actor.K2_GetActorLocation(); } catch (_) { return new UE.Vector(0, ROOM_Y, FLOOR_Z); } }
 function addTag(actor: UE.Actor, tag: string): void { try { actor.Tags.Add(tag); } catch (_) {} }
 function clearTags(actor: UE.Actor): void { try { (actor.Tags as any).Empty(); } catch (_) {} }
 function makeMaterial(owner: UE.Object, r: number, g: number, b: number): UE.MaterialInstanceDynamic | undefined { try { const base = UE.Material.Load('/Engine/BasicShapes/BasicShapeMaterial'); if (!base) return undefined; const mat = UE.KismetMaterialLibrary.CreateDynamicMaterialInstance(owner, base); mat.SetVectorParameterValue('Color', new UE.LinearColor(r, g, b, 1)); return mat; } catch (_) { return undefined; } }
 function makeWorldMesh(owner: UE.Character, name: string, world: UE.Vector, scale: UE.Vector, color: UE.LinearColor): UE.StaticMeshComponent | undefined { try { const c = new UE.StaticMeshComponent(owner, name); const mesh = UE.StaticMesh.Load('/Engine/BasicShapes/Cube'); if (mesh) c.SetStaticMesh(mesh); c.SetRelativeScale3D(scale); const mat = makeMaterial(owner, color.R, color.G, color.B); if (mat) c.SetMaterial(0, mat); c.SetCollisionEnabled(UE.ECollisionEnabled.QueryOnly); c.SetAbsolute(true, false, false); c.RegisterComponent(); (c as any).K2_SetWorldLocation(world, false, undefined, true); try { c.ComponentTags.Add(name); } catch (_) {} return c; } catch (e) { log(`WorldMeshCreateFailed name=${name} error=${e}`); return undefined; } }
 function ensurePlayerVisual(actor: UE.Character): void { const self = actor as any; if (self._autoueGeneratedPlayerVisual) return; try { const c = new UE.StaticMeshComponent(actor, 'AutoUEGenerated_PlayerVisual'); const mesh = UE.StaticMesh.Load('/Engine/BasicShapes/Cube'); if (mesh) c.SetStaticMesh(mesh); c.SetRelativeScale3D(new UE.Vector(0.85, 0.85, 1.35)); const mat = makeMaterial(actor, 1.0, 0.55, 0.05); if (mat) c.SetMaterial(0, mat); c.SetupAttachment(actor.RootComponent, ''); c.SetCollisionEnabled(UE.ECollisionEnabled.NoCollision); c.RegisterComponent(); (c as any).K2_SetRelativeLocation(new UE.Vector(0, 0, 0), false, undefined, true); try { c.ComponentTags.Add('AUTOUE_GENERATED_PLAYER_VISUAL'); } catch (_) {} self._autoueGeneratedPlayerVisual = c; log('PlayerVisualReady=1'); } catch (e) { log(`PlayerVisualCreateFailed error=${e}`); } }
-function ensureSceneLight(actor: UE.Character): void { const self = actor as any; if (self._autoueGeneratedKeyLight) return; try { const light = new UE.PointLightComponent(actor, 'AutoUEGenerated_KeyLight'); light.Intensity = 9000; light.AttenuationRadius = 3200; try { light.LightColor = new UE.Color(255, 244, 220, 255); } catch (_) {} light.SetAbsolute(true, false, false); light.RegisterComponent(); (light as any).K2_SetWorldLocation(new UE.Vector(EXIT_X * 0.5, ROOM_Y - 220, FLOOR_Z + 650), false, undefined, true); try { light.ComponentTags.Add('AUTOUE_GENERATED_KEY_LIGHT'); } catch (_) {} self._autoueGeneratedKeyLight = light; log('SceneLightReady=1'); } catch (e) { log(`SceneLightCreateFailed error=${e}`); } }
+function ensureSceneLight(actor: UE.Character): void { const self = actor as any; if (self._autoueGeneratedKeyLight) return; try { const light = new UE.PointLightComponent(actor, 'AutoUEGenerated_KeyLight'); light.Intensity = 9000; light.AttenuationRadius = 3200; try { light.LightColor = new UE.Color(255, 244, 220, 255); } catch (_) {} light.SetAbsolute(true, false, false); light.RegisterComponent(); (light as any).K2_SetWorldLocation(new UE.Vector(0, ROOM_Y - 220, FLOOR_Z + 650), false, undefined, true); try { light.ComponentTags.Add('AUTOUE_GENERATED_KEY_LIGHT'); } catch (_) {} self._autoueGeneratedKeyLight = light; log('SceneLightReady=1'); } catch (e) { log(`SceneLightCreateFailed error=${e}`); } }
 
-function initialState(): GeneratedState { return { elapsed: 0, cameraShakeUntil: 0, exitReached: false, roomComplete: false, trapArmed: true, trapTriggerCount: 0 }; }
+function initialState(): GeneratedState { return { elapsed: 0, roomComplete: false }; }
 function inputRuntime(actor: UE.Character): AutoUEInputHarnessRuntime { const self = actor as any; if (!self._autoueInputRuntime) self._autoueInputRuntime = createAutoUEInputHarnessRuntime({}); return self._autoueInputRuntime; }
 function movementRuntime(actor: UE.Character): AutoUEMovementRuntime { const self = actor as any; if (!self._autoueMovementRuntime) self._autoueMovementRuntime = createAutoUEMovementRuntime({}); return self._autoueMovementRuntime; }
-function trapRuntime(actor: UE.Character): AutoUETrapRuntime { const self = actor as any; if (!self._autoueTrapRuntime) self._autoueTrapRuntime = createAutoUETrapRuntime({}); return self._autoueTrapRuntime; }
-function vfxRuntime(actor: UE.Character): AutoUEVfxRuntime { const self = actor as any; if (!self._autoueVfxRuntime) self._autoueVfxRuntime = createAutoUEVfxRuntime({}); return self._autoueVfxRuntime; }
 function stateBlackboard(actor: UE.Character): AutoUEStateBlackboard { const self = actor as any; if (!self._autoueStateBlackboard) self._autoueStateBlackboard = createAutoUEStateBlackboard({ nowSeconds: () => ((self._autoueGeneratedState || { elapsed: 0 }) as GeneratedState).elapsed }); return self._autoueStateBlackboard; }
-function isFrozen(actor: UE.Character): boolean { return stateBlackboard(actor).isActive(FREEZE_STATE_KEY); }
-function writeFreezeState(actor: UE.Character): void { stateBlackboard(actor).set(FREEZE_STATE_KEY, { active: true, duration: FREEZE_SECONDS }, FREEZE_SECONDS); log('StateWritten player.effects.frozen duration=' + FREEZE_SECONDS); }
+function runtimeServices(actor: UE.Character): RuntimeServices {
+  const self = actor as any;
+  if (self._autoueGeneratedServices) return self._autoueGeneratedServices as RuntimeServices;
+  const services: RuntimeServices = {};
+  const worldAdapterFactory = generatedFactory('./AutoUEWorldAdapter', 'createAutoUEWorldAdapter');
+  if (worldAdapterFactory) services.worldAdapter = worldAdapterFactory({ UE, actor, world: actor, entities: { player: actor }, log: moduleLog });
+  if (runtimeFeature('enemy_runtime')) {
+    const registryFactory = generatedFactory('./AutoUEEnemyRegistry', 'createAutoUEEnemyRegistry');
+    const spawnPointFactory = generatedFactory('./AutoUESpawnPointRegistry', 'createAutoUESpawnPointRegistry');
+    const spawnFactory = generatedFactory('./AutoUEEnemySpawnRuntime', 'createAutoUEEnemySpawnRuntime');
+    const spawnManagerFactory = generatedFactory('./AutoUEEnemySpawnManager', 'createAutoUEEnemySpawnManager');
+    const encounterFactory = generatedFactory('./AutoUEEncounterManager', 'createAutoUEEncounterManager');
+    const deathFactory = generatedFactory('./AutoUEEnemyDeathEvents', 'createAutoUEEnemyDeathEvents');
+    const healthFactory = generatedFactory('./AutoUEEnemyHealth', 'createAutoUEEnemyHealth');
+    const combatFactory = generatedFactory('./AutoUEEnemyCombat', 'createAutoUEEnemyCombat');
+    const perceptionFactory = generatedFactory('./AutoUEEnemyPerception', 'createAutoUEEnemyPerception');
+    const movementFactory = generatedFactory('./AutoUEEnemyMovement', 'createAutoUEEnemyMovement');
+    const dispatcherFactory = generatedFactory('./AutoUEEnemyAbilityDispatcher', 'createAutoUEEnemyAbilityDispatcher');
+    const brainFactory = generatedFactory('./AutoUEEnemyBrain', 'createAutoUEEnemyBrain');
+    if (registryFactory) services.enemyRegistry = registryFactory({ log: moduleLog });
+    if (services.worldAdapter && spawnPointFactory) services.spawnPointRegistry = spawnPointFactory({ worldContext: actor, log: moduleLog });
+    if (services.worldAdapter && services.enemyRegistry && spawnFactory) services.enemySpawn = spawnFactory({ worldAdapter: services.worldAdapter, registry: services.enemyRegistry, spec: BEHAVIOR_SPEC, log: moduleLog });
+    if (services.enemyRegistry && services.spawnPointRegistry && services.enemySpawn && spawnManagerFactory) services.enemySpawnManager = spawnManagerFactory({ spawnPointRegistry: services.spawnPointRegistry, enemySpawn: services.enemySpawn, registry: services.enemyRegistry, log: moduleLog });
+    if (services.enemyRegistry && services.enemySpawnManager && encounterFactory) services.encounterManager = encounterFactory({ registry: services.enemyRegistry, spawnManager: services.enemySpawnManager, log: moduleLog });
+    if (services.worldAdapter && services.enemyRegistry && deathFactory) services.enemyDeathEvents = deathFactory({ worldAdapter: services.worldAdapter, registry: services.enemyRegistry, encounterManager: services.encounterManager, log: moduleLog });
+    if (services.worldAdapter && services.enemyRegistry && healthFactory) services.enemyHealth = healthFactory({ worldAdapter: services.worldAdapter, registry: services.enemyRegistry, deathEvents: services.enemyDeathEvents, log: moduleLog });
+    if (services.worldAdapter && services.enemyRegistry && combatFactory) services.enemyCombat = combatFactory({ worldAdapter: services.worldAdapter, registry: services.enemyRegistry, deathEvents: services.enemyDeathEvents, log: moduleLog });
+    if (services.worldAdapter && services.enemyRegistry && perceptionFactory) services.enemyPerception = perceptionFactory({ worldAdapter: services.worldAdapter, registry: services.enemyRegistry, log: moduleLog });
+    if (services.worldAdapter && services.enemyRegistry && movementFactory) services.enemyMovement = movementFactory({ worldAdapter: services.worldAdapter, registry: services.enemyRegistry, log: moduleLog });
+    if (dispatcherFactory) services.enemyDispatcher = dispatcherFactory({ spawnRuntime: services.enemySpawn, perception: services.enemyPerception, movement: services.enemyMovement, combat: services.enemyCombat, health: services.enemyHealth, deathEvents: services.enemyDeathEvents, encounterManager: services.encounterManager, log: moduleLog });
+    if (brainFactory && services.enemyRegistry && services.worldAdapter && services.enemyPerception && services.enemyDispatcher) services.enemyBrain = brainFactory({ registry: services.enemyRegistry, worldAdapter: services.worldAdapter, perception: services.enemyPerception, dispatcher: services.enemyDispatcher, log: moduleLog });
+  }
+  if (runtimeFeature('player_combat_runtime')) {
+    const playerCombatFactory = generatedFactory('./AutoUEPlayerCombatRuntime', 'createAutoUEPlayerCombatRuntime');
+    const hitQueryFactory = generatedFactory('./AutoUEHitQueryRuntime', 'createAutoUEHitQueryRuntime');
+    if (playerCombatFactory) services.playerCombat = playerCombatFactory({ now: () => ((self._autoueGeneratedState || { elapsed: 0 }) as GeneratedState).elapsed, log: moduleLog });
+    if (hitQueryFactory && services.worldAdapter) services.hitQuery = hitQueryFactory({ worldAdapter: services.worldAdapter, log: moduleLog });
+  }
+  self._autoueGeneratedServices = services;
+  return services;
+}
 
-function refreshTags(actor: UE.Actor, state: GeneratedState, frozen: boolean): void {
+function refreshTags(actor: UE.Actor, state: GeneratedState): void {
   clearTags(actor);
   addTag(actor, 'Player');
   addTag(actor, 'AUTOUE_GENERATED_ACTIVE');
   addTag(actor, 'AUTOUE_FEATURES_' + RUNTIME_FEATURES.join('_'));
   if (DISABLED_FEATURES.indexOf('enemy_encounter') >= 0) addTag(actor, 'AUTOUE_ENEMY_ENCOUNTER_DISABLED');
-  if (frozen) addTag(actor, 'AUTOUE_GENERATED_PLAYER_FROZEN');
-  if (!state.trapArmed) addTag(actor, 'AUTOUE_GENERATED_TRAP_SPENT');
   if (state.roomComplete) addTag(actor, 'AUTOUE_GENERATED_ROOM_COMPLETE');
 }
 
@@ -70,39 +103,75 @@ export function configureAutoUEGeneratedCharacter(actor: UE.Character): void {
   try { actor.CapsuleComponent.SetCapsuleSize(48, 96, true); } catch (_) {}
 }
 
+function bindEnemyRuntimeAfterSpawn(actor: UE.Character, spec: any): void {
+  const services = runtimeServices(actor);
+  if (!runtimeFeature('enemy_runtime') || !services.enemyRegistry) return;
+  for (const enemy of services.enemyRegistry.all?.() || []) {
+    const behavior = (spec.behaviors || []).find((item: any) => item.bound_entity_id === enemy.entity_id && item.runtime_domain === 'enemy_runtime');
+    for (const capability of behavior?.resolved_capabilities || []) {
+      if (capability.handler === 'EnemyHealth.applyDamage') services.enemyHealth?.bindDamage?.(enemy, capability.params || {});
+      if (capability.handler === 'EnemyDeathEvents.emitDeath') services.enemyDeathEvents?.bind?.(enemy, capability.params || {});
+    }
+  }
+}
+
+function loadEncounterSpec(): any | undefined {
+  const encounterFactory = generatedFactory('./AutoUEGeneratedEncounterSpec', 'getAutoUEGeneratedEncounterSpec');
+  return encounterFactory ? encounterFactory({}) : undefined;
+}
+
+function startGeneratedEncounters(actor: UE.Character, behaviorSpec: any): void {
+  const self = actor as any;
+  if (self._autoueEncountersStarted) return;
+  const services = runtimeServices(actor);
+  if (!runtimeFeature('enemy_runtime') || !services.encounterManager || !services.enemySpawnManager) return;
+  const encounterSpec = loadEncounterSpec();
+  if (!encounterSpec) { log('EnemyRuntimeBlocked reason=missing_encounter_spec'); return; }
+  services.encounterManager.startInitialEncounters?.(encounterSpec, behaviorSpec);
+  bindEnemyRuntimeAfterSpawn(actor, behaviorSpec);
+  services.encounterManager.initialize?.();
+  self._autoueEncountersStarted = true;
+  const encounterCount = Array.isArray((encounterSpec as any).encounters) ? (encounterSpec as any).encounters.length : 0;
+  log(`EnemyRuntimeReady managed_by=EncounterManager encounters=${encounterCount} alive=${services.enemyRegistry?.getAliveEnemies?.().length || 0}`);
+}
+
+function updatePlayerCombat(actor: UE.Character, input: any, state: GeneratedState): boolean {
+  const services = runtimeServices(actor);
+  if (!services.playerCombat || !services.enemyRegistry || !services.enemyHealth || !services.hitQuery) return false;
+  const pressed = services.playerCombat.readAction(input, { action: 'attack' });
+  if (!services.playerCombat.cooldownGate(pressed, { cooldown: 0.35 })) return false;
+  const hitActors = services.hitQuery.resolveMelee(actor, { entity_id: 'player', targetTag: 'AUTOUE_GENERATED_ENEMY', range: 180, radius: 120 });
+  const targets = (services.enemyRegistry.getAliveEnemies?.() || []).filter((enemy: any) => enemy?.actor && hitActors.indexOf(enemy.actor) >= 0);
+  for (const enemy of targets) services.enemyHealth.applyDamage(enemy, Number(enemy.runtime_params?.player_attack_damage || 18), 'player_attack', {});
+  services.playerCombat.resolveAttack(targets, undefined, { entity_id: 'player', attack_damage: 18 });
+  state.roomComplete = state.roomComplete || (services.enemyRegistry.getAliveEnemies?.().length === 0 && targets.length > 0);
+  return targets.length > 0;
+}
+
 function resetGeneratedRuntime(actor: UE.Character): void {
   const self = actor as any;
+  const oldServices = self._autoueGeneratedServices as RuntimeServices | undefined;
+  try { for (const enemy of oldServices?.enemyRegistry?.all?.() || []) oldServices?.worldAdapter?.destroyActor?.(enemy.actor); } catch (_) {}
+  self._autoueGeneratedServices = undefined;
+  self._autoueEncountersStarted = false;
   self._autoueGeneratedState = initialState();
   self._autoueStateBlackboard = createAutoUEStateBlackboard({ nowSeconds: () => ((self._autoueGeneratedState || { elapsed: 0 }) as GeneratedState).elapsed });
   inputRuntime(actor).reset();
-  trapRuntime(actor).reset();
-  vfxRuntime(actor).reset(actor);
   try { (actor as any).K2_SetActorLocation(new UE.Vector(0, ROOM_Y, FLOOR_Z + 40), false, undefined, true); } catch (_) {}
-  refreshTags(actor, self._autoueGeneratedState as GeneratedState, false);
-  log('RuntimeReset=1 EnemyEncounterEnabled=0');
+  refreshTags(actor, self._autoueGeneratedState as GeneratedState);
+  log(`RuntimeReset=1 EnemyEncounterEnabled=${runtimeFeature('enemy_runtime') ? 1 : 0}`);
 }
 
 export function beginAutoUEGeneratedCharacter(actor: UE.Character): void {
-  const self = actor as any;
   configureAutoUEGeneratedCharacter(actor);
   ensurePlayerVisual(actor);
   ensureSceneLight(actor);
-  if (!self._autoueGeneratedFloor) self._autoueGeneratedFloor = makeWorldMesh(actor, 'AutoUEGenerated_RoomFloor', new UE.Vector(EXIT_X * 0.5, ROOM_Y, 25), new UE.Vector(10, 2.0, 0.08), new UE.LinearColor(0.18, 0.18, 0.18, 1));
-  if (!self._autoueGeneratedTrap) self._autoueGeneratedTrap = makeWorldMesh(actor, 'AutoUEGenerated_IceTrap', new UE.Vector(160, ROOM_Y, FLOOR_Z), new UE.Vector(0.65, 0.65, 0.2), new UE.LinearColor(0.2, 0.8, 1, 1));
-  if (!self._autoueGeneratedExit) self._autoueGeneratedExit = makeWorldMesh(actor, 'AutoUEGenerated_Exit', new UE.Vector(EXIT_X, ROOM_Y, FLOOR_Z), new UE.Vector(0.35, 1.0, 1.65), new UE.LinearColor(0.05, 0.9, 0.15, 1));
-  vfxRuntime(actor).ensure(actor);
-  setupAutoUEGeneratedCamera(actor, { orthoWidth: 1450, armLength: 1650 });
   resetGeneratedRuntime(actor);
   const manifest = getAutoUEGeneratedSceneManifest({});
   const spec = getAutoUEBehaviorSpec({});
+  startGeneratedEncounters(actor, spec);
   log(`BeginPlay behavior=${BEHAVIOR_ID} specBehaviors=${(spec.behaviors as readonly unknown[]).length} features=${RUNTIME_FEATURES.join(',')} disabled=${DISABLED_FEATURES.join(',')} manifestActors=${(manifest.actors as readonly unknown[]).length}`);
   log('HarnessReady tags=AUTOUE_INPUT_RIGHT,AUTOUE_INPUT_RIGHT_1S,AUTOUE_INPUT_RIGHT_3S,AUTOUE_INPUT_LEFT,AUTOUE_INPUT_DASH,AUTOUE_INPUT_ATTACK,AUTOUE_INPUT_RESET');
-}
-
-function updateExit(actor: UE.Character, state: GeneratedState, frozen: boolean): void {
-  if (state.roomComplete || frozen) return;
-  const distance = Math.abs(loc(actor).X - EXIT_X);
-  if (distance <= EXIT_RADIUS) { state.exitReached = true; state.roomComplete = true; stateBlackboard(actor).set('exit.level_exit_door.unlocked', true); log(`ExitReached=1 RoomComplete=1 distance=${Math.round(distance)}`); }
 }
 
 export function tickAutoUEGeneratedCharacter(actor: UE.Character, dt: number): void {
@@ -114,18 +183,13 @@ export function tickAutoUEGeneratedCharacter(actor: UE.Character, dt: number): v
   const pc = UE.GameplayStatics.GetPlayerController(actor, 0);
   const input = inputRuntime(actor).read(actor, pc, state.elapsed);
   if (input.resetRequested) resetGeneratedRuntime(actor);
-  const frozenBefore = isFrozen(actor);
-  const moved = movementRuntime(actor).tick(actor, dt, state.elapsed, input, frozenBefore);
-  const trap = trapRuntime(actor).tick(actor, state.elapsed, frozenBefore);
-  state.trapArmed = trap.trapArmed;
-  state.trapTriggerCount = trap.triggerCount;
-  if (trap.triggered) { writeFreezeState(actor); state.cameraShakeUntil = state.elapsed + CAMERA_SHAKE_SECONDS; log('CameraShakeTriggered=1'); }
-  const frozenNow = isFrozen(actor);
-  vfxRuntime(actor).setFrozenVisible(actor, frozenNow);
-  try { const shake = state.elapsed < state.cameraShakeUntil ? Math.sin(state.elapsed * 95) * 18 : 0; updateAutoUEGeneratedSideCamera(actor, shake); } catch (_) {}
-  updateExit(actor, state, frozenNow);
-  refreshTags(actor, state, frozenNow);
-  if (moved || trap.triggered || trap.rearmed) log(`BehaviorTick behavior=${BEHAVIOR_ID} frozen=${frozenNow ? 1 : 0} trapArmed=${state.trapArmed ? 1 : 0}`);
+  const services = runtimeServices(actor);
+  const moved = movementRuntime(actor).tick(actor, dt, state.elapsed, input, false);
+  const attacked = updatePlayerCombat(actor, input, state);
+  services.enemyBrain?.tick?.(state.elapsed, dt, BEHAVIOR_SPEC);
+  services.encounterManager?.completeWhenAllDead?.();
+  refreshTags(actor, state);
+  if (moved || attacked) log(`BehaviorTick behavior=${BEHAVIOR_ID} aliveEnemies=${services.enemyRegistry?.getAliveEnemies?.().length ?? 0}`);
 }
 
 export function latestAutoUEGeneratedSnapshot(actor: UE.Actor): Record<string, unknown> | undefined {
@@ -133,5 +197,6 @@ export function latestAutoUEGeneratedSnapshot(actor: UE.Actor): Record<string, u
   const state = self._autoueGeneratedState as GeneratedState | undefined;
   if (!state) return undefined;
   const character = actor as UE.Character;
-  return { ...state, pawnX: loc(actor).X, exitX: EXIT_X, frozen: isFrozen(character), state_blackboard: stateBlackboard(character).snapshot(), input: inputRuntime(character).snapshot(), movement: movementRuntime(character).snapshot(actor), trap: trapRuntime(character).snapshot(actor), vfx: vfxRuntime(character).snapshot(character), cameraShakeActive: state.elapsed < state.cameraShakeUntil, runtime_features: RUNTIME_FEATURES, disabled_features: DISABLED_FEATURES };
+  const services = runtimeServices(character);
+  return { ...state, pawnX: loc(actor).X, state_blackboard: stateBlackboard(character).snapshot(), input: inputRuntime(character).snapshot(), movement: movementRuntime(character).snapshot(actor), enemies: services.enemyRegistry?.all?.() || [], aliveEnemyCount: services.enemyRegistry?.getAliveEnemies?.().length || 0, runtime_features: RUNTIME_FEATURES, disabled_features: DISABLED_FEATURES };
 }

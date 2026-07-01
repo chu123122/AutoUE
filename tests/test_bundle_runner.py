@@ -62,7 +62,7 @@ def mapping():
     spec, support = behavior_spec_and_support()
     helpers = {'input.action_binding': 'TriggerRouter.bindInputAction', 'primitive.on_component_begin_overlap': 'TriggerRouter.bindOverlapEnter', 'component.set_visibility': 'WorldAdapter.setVisibility', 'camera.update_view_target': 'WorldAdapter.cameraImpulse'}
     syms = {'input.action_binding': 'UE.PlayerController.IsInputKeyDown', 'primitive.on_component_begin_overlap': 'UE.PrimitiveComponent.OnComponentBeginOverlap', 'component.set_visibility': 'UE.SceneComponent.SetVisibility', 'camera.update_view_target': 'UE.CameraComponent.K2_SetWorldLocation'}
-    return {'runtime_mapping_path': RUNTIME_MAPPING_PATH, 'behavior_spec_path': 'flow/06-behavior-spec.json', 'support_check_path': 'flow/06-runtime-support-check.json', 'runtime_features': RUNTIME_FEATURES, 'disabled_features': DISABLED_FEATURES, 'behavior_spec': spec, 'support_check': support, 'mappings': [{'entity_id': 'freeze_trap', 'behavior_id': BEHAVIOR_ID, 'flow_id': FLOW_ID, 'runtime_owner': RUNTIME_OWNER, 'implementation_carrier': 'template_rendered_ts', 'selected_runtime_owner': 'AutoUEBehaviorSpec.generated', 'existing_framework_candidates': ['AutoUE behavior runtime framework'], 'why_not_existing_framework': 'shared behavior framework renders BehaviorSpec instead of gameplay-specific TS', 'temporary_or_canonical': 'canonical', 'migration_path': 'regenerate BehaviorSpec data only', 'engine_port_mappings': [{'engine_port_id': p, 'adjudication_path': a, 'adapter_or_helper': helpers[p], 'verdict': 'hit', 'evidence_symbols': [syms[p]]} for p, a in zip(ENGINE_PORTS, ADJUDICATIONS)], 'thin_contracts': ['read input', 'detect overlap', 'write player.effects.frozen', 'show vfx', 'shake camera'], 'ability_binding': 'behavior_spec:hazard.behavior.freeze_on_overlap', 'verification_evidence': ['StateWritten player.effects.frozen']}], 'blocked_mappings': []}
+    return {'runtime_mapping_path': RUNTIME_MAPPING_PATH, 'behavior_spec_path': 'flow/06-behavior-spec.json', 'support_check_path': 'flow/06-runtime-support-check.json', 'encounter_spec_path': 'flow/03-encounter-spec.json', 'scene_spawn_manifest_path': 'flow/scene-spawn-manifest.json', 'runtime_features': RUNTIME_FEATURES, 'disabled_features': DISABLED_FEATURES, 'behavior_spec': spec, 'encounter_spec': encounter(), 'support_check': support, 'mappings': [{'entity_id': 'freeze_trap', 'behavior_id': BEHAVIOR_ID, 'flow_id': FLOW_ID, 'runtime_owner': RUNTIME_OWNER, 'implementation_carrier': 'template_rendered_ts', 'selected_runtime_owner': 'AutoUEBehaviorSpec.generated', 'existing_framework_candidates': ['AutoUE behavior runtime framework'], 'why_not_existing_framework': 'shared behavior framework renders BehaviorSpec instead of gameplay-specific TS', 'temporary_or_canonical': 'canonical', 'migration_path': 'regenerate BehaviorSpec data only', 'engine_port_mappings': [{'engine_port_id': p, 'adjudication_path': a, 'adapter_or_helper': helpers[p], 'verdict': 'hit', 'evidence_symbols': [syms[p]]} for p, a in zip(ENGINE_PORTS, ADJUDICATIONS)], 'thin_contracts': ['read input', 'detect overlap', 'write player.effects.frozen', 'show vfx', 'shake camera'], 'ability_binding': 'behavior_spec:hazard.behavior.freeze_on_overlap', 'verification_evidence': ['StateWritten player.effects.frozen']}], 'blocked_mappings': []}
 
 def analyzer():
     return {'typescript_sources': [{'path': RUNTIME_OWNER, 'role': 'runtime_owner', 'notes': 'mapping'}], 'implementation_slots': [{'entity_id': 'freeze_trap', 'behavior_id': BEHAVIOR_ID, 'flow_id': FLOW_ID, 'runtime_mapping_path': RUNTIME_MAPPING_PATH, 'target_ts_file': RUNTIME_OWNER, 'reason': 'mapping'}], 'missing_slots': []}
@@ -76,6 +76,7 @@ def codegen():
     state = GraphState(llm_outputs={
         'PuerTSRuntimeMappingCompiler': json.dumps(mapping()),
         'TypeScriptImplementationSlotProjector': json.dumps(analyzer()),
+        'EncounterSpecPlanner': json.dumps(encounter()),
         'TypeScriptInteractiveTemplatePlanner': json.dumps(interactive()),
     })
     return build_codegen_output(state)
@@ -87,6 +88,7 @@ def eval_plan():
 
 def load_node(name: str, llm_profile='scripted_smoke'):
     runtime = load_runtime_config()
+    runtime.setdefault("aidev_staging", {})["enabled"] = False
     workflow = load_workflow_config('config/workflows/puerts_ts.json', runtime)
     nodes, specs = build_bundle_nodes(runtime, workflow, llm_profile=llm_profile)
     by_name = {node.name: (node, spec) for node, spec in zip(nodes, specs)}
@@ -139,7 +141,7 @@ def test_bundle_runner_codegen_materializes_declared_typescript(tmp_path):
     assert bundle.has_port('typescript_codegen')
     assert (bundle.root / 'TypeScript' / 'content' / 'generated' / 'AutoUEBehaviorSpec.generated.ts').exists()
     assert (bundle.root / 'TypeScript' / 'content' / 'generated' / 'AutoUEGeneratedRuntime.ts').exists()
-    assert (bundle.root / 'TypeScript' / 'content' / 'generated' / 'AutoUETrapRuntime.ts').exists()
+    assert not (bundle.root / 'TypeScript' / 'content' / 'generated' / 'AutoUETrapRuntime.ts').exists()
     assert not (bundle.root / 'TypeScript' / 'content' / 'generated' / 'AutoUEEncounterManager.ts').exists()
     assert not (bundle.root / 'TypeScript' / 'content' / 'generated' / 'AutoUEEnemySpawnManager.ts').exists()
 
@@ -160,3 +162,26 @@ def test_node_cli_run_and_validate_roundtrip(tmp_path):
         sys.executable, 'autoue.py', 'node', 'validate', '--node', 'TypeScriptImplementationSlotProjector', '--bundle', str(next_bundle)
     ], cwd=ROOT, text=True, capture_output=True, check=True)
     assert json.loads(val.stdout)['result'] == 'pass'
+
+
+def test_stage_generated_ts_to_aidev_plans_only_autoue_generated_files(tmp_path):
+    from tools.unreal.stage_generated_ts_to_aidev import StageConfig, stage_generated_ts_bundle
+
+    bundle = tmp_path / "bundle"
+    source = bundle / "TypeScript" / "content" / "generated"
+    source.mkdir(parents=True)
+    (bundle / "TypeScript" / "AutoUEGeneratedCharacterAdapter.ts").write_text("export const fresh = 1;\n", encoding="utf-8")
+    (source / "AutoUEGeneratedRuntime.ts").write_text("export const runtime = 1;\n", encoding="utf-8")
+    aidev = tmp_path / "AIDev"
+    old_generated = aidev / "TypeScript" / "content" / "generated"
+    old_generated.mkdir(parents=True)
+    (aidev / "TypeScript" / "KeepUserCode.ts").write_text("keep\n", encoding="utf-8")
+    (old_generated / "AutoUEOldRuntime.ts").write_text("old\n", encoding="utf-8")
+
+    report = stage_generated_ts_bundle(StageConfig(bundle=bundle, aidev_root=aidev, apply=False, run_tsc=False, report_path=Path("flow/stage.json")))
+
+    assert report["status"] == "dry_run"
+    assert (aidev / "TypeScript" / "KeepUserCode.ts").read_text(encoding="utf-8") == "keep\n"
+    assert "content/generated/AutoUEOldRuntime.ts" in report["removed"]
+    assert any(item["path"] == "content/generated/AutoUEGeneratedRuntime.ts" for item in report["copied"])
+    assert (bundle / "flow" / "stage.json").exists()
