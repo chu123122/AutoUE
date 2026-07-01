@@ -11,6 +11,7 @@ NODE_NAME = "TypeScriptRuntimeTemplatePlanner"
 RUNTIME_NODE = "PuerTSRuntimeMappingCompiler"
 SLOT_NODE = "TypeScriptImplementationSlotProjector"
 INTERACTIVE_NODE = "TypeScriptInteractiveTemplatePlanner"
+ENCOUNTER_NODE = "EncounterSpecPlanner"
 PROMPT = """SCHEMA: TypeScriptRuntimeTemplatePlanner
 确定性 Python 节点。生成共享 runtime framework 和 BehaviorSpec 的 TypeScript template_inputs。禁止输出原始 TypeScript 源码。
 """
@@ -28,6 +29,7 @@ def build_generation_context(node: BaseLLMNode, state: GraphState, full_input: s
     required = {
         RUNTIME_NODE: state.llm_outputs.get(RUNTIME_NODE, ""),
         SLOT_NODE: state.llm_outputs.get(SLOT_NODE, ""),
+        ENCOUNTER_NODE: state.llm_outputs.get(ENCOUNTER_NODE, ""),
         INTERACTIVE_NODE: state.llm_outputs.get(INTERACTIVE_NODE, ""),
     }
     missing = [name for name, value in required.items() if not value.strip()]

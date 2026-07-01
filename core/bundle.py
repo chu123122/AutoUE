@@ -34,10 +34,10 @@ DEFAULT_NODE_INPUT_PORTS: dict[str, list[str]] = {
     "ThinGameplayFlowPlanner": ["user_prompt", "entity_behavior"],
     "EncounterSpecPlanner": ["entity_behavior", "thin_flow", "scene_spawn_manifest"],
     "UEApiMCPFeasibilitySearcher": ["thin_flow"],
-    "PuerTSRuntimeMappingCompiler": ["entity_behavior", "thin_flow", "ue_api_feasibility"],
+    "PuerTSRuntimeMappingCompiler": ["entity_behavior", "thin_flow", "encounter_spec", "ue_api_feasibility"],
     "TypeScriptImplementationSlotProjector": ["entity_behavior", "runtime_mapping"],
     "TypeScriptInteractiveTemplatePlanner": ["entity_behavior", "runtime_mapping", "ts_analyzer"],
-    "TypeScriptRuntimeTemplatePlanner": ["entity_behavior", "runtime_mapping", "ts_analyzer", "interactive_ts_plan"],
+    "TypeScriptRuntimeTemplatePlanner": ["entity_behavior", "runtime_mapping", "ts_analyzer", "encounter_spec", "interactive_ts_plan"],
     "StaticEvaluationPlanBuilder": [
         "scene_gameplay_split",
         "entity_behavior",

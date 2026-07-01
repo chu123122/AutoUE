@@ -1,11 +1,49 @@
-export interface {{interface_name}} { readonly registry: any; readonly log?: (message: string) => void; }
 const LOG_PREFIX = '[AUTOUE_GENERATED]';
-function log(ctx: {{interface_name}}, message: string): void { (ctx.log || console.warn)(`${LOG_PREFIX} ${message}`); }
+
+export interface {{interface_name}} {
+  readonly registry: any;
+  readonly spawnManager?: any;
+  readonly log?: (message: string) => void;
+}
+
 export class AutoUEEncounterManager {
-  private completed = false;
+  private readonly started = new Set<string>();
+  private readonly completed = new Set<string>();
+  private readonly spawnedByEncounter = new Map<string, string[]>();
   constructor(private readonly context: {{interface_name}}) {}
-  initialize(): void { log(this.context, `EncounterInitialized AliveEnemies=${this.context.registry.getAliveEnemies().length}`); }
+  private log(message: string): void { (this.context.log || console.warn)(`${LOG_PREFIX} ${message}`); }
+  initialize(): void { this.log(`EncounterInitialized AliveEnemies=${this.context.registry.getAliveEnemies().length}`); }
+  startInitialEncounters(encounterSpec: any, behaviorSpec: any): number {
+    let total = 0;
+    for (const encounter of Array.isArray(encounterSpec?.encounters) ? encounterSpec.encounters : []) {
+      if (!encounter || (encounter.trigger && encounter.trigger.type !== 'on_level_start')) continue;
+      total += this.startEncounter(encounter, behaviorSpec);
+    }
+    this.log(`EncounterInitialDispatch count=${this.started.size} spawned=${total}`);
+    return total;
+  }
+  startEncounter(encounter: any, behaviorSpec: any): number {
+    const id = String(encounter?.encounter_id || 'encounter');
+    if (this.started.has(id)) return 0;
+    this.started.add(id);
+    const spawned = this.context.spawnManager?.spawnEncounterEnemies?.(encounter, behaviorSpec) || [];
+    this.spawnedByEncounter.set(id, spawned.map((item: any) => String(item.enemy_id || '')));
+    this.log(`EncounterStarted id=${id} spawn_group=${encounter?.spawn_group || '<none>'} spawned=${spawned.length} alive=${this.context.registry.getAliveEnemies().length}`);
+    return spawned.length;
+  }
   onEnemyDied(_enemy: any, _reason = 'runtime'): void { this.completeWhenAllDead(); }
-  completeWhenAllDead(_params: Record<string, any> = {}): boolean { const alive = this.context.registry.getAliveEnemies().length; if (alive === 0 && !this.completed) { this.completed = true; log(this.context, 'EncounterCompleted=1 AliveEnemies=0'); return true; } log(this.context, `EncounterCompleted=0 AliveEnemies=${alive}`); return false; }
+  completeWhenAllDead(_params: Record<string, any> = {}): boolean {
+    const alive = this.context.registry.getAliveEnemies().length;
+    if (alive !== 0) { this.log(`EncounterCompleted=0 AliveEnemies=${alive}`); return false; }
+    let anyNew = false;
+    for (const id of this.started) {
+      if (this.completed.has(id)) continue;
+      this.completed.add(id);
+      anyNew = true;
+      this.log(`EncounterCompleted=1 id=${id} AliveEnemies=0`);
+    }
+    return anyNew;
+  }
+  snapshot(): Record<string, unknown> { return { schema_version: 'autoue-encounter-manager/v3', started: Array.from(this.started), completed: Array.from(this.completed), alive: this.context.registry.getAliveEnemies().length }; }
 }
 export function {{export_name}}(context: {{interface_name}}): AutoUEEncounterManager { return new AutoUEEncounterManager(context); }

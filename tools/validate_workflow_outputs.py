@@ -47,6 +47,34 @@ def validate_ts(path: Path, errors: list[str]) -> None:
         errors.append(f'generated TypeScript lacks an obvious exported/function/class entry point: {path}')
 
 
+def validate_encounter_runtime_consumption(root: Path, data: dict, errors: list[str], evidence: dict) -> None:
+    encounter = data.get('EncounterSpecPlanner', {}) if isinstance(data, dict) else {}
+    if not isinstance(encounter, dict) or not encounter.get('encounters'):
+        return
+    runtime = root / 'TypeScript' / 'content' / 'generated' / 'AutoUEGeneratedRuntime.ts'
+    if not runtime.exists():
+        errors.append('EncounterSpec runtime consumption missing AutoUEGeneratedRuntime.ts')
+        return
+    text = runtime.read_text(encoding='utf-8', errors='replace')
+    banned_runtime_markers = ['spawnGeneratedEnemies', 'enemySpawnBehaviors', 'const x = 340', 'FLOOR_Z + 40 }', 'services.enemySpawn.spawnEnemy(behavior, transform)']
+    for marker in banned_runtime_markers:
+        if marker in text:
+            errors.append(f'EncounterSpec runtime consumption bypassed by hardcoded spawn marker: {marker}')
+    required_runtime_markers = ['getAutoUEGeneratedEncounterSpec', 'startInitialEncounters', 'AutoUEEnemySpawnManager', 'AutoUESpawnPointRegistry']
+    for marker in required_runtime_markers:
+        if marker not in text:
+            errors.append(f'EncounterSpec runtime consumption missing marker in AutoUEGeneratedRuntime.ts: {marker}')
+    for rel in [
+        'TypeScript/content/generated/AutoUEGeneratedEncounterSpec.ts',
+        'TypeScript/content/generated/AutoUESpawnPointRegistry.ts',
+        'TypeScript/content/generated/AutoUEEnemySpawnManager.ts',
+        'TypeScript/content/generated/AutoUEEncounterManager.ts',
+    ]:
+        if not (root / rel).exists():
+            errors.append(f'EncounterSpec runtime consumption missing generated module: {rel}')
+    evidence['encounter_runtime_consumption'] = 'checked'
+
+
 def ensure_rel_file(root: Path, rel: str, label: str, errors: list[str]) -> Path | None:
     if not isinstance(rel, str) or not is_safe_relative_path(rel):
         errors.append(f'{label} unsafe path: {rel}')
@@ -240,7 +268,11 @@ def main(argv: list[str] | None = None) -> int:
         except WorkflowValidationError as exc:
             errors.append(str(exc))
 
-    ts_files = sorted(path for path in root.rglob('*.ts') if path.is_file()) if root.exists() else []
+    def is_stage_backup(path: Path) -> bool:
+        parts = set(path.relative_to(root).parts)
+        return any(part.startswith('aidev_ts_backup_') for part in parts) or 'aidev-stage-backups' in parts
+
+    ts_files = sorted(path for path in root.rglob('*.ts') if path.is_file() and not is_stage_backup(path)) if root.exists() else []
     if not ts_files:
         errors.append('no generated .ts files found under output root')
     for path in ts_files:
@@ -250,6 +282,7 @@ def main(argv: list[str] | None = None) -> int:
         evidence['configured_artifacts'] = validate_configured_artifacts(root, workflow, data, errors)
         evidence['declared_ts_files'] = validate_declared_files(root, data, errors)
         evidence['encounter_artifacts'] = validate_encounter_artifacts(root, data, errors, evidence)
+        validate_encounter_runtime_consumption(root, data, errors, evidence)
         evidence['mcp_artifacts'] = validate_mcp_artifacts(root, data, errors)
 
     native_files = sorted(path for path in root.rglob('*') if path.is_file() and path.suffix.lower() in CXX_SUFFIXES) if root.exists() else []

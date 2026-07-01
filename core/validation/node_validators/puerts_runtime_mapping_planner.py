@@ -16,18 +16,55 @@ def validate_puerts_runtime_mapping_planner(node: str, data: dict[str, Any]) -> 
         raise WorkflowValidationError(f"{node}: runtime_features must not contain status/interaction")
     validate_json_path(node, require_string(node, data, "behavior_spec_path", non_empty=True), label="behavior_spec_path")
     validate_json_path(node, require_string(node, data, "support_check_path", non_empty=True), label="support_check_path")
+    validate_json_path(node, require_string(node, data, "encounter_spec_path", non_empty=True), label="encounter_spec_path")
+    validate_json_path(node, require_string(node, data, "scene_spawn_manifest_path", non_empty=True), label="scene_spawn_manifest_path")
     behavior_spec = require_dict(node, data, "behavior_spec")
     if behavior_spec.get("schema_version") != "autoue-behavior-spec/v1":
         raise WorkflowValidationError(f"{node}: behavior_spec schema_version must be autoue-behavior-spec/v1")
     support_check = require_dict(node, data, "support_check")
-    if support_check.get("status") != "supported":
+    if support_check.get("status") != "supported" or support_check.get("static_support", "supported") != "supported":
         reasons = [item.get("reason", "") for item in support_check.get("unsupported_capabilities", []) if isinstance(item, dict)]
-        raise WorkflowValidationError(f"{node}: unsupported runtime capabilities: {reasons}")
+        reasons += [item.get("reason", "") for item in support_check.get("unsupported_primitives", []) if isinstance(item, dict)]
+        raise WorkflowValidationError(f"{node}: unsupported runtime capabilities/primitives: {reasons}")
+    if support_check.get("runtime_proof", "not_run") not in {"not_run", "pass", "fail"}:
+        raise WorkflowValidationError(f"{node}: support_check.runtime_proof must be not_run/pass/fail")
+    if support_check.get("unsupported_primitives") not in ([], None):
+        raise WorkflowValidationError(f"{node}: unsupported_primitives must be empty for supported runtime mapping")
     disabled_features = require_list(node, data, "disabled_features")
     if any(not isinstance(item, str) or not item.strip() for item in disabled_features):
         raise WorkflowValidationError(f"{node}: disabled_features must contain non-empty strings")
     if "enemy_encounter" in runtime_features and "enemy_encounter" in disabled_features:
         raise WorkflowValidationError(f"{node}: enemy_encounter cannot be both enabled and disabled")
+    encounter_spec = require_dict(node, data, "encounter_spec")
+    if encounter_spec.get("schema_version") != "autoue-encounter-spec/v1":
+        raise WorkflowValidationError(f"{node}: encounter_spec schema_version must be autoue-encounter-spec/v1")
+    encounters = encounter_spec.get("encounters", [])
+    has_encounters = any(isinstance(item, dict) for item in encounters) if isinstance(encounters, list) else False
+    if has_encounters:
+        required_encounter_modules = {"encounter_spec_data", "spawn_point_registry", "enemy_spawn_manager", "encounter_manager", "enemy_spawn_runtime"}
+        missing_modules = sorted(required_encounter_modules - set(runtime_features))
+        if missing_modules:
+            raise WorkflowValidationError(f"{node}: generated EncounterSpec is not fully wired into runtime modules: {missing_modules}")
+        if "enemy_runtime" in disabled_features or "enemy_encounter" in disabled_features:
+            raise WorkflowValidationError(f"{node}: EncounterSpec with encounters cannot disable enemy runtime/encounter")
+
+    primitive_behaviors = {"player.behavior.move_and_attack", "pickup.behavior.collect_reward"}
+    for behavior in behavior_spec.get("behaviors", []):
+        if not isinstance(behavior, dict) or behavior.get("behavior_id") not in primitive_behaviors:
+            continue
+        plan = behavior.get("primitive_plan")
+        if not isinstance(plan, list) or not plan:
+            raise WorkflowValidationError(f"{node}: {behavior.get('behavior_id')} requires non-empty primitive_plan")
+        for si, step in enumerate(plan):
+            if not isinstance(step, dict):
+                raise WorkflowValidationError(f"{node}: primitive_plan[{si}] must be object")
+            require_string(node, step, "primitive_id", non_empty=True)
+            require_string(node, step, "handler", non_empty=True)
+            modules = require_list(node, step, "required_runtime_modules", non_empty=True)
+            if any(not isinstance(item, str) or not item.strip() for item in modules):
+                raise WorkflowValidationError(f"{node}: primitive_plan[{si}].required_runtime_modules must contain non-empty strings")
+            if not isinstance(step.get("params"), dict):
+                raise WorkflowValidationError(f"{node}: primitive_plan[{si}].params must be object")
     if "enemy_runtime" in runtime_features:
         required_modules = {"enemy_registry", "enemy_death_events", "encounter_manager"}
         missing_modules = sorted(required_modules - set(runtime_features))

@@ -5,101 +5,60 @@ const LOG_PREFIX = '[AUTOUE_GENERATED]';
 const SPAWN_POINT_TAGS = ['AUTOUE_ENEMY_SPAWN_POINT', 'BP_EnemySpawnPoint', 'EnemySpawnPoint'];
 const DEFAULT_GROUP = 'room_01_guard';
 
-export interface {{interface_name}} { worldContext?: UE.Object; runId?: string; }
+type PlainTransform = { location: { X: number; Y: number; Z: number }; rotation: { Pitch: number; Yaw: number; Roll: number } };
+
+export interface {{interface_name}} { worldContext?: UE.Object; runId?: string; log?: (message: string) => void; }
 
 export type AutoUESpawnPointInfo = {
   actor: UE.Actor;
+  actor_name: string;
   spawn_group: string;
-  transform: UE.Transform;
+  transform: PlainTransform;
   allowed_enemy_tags: string[];
   can_initial_spawn: boolean;
   can_runtime_spawn: boolean;
+  consumed: boolean;
 };
 
 export type AutoUESpawnPointRegistry = {
   refresh(): AutoUESpawnPointInfo[];
   getSpawnPoints(spawnGroup: string): AutoUESpawnPointInfo[];
-  getSpawnTransform(spawnGroup: string): UE.Transform | undefined;
+  acquireSpawnPoint(spawnGroup: string, enemyTags?: string[], consume?: boolean): AutoUESpawnPointInfo | undefined;
+  getSpawnTransform(spawnGroup: string): PlainTransform | undefined;
   snapshot(): Record<string, unknown>;
 };
 
-function log(message: string): void { console.warn(`${LOG_PREFIX} ${message}`); }
-
-function actorName(actor: UE.Actor | undefined): string {
-  if (!actor) return '<none>';
-  try { return (actor as any).GetName(); } catch (_) { return String(actor); }
-}
+function log(context: {{interface_name}}, message: string): void { (context.log || console.warn)(`${LOG_PREFIX} ${message}`); }
+function actorName(actor: UE.Actor | undefined): string { if (!actor) return '<none>'; try { return (actor as any).GetName(); } catch (_) { return String(actor); } }
 
 function tags(actor: UE.Actor): string[] {
   const out: string[] = [];
   try {
     const arr = (actor as any).Tags;
-    if (arr && typeof arr.Num === 'function') {
-      for (let i = 0; i < arr.Num(); i++) out.push(String(arr.Get(i)));
-      return out;
-    }
-    if (arr && Symbol.iterator in Object(arr)) {
-      for (const item of arr as Iterable<unknown>) out.push(String(item));
-      return out;
-    }
+    if (arr && typeof arr.Num === 'function') { for (let i = 0; i < arr.Num(); i++) out.push(String(arr.Get(i))); return out; }
+    if (arr && Symbol.iterator in Object(arr)) { for (const item of arr as Iterable<unknown>) out.push(String(item)); return out; }
   } catch (_) {}
   return out;
 }
-
-function hasTag(actor: UE.Actor, tag: string): boolean {
-  try { return actor.ActorHasTag(tag); } catch (_) { return tags(actor).indexOf(tag) >= 0; }
-}
-
-function tagValue(actor: UE.Actor, prefixes: string[]): string {
-  for (const tag of tags(actor)) {
-    for (const prefix of prefixes) {
-      if (tag.indexOf(prefix) === 0) return tag.substring(prefix.length).trim();
-    }
-  }
-  return '';
-}
-
-function propString(actor: UE.Actor, names: string[], fallback = ''): string {
-  const anyActor = actor as any;
-  for (const name of names) {
-    try { const value = anyActor[name]; if (value !== undefined && value !== null && String(value)) return String(value); } catch (_) {}
-  }
-  return fallback;
-}
-
-function propBool(actor: UE.Actor, names: string[], positiveTags: string[], fallback = false): boolean {
-  const anyActor = actor as any;
-  for (const name of names) {
-    try { const value = anyActor[name]; if (value !== undefined && value !== null) return !!value; } catch (_) {}
-  }
-  for (const tag of positiveTags) if (hasTag(actor, tag)) return true;
-  return fallback;
-}
-
+function hasTag(actor: UE.Actor, tag: string): boolean { try { return actor.ActorHasTag(tag); } catch (_) { return tags(actor).indexOf(tag) >= 0; } }
+function tagValue(actor: UE.Actor, prefixes: string[]): string { for (const tag of tags(actor)) for (const prefix of prefixes) if (tag.indexOf(prefix) === 0) return tag.substring(prefix.length).trim(); return ''; }
+function propString(actor: UE.Actor, names: string[], fallback = ''): string { const anyActor = actor as any; for (const name of names) { try { const value = anyActor[name]; if (value !== undefined && value !== null && String(value)) return String(value); } catch (_) {} } return fallback; }
+function propBool(actor: UE.Actor, names: string[], positiveTags: string[], fallback = false): boolean { const anyActor = actor as any; for (const name of names) { try { const value = anyActor[name]; if (value !== undefined && value !== null) return !!value; } catch (_) {} } for (const tag of positiveTags) if (hasTag(actor, tag)) return true; return fallback; }
 function allowedTags(actor: UE.Actor): string[] {
   const out: string[] = [];
   const anyActor = actor as any;
-  try {
-    const arr = anyActor.AllowedEnemyTags || anyActor.allowed_enemy_tags;
-    if (arr && typeof arr.Num === 'function') for (let i = 0; i < arr.Num(); i++) out.push(String(arr.Get(i)));
-    else if (Array.isArray(arr)) for (const item of arr) out.push(String(item));
-  } catch (_) {}
+  try { const arr = anyActor.AllowedEnemyTags || anyActor.allowed_enemy_tags; if (arr && typeof arr.Num === 'function') for (let i = 0; i < arr.Num(); i++) out.push(String(arr.Get(i))); else if (Array.isArray(arr)) for (const item of arr) out.push(String(item)); } catch (_) {}
   const raw = tagValue(actor, ['AllowedEnemyTags=', 'AllowedEnemyTags:', 'allowed_enemy_tags=']);
   if (raw) for (const item of raw.replace(/,/g, ';').split(';')) if (item.trim()) out.push(item.trim());
   return out.length ? out : ['ground', 'melee'];
 }
-
-function spawnGroup(actor: UE.Actor): string {
-  return propString(actor, ['SpawnGroup', 'spawn_group', 'spawnGroup'], '') || tagValue(actor, ['SpawnGroup=', 'SpawnGroup:', 'spawn_group=']) || DEFAULT_GROUP;
-}
-
-function transform(actor: UE.Actor): UE.Transform {
-  try { return (actor as any).K2_GetActorTransform(); } catch (_) {}
+function spawnGroup(actor: UE.Actor): string { return propString(actor, ['SpawnGroup', 'spawn_group', 'spawnGroup'], '') || tagValue(actor, ['SpawnGroup=', 'SpawnGroup:', 'spawn_group=']) || DEFAULT_GROUP; }
+function plainTransform(actor: UE.Actor): PlainTransform {
   const loc = (() => { try { return actor.K2_GetActorLocation(); } catch (_) { return new UE.Vector(360, 0, 120); } })();
-  const rot = (() => { try { return actor.K2_GetActorRotation(); } catch (_) { return new UE.Rotator(0, 0, 0); } })();
-  return new UE.Transform(rot, loc, new UE.Vector(1, 1, 1));
+  const rot = (() => { try { return actor.K2_GetActorRotation(); } catch (_) { return new UE.Rotator(0, 180, 0); } })();
+  return { location: { X: Number(loc.X || 0), Y: Number(loc.Y || 0), Z: Number(loc.Z || 120) }, rotation: { Pitch: Number(rot.Pitch || 0), Yaw: Number(rot.Yaw || 180), Roll: Number(rot.Roll || 0) } };
 }
-
+function matchesTags(point: AutoUESpawnPointInfo, enemyTags: string[] = []): boolean { if (!enemyTags.length || !point.allowed_enemy_tags.length) return true; return enemyTags.some((tag) => point.allowed_enemy_tags.indexOf(tag) >= 0); }
 function collectByTag(worldContext: UE.Object, tag: string, seen: Set<string>, out: AutoUESpawnPointInfo[]): void {
   const ref = $ref<UE.TArray<UE.Actor>>();
   UE.GameplayStatics.GetAllActorsWithTag(worldContext, tag, ref);
@@ -110,14 +69,7 @@ function collectByTag(worldContext: UE.Object, tag: string, seen: Set<string>, o
     const name = actorName(actor);
     if (seen.has(name)) continue;
     seen.add(name);
-    out.push({
-      actor,
-      spawn_group: spawnGroup(actor),
-      transform: transform(actor),
-      allowed_enemy_tags: allowedTags(actor),
-      can_initial_spawn: propBool(actor, ['CanInitialSpawn', 'can_initial_spawn'], ['CanInitialSpawn', 'AUTOUE_CAN_INITIAL_SPAWN'], true),
-      can_runtime_spawn: propBool(actor, ['CanRuntimeSpawn', 'can_runtime_spawn'], ['CanRuntimeSpawn', 'AUTOUE_CAN_RUNTIME_SPAWN'], true),
-    });
+    out.push({ actor, actor_name: name, spawn_group: spawnGroup(actor), transform: plainTransform(actor), allowed_enemy_tags: allowedTags(actor), can_initial_spawn: propBool(actor, ['CanInitialSpawn', 'can_initial_spawn'], ['CanInitialSpawn', 'AUTOUE_CAN_INITIAL_SPAWN'], true), can_runtime_spawn: propBool(actor, ['CanRuntimeSpawn', 'can_runtime_spawn'], ['CanRuntimeSpawn', 'AUTOUE_CAN_RUNTIME_SPAWN'], true), consumed: false });
   }
 }
 
@@ -126,29 +78,25 @@ export function {{export_name}}(context: {{interface_name}} = {}): AutoUESpawnPo
   return {
     refresh(): AutoUESpawnPointInfo[] {
       const worldContext = context.worldContext;
-      if (!worldContext) {
-        cache = [];
-        log('SpawnPointRegistry count=0 reason=no_world_context');
-        return cache;
-      }
+      if (!worldContext) { cache = []; log(context, 'SpawnPointRegistryReady count=0 reason=no_world_context'); return cache; }
       const seen = new Set<string>();
       const found: AutoUESpawnPointInfo[] = [];
       for (const tag of SPAWN_POINT_TAGS) collectByTag(worldContext, tag, seen, found);
       cache = found;
-      const groups = cache.map((p) => p.spawn_group).join(',');
-      log(`SpawnPointRegistry count=${cache.length} groups=${groups}`);
+      const groups = Array.from(new Set(cache.map((p) => p.spawn_group))).join(',');
+      log(context, `SpawnPointRegistryReady count=${cache.length} groups=${groups}`);
       return cache;
     },
-    getSpawnPoints(spawnGroup: string): AutoUESpawnPointInfo[] {
-      if (!cache.length) this.refresh();
-      return cache.filter((p) => p.spawn_group === spawnGroup && p.can_initial_spawn);
+    getSpawnPoints(spawnGroup: string): AutoUESpawnPointInfo[] { if (!cache.length) this.refresh(); return cache.filter((p) => p.spawn_group === spawnGroup && p.can_initial_spawn && !p.consumed); },
+    acquireSpawnPoint(spawnGroup: string, enemyTags: string[] = [], consume = true): AutoUESpawnPointInfo | undefined {
+      const candidates = this.getSpawnPoints(spawnGroup).filter((p) => matchesTags(p, enemyTags));
+      const point = candidates.length ? candidates[0] : undefined;
+      if (point && consume) point.consumed = true;
+      if (point) log(context, `SpawnPointAcquired spawn_group=${spawnGroup} actor=${point.actor_name} tags=${point.allowed_enemy_tags.join(',')}`);
+      else log(context, `SpawnPointMissing spawn_group=${spawnGroup} requested_tags=${enemyTags.join(',')}`);
+      return point;
     },
-    getSpawnTransform(spawnGroup: string): UE.Transform | undefined {
-      const points = this.getSpawnPoints(spawnGroup);
-      return points.length ? points[0].transform : undefined;
-    },
-    snapshot(): Record<string, unknown> {
-      return { schema_version: 'autoue-spawn-point-registry/v2', count: cache.length, groups: cache.map((p) => p.spawn_group) };
-    }
+    getSpawnTransform(spawnGroup: string): PlainTransform | undefined { const point = this.acquireSpawnPoint(spawnGroup, [], false); return point ? point.transform : undefined; },
+    snapshot(): Record<string, unknown> { return { schema_version: 'autoue-spawn-point-registry/v3', count: cache.length, available: cache.filter((p) => !p.consumed).length, groups: cache.map((p) => p.spawn_group), actors: cache.map((p) => p.actor_name) }; }
   };
 }

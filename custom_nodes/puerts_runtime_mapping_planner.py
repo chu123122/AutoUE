@@ -27,6 +27,7 @@ def build_runtime_mapping_output(state: GraphState) -> dict:
     return run_puerts_runtime_mapping({
         "entity_behavior": state.llm_outputs.get("EntityAbilityBehaviorPlanner", ""),
         "thin_flow": state.llm_outputs.get("ThinGameplayFlowPlanner", ""),
+        "encounter_spec": state.llm_outputs.get("EncounterSpecPlanner", ""),
         "ue_api_feasibility": state.llm_outputs.get("UEApiMCPFeasibilitySearcher", ""),
     }, save_dir=getattr(state, "save_dir", ""))
 
@@ -35,6 +36,7 @@ def build_runtime_mapping_context(node: BaseLLMNode, state: GraphState, full_inp
     required = {
         "EntityAbilityBehaviorPlanner": state.llm_outputs.get("EntityAbilityBehaviorPlanner", ""),
         "ThinGameplayFlowPlanner": state.llm_outputs.get("ThinGameplayFlowPlanner", ""),
+        "EncounterSpecPlanner": state.llm_outputs.get("EncounterSpecPlanner", ""),
         "UEApiMCPFeasibilitySearcher": state.llm_outputs.get("UEApiMCPFeasibilitySearcher", ""),
     }
     missing = [name for name, value in required.items() if not value.strip()]

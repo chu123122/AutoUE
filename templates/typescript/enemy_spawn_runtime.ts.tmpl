@@ -13,8 +13,10 @@ export class AutoUEEnemySpawnRuntime {
     const enemyId = `${entityId}_${this.nextId++}`;
     const actor = this.context.worldAdapter.spawnActor(params.actor_class_path, transform || params.spawn_transform || {});
     this.context.worldAdapter.setActorTag(actor, 'AUTOUE_GENERATED_ENEMY');
+    this.context.worldAdapter.setActorTag(actor, enemyId);
     this.context.worldAdapter.setActorTag(actor, params.enemy_tag || entityId);
-    this.context.registry.registerEnemy({ enemy_id: enemyId, entity_id: entityId, archetype_id: entityId, actor, hp: Number(params.default_hp || params.max_hp || 1), runtime_params: params });
+    this.context.worldAdapter.configureSpawnedEnemyActor?.(actor, params);
+    this.context.registry.registerEnemy({ enemy_id: enemyId, entity_id: entityId, archetype_id: entityId, actor, hp: Number(params.default_hp || params.max_hp || 1), runtime_params: { ...params, enemy_id: enemyId, actor_tag: enemyId } });
     log(this.context, `EnemySpawned enemy_id=${enemyId} actor=${actor ? 'valid' : 'missing'} entity=${entityId}`);
     return actor;
   }

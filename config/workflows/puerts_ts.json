@@ -175,6 +175,7 @@
       "inputs": [
         "entity_behavior",
         "thin_flow",
+        "encounter_spec",
         "ue_api_feasibility"
       ],
       "outputs": [
@@ -249,6 +250,7 @@
         "entity_behavior",
         "runtime_mapping",
         "ts_analyzer",
+        "encounter_spec",
         "interactive_ts_plan"
       ],
       "outputs": [

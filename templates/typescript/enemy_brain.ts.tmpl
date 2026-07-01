@@ -1,19 +1,36 @@
 export interface {{interface_name}} { readonly registry: any; readonly worldAdapter: any; readonly perception: any; readonly dispatcher: any; readonly log?: (message: string) => void; }
 export class AutoUEEnemyBrain {
   constructor(private readonly context: {{interface_name}}) {}
+  private behaviorDrivesEnemy(behavior: any): boolean {
+    return (behavior.resolved_capabilities || []).some((capability: any) => {
+      const handler = String(capability.handler || '');
+      return handler === 'EnemyPerception.detectPlayer' || handler.indexOf('EnemyMovement.') === 0 || handler.indexOf('EnemyCombat.') === 0;
+    });
+  }
   tick(now: number, dt: number, behaviorSpec: any): void {
     for (const enemy of this.context.registry.getAliveEnemies()) {
-      const behavior = (behaviorSpec.behaviors || []).find((item: any) => item.bound_entity_id === enemy.entity_id && item.runtime_domain === 'enemy_runtime');
-      if (!behavior) continue;
-      const perceptionSpec = (behavior.resolved_capabilities || []).find((item: any) => item.handler === 'EnemyPerception.detectPlayer');
-      const perception = this.context.perception.detectPlayer(enemy, perceptionSpec?.params || {});
-      if (!perception.in_range) { this.context.registry.updateState(enemy.enemy_id, 'Idle'); continue; }
-      const target = perception.target_actor || this.context.worldAdapter.findPlayerPawn();
-      for (const capability of behavior.resolved_capabilities || []) {
-        if (capability.handler === 'EnemySpawnRuntime.spawnEnemy') continue;
-        if (capability.handler === 'EncounterManager.completeWhenAllDead') continue;
-        this.context.dispatcher.dispatch(capability, enemy, target, now, dt);
+      const actor = this.context.worldAdapter.resolveActor?.(enemy.actor, [enemy.enemy_id, enemy.runtime_params?.actor_tag, enemy.runtime_params?.enemy_tag, enemy.entity_id]) || enemy.actor;
+      if (!actor) { this.context.registry.updateState(enemy.enemy_id, 'Idle'); continue; }
+      enemy.actor = actor;
+      const behaviors = (behaviorSpec.behaviors || []).filter((item: any) => item.bound_entity_id === enemy.entity_id && item.runtime_domain === 'enemy_runtime' && this.behaviorDrivesEnemy(item));
+      if (!behaviors.length) continue;
+      let acted = false;
+      for (const behavior of behaviors) {
+        const perceptionSpec = (behavior.resolved_capabilities || []).find((item: any) => item.handler === 'EnemyPerception.detectPlayer');
+        const perception = this.context.perception.detectPlayer(enemy, perceptionSpec?.params || {});
+        if (!perception.in_range) continue;
+        const target = perception.target_actor || this.context.worldAdapter.findPlayerPawn();
+        for (const capability of behavior.resolved_capabilities || []) {
+          if (capability.handler === 'EnemySpawnRuntime.spawnEnemy') continue;
+          if (capability.handler === 'EnemyPerception.detectPlayer') continue;
+          if (capability.handler === 'EncounterManager.completeWhenAllDead') continue;
+          if (capability.handler === 'EnemyHealth.applyDamage') continue;
+          if (capability.handler === 'EnemyDeathEvents.emitDeath') continue;
+          this.context.dispatcher.dispatch(capability, enemy, target, now, dt);
+          acted = true;
+        }
       }
+      if (!acted) this.context.registry.updateState(enemy.enemy_id, 'Idle');
     }
   }
 }
