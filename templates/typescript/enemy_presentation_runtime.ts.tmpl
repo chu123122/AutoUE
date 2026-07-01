@@ -2,14 +2,71 @@ type AnyUEObject = any;
 export interface {{interface_name}} { readonly worldAdapter: any; readonly log?: (message: string) => void; }
 const LOG_PREFIX = '[AUTOUE_GENERATED]';
 function log(ctx: {{interface_name}}, message: string): void { (ctx.log || console.warn)(`${LOG_PREFIX} ${message}`); }
+function num(value: any, fallback: number): number { const n = Number(value); return Number.isFinite(n) ? n : fallback; }
+function color(r: number, g: number, b: number): Record<string, number> { return { r, g, b }; }
 export class AutoUEEnemyPresentationRuntime {
   constructor(private readonly context: {{interface_name}}) {}
-  telegraph(enemy: any, params: Record<string, any> = {}): void { this.context.worldAdapter.setActorTag?.(enemy.actor, 'AUTOUE_ENEMY_TELEGRAPH'); log(this.context, `EnemyPresentationTelegraph enemy_id=${enemy.enemy_id} radius=${Math.round(Number(params.hitbox_radius || params.explosion_radius || params.attack_range || 0))}`); }
-  showHitbox(enemy: any, params: Record<string, any> = {}): void { this.context.worldAdapter.setActorTag?.(enemy.actor, 'AUTOUE_ENEMY_ATTACK_ACTIVE'); log(this.context, `EnemyPresentationHitbox enemy_id=${enemy.enemy_id} radius=${Math.round(Number(params.hitbox_radius || params.explosion_radius || params.attack_range || 0))}`); }
-  impact(enemy: any, target: AnyUEObject, params: Record<string, any> = {}): void { if (target) this.context.worldAdapter.cameraImpulse?.(Number(params.impact_impulse_seconds || 0.08)); log(this.context, `EnemyPresentationImpact enemy_id=${enemy.enemy_id} target=${target ? 'valid' : 'missing'}`); }
-  projectileFx(enemy: any, projectile: AnyUEObject, params: Record<string, any> = {}): void { if (projectile) this.context.worldAdapter.setActorTag?.(projectile, 'AUTOUE_ENEMY_PROJECTILE'); log(this.context, `EnemyPresentationProjectile enemy_id=${enemy.enemy_id} projectile=${projectile ? 'valid' : 'missing'} speed=${Math.round(Number(params.projectile_speed || 0))}`); }
-  explosion(enemy: any, params: Record<string, any> = {}): void { this.context.worldAdapter.cameraImpulse?.(Number(params.explosion_impulse_seconds || 0.16)); log(this.context, `EnemyPresentationExplosion enemy_id=${enemy.enemy_id} radius=${Math.round(Number(params.explosion_radius || params.explode_radius || 0))}`); }
-  death(enemy: any): void { this.context.worldAdapter.setActorTag?.(enemy.actor, 'AUTOUE_ENEMY_DEATH_FX'); log(this.context, `EnemyPresentationDeath enemy_id=${enemy.enemy_id}`); }
-  block(enemy: any, params: Record<string, any> = {}): void { this.context.worldAdapter.setActorTag?.(enemy.actor, 'AUTOUE_ENEMY_BLOCKING'); log(this.context, `EnemyPresentationBlock enemy_id=${enemy.enemy_id} reduction=${Number(params.damage_reduction ?? params.reduction ?? 1)}`); }
+  private loc(actor: AnyUEObject): AnyUEObject | undefined { try { return actor ? this.context.worldAdapter.getActorLocation?.(actor) : undefined; } catch (_) { return undefined; } }
+  private attackRadius(params: Record<string, any>, fallback: number = 120): number { return num(params.hitbox_radius ?? params.explosion_radius ?? params.explode_radius ?? params.attack_range, fallback); }
+  private duration(params: Record<string, any>, keys: string[], fallback: number): number { for (const key of keys) if (params[key] !== undefined) return num(params[key], fallback); return fallback; }
+  private attackCenter(enemy: any, params: Record<string, any> = {}): AnyUEObject | undefined {
+    const origin = this.loc(enemy?.actor);
+    if (!origin) return undefined;
+    const range = num(params.attack_range, this.attackRadius(params, 120));
+    let forward: AnyUEObject | undefined;
+    try { forward = this.context.worldAdapter.getForwardVector?.(enemy.actor); } catch (_) {}
+    return { X: num(origin.X, 0) + num(forward?.X, 1) * range * 0.5, Y: num(origin.Y, 0) + num(forward?.Y, 0) * range * 0.5, Z: num(origin.Z, 0) + num(params.z_offset, 0) };
+  }
+  telegraph(enemy: any, params: Record<string, any> = {}): void {
+    const wa = this.context.worldAdapter;
+    const seconds = this.duration(params, ['windup_seconds', 'windup', 'windupSeconds'], 0.35);
+    const radius = this.attackRadius(params, 120);
+    wa.setActorTag?.(enemy.actor, 'AUTOUE_ENEMY_TELEGRAPH');
+    wa.flashActorColor?.(enemy.actor, color(1, 0.05, 0.02), seconds);
+    const center = this.attackCenter(enemy, params);
+    if (center) wa.spawnTempShape?.(center, radius, color(1, 0.05, 0.02), seconds, 'Sphere');
+    log(this.context, `EnemyPresentationTelegraph enemy_id=${enemy.enemy_id} radius=${Math.round(radius)}`);
+  }
+  showHitbox(enemy: any, params: Record<string, any> = {}): void {
+    const wa = this.context.worldAdapter;
+    const seconds = this.duration(params, ['active_seconds', 'active', 'activeSeconds'], 0.16);
+    const radius = this.attackRadius(params, 110);
+    wa.setActorTag?.(enemy.actor, 'AUTOUE_ENEMY_ATTACK_ACTIVE');
+    wa.spawnTempShape?.(this.attackCenter(enemy, params) || this.loc(enemy.actor), radius, color(1, 0.85, 0.05), seconds, 'Sphere');
+    log(this.context, `EnemyPresentationHitbox enemy_id=${enemy.enemy_id} radius=${Math.round(radius)}`);
+  }
+  impact(enemy: any, target: AnyUEObject, params: Record<string, any> = {}): void {
+    const wa = this.context.worldAdapter;
+    if (target) wa.flashActorColor?.(target, color(1, 1, 1), num(params.impact_flash_seconds, 0.1));
+    if (target) wa.cameraImpulse?.(Number(params.impact_impulse_seconds || 0.08));
+    log(this.context, `EnemyPresentationImpact enemy_id=${enemy.enemy_id} target=${target ? 'valid' : 'missing'}`);
+  }
+  projectileFx(enemy: any, projectile: AnyUEObject, params: Record<string, any> = {}): void {
+    const wa = this.context.worldAdapter;
+    if (projectile) wa.setActorTag?.(projectile, 'AUTOUE_ENEMY_PROJECTILE');
+    if (projectile) wa.flashActorColor?.(projectile, color(0.1, 0.95, 1), 0.15);
+    const origin = this.loc(enemy?.actor);
+    if (origin) wa.spawnTempShape?.(origin, 30, color(0.1, 0.95, 1), 0.1, 'Sphere');
+    log(this.context, `EnemyPresentationProjectile enemy_id=${enemy.enemy_id} projectile=${projectile ? 'valid' : 'missing'} speed=${Math.round(Number(params.projectile_speed || 0))}`);
+  }
+  explosion(enemy: any, params: Record<string, any> = {}): void {
+    const wa = this.context.worldAdapter;
+    const radius = num(params.explosion_radius ?? params.explode_radius, 220);
+    wa.spawnTempShape?.(this.loc(enemy.actor), radius, color(1, 0.38, 0.02), num(params.explosion_visible_seconds, 0.3), 'Sphere');
+    wa.cameraImpulse?.(Number(params.explosion_impulse_seconds || 0.16));
+    log(this.context, `EnemyPresentationExplosion enemy_id=${enemy.enemy_id} radius=${Math.round(radius)}`);
+  }
+  death(enemy: any): void {
+    const wa = this.context.worldAdapter;
+    wa.setActorTag?.(enemy.actor, 'AUTOUE_ENEMY_DEATH_FX');
+    wa.flashActorColor?.(enemy.actor, color(0.35, 0.35, 0.35), 0.4);
+    log(this.context, `EnemyPresentationDeath enemy_id=${enemy.enemy_id}`);
+  }
+  block(enemy: any, params: Record<string, any> = {}): void {
+    const wa = this.context.worldAdapter;
+    wa.setActorTag?.(enemy.actor, 'AUTOUE_ENEMY_BLOCKING');
+    wa.flashActorColor?.(enemy.actor, color(0.1, 0.35, 1), 0.2);
+    log(this.context, `EnemyPresentationBlock enemy_id=${enemy.enemy_id} reduction=${Number(params.damage_reduction ?? params.reduction ?? 1)}`);
+  }
 }
 export function {{export_name}}(context: {{interface_name}}): AutoUEEnemyPresentationRuntime { return new AutoUEEnemyPresentationRuntime(context); }

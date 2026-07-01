@@ -152,6 +152,84 @@ export class AutoUEWorldAdapter {
   bindInputAction(actionName: string, callback: () => void): void { this.context.inputActions = this.context.inputActions || {}; (this.context.inputActions as Record<string, () => void>)[actionName] = callback; this.log(`WorldAdapter.bindInputAction ${actionName}`); }
   bindTick(callback: (dt: number) => void): void { if (this.context.registerTick) this.context.registerTick(callback); else this.log('WorldAdapter.bindTick no registerTick hook'); }
   bindTimer(seconds: number, callback: () => void): void { const setTimer = (globalThis as any).setTimeout; if (setTimer) setTimer(callback, Math.max(0, seconds) * 1000); else this.log(`WorldAdapter.bindTimer ${seconds}`); }
+  private makeVector(value: AnyUEObject, fallbackZ: number = 120): AnyUEObject {
+    const UE = this.context.UE;
+    try { if (value && value.X !== undefined && UE?.Vector) return new UE.Vector(Number(value.X || 0), Number(value.Y || 0), Number(value.Z || fallbackZ)); } catch (_) {}
+    try { if (value && value.x !== undefined && UE?.Vector) return new UE.Vector(Number(value.x || 0), Number(value.y || 0), Number(value.z || fallbackZ)); } catch (_) {}
+    try { if (UE?.Vector) return new UE.Vector(0, 0, fallbackZ); } catch (_) {}
+    return value || { X: 0, Y: 0, Z: fallbackZ };
+  }
+  private firstRenderableComponent(actor: AnyUEObject): AnyUEObject | undefined {
+    const resolved = this.resolveActor(actor, []);
+    if (!resolved) return undefined;
+    try { if (resolved.GetMesh) { const mesh = resolved.GetMesh(); if (mesh?.SetMaterial) return mesh; } } catch (_) {}
+    try { if (resolved.Mesh?.SetMaterial) return resolved.Mesh; } catch (_) {}
+    try { if (resolved.StaticMeshComponent?.SetMaterial) return resolved.StaticMeshComponent; } catch (_) {}
+    const UE = this.context.UE;
+    const classes = [UE?.MeshComponent, UE?.StaticMeshComponent, UE?.SkeletalMeshComponent, UE?.PrimitiveComponent].filter(Boolean);
+    for (const cls of classes) {
+      try {
+        const comps = resolved.GetComponentsByClass ? resolved.GetComponentsByClass(cls) : [];
+        for (const comp of comps || []) if (comp?.SetMaterial) return comp;
+      } catch (_) {}
+    }
+    return undefined;
+  }
+  private makeColorMaterial(owner: AnyUEObject, color: Record<string, number>): AnyUEObject | undefined {
+    const UE = this.context.UE;
+    try {
+      const base = UE?.Material?.Load ? UE.Material.Load('/Engine/BasicShapes/BasicShapeMaterial') : undefined;
+      if (!base || !UE?.KismetMaterialLibrary?.CreateDynamicMaterialInstance) return undefined;
+      const mat = UE.KismetMaterialLibrary.CreateDynamicMaterialInstance(owner || this.context.actor || this.context.world, base);
+      mat.SetVectorParameterValue('Color', new UE.LinearColor(Number(color.r ?? color.R ?? 1), Number(color.g ?? color.G ?? 1), Number(color.b ?? color.B ?? 1), Number(color.a ?? color.A ?? 1)));
+      return mat;
+    } catch (e) { this.log(`WorldAdapter.makeColorMaterial failed: ${e}`); return undefined; }
+  }
+  flashActorColor(actor: AnyUEObject, color: Record<string, number>, seconds: number = 0.12): void {
+    try {
+      const comp = this.firstRenderableComponent(actor);
+      if (!comp) { this.log('WorldAdapter.flashActorColor missing component'); return; }
+      const original = comp.GetMaterial ? comp.GetMaterial(0) : undefined;
+      const mat = this.makeColorMaterial(comp, color);
+      if (!mat) { this.log('WorldAdapter.flashActorColor material unavailable'); return; }
+      const seq = Number((comp as any)._autoueFlashColorSeq || 0) + 1;
+      (comp as any)._autoueFlashColorSeq = seq;
+      comp.SetMaterial(0, mat);
+      this.bindTimer(seconds, () => {
+        try {
+          if ((comp as any)._autoueFlashColorSeq !== seq) return;
+          if (original && comp.SetMaterial) comp.SetMaterial(0, original);
+        } catch (e) { this.log(`WorldAdapter.flashActorColor restore failed: ${e}`); }
+      });
+      this.log(`WorldAdapter.flashActorColor seconds=${seconds}`);
+    } catch (e) { this.log(`WorldAdapter.flashActorColor failed: ${e}`); }
+  }
+  spawnTempShape(center: AnyUEObject, radius: number, color: Record<string, number>, seconds: number = 0.12, shape: string = 'Sphere'): AnyUEObject | undefined {
+    const UE = this.context.UE;
+    try {
+      const owner = this.context.actor || this.context.world;
+      if (!UE?.StaticMeshComponent || !owner) { this.log('WorldAdapter.spawnTempShape missing owner/component class'); return undefined; }
+      const safeRadius = Math.max(10, Number(radius || 50));
+      const name = `AutoUE_Temp_${shape}_${Date.now ? Date.now() : Math.floor(Math.random() * 100000)}`;
+      const comp = new UE.StaticMeshComponent(owner, name);
+      const meshName = String(shape || 'Sphere').toLowerCase().indexOf('box') >= 0 || String(shape || '').toLowerCase().indexOf('cube') >= 0 ? 'Cube' : 'Sphere';
+      const mesh = UE.StaticMesh?.Load ? UE.StaticMesh.Load(`/Engine/BasicShapes/${meshName}`) : undefined;
+      if (mesh) comp.SetStaticMesh(mesh);
+      const scale = safeRadius / 50;
+      comp.SetWorldScale3D ? comp.SetWorldScale3D(new UE.Vector(scale, scale, scale)) : comp.SetRelativeScale3D(new UE.Vector(scale, scale, scale));
+      const mat = this.makeColorMaterial(comp, color);
+      if (mat) comp.SetMaterial(0, mat);
+      try { comp.SetCollisionEnabled(UE.ECollisionEnabled?.NoCollision ?? 0); } catch (_) {}
+      try { comp.SetAbsolute(true, false, false); } catch (_) {}
+      comp.RegisterComponent();
+      const loc = this.makeVector(center);
+      try { comp.K2_SetWorldLocation(loc, false, undefined, true); } catch (_) { try { comp.SetWorldLocation(loc); } catch (_) {} }
+      try { comp.ComponentTags?.Add?.('AUTOUE_TEMP_COMBAT_VISUAL'); } catch (_) {}
+      this.bindTimer(seconds, () => { try { if (comp.DestroyComponent) comp.DestroyComponent(); } catch (e) { this.log(`WorldAdapter.spawnTempShape destroy failed: ${e}`); } });
+      this.log(`WorldAdapter.spawnTempShape shape=${meshName} radius=${Math.round(safeRadius)} seconds=${seconds}`);
+      return comp;
+    } catch (e) { this.log(`WorldAdapter.spawnTempShape failed: ${e}`); return undefined; }
+  }
   bindOnDestroyed(target: AnyUEObject, callback: () => void): void { try { if (target?.OnDestroyed?.Add) { target.OnDestroyed.Add(callback); return; } } catch (e) { this.log(`WorldAdapter.bindOnDestroyed failed: ${e}`); } this.failUnsupported('bindOnDestroyed'); }
   bindDestroyed(target: AnyUEObject, callback: () => void): void { this.bindOnDestroyed(target, callback); }
   bindOnTakeAnyDamage(target: AnyUEObject, callback: (amount: number) => void): void { try { if (target?.OnTakeAnyDamage?.Add) { target.OnTakeAnyDamage.Add((_a: AnyUEObject, amount: number) => callback(amount)); return; } } catch (e) { this.log(`WorldAdapter.bindOnTakeAnyDamage failed: ${e}`); } this.failUnsupported('bindOnTakeAnyDamage'); }
@@ -186,7 +264,39 @@ export class AutoUEWorldAdapter {
   }
   getForwardVector(actor: AnyUEObject): AnyUEObject | undefined { try { if (actor?.GetActorForwardVector) return actor.GetActorForwardVector(); } catch (e) { this.log(`WorldAdapter.getForwardVector failed: ${e}`); } return undefined; }
   spawnVfx(entityId: string): void { const entity = this.findEntity({ entity_id: entityId }); if (entity) this.setVisibility(entity, true); else this.log(`WorldAdapter.spawnVfx ${entityId}`); }
-  cameraImpulse(duration: number): void { this.log(`WorldAdapter.cameraImpulse ${duration}`); }
+  cameraImpulse(duration: number): void {
+    const seconds = Math.max(0.03, Number(duration || 0.08));
+    try {
+      const UE = this.context.UE;
+      const actor = this.resolveActor(this.context.actor, ['player']) || this.findPlayerPawn();
+      const boom = (actor as any)?._autoueGeneratedCameraArm;
+      if (boom) {
+        const base = boom.K2_GetComponentLocation ? boom.K2_GetComponentLocation() : undefined;
+        if (base && UE?.Vector) {
+          const seq = Number((boom as any)._autoueCameraImpulseSeq || 0) + 1;
+          (boom as any)._autoueCameraImpulseSeq = seq;
+          const amp = 28;
+          const shaken = new UE.Vector(Number(base.X || 0), Number(base.Y || 0), Number(base.Z || 0) + amp);
+          try { boom.K2_SetWorldLocation(shaken, false, undefined, false); } catch (_) { try { boom.SetWorldLocation(shaken); } catch (_) {} }
+          this.bindTimer(seconds, () => {
+            try {
+              if ((boom as any)._autoueCameraImpulseSeq !== seq) return;
+              if (boom.K2_SetWorldLocation) boom.K2_SetWorldLocation(base, false, undefined, false);
+              else if (boom.SetWorldLocation) boom.SetWorldLocation(base);
+            } catch (e) { this.log(`WorldAdapter.cameraImpulse restore failed: ${e}`); }
+          });
+          this.log(`WorldAdapter.cameraImpulse cameraArm seconds=${seconds}`);
+          return;
+        }
+      }
+      const pc = UE?.GameplayStatics?.GetPlayerController ? UE.GameplayStatics.GetPlayerController(this.context.world || actor, 0) : undefined;
+      const manager = pc?.PlayerCameraManager;
+      if (manager?.StartCameraFade) {
+        try { manager.StartCameraFade(0.08, 0, seconds, new UE.LinearColor(1, 1, 1, 1), false, false); } catch (_) {}
+      }
+      this.log(`WorldAdapter.cameraImpulse fallback seconds=${seconds}`);
+    } catch (e) { this.log(`WorldAdapter.cameraImpulse failed: ${e}`); }
+  }
   openLevel(levelName: string): void { try { const UE = this.context.UE; if (UE?.GameplayStatics?.OpenLevel) UE.GameplayStatics.OpenLevel(this.context.world || this.context.actor, levelName); else this.log(`WorldAdapter.openLevel ${levelName}`); } catch (e) { this.log(`WorldAdapter.openLevel failed: ${e}`); } }
 }
 export function {{export_name}}(context?: {{interface_name}}): AutoUEWorldAdapter { return new AutoUEWorldAdapter(context); }
